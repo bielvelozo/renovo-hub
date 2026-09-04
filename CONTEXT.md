@@ -18,13 +18,20 @@ _Avoid_: líder, worship leader
 Membro com tudo que o Ministro faz mais a gestão de Membros (convidar, editar papéis).
 
 **Função**:
-O que um Membro faz em uma Equipe (vocal, guitarra, baixo, bateria, teclado, ministro...). Um Membro pode ter mais de uma Função.
+O que um Membro faz em uma Equipe (vocal, guitarra, baixo, bateria, teclado, ministro, som...). Um Membro pode ter mais de uma Função. Cada Função é musical ou técnica, marca definida pelo Admin.
 _Avoid_: instrumento, cargo, role
+
+**Função musical**:
+Função de quem toca ou canta a Música: vocal, ministro, guitarra, violão, baixo, bateria, teclado, backing. É a única que credita Execução.
+
+**Função técnica**:
+Função de quem serve na Escala sem tocar a Música, como som. Entra na Equipe para tudo (escalado, avisado, presença), mas não credita Execução nem aparece em "quem já tocou".
+_Avoid_: apoio, produção, staff
 
 ### Escala
 
 **Escala**:
-Um culto ou evento com data, que reúne uma Equipe e um Repertório. Criada livremente, não amarrada a fim de semana. Vira Realizada automaticamente quando a data passa.
+Um culto ou evento com data, que reúne uma Equipe e um Repertório. Criada livremente, não amarrada a fim de semana. Visível a todos os Membros desde a criação: não existe rascunho. Nasce Agendada, vira Realizada sozinha quando o dia termina, ou Cancelada se o Ministro marcar que não aconteceu.
 _Avoid_: culto, evento, setlist (como sinônimo do todo)
 
 **Equipe**:
@@ -36,10 +43,10 @@ Lista ordenada de Itens de uma Escala. Preenchido ao longo da semana, um item po
 _Avoid_: setlist, lista de músicas
 
 **Item**:
-Uma entrada do Repertório: uma Música inteira, um Trecho de Música ou um Medley. Carrega o Tom decidido para aquela execução.
+Uma entrada do Repertório: uma Música inteira, um Trecho de Música ou um Medley. Música inteira e Trecho carregam o Tom decidido para aquela execução; o Medley não tem Tom próprio, cada Trecho dele tem o seu.
 
 **Trecho**:
-Parte de uma Música delimitada por minutagem de início e fim no vídeo de referência.
+Parte de uma Música delimitada por minutagem de início e fim no vídeo de referência. Carrega o próprio Tom, com o último Tom da Música como sugestão.
 _Avoid_: parte, pedaço
 
 **Medley**:
@@ -48,8 +55,16 @@ Item formado por dois ou mais Trechos encadeados. Montado dentro de uma Escala, 
 **Ministrado por**:
 O Ministro que puxa um Item. Preenchido sozinho quando a Escala tem um só Ministro; explícito quando há mais de um dividindo a escolha.
 
+**Agendada**:
+Estado da Escala que ainda vai acontecer. Ter ou não Itens no Repertório não muda o estado.
+_Avoid_: planejada, prevista, aberta, rascunho
+
 **Realizada**:
-Estado da Escala cuja data já passou. Só Execuções de Escalas Realizadas entram no histórico.
+Estado da Escala cujo dia terminou: vira à meia-noite do dia da Escala, não no horário marcado, para continuar sendo "a de hoje" durante o culto. Só Execuções de Escalas Realizadas entram no histórico. Continua editável por Ministro e Admin sem prazo, inclusive para virar Cancelada; editar o passado é a única forma de corrigir o histórico, e é silencioso: não avisa ninguém.
+
+**Cancelada**:
+Estado da Escala que não aconteceu, marcado pelo Ministro antes ou depois da data. Não gera Execução nem conta a favor ou contra a presença de ninguém. Adiar não é cancelar: adiar é mudar a data da mesma Escala.
+_Avoid_: adiada, suspensa
 
 ### Músicas
 
@@ -57,18 +72,22 @@ Estado da Escala cuja data já passou. Só Execuções de Escalas Realizadas ent
 Canção do catálogo do ministério, com link de referência (YouTube e/ou Spotify), data de entrada e histórico de Execuções.
 
 **Tom**:
-Tonalidade em que uma Música foi tocada em uma Execução. Pertence ao Item, não à Música; o último Tom é a sugestão padrão.
+Tonalidade em que uma Música foi tocada em uma Execução. Pertence à Música inteira ou ao Trecho dentro do Item, nunca à Música do catálogo; o último Tom de cada Música é a sugestão padrão, venha de Execução inteira ou parcial.
 _Avoid_: key
 
 **Execução**:
-Registro de que uma Música foi tocada em uma Escala Realizada, por qual Equipe, em qual Tom, inteira ou parcial. É o que responde "quem já tocou isso" e "quando tocamos pela última vez".
+Registro de que uma Música foi tocada em uma Escala Realizada, por qual Equipe, em qual Tom, inteira ou parcial. Derivada do plano: nasce sozinha de cada Item quando a Escala vira Realizada, creditando os Membros da Equipe daquela Escala que têm Função musical. Não é registrada à parte nem confirmada depois. Uma Execução parcial vem de um Trecho e vale como Execução para todos os fins, marcada como parcial. É o que responde "quem já tocou isso" e "quando tocamos pela última vez".
 _Avoid_: play, histórico (o histórico é o conjunto de Execuções)
 
 **Nova**:
 Música sem nenhuma Execução e sem marca de Legado. Independe de quando foi adicionada.
 
 **Legado**:
-Música importada da playlist do YouTube, tocada antes do app existir: sem Execução, data e Tom desconhecidos. Deixa de ser Legado na primeira Execução.
+Música importada da playlist do YouTube, tocada antes do app existir: sem Execução, data e Tom desconhecidos. Deixa de ser Legado na primeira Execução, inteira ou parcial.
+
+**Arquivada**:
+Música com Execuções que saiu de uso. Fora das buscas e de "adicionar Item", mas presente no histórico de todo mundo. Música sem nenhuma Execução não se arquiva: apaga-se.
+_Avoid_: excluída, deletada, inativa
 
 **Sequência**:
 Documento com a letra da Música na ordem em que é cantada, repetições por extenso e gancho em destaque. Hoje é um arquivo Word; anexado à Música, com versões.

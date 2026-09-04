@@ -22,6 +22,7 @@ Spec de v1 do Renovo Hub pronta pra virar plano de implementação: glossário (
 - [Stack de custo zero pra um PWA com push, arquivos e acesso por link](issues/03-stack-custo-zero.md): Cloudflare Workers + D1 + KV + Cron é a única stack zero sem cartão e sem pausa, com o risco dos 10 ms de CPU por invocação no envio de push (fan-out obrigatório); Supabase Free pausa após 1 semana; Firebase Spark não serve; front Vite+React ou SvelteKit estático, Next.js export perde o PWA oficial.
 - [Push em PWA no iPhone: o que funciona de verdade](issues/01-push-pwa-ios.md): funciona desde iOS 16.4 só com o app na Tela de Início e permissão pedida por gesto; toda notificação tem que ser visível (3 silenciosas revogam a inscrição); Declarative Web Push (iOS 18.4+) elimina o risco do Service Worker; enviar com `web-push` + VAPID em função serverless e cron, sem intermediário.
 - [Coletar assets da marca (logo, cores, fonte) da Missão Renovo](issues/04-assets-de-marca.md): não existe paleta nem guia oficial, mas a conferência Alto & Sublime Lugar estreou uma identidade nova da igreja e é ela que o app herda; artes em alta e cores medidas em docs/brand/; conceito é a árvore de Isaías 11:1-2; Kodchasan e Inter livres do Google Fonts, display dos títulos não identificada; nenhum laranja único passa contraste nos dois temas, então o acento é um par; logo em alta ainda não existe.
+- [Estados da Escala e regras da Execução](issues/06-estados-escala-execucao.md): três estados, Agendada, Realizada e Cancelada, sem rascunho; Realizada vira à meia-noite do dia; Execução é derivada do plano, sem confirmação (ADR 0001), e corrigir o passado é editar a Escala Realizada, liberado pra Ministro e Admin sem prazo e sem aviso; parcial vale tudo e é marcada; Tom por Trecho, Medley sem Tom; Função é musical ou técnica e só musical credita Execução; streak chama "fins de semana seguidos" e só quebra com Escala Realizada sem o Membro; Música com Execução arquiva, não apaga.
 
 ## Not yet specified
 
@@ -35,7 +36,7 @@ Spec de v1 do Renovo Hub pronta pra virar plano de implementação: glossário (
 - **Troca da gravação de referência** de uma Música e o que acontece com Trechos e minutagens antigas.
 - **Metadados via Spotify** (busca, capa) além do link colado.
 - **Re-sincronizar com a playlist do YouTube** depois do import único (RSS detecta os 15 mais novos e poderia virar Sugestão automática). Depende de ver se o Ministro continua alimentando a playlist depois do app existir.
-- **Escala cancelada ou adiada**: hoje só "data passou = Realizada". Vira ticket assim que "Estados da Escala e regras da Execução" resolver.
+- **Registro de presença real** (quem faltou, quem cobriu) como conceito próprio, se o histórico derivado do plano começar a mentir na prática. Decidido não ter no v1 (ADR 0001); só volta com evidência do uso.
 
 ## Out of scope
 
