@@ -45,6 +45,9 @@ _Avoid_: parte, pedaço
 **Medley**:
 Item formado por dois ou mais Trechos encadeados. Montado dentro de uma Escala, não é reaproveitado. Cada Trecho conta como Execução parcial da sua Música.
 
+**Ministrado por**:
+O Ministro que puxa um Item. Preenchido sozinho quando a Escala tem um só Ministro; explícito quando há mais de um dividindo a escolha.
+
 **Realizada**:
 Estado da Escala cuja data já passou. Só Execuções de Escalas Realizadas entram no histórico.
 
@@ -62,7 +65,14 @@ Registro de que uma Música foi tocada em uma Escala Realizada, por qual Equipe,
 _Avoid_: play, histórico (o histórico é o conjunto de Execuções)
 
 **Nova**:
-Música sem nenhuma Execução. Independe de quando foi adicionada.
+Música sem nenhuma Execução e sem marca de Legado. Independe de quando foi adicionada.
+
+**Legado**:
+Música importada da playlist do YouTube, tocada antes do app existir: sem Execução, data e Tom desconhecidos. Deixa de ser Legado na primeira Execução.
+
+**Sequência**:
+Documento com a letra da Música na ordem em que é cantada, repetições por extenso e gancho em destaque. Hoje é um arquivo Word; anexado à Música, com versões.
+_Avoid_: arranjo, cifra, estrutura
 
 **Sugestão**:
 Música proposta por qualquer Membro para ser tocada, nova ou já conhecida, com link e observação. O Ministro pode promovê-la a Item de uma Escala.
