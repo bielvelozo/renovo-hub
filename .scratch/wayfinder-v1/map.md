@@ -18,6 +18,8 @@ Spec de v1 do Renovo Hub pronta pra virar plano de implementação: glossário (
 
 <!-- uma linha por ticket resolvido: [título](issues/NN-slug.md) e gist -->
 
+- [Importar a playlist do YouTube: API, cota e o que vem de cada vídeo](issues/02-importacao-playlist-youtube.md): 101 vídeos únicos; importar uma vez via Data API v3 (precisa de chave, 3 unidades de cota), revisão humana obrigatória porque os títulos não têm padrão; oEmbed pra enriquecer link colado; thumbnail derivada do videoId; Spotify sem minutagem.
+
 ## Not yet specified
 
 - **Editor estruturado de Sequência**: substituir o Word por blocos de letra ordenados com repetições e destaque do gancho, e a visão unificada do Medley usar isso. Depende de ver como o anexo é usado na v1.
@@ -26,6 +28,7 @@ Spec de v1 do Renovo Hub pronta pra virar plano de implementação: glossário (
 - **Indisponibilidade de Membros** no planejamento mensal da Equipe. Depende de ver como a tela de mês é usada.
 - **Troca da gravação de referência** de uma Música e o que acontece com Trechos e minutagens antigas.
 - **Metadados via Spotify** (busca, capa) além do link colado.
+- **Re-sincronizar com a playlist do YouTube** depois do import único (RSS detecta os 15 mais novos e poderia virar Sugestão automática). Depende de ver se o Ministro continua alimentando a playlist depois do app existir.
 - **Escala cancelada ou adiada**: hoje só "data passou = Realizada". Vira ticket assim que "Estados da Escala e regras da Execução" resolver.
 
 ## Out of scope
