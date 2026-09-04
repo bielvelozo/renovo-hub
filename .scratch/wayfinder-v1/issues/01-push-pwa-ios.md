@@ -1,7 +1,8 @@
 # Push em PWA no iPhone: o que funciona de verdade
 
 Type: research
-Status: open
+Status: claimed
+Findings: branch research/push-pwa-ios, arquivo docs/research/push-pwa-ios.md
 Blocked by: 
 Map: ../map.md
 

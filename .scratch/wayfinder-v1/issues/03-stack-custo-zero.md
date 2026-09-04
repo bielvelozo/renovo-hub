@@ -1,7 +1,8 @@
 # Stack de custo zero pra um PWA com push, arquivos e acesso por link
 
 Type: research
-Status: open
+Status: claimed
+Findings: branch research/stack-custo-zero, arquivo docs/research/stack-custo-zero.md
 Blocked by: 
 Map: ../map.md
 

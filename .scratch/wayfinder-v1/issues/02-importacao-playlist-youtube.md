@@ -1,7 +1,8 @@
 # Importar a playlist do YouTube: API, cota e o que vem de cada vídeo
 
 Type: research
-Status: open
+Status: claimed
+Findings: branch research/importacao-playlist-youtube, arquivo docs/research/importacao-playlist-youtube.md
 Blocked by: 
 Map: ../map.md
 
