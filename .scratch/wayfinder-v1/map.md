@@ -21,9 +21,13 @@ Spec de v1 do Renovo Hub pronta pra virar plano de implementação: glossário (
 - [Importar a playlist do YouTube: API, cota e o que vem de cada vídeo](issues/02-importacao-playlist-youtube.md): 101 vídeos únicos; importar uma vez via Data API v3 (precisa de chave, 3 unidades de cota), revisão humana obrigatória porque os títulos não têm padrão; oEmbed pra enriquecer link colado; thumbnail derivada do videoId; Spotify sem minutagem.
 - [Stack de custo zero pra um PWA com push, arquivos e acesso por link](issues/03-stack-custo-zero.md): Cloudflare Workers + D1 + KV + Cron é a única stack zero sem cartão e sem pausa, com o risco dos 10 ms de CPU por invocação no envio de push (fan-out obrigatório); Supabase Free pausa após 1 semana; Firebase Spark não serve; front Vite+React ou SvelteKit estático, Next.js export perde o PWA oficial.
 - [Push em PWA no iPhone: o que funciona de verdade](issues/01-push-pwa-ios.md): funciona desde iOS 16.4 só com o app na Tela de Início e permissão pedida por gesto; toda notificação tem que ser visível (3 silenciosas revogam a inscrição); Declarative Web Push (iOS 18.4+) elimina o risco do Service Worker; enviar com `web-push` + VAPID em função serverless e cron, sem intermediário.
+- [Coletar assets da marca (logo, cores, fonte) da Missão Renovo](issues/04-assets-de-marca.md): não existe paleta nem guia oficial, mas a conferência Alto & Sublime Lugar estreou uma identidade nova da igreja e é ela que o app herda; artes em alta e cores medidas em docs/brand/; conceito é a árvore de Isaías 11:1-2; Kodchasan e Inter livres do Google Fonts, display dos títulos não identificada; nenhum laranja único passa contraste nos dois temas, então o acento é um par; logo em alta ainda não existe.
 
 ## Not yet specified
 
+<!-- see "Fog of war" -->
+
+- **Fonte display própria do Renovo Hub**: a serifada anos 70 das artes da conferência não foi identificada e pode ser paga. Se "Identidade visual" decidir que o app precisa de voz de display, vira busca por uma alternativa livre.
 - **Editor estruturado de Sequência**: substituir o Word por blocos de letra ordenados com repetições e destaque do gancho, e a visão unificada do Medley usar isso. Depende de ver como o anexo é usado na v1.
 - **Sugestão automática de músicas pra Escala** ("faz 4 meses que não tocamos X e a Equipe toda já sabe"). Só depois de ver o Ministro usando a lista ordenada.
 - **Achievements leves** em cima do streak e das Execuções, sem competição. Depois da v1 rodar.

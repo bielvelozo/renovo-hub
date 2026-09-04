@@ -26,5 +26,5 @@ Decisões tomadas nas três rodadas de grilling que abriram o mapa. Não são ti
 - WhatsApp continua como canal paralelo; o app gera texto pronto pra colar (Equipe + Itens + Tom + links).
 - Acesso sem senha: link pessoal de convite enviado pelo Ministro/Admin grava o dispositivo; "esqueci" mostra a lista de Membros pra escolher. Confiança total no grupo.
 - Framework e backend escolhidos pelo que funciona melhor como PWA (e futura aprovação Apple), não por familiaridade. Menor custo possível.
-- Identidade visual própria do Renovo Hub derivada da logo da igreja (círculo preto, "RENOVO" branco, "O" como árvore). Tema escuro **e** claro na v1. Navegação inspirada no Spotify, thumbnail do YouTube como capa da Música. Idioma: PT-BR.
+- Identidade visual própria do Renovo Hub derivada da logo da igreja (círculo preto, "RENOVO" branco, "O" como árvore). **Atualizado em 04/09/2026**: a igreja estreou uma identidade nova na conferência Alto & Sublime Lugar e é ela que o app herda; ver [Coletar assets da marca](./issues/04-assets-de-marca.md) e [docs/brand/README.md](../../docs/brand/README.md). Tema escuro **e** claro na v1. Navegação inspirada no Spotify, thumbnail do YouTube como capa da Música. Idioma: PT-BR.
 - Ferramentas prontas (Planning Center, Holyrics) descartadas: exigem login, pesadas ou em inglês.
