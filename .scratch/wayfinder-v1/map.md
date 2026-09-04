@@ -19,6 +19,7 @@ Spec de v1 do Renovo Hub pronta pra virar plano de implementação: glossário (
 <!-- uma linha por ticket resolvido: [título](issues/NN-slug.md) e gist -->
 
 - [Importar a playlist do YouTube: API, cota e o que vem de cada vídeo](issues/02-importacao-playlist-youtube.md): 101 vídeos únicos; importar uma vez via Data API v3 (precisa de chave, 3 unidades de cota), revisão humana obrigatória porque os títulos não têm padrão; oEmbed pra enriquecer link colado; thumbnail derivada do videoId; Spotify sem minutagem.
+- [Stack de custo zero pra um PWA com push, arquivos e acesso por link](issues/03-stack-custo-zero.md): Cloudflare Workers + D1 + KV + Cron é a única stack zero sem cartão e sem pausa, com o risco dos 10 ms de CPU por invocação no envio de push (fan-out obrigatório); Supabase Free pausa após 1 semana; Firebase Spark não serve; front Vite+React ou SvelteKit estático, Next.js export perde o PWA oficial.
 
 ## Not yet specified
 
