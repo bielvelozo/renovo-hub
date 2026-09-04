@@ -17,6 +17,8 @@ O fluxo central funciona em menos toques que mandar no WhatsApp? Protótipo clic
 
 Branch `prototype/fluxo-ministro`, arquivo `prototypes/fluxo-ministro/index.html`. Um HTML só, sem marca, abre com dois cliques em qualquer navegador; nada é salvo. Pra pegar sem trocar de branch: `git show prototype/fluxo-ministro:prototypes/fluxo-ministro/index.html > fluxo-ministro.html`.
 
+**Pra mandar pro Ministro**: publicado como artefato privado em https://claude.ai/code/artifact/4f70f368-76fa-4af4-be0a-0e59bb0bb623 (compartilhar pelo menu da página). É a variante `artifact.html` da mesma branch, com as capas embutidas porque o artefato bloqueia imagem externa.
+
 O domínio (Escalas, Equipe, Itens, Execuções derivadas, último Tom, cobertura, texto do WhatsApp) está num módulo puro separado da tela, seguindo `docs/dominio/escala.md`; é a parte que sobrevive ao protótipo. Cada toque e cada tecla dentro do celular contam. Oito roteiros zeram o estado e dizem o que fazer; o painel da direita mostra as Execuções derivadas mudando.
 
 Contagem verificada por script disparando cliques e teclas reais. Os números do WhatsApp são estimativas do agente contando cada letra digitada; o Gabriel corrige.
