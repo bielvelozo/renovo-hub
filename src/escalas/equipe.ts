@@ -2,8 +2,10 @@ import type { EntradaEquipe, Funcao, Membro, Naipe } from '../dominio'
 
 export type ChaveDaSecao = 'vocal' | 'musicos' | 'som'
 
+export type MembroComPush = Membro & { push?: number }
+
 export type MembroDaSecao = {
-  membro: Membro
+  membro: MembroComPush
   funcoes: Funcao[]
 }
 
@@ -49,7 +51,11 @@ export function podeSerMinistro(membro: Membro): boolean {
   return membro.ministro || membro.admin
 }
 
-export function secoesDaEquipe(membros: Membro[], funcoes: Funcao[]): SecaoDaEquipe[] {
+export function naoRecebeNotificacao(membro: MembroComPush, escalado: boolean): boolean {
+  return escalado && membro.push === 0
+}
+
+export function secoesDaEquipe(membros: MembroComPush[], funcoes: Funcao[]): SecaoDaEquipe[] {
   const linhas = membros
     .map((membro) => ({ membro, funcoes: funcoesDoMembro(membro, funcoes) }))
     .filter((linha) => linha.funcoes.length > 0)

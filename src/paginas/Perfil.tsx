@@ -3,6 +3,7 @@ import { api } from '../api/cliente'
 import type { PerfilApresentado } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
+import { Notificacoes } from '../componentes/Notificacoes'
 import { rotuloDeEscalasNoAno, rotuloDeSeguidos, textoDaUltimaEscala } from '../perfil/perfil'
 import { usarEu } from '../sessao/sessao'
 import { usarTema } from '../tema/ProvedorDeTema'
@@ -84,19 +85,11 @@ export function Perfil() {
         <p className="dica">Do sistema segue o tema do seu celular.</p>
       </div>
 
-      <div className="cartao pagina">
-        <h2>Notificações</h2>
-        <button type="button" className="botao secundario largo" disabled>
-          Ativar notificações
-        </button>
-        <p className="dica">
-          O aviso de escalado, de mudança no Repertório e o lembrete da véspera chegam na próxima etapa do app. Aí este
-          botão liga o push neste aparelho e aparece aqui o silenciar.
-        </p>
-        <Link to="/instalar" className="dica">
-          Como instalar o app na tela inicial
-        </Link>
-      </div>
+      <Notificacoes silenciado={eu.silenciado} secundario />
+
+      <Link to="/instalar" className="dica">
+        Como instalar o app na tela inicial
+      </Link>
 
       {acao.erro && <p className="aviso">{acao.erro}</p>}
 

@@ -10,6 +10,7 @@ export type Eu = {
   ministro: boolean
   admin: boolean
   inativo: boolean
+  silenciado: boolean
 }
 
 export type Situacao =

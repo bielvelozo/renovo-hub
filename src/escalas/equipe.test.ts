@@ -7,6 +7,7 @@ import {
   comEntrada,
   entradaDoMembro,
   funcoesDoMembro,
+  naoRecebeNotificacao,
   podeSerMinistro,
   saiDaEquipe,
   secoesDaEquipe,
@@ -114,5 +115,23 @@ describe('comEntrada', () => {
   it('acha a entrada do Membro e nada pra quem está fora', () => {
     expect(entradaDoMembro(equipe, 'pedro')?.funcoes).toEqual(['baixo'])
     expect(entradaDoMembro(equipe, 'bia')).toBeUndefined()
+  })
+})
+
+describe('naoRecebeNotificacao', () => {
+  const semPush = { ...m.membros[0], push: 0 }
+  const comPush = { ...m.membros[0], push: 2 }
+
+  it('avisa o Ministro só sobre quem está escalado e não tem aparelho', () => {
+    expect(naoRecebeNotificacao(semPush, true)).toBe(true)
+    expect(naoRecebeNotificacao(comPush, true)).toBe(false)
+  })
+
+  it('não polui a lista com quem nem está na Equipe', () => {
+    expect(naoRecebeNotificacao(semPush, false)).toBe(false)
+  })
+
+  it('fica quieto quando a rota não trouxe a contagem', () => {
+    expect(naoRecebeNotificacao(m.membros[0], true)).toBe(false)
   })
 })

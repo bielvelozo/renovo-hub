@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { Marca } from '../casca/Marca'
+import { Notificacoes } from '../componentes/Notificacoes'
 import { PLATAFORMAS, passosDeInstalacao, plataformaDoAgente } from '../instalacao/plataforma'
 import type { Plataforma } from '../instalacao/plataforma'
 import { usarSessao } from '../sessao/sessao'
@@ -52,16 +53,7 @@ export function Instalar() {
         </div>
       )}
 
-      <div className="cartao pagina">
-        <h2>Notificações</h2>
-        <button type="button" className="botao largo" disabled>
-          Ativar notificações
-        </button>
-        <p className="dica">
-          Ainda não dá: as notificações chegam na próxima etapa do app. Quando chegarem, o botão só funciona com o
-          Renovo Hub aberto pelo ícone da tela inicial — é uma regra do iPhone, não uma escolha nossa.
-        </p>
-      </div>
+      <Notificacoes silenciado={sessao.situacao === 'dentro' && sessao.eu.silenciado} />
 
       <Link to="/" className="botao largo">
         Pronto

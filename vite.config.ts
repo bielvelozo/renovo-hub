@@ -28,6 +28,10 @@ export default defineConfig({
         ],
       },
       workbox: {
+        // O SW gerado não trata push: `push.js` entra nele por importScripts, que
+        // é bem mais barato que trocar tudo por injectManifest.
+        importScripts: ['/push.js'],
+        globIgnores: ['**/push.js'],
         navigateFallback: '/index.html',
         // /api/* e /entrar/* são do Worker; servir o index em cima deles quebraria o convite.
         navigateFallbackDenylist: [/^\/api\//, /^\/entrar\//],

@@ -8,17 +8,18 @@ import type { Acao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
 import { Barra } from '../componentes/Barra'
 import { Folha } from '../componentes/Folha'
-import type { Funcao, Membro } from '../dominio'
+import type { Funcao } from '../dominio'
 import {
   alternarFuncao,
   alternarMinistro,
   comEntrada,
   entradaDoMembro,
+  naoRecebeNotificacao,
   podeSerMinistro,
   saiDaEquipe,
   secoesDaEquipe,
 } from '../escalas/equipe'
-import type { EstadoNaEquipe, SecaoDaEquipe } from '../escalas/equipe'
+import type { EstadoNaEquipe, MembroComPush, SecaoDaEquipe } from '../escalas/equipe'
 import { rotuloDoDia } from '../escalas/mes'
 import { usarEu } from '../sessao/sessao'
 
@@ -26,7 +27,7 @@ export function Equipe() {
   const { id = '' } = useParams()
   const eu = usarEu()
   const escala = usarBusca<EscalaApresentada>(`/api/escalas/${id}`)
-  const pessoas = usarBusca<{ membros: Membro[] }>('/api/membros')
+  const pessoas = usarBusca<{ membros: MembroComPush[] }>('/api/membros')
   const papeis = usarBusca<{ funcoes: Funcao[] }>('/api/funcoes')
   const formacoes = usarBusca<{ formacoes: Formacao[] }>('/api/formacoes')
   const acao = usarAcao()
@@ -175,9 +176,16 @@ function Secao({
           {secao.membros.map(({ membro, funcoes }) => {
             const entrada = entradaDoMembro(equipe, membro.id)
 
+            const escalado = Boolean(entrada?.funcoes.length || entrada?.ministro)
+
             return (
               <li key={membro.id} className="pessoa">
-                <span className="titulo cresce">{membro.nome}</span>
+                <span className="titulo cresce">
+                  {membro.nome}
+                  {naoRecebeNotificacao(membro, escalado) && (
+                    <small className="dica"> · não recebe notificação</small>
+                  )}
+                </span>
                 <span className="chips">
                   {funcoes.map((funcao) => (
                     <button

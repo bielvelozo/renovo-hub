@@ -12,6 +12,7 @@
     "db:migrate": "wrangler d1 migrations apply renovo-hub --local",
     "db:seed": "tsx scripts/seed.ts",
     "convite": "tsx scripts/convite.ts",
+    "vapid": "tsx scripts/vapid.ts",
     "smoke": "tsx scripts/smoke.ts",
     "deploy": "npm run build && wrangler deploy"
   },
