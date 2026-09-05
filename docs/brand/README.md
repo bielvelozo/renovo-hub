@@ -58,8 +58,22 @@ O tema claro e o tema escuro precisam de **laranjas diferentes** para o mesmo pa
 - **Display serifada estilo anos 70**, alto contraste e terminais em bola, usada em "ALTO E SUBLIME LUGAR" e "SESSÃO 1". Não está no Google Fonts do site, veio da arte. **Não identificada.** Quem fez a arte precisa dizer qual é.
 - **Manuscrita** nos nomes dos convidados. Decorativa, provavelmente dispensável no app.
 
-## Pendências
+## Logo (recebida em 05/09/2026)
 
-- **A logo em alta resolução não existe em lugar nenhum de público.** A foto de perfil do Instagram só sai em 150×150. Ticket próprio: [Arquivo da logo Renovo em alta resolução](../../.scratch/wayfinder-v1/issues/18-arquivo-logo-alta.md).
-- Existem possivelmente **duas marcas**: a descrita nas premissas (círculo preto, "RENOVO" branco, "O" como árvore) e a do rodapé da landing ("IGREJA MISSÃO" com árvore verde). Qual é a atual, ninguém confirmou.
-- O nome da fonte display.
+Cinco PNGs de 1250 x 1250, RGB sem transparencia, em [logo/](logo/):
+
+| Arquivo | O que e | Uso |
+| --- | --- | --- |
+| `simbolo-arvore-anel-sobre-branco.png` | So a arvore, metade folhas verdes e metade galhos pretos, com raizes, dentro de um anel escuro sobre branco | Icone do app e do PWA; favicon |
+| `logo-circulo-preto.png` | Circulo preto, "IGREJA MISSAO" e "RENOVO" em branco, a arvore como o primeiro O | A marca principal; avatar, splash |
+| `logo-anel-sobre-branco.png` | A mesma marca em preto sobre branco, dentro do anel escuro | Tema claro |
+| `logo-horizontal-sobre-preto.png` | Marca horizontal, branca sobre quadrado preto | Cabecalho no tema escuro |
+| `logo-horizontal-sobre-branco.png` | Marca horizontal, preta sobre quadrado branco | Cabecalho no tema claro |
+
+Cores medidas na arvore: verde `#689C38` (folhas), anel `#242824`, preto puro no circulo, nos galhos e nas raizes. O verde e a unica cor da marca e vira token secundario do app; o laranja da conferencia continua como acento.
+
+Resposta a duvida das duas marcas: e uma so. "IGREJA MISSAO RENOVO" com a arvore no O e a marca; a arvore sozinha e o simbolo, o mesmo do rodape da landing. Nao ha SVG: pra icone mascaravel do PWA, recortar o simbolo e compor sobre a cor de fundo do tema.
+
+## Pendencias
+
+- O nome da fonte display serifada das artes da conferencia, que so quem fez a arte sabe.

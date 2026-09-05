@@ -101,7 +101,7 @@ De [docs/brand/README.md](../../docs/brand/README.md). Tokens em `src/estilo/tok
 - Escuro: fundo `#282828`, superfície `#2f2f2f`, texto `#E0D8D0`, texto secundário `#a8a29e`, acento `#FF5C30`, acento sobre fundo escuro passa AA.
 - Claro: fundo `#F5F0E8`, superfície `#ffffff`, texto `#282020`, texto secundário `#6b6560`, acento `#A34418`.
 - Fontes: Kodchasan 300 e 600 pro corpo, Inter 700 pra rótulos e botões, via Google Fonts, com fallback do sistema. Sem fonte display na V1.
-- Logotipo provisório: a palavra RENOVO HUB em Inter 700; ícone do PWA provisório em SVG com a palavra e o acento. O arquivo real vem no ticket 18.
+- Logo real em `docs/brand/logo/` (ver `docs/brand/README.md`): o símbolo da árvore no anel (`simbolo-arvore-anel-sobre-branco.png`) vira o ícone do PWA e o favicon, recortado do fundo branco e composto sobre a cor de fundo de cada tema em 192, 512 e mascarável; a marca horizontal sobre preto no cabeçalho do tema escuro e a sobre branco no claro. Verde da árvore `#689C38` como token secundário (sucesso, Realizada). Sem SVG: gerar os PNGs do ícone no build com `sharp` a partir do símbolo.
 - Estados: Agendada azul discreto, Realizada verde discreto, Cancelada vermelho discreto, Santa Ceia roxo discreto, Legado cinza, parcial âmbar, como no protótipo.
 
 ## Fora da V1
@@ -116,7 +116,7 @@ Editor estruturado de Sequência; Sugestão automática por tempo sem tocar; ach
 | Acesso e permissões | link de convite sem validade, cookie de 1 ano, lista "esqueci" ligada, matriz acima | 07 |
 | Notificações | catálogo acima, agrupamento por hora, lembrete 10h da véspera | 08 |
 | Importação | seed do CSV da pesquisa, tudo Legado com `revisar`, sem chave da API | 10, 11 |
-| Identidade | tokens acima, logotipo provisório | 12, 18 |
+| Identidade | tokens acima com a logo real; fonte display ainda desconhecida | 12 |
 | Visão do Membro | telas acima, sem teste com Membro real | 14 |
 | Onboarding | fluxo acima, sem teste em iPhone real | 15 |
 | Tom original | só link pro Cifra Club, Ministro digita | 21 |
