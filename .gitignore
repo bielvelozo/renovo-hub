@@ -7,4 +7,7 @@
 dist/
 node_modules/
 .scratch/*.png
+.scratch/*.env
+.scratch/*.json
+.scratch/*.log
 .scratch/proto.html
