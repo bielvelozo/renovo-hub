@@ -1,0 +1,22 @@
+[
+ {"ir":"/escalas/e0913/adicionar"},
+ {"esperar":900},
+ {"nome":"escolher a 1a do catalogo","avaliar":"(()=>{document.querySelector('.lista li .toque').click();return true})()"},
+ {"esperar":1200},
+ {"nome":"trocar o Tom pra G","avaliar":"(()=>{[...document.querySelectorAll('.tons button')].find(b=>b.textContent==='G').click();return [...document.querySelectorAll('.tons button')].filter(b=>b.getAttribute('aria-pressed')==='true').map(b=>b.textContent)})()"},
+ {"nome":"virar Trecho","avaliar":"(()=>{[...document.querySelectorAll('.segmento button')].find(b=>b.textContent==='Trecho').click();return true})()"},
+ {"esperar":300},
+ {"nome":"minutagem apareceu e o botao travou","avaliar":"(()=>{const m=document.querySelector('.minutagem');const b=[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Adicionar ao Repertório'));return [!!m, b.disabled]})()"},
+ {"nome":"preencher minutagem invalida","avaliar":"(()=>{const s=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set;const i=document.querySelectorAll('.minutagem input');s.call(i[0],'1:5');i[0].dispatchEvent(new Event('input',{bubbles:true}));s.call(i[1],'2:30');i[1].dispatchEvent(new Event('input',{bubbles:true}));return true})()"},
+ {"esperar":300},
+ {"nome":"botao segue travado com 1:5","avaliar":"[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Adicionar ao Repertório')).disabled"},
+ {"nome":"corrigir pra 1:05 e escrever observacao","avaliar":"(()=>{const s=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set;const i=document.querySelectorAll('.minutagem input');s.call(i[0],'1:05');i[0].dispatchEvent(new Event('input',{bubbles:true}));const o=[...document.querySelectorAll('input')].find(x=>x.placeholder.startsWith('opcional'));s.call(o,'começar mais baixo, ênfase na transição');o.dispatchEvent(new Event('input',{bubbles:true}));return true})()"},
+ {"esperar":300},
+ {"nome":"botao liberou","avaliar":"[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Adicionar ao Repertório')).disabled"},
+ {"foto":"9-trecho-pronto.png"},
+ {"nome":"adicionar","avaliar":"(()=>{[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Adicionar ao Repertório')).click();return true})()"},
+ {"esperar":1800},
+ {"nome":"voltou pra Escala","avaliar":"[location.pathname, document.querySelector('h1').textContent]"},
+ {"nome":"Repertorio agora","avaliar":"[...document.querySelectorAll('.item')].map(i=>i.querySelector('.titulo').textContent.slice(0,34)+' || '+i.querySelector('.dica').textContent.trim()+(i.querySelector('.observacao')?' // '+i.querySelector('.observacao').textContent:''))"},
+ {"foto":"9-escala-com-trecho.png"}
+]

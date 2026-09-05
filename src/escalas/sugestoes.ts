@@ -1,8 +1,8 @@
 import type { MembroResumido } from '../api/tipos'
-import { formatarDia } from '../dominio'
+import { formatarDia, hojeEmBrasilia } from '../dominio'
 
-export function diaDaSugestao(data: string): string {
-  return formatarDia(data.slice(0, 10))
+export function diaDaSugestao(carimbo: string): string {
+  return formatarDia(hojeEmBrasilia(new Date(carimbo)))
 }
 
 export function textoDosApoios(apoios: MembroResumido[]): string {

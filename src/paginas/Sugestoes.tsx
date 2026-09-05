@@ -5,6 +5,7 @@ import { usarBusca } from '../api/usarBusca'
 import { Capa } from '../componentes/Capa'
 import { Folha } from '../componentes/Folha'
 import { rotuloDoDia } from '../escalas/mes'
+import { escolhaDaSugestao } from '../escalas/rascunho'
 import { diaDaSugestao, textoDosApoios } from '../escalas/sugestoes'
 import { usarEu } from '../sessao/sessao'
 
@@ -33,7 +34,7 @@ export function Sugestoes() {
         <ul className="lista cartao">
           {lista.map((sugestao) => (
             <li key={sugestao.id} className="item">
-              {sugestao.musica && <Capa musicas={[sugestao.musica]} />}
+              <Capa musicas={[escolhaDaSugestao(sugestao).resumo]} />
 
               <div className="cresce">
                 <div className="titulo">{sugestao.titulo}</div>

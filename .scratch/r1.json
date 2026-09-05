@@ -1,0 +1,12 @@
+[
+ {"ir":"/escalas/e0913"},
+ {"nome":"botoes do Repertorio","avaliar":"[...document.querySelectorAll('a')].map(a=>a.textContent.trim()).filter(t=>t.startsWith('+'))"},
+ {"ir":"/escalas/e0913/adicionar"},
+ {"esperar":900},
+ {"nome":"titulo","avaliar":"document.querySelector('h1').textContent"},
+ {"nome":"secoes","avaliar":"[...document.querySelectorAll('h2')].map(h=>h.textContent)"},
+ {"nome":"tamanho do catalogo","avaliar":"document.querySelectorAll('.lista li').length"},
+ {"nome":"3 primeiras do catalogo","avaliar":"[...document.querySelectorAll('.lista li .titulo')].slice(0,3).map(t=>t.textContent.slice(0,40))"},
+ {"nome":"largura","avaliar":"document.documentElement.scrollWidth"},
+ {"foto":"9-escolher.png"}
+]

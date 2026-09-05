@@ -1,0 +1,12 @@
+[
+ {"ir":"/escalas/e0913/adicionar"},
+ {"esperar":900},
+ {"nome":"escolher a 1a","avaliar":"(()=>{document.querySelector('.lista li .toque').click();return true})()"},
+ {"esperar":1300},
+ {"nome":"altura do titulo cortado em 2 linhas","avaliar":"(()=>{const h=document.querySelector('.barra h1');return [Math.round(h.getBoundingClientRect().height), h.scrollHeight>h.clientHeight]})()"},
+ {"foto":"9-detalhes-2.png"},
+ {"ir":"/sugestoes"},
+ {"esperar":1200},
+ {"nome":"capa em todas as Sugestoes","avaliar":"[...document.querySelectorAll('.item')].map(i=>[i.querySelector('.titulo').textContent.slice(0,26), i.querySelector('.capa img')?i.querySelector('.capa img').src:null])"},
+ {"foto":"9-sugestoes-2.png"}
+]
