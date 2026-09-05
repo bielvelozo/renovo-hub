@@ -7,3 +7,4 @@
 dist/
 node_modules/
 .scratch/*.png
+.scratch/proto.html
