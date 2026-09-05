@@ -62,3 +62,8 @@ export function segundos(minutagem: string | null | undefined): number {
   if (partes.length !== 2 || !partes.every(Number.isFinite)) return 0
   return partes[0] * 60 + partes[1]
 }
+
+export function ehMinutagem(valor: unknown): valor is string {
+  if (typeof valor !== 'string' || !/^\d{1,2}:\d{2}$/.test(valor)) return false
+  return Number(valor.split(':')[1]) < 60
+}

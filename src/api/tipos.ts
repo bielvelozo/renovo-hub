@@ -1,4 +1,4 @@
-import type { EntradaEquipe, EstadoEscala, GrupoEquipe } from '../dominio'
+import type { EntradaEquipe, EstadoEscala, GrupoEquipe, TomSugerido } from '../dominio'
 
 export type MusicaResumida = {
   id: string
@@ -77,4 +77,74 @@ export type Playlist = {
   videoIds: string[]
   ignorados: string[]
   instrucao: string
+}
+
+export type ExecucaoApresentada = {
+  escalaId: string
+  data: string
+  tom: string
+  parcial: boolean
+  ministradoPor: string | null
+  ministradoPorNome: string | null
+}
+
+export type MusicaNaLista = MusicaResumida & {
+  legado: boolean
+  nova: boolean
+  arquivada: boolean
+  revisar: boolean
+  tomConhecido: string | null
+  tomOriginal: string | null
+  ultimaExecucao: ExecucaoApresentada | null
+}
+
+export type TomSugeridoApresentado = TomSugerido & { ministradoPorNome: string | null }
+
+export type Cobertura = { ja: string[]; nunca: string[] }
+
+export type Anexo = {
+  id: string
+  musicaId: string
+  nome: string
+  mime: string
+  tamanho: number
+  versao: number
+  criadoEm: string
+  url: string
+}
+
+export type MusicaDetalhada = MusicaNaLista & {
+  link: string
+  cifraClub: string
+  tomSugerido: TomSugeridoApresentado | null
+  historico: ExecucaoApresentada[]
+  cobertura: Cobertura | null
+  anexos: Anexo[]
+}
+
+export type Resolucao = {
+  videoId: string
+  titulo: string
+  canal: string
+  capa: string
+  capaAlternativa: string
+  musica: MusicaDetalhada | null
+}
+
+export type MembroResumido = {
+  id: string
+  nome: string
+}
+
+export type SugestaoApresentada = {
+  id: string
+  membro: MembroResumido
+  musica: MusicaResumida | null
+  link: string | null
+  titulo: string
+  observacao: string
+  data: string
+  promovidaEm: string | null
+  apoios: MembroResumido[]
+  apoiei: boolean
 }

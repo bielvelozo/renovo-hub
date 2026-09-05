@@ -40,7 +40,7 @@ export function linkDaPlaylist(m: Ministerio, escala: Escala): string | null {
   return linkDeVideos(videosDaPlaylist(m, escala))
 }
 
-export function buscaNoCifraClub(musica: Musica): string {
+export function buscaNoCifraClub(musica: Pick<Musica, 'titulo'>): string {
   return 'https://www.cifraclub.com.br/?q=' + encodeURIComponent(musica.titulo)
 }
 

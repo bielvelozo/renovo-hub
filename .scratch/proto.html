@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PROTÓTIPO · Fluxo do Ministro · Renovo Hub</title>
+<style>
+  :root { --bg:#f4f4f5; --fg:#18181b; --muted:#71717a; --line:#e4e4e7; --card:#fff; --accent:#27272a; --ok:#166534; --warn:#9a3412; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  header.topo { padding:18px 22px 10px; border-bottom:1px solid var(--line); background:#fff; }
+  header.topo .tag { display:inline-block; font-size:11px; letter-spacing:.08em; text-transform:uppercase; background:var(--warn); color:#fff; padding:2px 8px; border-radius:4px; margin-bottom:6px; }
+  header.topo h1 { margin:0 0 6px; font-size:20px; }
+  header.topo p { margin:0; color:var(--muted); max-width:900px; }
+  main.layout { display:grid; grid-template-columns: minmax(280px,340px) 430px minmax(280px,1fr); gap:22px; padding:22px; align-items:start; }
+  aside { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; }
+  aside h2 { margin:0 0 10px; font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
+  details > summary { cursor:pointer; list-style:none; }
+  details > summary::-webkit-details-marker { display:none; }
+  .abas { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+  .abas button { border:1px solid var(--line); background:#fafafa; border-radius:999px; padding:5px 10px; font-size:13px; cursor:pointer; }
+  .abas button.ativa { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .roteiro p { margin:6px 0; }
+  .roteiro .contador { display:flex; gap:14px; align-items:baseline; margin:12px 0 6px; }
+  .roteiro .contador .n { font-size:36px; font-weight:700; line-height:1; }
+  .roteiro .contador .vs { color:var(--muted); font-size:13px; }
+  .roteiro .veredito { padding:10px 12px; border-radius:8px; background:#f0fdf4; color:var(--ok); font-weight:600; margin-top:8px; }
+  .roteiro .veredito.pior { background:#fff7ed; color:var(--warn); }
+  .roteiro .just { color:var(--muted); font-size:13px; }
+  .roteiro .livre { margin-top:14px; font-size:13px; color:var(--muted); }
+  .estado dl { margin:0; display:grid; grid-template-columns:auto 1fr; gap:4px 12px; font-size:14px; }
+  .estado dt { color:var(--muted); }
+  .estado dd { margin:0; }
+  .estado table { width:100%; border-collapse:collapse; font-size:13px; margin-top:6px; }
+  .estado th, .estado td { text-align:left; padding:4px 6px; border-bottom:1px solid var(--line); vertical-align:top; }
+  .estado th { color:var(--muted); font-weight:500; }
+  .estado .sec { margin-top:16px; }
+  .mudou { background:#fef9c3; }
+
+  .phone-wrap { display:flex; justify-content:center; }
+  .phone { width:390px; height:800px; background:#111; border-radius:44px; padding:12px; box-shadow:0 20px 60px rgba(0,0,0,.25); display:flex; flex-direction:column; }
+  .screen { flex:1; background:#fafafa; border-radius:34px; overflow:hidden; display:flex; flex-direction:column; position:relative; }
+  .barra { padding:14px 16px 10px; background:#fff; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px; min-height:56px; }
+  .barra h3 { margin:0; font-size:17px; flex:1; }
+  .barra .sub { color:var(--muted); font-size:12px; display:block; font-weight:400; }
+  .conteudo { flex:1; overflow:auto; padding:12px 14px 20px; }
+  .tabbar { display:flex; border-top:1px solid var(--line); background:#fff; }
+  .tabbar button { flex:1; padding:12px 4px 14px; border:0; background:none; font-size:12px; color:var(--muted); cursor:pointer; }
+  .tabbar button.ativa { color:var(--fg); font-weight:600; }
+  .phone button, .phone a.btn { font:inherit; cursor:pointer; }
+  .btn { display:block; width:100%; min-height:46px; border:0; border-radius:12px; background:var(--accent); color:#fff; font-weight:600; font-size:15px; margin-top:10px; text-align:center; text-decoration:none; line-height:46px; }
+  .btn.sec { background:#e4e4e7; color:var(--fg); }
+  .btn.pequeno { display:inline-block; width:auto; min-height:36px; line-height:36px; padding:0 14px; font-size:14px; margin:0; }
+  .btn.perigo { background:#fee2e2; color:#991b1b; }
+  .btn.icone { background:none; color:var(--fg); width:auto; min-height:36px; line-height:36px; padding:0 10px; margin:0; font-size:20px; }
+  .lista { list-style:none; margin:0; padding:0; }
+  .lista li { display:flex; gap:12px; align-items:center; padding:10px 0; border-bottom:1px solid var(--line); }
+  .lista li:last-child { border-bottom:0; }
+  .lista li.tap { cursor:pointer; }
+  .lista .cresce { flex:1; min-width:0; }
+  .lista .titulo { font-weight:600; }
+  .lista .sub { color:var(--muted); font-size:13px; }
+  .lista .obs { color:var(--fg); font-size:13px; font-style:italic; }
+  .capa { width:56px; height:42px; border-radius:6px; object-fit:cover; background:#d4d4d8; flex:none; }
+  .capa.g { width:96px; height:72px; }
+  .capa.colagem { display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr; gap:1px; background:#a1a1aa; overflow:hidden; }
+  .capa.colagem img { width:100%; height:100%; object-fit:cover; display:block; min-height:0; }
+  .capa.colagem.n1 { grid-template-columns:1fr; }
+  .capa.colagem.n3 img:first-child { grid-row:1 / span 2; }
+  .badge { display:inline-block; font-size:11px; padding:2px 7px; border-radius:999px; background:#e4e4e7; color:#3f3f46; }
+  .badge.realizada { background:#dcfce7; color:#166534; }
+  .badge.cancelada { background:#fee2e2; color:#991b1b; }
+  .badge.agendada { background:#dbeafe; color:#1e40af; }
+  .badge.legado { background:#f5f5f4; color:#57534e; }
+  .badge.parcial { background:#fef3c7; color:#92400e; }
+  .badge.ceia { background:#ede9fe; color:#5b21b6; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { border:1px solid var(--line); background:#fff; border-radius:999px; padding:6px 10px; font-size:13px; min-height:34px; font:inherit; cursor:pointer; }
+  .chip.sel { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .chip.min { border-color:#d97706; color:#92400e; background:#fffbeb; }
+  .chip.min.sel { background:#b45309; color:#fff; border-color:#b45309; }
+  .chip.tecnica { border-style:dashed; }
+  .grupo-eq { font-size:14px; margin-bottom:4px; }
+  .grupo-eq b { font-weight:500; font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-right:6px; }
+  .tons { display:grid; grid-template-columns:repeat(6,1fr); gap:6px; }
+  .tons button { min-height:40px; border:1px solid var(--line); background:#fff; border-radius:8px; font-weight:600; }
+  .tons button.sel { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .tons button.sug { outline:2px dashed #a1a1aa; outline-offset:-2px; }
+  .secao { margin-top:16px; }
+  .secao h4 { margin:0 0 6px; font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); display:flex; justify-content:space-between; align-items:center; gap:6px; flex-wrap:wrap; }
+  .cartao { background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px; }
+  .dica { color:var(--muted); font-size:13px; }
+  .segmento { display:flex; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  .segmento button { flex:1; min-height:40px; border:0; background:#fff; }
+  .segmento button.sel { background:var(--accent); color:#fff; }
+  .campo { display:flex; gap:8px; align-items:center; margin-top:8px; }
+  .campo label { width:56px; color:var(--muted); font-size:13px; flex:none; }
+  .campo input { flex:1; min-width:0; min-height:42px; border:1px solid var(--line); border-radius:10px; padding:0 12px; font:inherit; font-size:16px; }
+  .cobertura { margin-top:8px; font-size:14px; }
+  .cobertura b { font-weight:600; }
+  .mes-nav { display:flex; align-items:center; justify-content:space-between; }
+  .mes-nav h3 { margin:0; font-size:17px; }
+  .escala-card { display:flex; gap:12px; align-items:center; padding:12px; background:#fff; border:1px solid var(--line); border-radius:12px; margin-bottom:8px; cursor:pointer; }
+  .escala-card .dia { width:44px; text-align:center; flex:none; }
+  .escala-card .dia b { display:block; font-size:20px; line-height:1; }
+  .escala-card .dia span { font-size:11px; color:var(--muted); text-transform:uppercase; }
+  .sheet { position:absolute; inset:0; background:rgba(0,0,0,.35); display:flex; align-items:flex-end; border-radius:34px; z-index:4; }
+  .sheet .painel { background:#fff; width:100%; border-radius:20px 20px 34px 34px; padding:14px 16px 24px; max-height:85%; overflow:auto; }
+  .sheet .painel h4 { margin:0 0 8px; }
+  pre.zap { white-space:pre-wrap; font:13px/1.4 ui-monospace, Menlo, Consolas, monospace; background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px; margin:0; }
+  .vazio { color:var(--muted); text-align:center; padding:30px 10px; }
+  .toques-flutuante { position:absolute; top:8px; right:14px; background:rgba(24,24,27,.85); color:#fff; font-size:12px; padding:3px 9px; border-radius:999px; z-index:5; pointer-events:none; }
+  .erro-boot { padding:24px 18px; color:#991b1b; font-size:13px; white-space:pre-wrap; }
+
+  @media (max-width: 1100px) { main.layout { grid-template-columns: 1fr; } .phone-wrap { order:-1; } .phone { width:min(390px, 100%); height:min(800px, 88vh); } }
+</style>
+</head>
+<body>
+<header class="topo">
+  <span class="tag">Protótipo descartável · sem marca · versão 2</span>
+  <h1>O fluxo central do Ministro sai em menos toques que no WhatsApp?</h1>
+  <p>Um celular cinza onde <b>cada toque e cada tecla contam</b>. Os roteiros à esquerda dizem o que fazer e quanto o mesmo trabalho custa hoje no WhatsApp, em toques, contando cada letra digitada. O painel à direita mostra o estado do ministério mudando por baixo: Execuções derivadas do plano, último Tom, quem já tocou. Nada é salvo: recarregar zera tudo. Dados de exemplo, só o Gabriel é real. Versão 2, com os dez pontos do teste de 04/09: Ministro como marca por cima da Função, Equipe por naipe com a Banda pré-definida, tom original pra música nova, capa do Medley em montagem, Sugestão com data e apoio, Escala avulsa, Santa Ceia, data e horário editáveis, observação no Item e playlist do Repertório.</p>
+</header>
+
+<main class="layout">
+  <aside id="roteiros"><details open><summary><h2>Roteiros · toque em um pra começar</h2></summary><div id="roteiros-corpo"></div></details></aside>
+  <section class="phone-wrap"><div class="phone"><div class="screen" id="phone"><div class="toques-flutuante" id="toques-flutuante">0 toques</div><div id="tela"></div></div></div></section>
+  <aside id="estado" class="estado"><details open><summary><h2>Estado por baixo</h2></summary><div id="estado-corpo"></div></details></aside>
+</main>
+
+<script id="dominio">
+try { if (window.trustedTypes && window.trustedTypes.createPolicy && !window.trustedTypes.defaultPolicy) window.trustedTypes.createPolicy('default', { createHTML: (x) => x, createScript: (x) => x, createScriptURL: (x) => x }); } catch (e) {}
+
+// ===== DOMÍNIO: puro, sem DOM. É a parte que sobrevive ao protótipo. =====
+const Dominio = (() => {
+  const HOJE = '2026-09-08';
+  const EU = 'gabriel';
+  const FUNCOES = [
+    { id:'vocal', nome:'Vocal', naipe:'vocal' },
+    { id:'backing', nome:'Backing', naipe:'vocal' },
+    { id:'guitarra', nome:'Guitarra', naipe:'instrumentos' },
+    { id:'violao', nome:'Violão', naipe:'instrumentos' },
+    { id:'baixo', nome:'Baixo', naipe:'instrumentos' },
+    { id:'bateria', nome:'Bateria', naipe:'instrumentos' },
+    { id:'teclado', nome:'Teclado', naipe:'instrumentos' },
+    { id:'som', nome:'Som', naipe:'tecnica' },
+  ];
+  const NAIPES = [ { id:'vocal', nome:'Vocal' }, { id:'instrumentos', nome:'Músicos' }, { id:'tecnica', nome:'Som' } ];
+  const TONS = ['C','C#','D','Eb','E','F','F#','G','Ab','A','Bb','B'];
+  const INTERNET = {
+    'CmM1pcHohdI': { titulo:'Bendito É O Rei', artista:'Fhop Music', tomOriginal:'D' },
+    'YXnQ02HYB1w': { titulo:'Tu és + Águas Purificadoras', artista:'Fhop Music', tomOriginal:'G' },
+  };
+  const funcao = (id) => FUNCOES.find(f => f.id === id);
+  const naipeDe = (fid) => funcao(fid).naipe;
+  const ehMusical = (fid) => naipeDe(fid) !== 'tecnica';
+
+  const m = (id, titulo, artista, videoId, tomOriginal, tomConhecido) => ({ id, titulo, artista, videoId, legado:true, tomOriginal, tomConhecido: tomConhecido || null, arquivada:false });
+  const q = (membroId, funcoes, ministro) => ({ membroId, funcoes, ministro: !!ministro });
+  let seq = 100;
+  const novoId = (p) => p + '-' + (++seq);
+  const inteira = (musicaId, tom, observacao) => ({ id:novoId('i'), tipo:'inteira', musicaId, tom, observacao: observacao || '' });
+  const trecho = (musicaId, tom, inicio, fim) => ({ id:novoId('i'), tipo:'trecho', musicaId, tom, inicio, fim, observacao:'' });
+  const esc = (id, data, equipe, itens, extra) => Object.assign({ id, data, horario:'18:00', rotulo:'Culto de Domingo', santaCeia:false, cancelada:false, equipe, itens }, extra || {});
+
+  function estadoInicial() {
+    seq = 100;
+    return {
+      hoje: HOJE, eu: EU,
+      membros: [
+        { id:'gabriel', nome:'Gabriel', funcoes:['guitarra'] },
+        { id:'isa', nome:'Isa', funcoes:['vocal'], ministro:true },
+        { id:'marcos', nome:'Marcos', funcoes:['vocal','violao'], ministro:true },
+        { id:'pedro', nome:'Pedro', funcoes:['baixo'] },
+        { id:'ana', nome:'Ana', funcoes:['vocal'] },
+        { id:'lucas', nome:'Lucas', funcoes:['bateria'] },
+        { id:'rafa', nome:'Rafa', funcoes:['baixo','teclado'] },
+        { id:'bia', nome:'Bia', funcoes:['backing'] },
+        { id:'julia', nome:'Júlia', funcoes:['vocal','teclado'] },
+        { id:'davi', nome:'Davi', funcoes:['som'] },
+      ],
+      formacoes: [ { id:'banda', nome:'Banda', entradas:[ q('gabriel',['guitarra']), q('pedro',['baixo']), q('lucas',['bateria']), q('rafa',['teclado']), q('davi',['som']) ] } ],
+      musicas: [
+        m('meia-noite','Meia Noite','Fhop Music','hRJUcvsnqKs','G'),
+        m('firme','Firme Fundamento','Central MSC','FKKytz49Fhg','C'),
+        m('grato','Grato Sou','DROPS','Yo9G3hvl_UI','C','Bb'),
+        m('permanecerei','Permanecerei','Eric & Evellyn Emerick','0qTF7saPK7o','B','A'),
+        m('em-teus-bracos','Em Teus Braços','Laura Souguellis','IxpWNuxGmzc','G'),
+        m('sublime','Sublime','Fhop Music','7GWZwO0MdsY','A'),
+        m('fez-um-caminho','Fez Um Caminho','IIR Music','pXQRyiSZ8mQ','D'),
+        m('como-nao-te-amar','Como Não Te Amar','Gabi Sampaio','kJ9Yy-YGTNo','C'),
+        m('rio','Rio','Nívea Soares','s1oU-6vYc4E','D'),
+        m('dono','Dono da Minha Afeição','Fhop Music','2anDhu7L-Cc','E'),
+      ],
+      escalas: [
+        esc('e0816','2026-08-16', [q('marcos',['vocal','violao'],true), q('gabriel',['guitarra']), q('pedro',['baixo']), q('ana',['vocal']), q('lucas',['bateria']), q('davi',['som'])],
+          [inteira('meia-noite','E'), inteira('firme','C')]),
+        esc('e0823','2026-08-23', [q('isa',['vocal'],true), q('gabriel',['guitarra']), q('rafa',['baixo']), q('julia',['vocal']), q('lucas',['bateria']), q('bia',['backing']), q('davi',['som'])],
+          [inteira('grato','Bb'), inteira('permanecerei','A')]),
+        esc('e0830','2026-08-30', [q('isa',['vocal'],true), q('gabriel',['guitarra']), q('marcos',['violao']), q('ana',['vocal']), q('lucas',['bateria']), q('bia',['backing']), q('davi',['som'])],
+          [inteira('meia-noite','G','Começar mais baixo, diferente do clipe'), inteira('em-teus-bracos','G'), trecho('sublime','A','2:10','4:35')]),
+        esc('e0906','2026-09-06', [q('marcos',['vocal','violao'],true), q('gabriel',['guitarra']), q('pedro',['baixo']), q('julia',['vocal']), q('lucas',['bateria']), q('davi',['som'])],
+          [inteira('fez-um-caminho','D'), inteira('como-nao-te-amar','C')], { horario:'08:00', santaCeia:true }),
+        esc('e0913','2026-09-13', [q('isa',['vocal'],true), q('gabriel',['guitarra']), q('pedro',['baixo']), q('ana',['vocal']), q('lucas',['bateria']), q('davi',['som'])], []),
+        esc('e0920','2026-09-20', [], []),
+        esc('e0927','2026-09-27', [], []),
+      ],
+      sugestoes: [
+        { id:'s1', membroId:'ana', musicaId:'sublime', data:'2026-08-28', observacao:'A galera pediu de novo, inteira dessa vez', apoios:['lucas','bia'] },
+        { id:'s2', membroId:'lucas', musicaId:'rio', data:'2026-09-01', observacao:'Faz tempo que não tocamos Rio', apoios:[] },
+      ],
+    };
+  }
+
+  const membro = (s, id) => s.membros.find(x => x.id === id);
+  const musica = (s, id) => s.musicas.find(x => x.id === id);
+  const escala = (s, id) => s.escalas.find(x => x.id === id);
+
+  function estadoEscala(e, hoje) { if (e.cancelada) return 'cancelada'; return e.data < hoje ? 'realizada' : 'agendada'; }
+  function hora(h) { return /:00$/.test(h) ? h.slice(0, 2) + 'h' : h; }
+  function tituloEscala(e) { return (e.santaCeia ? 'Santa Ceia' : e.rotulo) + ' ' + hora(e.horario); }
+  function ministros(e) { return e.equipe.filter(x => x.ministro).map(x => x.membroId); }
+  function ministradoPorDe(e, item) { if (item && item.ministradoPor) return item.ministradoPor; const ms = ministros(e); return ms.length === 1 ? ms[0] : null; }
+  function membrosMusicais(e) { return e.equipe.filter(x => x.funcoes.some(ehMusical)).map(x => x.membroId); }
+
+  function execucoes(s) {
+    const out = [];
+    for (const e of s.escalas) {
+      if (estadoEscala(e, s.hoje) !== 'realizada') continue;
+      const musicais = membrosMusicais(e);
+      for (const it of e.itens) {
+        const quem = ministradoPorDe(e, it);
+        if (it.tipo === 'medley') for (const t of it.trechos) out.push({ escalaId:e.id, data:e.data, musicaId:t.musicaId, parcial:true, tom:t.tom, ministradoPor:quem, membros:musicais });
+        else out.push({ escalaId:e.id, data:e.data, musicaId:it.musicaId, parcial: it.tipo === 'trecho', tom:it.tom, ministradoPor:quem, membros:musicais });
+      }
+    }
+    return out.sort((a, b) => b.data.localeCompare(a.data));
+  }
+  function historicoTons(s, musicaId) { return execucoes(s).filter(x => x.musicaId === musicaId); }
+  function ultimoTom(s, musicaId) {
+    const h = historicoTons(s, musicaId);
+    if (h.length) return { tom:h[0].tom, origem:'execucao', data:h[0].data, ministradoPor:h[0].ministradoPor, parcial:h[0].parcial };
+    const mu = musica(s, musicaId);
+    if (mu && mu.tomConhecido) return { tom:mu.tomConhecido, origem:'conhecido', original: mu.tomOriginal };
+    if (mu && mu.tomOriginal) return { tom:mu.tomOriginal, origem:'original' };
+    return null;
+  }
+  function ultimaExecucao(s, musicaId) { const h = historicoTons(s, musicaId); return h.length ? h[0] : null; }
+  function ehLegado(s, mu) { return mu.legado && !historicoTons(s, mu.id).length; }
+  function cobertura(s, escalaId, musicaId) {
+    const e = escala(s, escalaId);
+    const quemJa = new Set(historicoTons(s, musicaId).flatMap(x => x.membros));
+    const ja = [], nunca = [];
+    for (const id of membrosMusicais(e)) (quemJa.has(id) ? ja : nunca).push(membro(s, id).nome);
+    return { ja, nunca };
+  }
+  function gruposEquipe(s, e) {
+    const nome = (id) => membro(s, id).nome;
+    const fn = (f) => funcao(f).nome.toLowerCase();
+    const mins = e.equipe.filter(x => x.ministro);
+    const resto = e.equipe.filter(x => !x.ministro);
+    const g = [];
+    if (mins.length) g.push({ nome: mins.length > 1 ? 'Ministros' : 'Ministro', itens: mins.map(x => { const inst = x.funcoes.filter(f => naipeDe(f) !== 'vocal'); return nome(x.membroId) + (inst.length ? ' (' + inst.map(fn).join(', ') + ')' : ''); }) });
+    const voc = resto.filter(x => x.funcoes.some(f => naipeDe(f) === 'vocal'));
+    if (voc.length) g.push({ nome:'Vocal', itens: voc.map(x => nome(x.membroId) + (x.funcoes.includes('backing') ? ' (backing)' : '')) });
+    const mus = resto.filter(x => x.funcoes.some(f => naipeDe(f) === 'instrumentos'));
+    if (mus.length) g.push({ nome:'Músicos', itens: mus.map(x => nome(x.membroId) + ' (' + x.funcoes.filter(f => naipeDe(f) === 'instrumentos').map(fn).join(', ') + ')') });
+    const tec = resto.filter(x => x.funcoes.some(f => naipeDe(f) === 'tecnica'));
+    if (tec.length) g.push({ nome:'Som', itens: tec.map(x => nome(x.membroId)) });
+    return g;
+  }
+
+  function videoIdDoLink(link) { const r = /(?:youtu\.be\/|v=|shorts\/)([A-Za-z0-9_-]{11})/.exec(link || ''); return r ? r[1] : null; }
+  function segundos(min) { const p = String(min || '').split(':').map(Number); return (p.length === 2 && p.every(Number.isFinite)) ? p[0] * 60 + p[1] : 0; }
+  function linkDe(mu, inicio) { const t = inicio ? segundos(inicio) : 0; return 'https://youtu.be/' + mu.videoId + (t ? '?t=' + t : ''); }
+  function playlist(s, e) { const ids = e.itens.filter(it => it.tipo === 'inteira').map(it => musica(s, it.musicaId).videoId); return ids.length ? 'https://www.youtube.com/watch_videos?video_ids=' + ids.join(',') : null; }
+  const DIAS = ['dom','seg','ter','qua','qui','sex','sáb'];
+  function fmtData(iso) { const d = new Date(iso + 'T12:00:00'); return String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0'); }
+  function diaSemana(iso) { return DIAS[new Date(iso + 'T12:00:00').getDay()]; }
+  function domingosDoMes(ano, mes) { const out = []; const d = new Date(ano, mes - 1, 1, 12); while (d.getMonth() === mes - 1) { if (d.getDay() === 0) out.push(d.toISOString().slice(0,10)); d.setDate(d.getDate() + 1); } return out; }
+  function descItem(s, it) {
+    if (it.tipo === 'medley') return 'Medley: ' + it.trechos.map(t => musica(s, t.musicaId).titulo + ' (' + t.inicio + '–' + t.fim + ', Tom ' + t.tom + ')').join(' + ');
+    const mu = musica(s, it.musicaId);
+    return mu.titulo + (it.tipo === 'trecho' ? ' (' + it.inicio + '–' + it.fim + ')' : '') + ' · Tom ' + it.tom;
+  }
+  function textoWhatsApp(s, escalaId) {
+    const e = escala(s, escalaId);
+    const L = ['*' + tituloEscala(e) + ' · ' + fmtData(e.data) + '*'];
+    for (const g of gruposEquipe(s, e)) L.push(g.nome + ': ' + g.itens.join(', '));
+    if (!e.equipe.length) L.push('(sem Equipe ainda)');
+    L.push('');
+    L.push('Repertório:');
+    e.itens.forEach((it, i) => {
+      if (it.tipo === 'medley') { L.push((i+1) + '. ' + descItem(s, it)); }
+      else { const mu = musica(s, it.musicaId); L.push((i+1) + '. ' + descItem(s, it) + ' · ' + mu.artista); }
+      if (it.observacao) L.push('   Obs: ' + it.observacao);
+      if (it.tipo === 'medley') it.trechos.forEach(t => L.push('   ' + linkDe(musica(s, t.musicaId), t.inicio)));
+      else L.push('   ' + linkDe(musica(s, it.musicaId), it.tipo === 'trecho' ? it.inicio : null));
+    });
+    if (!e.itens.length) L.push('(ainda sem músicas)');
+    const pl = playlist(s, e);
+    if (pl) { L.push(''); L.push('Playlist pra ouvir em loop: ' + pl); }
+    return L.join('\n');
+  }
+
+  // Reducer: (estado, ação) → novo estado. Nunca toca no DOM.
+  function reduzir(s, a) {
+    const n = structuredClone(s);
+    const e = a.escalaId ? escala(n, a.escalaId) : null;
+    const entradaDe = (mid) => { let x = e.equipe.find(y => y.membroId === mid); if (!x) { x = { membroId:mid, funcoes:[], ministro:false }; e.equipe.push(x); } return x; };
+    const limpar = () => { e.equipe = e.equipe.filter(x => x.funcoes.length || x.ministro); };
+    switch (a.tipo) {
+      case 'criarEscalasDoMes': {
+        const doms = domingosDoMes(a.ano, a.mes);
+        doms.forEach((data, i) => { if (n.escalas.some(x => x.data === data)) return; n.escalas.push(esc(novoId('e'), data, [], [], i === 0 ? { horario:'08:00', santaCeia:true } : {})); });
+        n.escalas.sort((x, y) => x.data.localeCompare(y.data));
+        return n;
+      }
+      case 'criarEscala': { n.escalas.push(esc(novoId('e'), a.data, [], [], { horario:a.horario, rotulo:a.rotulo })); n.escalas.sort((x, y) => x.data.localeCompare(y.data)); return n; }
+      case 'editarEscala': { if (a.data) e.data = a.data; if (a.horario) e.horario = a.horario; if (typeof a.santaCeia === 'boolean') e.santaCeia = a.santaCeia; n.escalas.sort((x, y) => x.data.localeCompare(y.data)); return n; }
+      case 'alternarFuncao': { const x = entradaDe(a.membroId); const i = x.funcoes.indexOf(a.funcaoId); if (i >= 0) x.funcoes.splice(i, 1); else x.funcoes.push(a.funcaoId); limpar(); return n; }
+      case 'alternarMinistro': {
+        if (!membro(n, a.membroId).ministro) return n;
+        const x = entradaDe(a.membroId);
+        if (!x.ministro && !x.funcoes.some(f => naipeDe(f) === 'vocal')) { const fv = membro(n, a.membroId).funcoes.find(f => naipeDe(f) === 'vocal'); if (fv) x.funcoes.push(fv); }
+        x.ministro = !x.ministro; limpar(); return n;
+      }
+      case 'aplicarFormacao': { const f = n.formacoes.find(f => f.id === a.formacaoId); for (const ent of f.entradas) { const x = entradaDe(ent.membroId); for (const fu of ent.funcoes) if (!x.funcoes.includes(fu)) x.funcoes.push(fu); } return n; }
+      case 'salvarFormacao': { const f = n.formacoes.find(f => f.id === a.formacaoId); f.entradas = e.equipe.map(x => ({ membroId:x.membroId, funcoes:x.funcoes.filter(fu => naipeDe(fu) !== 'vocal') })).filter(x => x.funcoes.length); return n; }
+      case 'cadastrarMusicaPorLink': {
+        const vid = videoIdDoLink(a.link);
+        let mu = n.musicas.find(x => x.videoId === vid);
+        if (!mu) { const meta = INTERNET[vid] || { titulo:'Vídeo ' + vid, artista:'Canal desconhecido', tomOriginal:null }; mu = { id:novoId('m'), titulo:meta.titulo, artista:meta.artista, videoId:vid, legado:false, tomOriginal:meta.tomOriginal, tomConhecido:null, arquivada:false }; n.musicas.push(mu); }
+        n.ultimaMusicaResolvida = mu.id; return n;
+      }
+      case 'adicionarItem': { e.itens.push(Object.assign({ id:novoId('i'), observacao:'' }, a.item)); if (a.sugestaoId) n.sugestoes = n.sugestoes.filter(x => x.id !== a.sugestaoId); return n; }
+      case 'removerItem': { e.itens = e.itens.filter(x => x.id !== a.itemId); return n; }
+      case 'cancelarEscala': { e.cancelada = true; return n; }
+      case 'desfazerCancelamento': { e.cancelada = false; return n; }
+      case 'apoiarSugestao': { const sg = n.sugestoes.find(x => x.id === a.sugestaoId); const i = sg.apoios.indexOf(a.membroId); if (i >= 0) sg.apoios.splice(i, 1); else sg.apoios.push(a.membroId); return n; }
+      default: return n;
+    }
+  }
+
+  return { FUNCOES, NAIPES, TONS, estadoInicial, funcao, naipeDe, ehMusical, membro, musica, escala, estadoEscala, hora, tituloEscala, ministros, ministradoPorDe, membrosMusicais,
+           execucoes, historicoTons, ultimoTom, ultimaExecucao, ehLegado, cobertura, gruposEquipe, videoIdDoLink, linkDe, playlist, fmtData, diaSemana, domingosDoMes, descItem, textoWhatsApp, reduzir };
+})();
+</script>
+
+<script id="shell">
+// ===== TELA: casca descartável em volta do domínio. =====
+const D = Dominio;
+let s = D.estadoInicial();
+let ui = novaUi();
+const MESES = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+const escById = (id) => D.escala(s, id);
+
+function novaUi(extra) {
+  return Object.assign({ tela:'mes', mesVisto:'2026-09', escalaId:null, toques:0, roteiro:null, concluido:null, copiou:null,
+    rascunho:null, medley:null, trechoMedley:null, sheet:null, alvoEscolha:'item', sugestaoId:null, mudou:null, editSantaCeia:false }, extra || {});
+}
+function dispatch(a) { s = D.reduzir(s, a); ui.mudou = a.tipo; render(); }
+function ir(tela, extra) { Object.assign(ui, { tela, sheet:null }, extra || {}); render(); }
+function esc(id) { return D.escala(s, id || ui.escalaId); }
+
+// ---------- roteiros ----------
+const ROTEIROS = [
+  { id:'mes', titulo:'1. Montar o mês de outubro', ui:{ tela:'mes', mesVisto:'2026-10' },
+    descricao:'É fim de setembro. Crie os domingos de outubro de uma vez: o primeiro já nasce Santa Ceia às 08h. Abra o dia 4 e monte a Equipe: Isa como Ministra, Ana no vocal, e a Banda inteira num toque.',
+    whatsapp:200, just:'Digitar "Escala de outubro" com 4 datas e os nomes por data, mais abrir o grupo e enviar. Cada tecla é um toque.',
+    pronto:(s, ui) => { const out = s.escalas.filter(e => e.data.startsWith('2026-10')); return out.length >= 4 && out[0].santaCeia && out.some(e => D.ministros(e).length && e.equipe.length >= 6) && ui.tela !== 'equipe'; } },
+  { id:'link', titulo:'2. Terça: adicionar música colando o link', ui:{ tela:'escala', escalaId:'e0913' },
+    descricao:'Você achou a versão da Fhop de "Bendito É O Rei". Na Escala de 13/09, cole o link. O tom original da gravação já vem sugerido (simulado aqui; a fonte real é pesquisa aberta). Adicione inteira. Repare na cobertura: música nova, ninguém tocou.',
+    whatsapp:45, just:'Abrir o grupo, colar o link, enviar, escrever "Bendito É O Rei em D, versão da Fhop", enviar. O WhatsApp não mostra tom nem quem já tocou.',
+    pronto:(s) => escById('e0913').itens.some(i => i.tipo === 'inteira' && D.musica(s, i.musicaId).videoId === 'CmM1pcHohdI' && i.tom) },
+  { id:'trecho', titulo:'3. Adicionar só um Trecho, com minutagem', ui:{ tela:'escala', escalaId:'e0913' },
+    descricao:'"Sublime" só do 2:10 ao 4:35, como no dia 30/08. Adicione como Trecho e digite a minutagem. O último Tom veio de uma Execução parcial.',
+    whatsapp:30, just:'Colar o link e escrever "só do 2:10 até o 4:35".',
+    pronto:(s) => escById('e0913').itens.some(i => i.tipo === 'trecho' && i.inicio && i.fim) },
+  { id:'medley', titulo:'4. Montar um Medley de 2 Trechos', ui:{ tela:'escala', escalaId:'e0913' },
+    descricao:'Rio (Nívea Soares) até 1:40 emendando em Grato Sou do 1:20 ao 3:00. Cada Trecho tem seu Tom e sua minutagem; a capa do Medley vira montagem. Se quiser, escreva uma observação ("solo de guitarra na transição").',
+    whatsapp:70, just:'Dois links e "Rio até 1:40 em D, aí entra Grato Sou do 1:20 em Bb", enviar.',
+    pronto:(s) => escById('e0913').itens.some(i => i.tipo === 'medley' && i.trechos.length >= 2 && i.trechos.every(t => t.tom)) },
+  { id:'sugestao', titulo:'5. Promover uma Sugestão', ui:{ tela:'sugestoes' },
+    descricao:'A Ana sugeriu "Sublime" inteira há uma semana e duas pessoas apoiam. Promova pra Escala de 13/09.',
+    whatsapp:20, just:'Rolar o grupo até achar a mensagem da Ana, copiar o link, colar de novo, escrever o Tom, enviar.',
+    pronto:(s) => s.escalas.some(e => e.itens.some(i => i.origemSugestao)) },
+  { id:'whatsapp', titulo:'6. Gerar o texto pro WhatsApp', ui:{ tela:'escala', escalaId:'e0830' },
+    descricao:'A Escala de 30/08 já está montada. Gere o texto pronto e copie. A Equipe sai separada em ministro, vocal, músicos e som; a observação da música vai junto.',
+    whatsapp:250, just:'Digitar Equipe, três músicas, Tons e links à mão.',
+    pronto:(s, ui) => ui.copiou === 'e0830' },
+  { id:'corrigir', titulo:'7. Corrigir o domingo passado', ui:{ tela:'escala', escalaId:'e0906' },
+    descricao:'Na Santa Ceia de 06/09 o Pedro faltou e o Rafa cobriu no baixo. Corrija a Equipe da Escala já Realizada e veja as Execuções mudarem sozinhas no painel.',
+    whatsapp:null, just:'Não existe no WhatsApp: o histórico não é registrado em lugar nenhum.',
+    pronto:(s, ui) => { const e = escById('e0906'); return !e.equipe.some(q => q.membroId === 'pedro') && e.equipe.some(q => q.membroId === 'rafa' && q.funcoes.includes('baixo')) && ui.tela !== 'equipe'; } },
+  { id:'cancelar', titulo:'8. Cancelar uma Escala', ui:{ tela:'escala', escalaId:'e0927' },
+    descricao:'Dia 27/09 não vai ter culto. Marque a Escala como Cancelada. Ela some do histórico e não conta presença.',
+    whatsapp:40, just:'"Pessoal, dia 27 não vai ter culto", enviar.',
+    pronto:(s) => escById('e0927').cancelada },
+  { id:'avulsa', titulo:'9. Criar uma Escala avulsa', ui:{ tela:'mes', mesVisto:'2026-10' },
+    descricao:'Conferência no sábado 10/10 às 19:30. Crie a Escala avulsa com nome, data e horário. Aqui a digitação pesa: conte.',
+    whatsapp:60, just:'"Sábado 10/10 às 19h30 tem conferência, escala: …", enviar.',
+    pronto:(s, ui) => s.escalas.some(e => e.data === '2026-10-10') && !ui.sheet },
+];
+function iniciarRoteiro(id) { const r = ROTEIROS.find(x => x.id === id); s = D.estadoInicial(); ui = novaUi(Object.assign({ roteiro:id }, r.ui)); render(); }
+function renderRoteiros() {
+  const r = ROTEIROS.find(x => x.id === ui.roteiro);
+  let h = '<div class="abas">' + ROTEIROS.map(x => '<button class="' + (x.id === ui.roteiro ? 'ativa' : '') + '" onclick="iniciarRoteiro(\'' + x.id + '\')">' + x.titulo.split('.')[0] + '</button>').join('') + '</div>';
+  if (!r) {
+    h += '<div class="roteiro"><p><b>Modo livre.</b> Mexa à vontade no celular; o contador conta tudo. Ou escolha um roteiro numerado: ele zera o estado e o contador e diz o que fazer.</p><p class="livre">Toques até agora: <b>' + ui.toques + '</b></p></div>';
+  } else {
+    const c = ui.concluido;
+    h += '<div class="roteiro"><p><b>' + r.titulo + '</b></p><p>' + r.descricao + '</p>';
+    h += '<div class="contador"><div><div class="n">' + (c ? c.toques : ui.toques) + '</div><div class="vs">toques no app' + (c ? ' · concluído' : ' · em andamento') + '</div></div>';
+    h += '<div><div class="n" style="color:var(--muted)">' + (r.whatsapp == null ? '—' : '~' + r.whatsapp) + '</div><div class="vs">no WhatsApp hoje</div></div></div>';
+    h += '<p class="just">' + r.just + '</p>';
+    if (c) {
+      if (r.whatsapp == null) h += '<div class="veredito">Concluído em ' + c.toques + ' toques. No WhatsApp isso não existe.</div>';
+      else if (c.toques < r.whatsapp) h += '<div class="veredito">Concluído em ' + c.toques + ' toques, ' + Math.round(r.whatsapp / c.toques) + '× menos que os ~' + r.whatsapp + ' do WhatsApp.</div>';
+      else h += '<div class="veredito pior">Concluído em ' + c.toques + ' toques. Não ganhou do WhatsApp (~' + r.whatsapp + ').</div>';
+      h += '<button style="margin-top:10px;border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;cursor:pointer;font:inherit" onclick="iniciarRoteiro(\'' + r.id + '\')">Refazer este roteiro</button>';
+    }
+    h += '<p class="livre">Depois de concluir, pode continuar mexendo: o roteiro só congela o número dele. Refazer zera.</p></div>';
+  }
+  document.getElementById('roteiros-corpo').innerHTML = h;
+}
+
+// ---------- contagem de toques ----------
+const phone = document.getElementById('phone');
+phone.addEventListener('click', (ev) => {
+  const alvo = ev.target.closest('button, a, .tap, input, .escala-card, .chip');
+  if (!alvo) return;
+  ui.toques += Number(alvo.dataset.toques || 1);
+  document.getElementById('toques-flutuante').textContent = ui.toques + ' toques';
+}, true);
+phone.addEventListener('keydown', (ev) => {
+  if (ev.target.tagName !== 'INPUT') return;
+  if (ev.key.length === 1 || ev.key === 'Backspace') { ui.toques += 1; document.getElementById('toques-flutuante').textContent = ui.toques + ' toques'; }
+}, true);
+
+// ---------- telas ----------
+const srcCapa = (mu) => 'https://i.ytimg.com/vi/' + mu.videoId + '/mqdefault.jpg';
+const capa = (mu, g) => '<img class="capa' + (g ? ' g' : '') + '" src="' + srcCapa(mu) + '" alt="" onerror="this.style.visibility=\'hidden\'">';
+const capaColagem = (musicas, g) => { const ms = musicas.slice(0, 4); return '<div class="capa colagem' + (g ? ' g' : '') + ' n' + ms.length + '">' + ms.map(mu => '<img src="' + srcCapa(mu) + '" alt="">').join('') + '</div>'; };
+const capaItem = (it) => it.tipo === 'medley' ? capaColagem(it.trechos.map(t => D.musica(s, t.musicaId))) : capa(D.musica(s, it.musicaId));
+const barra = (titulo, sub, voltar, direita) => '<div class="barra">' + (voltar ? '<button class="btn icone" onclick="' + voltar + '">‹</button>' : '') + '<h3>' + titulo + (sub ? '<span class="sub">' + sub + '</span>' : '') + '</h3>' + (direita || '') + '</div>';
+const tabbar = () => '<nav class="tabbar"><button class="' + (ui.tela !== 'sugestoes' ? 'ativa' : '') + '" onclick="ir(\'mes\')">Mês</button><button class="' + (ui.tela === 'sugestoes' ? 'ativa' : '') + '" onclick="ir(\'sugestoes\')">Sugestões' + (s.sugestoes.length ? ' (' + s.sugestoes.length + ')' : '') + '</button></nav>';
+const badge = (e) => { const st = D.estadoEscala(e, s.hoje); return '<span class="badge ' + st + '">' + st + '</span>' + (e.santaCeia ? ' <span class="badge ceia">Santa Ceia</span>' : ''); };
+const esc_ = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+
+function telaMes() {
+  const [ano, mes] = ui.mesVisto.split('-').map(Number);
+  const do_mes = s.escalas.filter(e => e.data.startsWith(ui.mesVisto));
+  let h = barra('<div class="mes-nav"><button class="btn icone" onclick="mudarMes(-1)">‹</button><h3>' + MESES[mes-1] + ' ' + ano + '</h3><button class="btn icone" onclick="mudarMes(1)">›</button></div>', null);
+  h += '<div class="conteudo">';
+  if (!do_mes.length) h += '<div class="vazio">Nenhuma Escala em ' + MESES[mes-1] + '.</div>';
+  for (const e of do_mes) {
+    h += '<div class="escala-card" onclick="ir(\'escala\',{escalaId:\'' + e.id + '\'})"><div class="dia"><b>' + e.data.slice(8) + '</b><span>' + D.diaSemana(e.data) + '</span></div><div class="cresce"><div><b>' + D.tituloEscala(e) + '</b> ' + badge(e) + '</div><div class="dica">' + (e.equipe.length ? e.equipe.length + ' na Equipe' : 'sem Equipe') + ' · ' + (e.itens.length ? e.itens.length + ' no Repertório' : 'sem músicas') + '</div></div><div>›</div></div>';
+  }
+  const faltam = D.domingosDoMes(ano, mes).filter(d => !s.escalas.some(e => e.data === d));
+  if (faltam.length) h += '<button class="btn" onclick="dispatch({tipo:\'criarEscalasDoMes\', ano:' + ano + ', mes:' + mes + '})">Criar os ' + faltam.length + ' domingos de ' + MESES[mes-1] + '</button><div class="dica" style="margin-top:6px">O primeiro domingo nasce Santa Ceia às 08h; os outros, Culto de Domingo 18h.</div>';
+  h += '<button class="btn sec" onclick="abrirSheet(\'avulsa\')">+ Escala avulsa</button>';
+  h += '</div>';
+  if (ui.sheet === 'avulsa') {
+    h += '<div class="sheet"><div class="painel"><h4>Escala avulsa</h4><p class="dica">Evento fora de domingo: nome, data e horário livres.</p>';
+    h += '<div class="campo"><label>nome</label><input id="av-rotulo" placeholder="Conferência"></div>';
+    h += '<div class="campo"><label>data</label><input id="av-data" placeholder="10/10" inputmode="numeric"></div>';
+    h += '<div class="campo"><label>hora</label><input id="av-hora" placeholder="19:30" inputmode="numeric"></div>';
+    h += '<button class="btn" onclick="criarAvulsa(' + ano + ')">Criar</button><button class="btn sec" onclick="fecharSheet()">Voltar</button></div></div>';
+  }
+  return h + tabbar();
+}
+function mudarMes(delta) { let [ano, mes] = ui.mesVisto.split('-').map(Number); mes += delta; if (mes > 12) { mes = 1; ano++; } if (mes < 1) { mes = 12; ano--; } ui.mesVisto = ano + '-' + String(mes).padStart(2,'0'); render(); }
+function dataDe(txt, ano) { const r = /^(\d{1,2})\/(\d{1,2})$/.exec((txt || '').trim()); if (!r) return null; return ano + '-' + r[2].padStart(2,'0') + '-' + r[1].padStart(2,'0'); }
+function horaDe(txt) { const r = /^(\d{1,2}):?(\d{2})$/.exec((txt || '').trim()); if (!r) return null; return r[1].padStart(2,'0') + ':' + r[2]; }
+function criarAvulsa(ano) {
+  const rotulo = (document.getElementById('av-rotulo').value || '').trim() || 'Evento';
+  const data = dataDe(document.getElementById('av-data').value, ano), horario = horaDe(document.getElementById('av-hora').value);
+  if (!data || !horario) { alert('Data no formato 10/10 e hora no formato 19:30.'); return; }
+  s = D.reduzir(s, { tipo:'criarEscala', data, horario, rotulo }); ui.mudou = 'criarEscala'; ui.sheet = null; ui.mesVisto = data.slice(0, 7); render();
+}
+
+function telaEscala() {
+  const e = esc();
+  const st = D.estadoEscala(e, s.hoje);
+  let h = barra(D.tituloEscala(e), D.fmtData(e.data) + ' (' + D.diaSemana(e.data) + ') · ' + st, "ir('mes')", '<button class="btn icone" onclick="abrirSheet(\'menu\')">⋯</button>');
+  h += '<div class="conteudo">';
+  if (st === 'cancelada') h += '<div class="cartao" style="background:#fee2e2;color:#991b1b">Escala Cancelada: não gera Execução nem conta presença. <button class="btn pequeno sec" style="margin-top:8px" onclick="dispatch({tipo:\'desfazerCancelamento\', escalaId:\'' + e.id + '\'})">Desfazer</button></div>';
+  if (st === 'realizada') h += '<div class="dica" style="margin-bottom:8px">Realizada. Editar aqui corrige o histórico e não avisa ninguém.</div>';
+  h += '<div class="secao"><h4>Equipe <button class="btn pequeno sec" onclick="ir(\'equipe\')">' + (e.equipe.length ? 'Editar' : 'Montar') + '</button></h4>';
+  const grupos = D.gruposEquipe(s, e);
+  h += grupos.length ? grupos.map(g => '<div class="grupo-eq"><b>' + g.nome + '</b>' + g.itens.join(', ') + '</div>').join('') : '<div class="dica">Ninguém escalado ainda.</div>';
+  h += '</div>';
+  h += '<div class="secao"><h4>Repertório</h4>';
+  if (e.itens.length) {
+    h += '<ul class="lista">' + e.itens.map((it, i) => {
+      const quem = D.ministradoPorDe(e, it);
+      const titulo = it.tipo === 'medley' ? 'Medley' : D.musica(s, it.musicaId).titulo;
+      const sub = it.tipo === 'medley' ? it.trechos.map(t => D.musica(s, t.musicaId).titulo + ' ' + t.inicio + '–' + t.fim + ' · ' + t.tom).join(' + ') : (it.tipo === 'trecho' ? '<span class="badge parcial">trecho ' + it.inicio + '–' + it.fim + '</span> ' : '') + 'Tom <b>' + it.tom + '</b>';
+      return '<li>' + capaItem(it) + '<div class="cresce"><div class="titulo">' + (i+1) + '. ' + titulo + '</div><div class="sub">' + sub + (quem ? ' · ' + D.membro(s, quem).nome : '') + (it.origemSugestao ? ' · <span class="badge">de Sugestão</span>' : '') + '</div>' + (it.observacao ? '<div class="obs">' + esc_(it.observacao) + '</div>' : '') + '</div><button class="btn icone" onclick="dispatch({tipo:\'removerItem\', escalaId:\'' + e.id + '\', itemId:\'' + it.id + '\'})" title="Remover">×</button></li>';
+    }).join('') + '</ul>';
+  } else h += '<div class="dica">Nenhuma música ainda.</div>';
+  if (st !== 'cancelada') { h += '<button class="btn" onclick="abrirEscolha(\'item\')">+ Música</button>'; h += '<button class="btn sec" onclick="ui.medley={trechos:[],observacao:\'\'}; ir(\'medley\')">+ Medley</button>'; }
+  h += '</div>';
+  const pl = D.playlist(s, e);
+  h += '<div class="secao"><button class="btn sec" onclick="ir(\'whatsapp\')">Texto pro WhatsApp</button>' + (pl ? '<a class="btn sec" href="' + pl + '" target="_blank" rel="noopener">Ouvir o Repertório no YouTube</a><div class="dica" style="margin-top:4px">Playlist montada só com as músicas inteiras. Funciona sem conta; confirmar no iPhone é pesquisa aberta.</div>' : '') + '</div>';
+  h += '</div>';
+  if (ui.sheet === 'menu') {
+    h += '<div class="sheet" onclick="fecharSheet()"><div class="painel" onclick="event.stopPropagation()"><h4>' + D.tituloEscala(e) + ' · ' + D.fmtData(e.data) + '</h4>';
+    h += '<button class="btn sec" onclick="abrirEditar()">Editar data, horário e Santa Ceia</button>';
+    if (st !== 'cancelada') h += '<button class="btn perigo" onclick="abrirSheet(\'confirmarCancelar\')">Marcar como Cancelada</button>';
+    h += '<button class="btn sec" onclick="fecharSheet()">Fechar</button></div></div>';
+  }
+  if (ui.sheet === 'editar') {
+    h += '<div class="sheet"><div class="painel"><h4>Editar Escala</h4>';
+    h += '<div class="campo"><label>data</label><input id="ed-data" value="' + D.fmtData(e.data) + '" inputmode="numeric"></div>';
+    h += '<div class="campo"><label>hora</label><input id="ed-hora" value="' + e.horario + '" inputmode="numeric"></div>';
+    h += '<div class="campo"><label>tipo</label><button class="chip ' + (ui.editSantaCeia ? 'sel' : '') + '" onclick="ui.editSantaCeia=!ui.editSantaCeia; render()">Santa Ceia</button></div>';
+    h += '<button class="btn" onclick="salvarEdicao()">Salvar</button><button class="btn sec" onclick="fecharSheet()">Voltar</button></div></div>';
+  }
+  if (ui.sheet === 'confirmarCancelar') {
+    h += '<div class="sheet"><div class="painel"><h4>Não vai ter culto dia ' + D.fmtData(e.data) + '?</h4><p class="dica">A Escala fica Cancelada: nada dela vira Execução e ninguém perde presença.</p><button class="btn perigo" onclick="dispatch({tipo:\'cancelarEscala\', escalaId:\'' + e.id + '\'}); fecharSheet()">Sim, cancelar</button><button class="btn sec" onclick="fecharSheet()">Voltar</button></div></div>';
+  }
+  return h + tabbar();
+}
+function abrirSheet(nome) { ui.sheet = nome; render(); }
+function fecharSheet() { ui.sheet = null; render(); }
+function abrirEditar() { ui.editSantaCeia = esc().santaCeia; abrirSheet('editar'); }
+function salvarEdicao() {
+  const e = esc();
+  const data = dataDe(document.getElementById('ed-data').value, e.data.slice(0, 4)), horario = horaDe(document.getElementById('ed-hora').value);
+  if (!data || !horario) { alert('Data no formato 13/09 e hora no formato 18:00.'); return; }
+  s = D.reduzir(s, { tipo:'editarEscala', escalaId:e.id, data, horario, santaCeia: ui.editSantaCeia }); ui.mudou = 'editarEscala'; ui.sheet = null; render();
+}
+
+function telaEquipe() {
+  const e = esc();
+  const entrada = (mid) => e.equipe.find(x => x.membroId === mid);
+  const temNaipe = (mb, naipe) => mb.funcoes.some(f => D.naipeDe(f) === naipe);
+  const secoes = [
+    { nome:'Vocal', dica:'Decidido antes, na Escala do mês. O chip Ministro só aparece pra quem o Admin cadastrou como Ministro; quem dirige continua no vocal.', membros: s.membros.filter(mb => temNaipe(mb, 'vocal')) },
+    { nome:'Músicos', dica:'Decididos na semana. A Banda é o grupo de sempre: aplica num toque e ajusta o que mudar.', membros: s.membros.filter(mb => temNaipe(mb, 'instrumentos') && !temNaipe(mb, 'vocal')), banda:true },
+    { nome:'Som', dica:'Escalado e avisado como todo mundo; não conta em "quem já tocou".', membros: s.membros.filter(mb => temNaipe(mb, 'tecnica')) },
+  ];
+  let h = barra('Equipe', D.fmtData(e.data) + ' · toque na Função pra escalar', "ir('escala')", '<button class="btn pequeno" onclick="ir(\'escala\')">Concluir</button>');
+  h += '<div class="conteudo">';
+  for (const sec of secoes) {
+    h += '<div class="secao"><h4>' + sec.nome + (sec.banda ? ' <span><button class="btn pequeno" onclick="dispatch({tipo:\'aplicarFormacao\', escalaId:\'' + e.id + '\', formacaoId:\'banda\'})">Aplicar Banda</button> <button class="btn pequeno sec" onclick="dispatch({tipo:\'salvarFormacao\', escalaId:\'' + e.id + '\', formacaoId:\'banda\'})">Salvar como Banda</button></span>' : '') + '</h4><div class="dica" style="margin-bottom:4px">' + sec.dica + '</div><ul class="lista">';
+    for (const mb of sec.membros) {
+      const x = entrada(mb.id);
+      h += '<li><div class="cresce"><div class="titulo">' + mb.nome + '</div></div><div class="chips">';
+      for (const f of mb.funcoes) { const fu = D.funcao(f); h += '<button class="chip ' + (x && x.funcoes.includes(f) ? 'sel' : '') + (fu.naipe === 'tecnica' ? ' tecnica' : '') + '" onclick="dispatch({tipo:\'alternarFuncao\', escalaId:\'' + e.id + '\', membroId:\'' + mb.id + '\', funcaoId:\'' + f + '\'})">' + fu.nome + '</button>'; }
+      if (mb.ministro) h += '<button class="chip min ' + (x && x.ministro ? 'sel' : '') + '" onclick="dispatch({tipo:\'alternarMinistro\', escalaId:\'' + e.id + '\', membroId:\'' + mb.id + '\'})">Ministro</button>';
+      h += '</div></li>';
+    }
+    h += '</ul></div>';
+  }
+  h += '</div>';
+  return h + tabbar();
+}
+
+function abrirEscolha(alvo) { ui.alvoEscolha = alvo; ui.tela = 'escolher'; ui.sheet = null; render(); }
+function telaEscolher() {
+  const voltar = ui.alvoEscolha === 'medley' ? "ir('medley')" : "ir('escala')";
+  let h = barra(ui.alvoEscolha === 'medley' ? 'Trecho do Medley' : 'Adicionar música', 'cole um link ou escolha do catálogo', voltar);
+  h += '<div class="conteudo">';
+  h += '<div class="cartao"><div class="dica">Link do YouTube</div><div class="campo"><input id="link" placeholder="https://youtu.be/…" value=""><button class="btn pequeno" data-toques="2" onclick="colarLink()">Colar</button></div><div class="dica" style="margin-top:6px">"Colar" simula colar da área de transferência e custa 2 toques. Título, capa e tom original vêm sozinhos.</div></div>';
+  const ordenadas = s.musicas.filter(mu => !mu.arquivada).map(mu => ({ mu, ult: D.ultimaExecucao(s, mu.id) })).sort((a, b) => (a.ult ? a.ult.data : '9') < (b.ult ? b.ult.data : '9') ? -1 : 1);
+  h += '<div class="secao"><h4>Catálogo · faz mais tempo primeiro</h4><ul class="lista">';
+  for (const { mu, ult } of ordenadas) h += '<li class="tap" onclick="escolherMusica(\'' + mu.id + '\')">' + capa(mu) + '<div class="cresce"><div class="titulo">' + mu.titulo + '</div><div class="sub">' + mu.artista + ' · ' + (D.ehLegado(s, mu) ? '<span class="badge legado">Legado</span>' : ult ? 'última ' + D.fmtData(ult.data) + (ult.parcial ? ' (trecho)' : '') : '<span class="badge">Nova</span>') + '</div></div></li>';
+  h += '</ul></div></div>';
+  return h + tabbar();
+}
+function colarLink() {
+  const link = (document.getElementById('link').value || '').trim() || 'https://youtu.be/CmM1pcHohdI';
+  s = D.reduzir(s, { tipo:'cadastrarMusicaPorLink', link }); ui.mudou = 'cadastrarMusicaPorLink';
+  escolherMusica(s.ultimaMusicaResolvida);
+}
+function escolherMusica(musicaId) {
+  const sug = D.ultimoTom(s, musicaId);
+  if (ui.alvoEscolha === 'medley') { ui.trechoMedley = { musicaId, tom: sug ? sug.tom : null, inicio: ui.medley.trechos.length ? '' : '0:00', fim:'' }; ir('trechoMedley'); }
+  else { ui.rascunho = { musicaId, tom: sug ? sug.tom : null, modo:'inteira', inicio:'', fim:'', observacao:'', origemSugestao: ui.sugestaoId || null }; ui.sugestaoId = null; ir('tom'); }
+}
+
+function blocoTom(r, setter) {
+  const sug = D.ultimoTom(s, r.musicaId);
+  const hist = D.historicoTons(s, r.musicaId);
+  let h = '<div class="secao"><h4>Tom</h4>';
+  if (!sug) h += '<div class="dica" style="margin-bottom:6px">Sem tom de partida: escolha.</div>';
+  else if (sug.origem === 'execucao') h += '<div class="dica" style="margin-bottom:6px">Último Tom: <b>' + sug.tom + '</b>, tocado em ' + D.fmtData(sug.data) + (sug.ministradoPor ? ' com ' + D.membro(s, sug.ministradoPor).nome : '') + (sug.parcial ? ' (trecho)' : '') + '. Já selecionado.</div>';
+  else if (sug.origem === 'conhecido') h += '<div class="dica" style="margin-bottom:6px">Último tom conhecido: <b>' + sug.tom + '</b>, preenchido à mão' + (sug.original ? '; a gravação é em ' + sug.original : '') + '. Já selecionado.</div>';
+  else h += '<div class="dica" style="margin-bottom:6px">Tom original da gravação: <b>' + sug.tom + '</b>. Já selecionado. (Simulado: de onde vem esse tom de verdade é pesquisa aberta.)</div>';
+  h += '<div class="tons">' + D.TONS.map(t => '<button class="' + (r.tom === t ? 'sel' : '') + (sug && sug.tom === t ? ' sug' : '') + '" onclick="' + setter + '(\'tom\',\'' + t + '\')">' + t + '</button>').join('') + '</div>';
+  if (hist.length) h += '<div class="dica" style="margin-top:8px">Histórico: ' + hist.map(x => x.tom + ' em ' + D.fmtData(x.data) + (x.ministradoPor ? ' (' + D.membro(s, x.ministradoPor).nome + ')' : '') + (x.parcial ? ', trecho' : '')).join(' · ') + '</div>';
+  return h + '</div>';
+}
+function blocoMinutagem(r, setter, sempre) {
+  if (!sempre && r.modo !== 'trecho') return '';
+  return '<div class="secao"><h4>Minutagem</h4><div class="campo"><label>início</label><input inputmode="numeric" placeholder="0:00" value="' + (r.inicio || '') + '" oninput="' + setter + '(\'inicio\', this.value)"></div><div class="campo"><label>fim</label><input inputmode="numeric" placeholder="3:45" value="' + (r.fim || '') + '" oninput="' + setter + '(\'fim\', this.value)"></div></div>';
+}
+function blocoObs(valor, setter) { return '<div class="secao"><h4>Observação pro grupo</h4><div class="campo"><input placeholder="opcional: começar mais baixo, solo na transição…" value="' + esc_(valor || '') + '" oninput="' + setter + '(\'observacao\', this.value)"></div></div>'; }
+function cobTexto(cob) { return '<div class="cobertura">' + (cob.ja.length ? '<b>' + cob.ja.join(', ') + '</b> já ' + (cob.ja.length > 1 ? 'tocaram' : 'tocou') : 'Ninguém da Equipe tocou ainda') + (cob.nunca.length ? ' · <b>' + cob.nunca.join(', ') + '</b> nunca' : '') + '.</div>'; }
+function setRascunho(campo, valor) { ui.rascunho[campo] = valor; if (campo === 'tom' || campo === 'modo') render(); else { renderPaineis(); refrescarConfirmar(); } }
+function setTrecho(campo, valor) { ui.trechoMedley[campo] = valor; if (campo === 'tom') render(); else { renderPaineis(); refrescarConfirmar(); } }
+function setMedley(campo, valor) { ui.medley[campo] = valor; renderPaineis(); }
+function refrescarConfirmar() {
+  const b = document.getElementById('confirmar'); if (!b) return;
+  let ok = false;
+  if (ui.tela === 'tom') { const r = ui.rascunho; ok = !!(r.tom && (r.modo === 'inteira' || (r.inicio && r.fim))); }
+  if (ui.tela === 'trechoMedley') { const t = ui.trechoMedley; ok = !!(t.tom && t.inicio && t.fim); }
+  b.disabled = !ok; b.style.opacity = ok ? '' : '.4';
+}
+
+function telaTom() {
+  const r = ui.rascunho, e = esc(), mu = D.musica(s, r.musicaId);
+  let h = barra(mu.titulo, mu.artista, "ir('escolher')");
+  h += '<div class="conteudo">';
+  h += '<div style="display:flex;gap:12px;align-items:center">' + capa(mu, true) + '<div class="dica">' + (D.ehLegado(s, mu) ? '<span class="badge legado">Legado</span> importada da playlist, sem histórico no app.' : mu.legado ? 'Já tocada no app.' : '<span class="badge">Nova</span> cadastrada agora pelo link.') + '</div></div>';
+  h += cobTexto(D.cobertura(s, e.id, r.musicaId));
+  h += blocoTom(r, 'setRascunho');
+  h += '<div class="secao"><h4>Como</h4><div class="segmento"><button class="' + (r.modo === 'inteira' ? 'sel' : '') + '" onclick="setRascunho(\'modo\',\'inteira\')">Inteira</button><button class="' + (r.modo === 'trecho' ? 'sel' : '') + '" onclick="setRascunho(\'modo\',\'trecho\')">Trecho</button></div></div>';
+  h += blocoMinutagem(r, 'setRascunho', false);
+  h += blocoObs(r.observacao, 'setRascunho');
+  const ok = r.tom && (r.modo === 'inteira' || (r.inicio && r.fim));
+  h += '<button class="btn" id="confirmar" ' + (ok ? '' : 'disabled style="opacity:.4"') + ' onclick="confirmarItem()">Adicionar ao Repertório</button>';
+  h += '</div>';
+  return h + tabbar();
+}
+function confirmarItem() {
+  const r = ui.rascunho;
+  const item = r.modo === 'inteira' ? { tipo:'inteira', musicaId:r.musicaId, tom:r.tom } : { tipo:'trecho', musicaId:r.musicaId, tom:r.tom, inicio:r.inicio, fim:r.fim };
+  item.observacao = (r.observacao || '').trim();
+  if (r.origemSugestao) item.origemSugestao = r.origemSugestao;
+  s = D.reduzir(s, { tipo:'adicionarItem', escalaId: ui.escalaId, item, sugestaoId: r.origemSugestao }); ui.mudou = 'adicionarItem'; ui.rascunho = null;
+  ir('escala');
+}
+
+function telaMedley() {
+  const md = ui.medley;
+  let h = barra('Montar Medley', D.fmtData(esc().data) + ' · dois ou mais Trechos emendados', "ir('escala')");
+  h += '<div class="conteudo">';
+  if (md.trechos.length) h += '<div style="display:flex;gap:12px;align-items:center;margin-bottom:8px">' + capaColagem(md.trechos.map(t => D.musica(s, t.musicaId)), true) + '<div class="dica">A capa do Medley é a montagem das capas dos Trechos.</div></div><ul class="lista">' + md.trechos.map((t, i) => { const mu = D.musica(s, t.musicaId); return '<li>' + capa(mu) + '<div class="cresce"><div class="titulo">' + (i+1) + '. ' + mu.titulo + '</div><div class="sub">' + t.inicio + '–' + t.fim + ' · Tom <b>' + t.tom + '</b></div></div></li>'; }).join('') + '</ul>';
+  else h += '<div class="dica">Nenhum Trecho ainda. O Medley não tem Tom próprio: cada Trecho tem o seu.</div>';
+  h += '<button class="btn sec" onclick="abrirEscolha(\'medley\')">+ Trecho</button>';
+  h += blocoObs(md.observacao, 'setMedley');
+  h += '<button class="btn" ' + (md.trechos.length >= 2 ? '' : 'disabled style="opacity:.4"') + ' onclick="confirmarMedley()">Adicionar Medley ao Repertório</button>';
+  h += '</div>';
+  return h + tabbar();
+}
+function telaTrechoMedley() {
+  const t = ui.trechoMedley, mu = D.musica(s, t.musicaId);
+  let h = barra(mu.titulo, 'Trecho ' + (ui.medley.trechos.length + 1) + ' do Medley', "ir('escolher')");
+  h += '<div class="conteudo">' + cobTexto(D.cobertura(s, ui.escalaId, t.musicaId)) + blocoTom(t, 'setTrecho') + blocoMinutagem(t, 'setTrecho', true);
+  const ok = t.tom && t.inicio && t.fim;
+  h += '<button class="btn" id="confirmar" ' + (ok ? '' : 'disabled style="opacity:.4"') + ' onclick="confirmarTrechoMedley()">OK, próximo</button></div>';
+  return h + tabbar();
+}
+function confirmarTrechoMedley() { ui.medley.trechos.push(Object.assign({}, ui.trechoMedley)); ui.trechoMedley = null; ir('medley'); }
+function confirmarMedley() {
+  s = D.reduzir(s, { tipo:'adicionarItem', escalaId: ui.escalaId, item:{ tipo:'medley', trechos: ui.medley.trechos, observacao:(ui.medley.observacao || '').trim() } }); ui.mudou = 'adicionarItem'; ui.medley = null;
+  ir('escala');
+}
+
+function telaSugestoes() {
+  let h = barra('Sugestões', 'qualquer Membro sugere e apoia; o Ministro promove');
+  h += '<div class="conteudo">';
+  if (!s.sugestoes.length) h += '<div class="vazio">Nenhuma Sugestão pendente.</div>';
+  else h += '<ul class="lista">' + s.sugestoes.map(sg => { const mu = D.musica(s, sg.musicaId); const ult = D.ultimoTom(s, mu.id); const apoiei = sg.apoios.includes(s.eu); return '<li>' + capa(mu) + '<div class="cresce"><div class="titulo">' + mu.titulo + '</div><div class="sub">' + D.membro(s, sg.membroId).nome + ', ' + D.fmtData(sg.data) + ': "' + esc_(sg.observacao) + '"' + (ult ? ' · Tom ' + ult.tom : '') + '</div><div class="sub">' + (sg.apoios.length ? sg.apoios.map(id => D.membro(s, id).nome).join(', ') + (sg.apoios.length > 1 ? ' apoiam' : ' apoia') : 'ninguém apoiou ainda') + '</div></div><div style="display:flex;flex-direction:column;gap:6px"><button class="btn pequeno" onclick="promover(\'' + sg.id + '\')">Promover</button><button class="btn pequeno sec" onclick="dispatch({tipo:\'apoiarSugestao\', sugestaoId:\'' + sg.id + '\', membroId:s.eu})">' + (apoiei ? 'Apoiado ✓' : 'Apoiar') + '</button></div></li>'; }).join('') + '</ul>';
+  h += '</div>';
+  if (ui.sheet === 'escolherEscala') {
+    const ag = s.escalas.filter(e => D.estadoEscala(e, s.hoje) === 'agendada');
+    h += '<div class="sheet" onclick="fecharSheet()"><div class="painel" onclick="event.stopPropagation()"><h4>Pra qual Escala?</h4>' + ag.map(e => '<button class="btn sec" onclick="promoverPara(\'' + e.id + '\')">' + D.fmtData(e.data) + ' · ' + D.tituloEscala(e) + (e.equipe.length ? '' : ' (sem Equipe)') + '</button>').join('') + '</div></div>';
+  }
+  return h + tabbar();
+}
+function promover(sugestaoId) { ui.sugestaoId = sugestaoId; abrirSheet('escolherEscala'); }
+function promoverPara(escalaId) { const sg = s.sugestoes.find(x => x.id === ui.sugestaoId); ui.escalaId = escalaId; ui.sheet = null; ui.alvoEscolha = 'item'; escolherMusica(sg.musicaId); }
+
+function telaWhatsApp() {
+  const e = esc();
+  const txt = D.textoWhatsApp(s, e.id);
+  let h = barra('Texto pro WhatsApp', D.fmtData(e.data) + ' · pronto pra colar no grupo', "ir('escala')");
+  h += '<div class="conteudo"><pre class="zap">' + esc_(txt) + '</pre><button class="btn" onclick="copiar(\'' + e.id + '\')">' + (ui.copiou === e.id ? 'Copiado ✓' : 'Copiar') + '</button><p class="dica">Fallback pra quem não instalou o app ou não recebe notificação.</p></div>';
+  return h + tabbar();
+}
+function copiar(escalaId) { const txt = D.textoWhatsApp(s, escalaId); try { if (navigator.clipboard) navigator.clipboard.writeText(txt).catch(() => {}); } catch (e) {} ui.copiou = escalaId; render(); }
+
+// ---------- painel de estado ----------
+function renderEstado() {
+  const ex = D.execucoes(s);
+  const e = ui.escalaId ? esc() : null;
+  let h = '';
+  if (e) {
+    const st = D.estadoEscala(e, s.hoje);
+    h += '<div class="sec"><h2>Escala selecionada</h2><dl><dt>Quando</dt><dd>' + D.tituloEscala(e) + ' · ' + D.fmtData(e.data) + ' (' + D.diaSemana(e.data) + ')</dd><dt>Estado</dt><dd>' + badge(e) + '</dd>';
+    const grupos = D.gruposEquipe(s, e);
+    h += '<dt>Equipe</dt><dd>' + (grupos.length ? grupos.map(g => '<b>' + g.nome + ':</b> ' + g.itens.join(', ')).join('<br>') : '—') + '</dd>';
+    h += '<dt>Ministrado por</dt><dd>' + (D.ministros(e).length ? D.ministros(e).map(id => D.membro(s, id).nome).join(' e ') + (D.ministros(e).length > 1 ? ' · com dois, cada Item precisa dizer quem' : '') : '—') + '</dd>';
+    h += '<dt>Itens</dt><dd>' + (e.itens.length ? e.itens.map(it => D.descItem(s, it) + (it.observacao ? ' <i>(' + esc_(it.observacao) + ')</i>' : '')).join('<br>') : '—') + '</dd>';
+    h += '<dt>Execuções desta Escala</dt><dd>' + (st === 'realizada' ? ex.filter(x => x.escalaId === e.id).length : '0 · só Realizada gera') + '</dd></dl></div>';
+  }
+  h += '<div class="sec"><h2>Banda (formação salva)</h2><div class="dica">' + s.formacoes[0].entradas.map(x => D.membro(s, x.membroId).nome + ' (' + x.funcoes.map(f => D.funcao(f).nome.toLowerCase()).join(', ') + ')').join(', ') + '</div></div>';
+  h += '<div class="sec"><h2>Execuções derivadas · ' + ex.length + ' no total</h2><table><tr><th>Data</th><th>Música</th><th>Tom</th><th>Creditou</th></tr>' + ex.slice(0, 8).map(x => '<tr class="' + (ui.mudou && e && x.escalaId === e.id ? 'mudou' : '') + '"><td>' + D.fmtData(x.data) + '</td><td>' + D.musica(s, x.musicaId).titulo + (x.parcial ? ' <span class="badge parcial">parcial</span>' : '') + '</td><td>' + x.tom + '</td><td>' + x.membros.map(id => D.membro(s, id).nome).join(', ') + '</td></tr>').join('') + '</table>' + (ex.length > 8 ? '<div class="dica">… e mais ' + (ex.length - 8) + '</div>' : '') + '</div>';
+  h += '<div class="sec"><h2>Catálogo · tom de partida</h2><table><tr><th>Música</th><th>Sugestão</th><th>Origem</th><th>Última Execução</th></tr>' + s.musicas.map(mu => { const ut = D.ultimoTom(s, mu.id); const ue = D.ultimaExecucao(s, mu.id); return '<tr><td>' + mu.titulo + (D.ehLegado(s, mu) ? ' <span class="badge legado">Legado</span>' : '') + (!mu.legado ? ' <span class="badge">Nova</span>' : '') + '</td><td>' + (ut ? ut.tom : '—') + '</td><td>' + (ut ? { execucao:'última Execução', conhecido:'à mão', original:'gravação' }[ut.origem] : '—') + '</td><td>' + (ue ? D.fmtData(ue.data) + (ue.parcial ? ' (trecho)' : '') : '—') + '</td></tr>'; }).join('') + '</table></div>';
+  h += '<div class="sec"><h2>Sugestões pendentes</h2><div class="dica">' + (s.sugestoes.length ? s.sugestoes.map(sg => D.musica(s, sg.musicaId).titulo + ' (' + D.membro(s, sg.membroId).nome + ', ' + D.fmtData(sg.data) + ', ' + sg.apoios.length + ' apoio' + (sg.apoios.length === 1 ? '' : 's') + ')').join(' · ') : 'nenhuma') + '</div></div>';
+  h += '<div class="sec"><h2>Regras em jogo</h2><ul class="dica" style="margin:0;padding-left:18px"><li>Realizada = dia da Escala já terminou (hoje é ' + D.fmtData(s.hoje) + ', terça).</li><li>Execução nasce do plano; credita vocal e músicos, não o som.</li><li>Ministro é papel no cadastro e marca na Escala, por cima da Função; só quem tem o papel pode receber a marca.</li><li>Parcial vale tudo, marcada. Cancelada não gera nada.</li><li>Tom de partida: última Execução, senão o tom à mão, senão o da gravação.</li></ul></div>';
+  document.getElementById('estado-corpo').innerHTML = h;
+}
+
+// ---------- render ----------
+function renderPaineis() { renderRoteiros(); renderEstado(); document.getElementById('toques-flutuante').textContent = ui.toques + ' toques'; }
+function render() {
+  const telas = { mes:telaMes, escala:telaEscala, equipe:telaEquipe, escolher:telaEscolher, tom:telaTom, medley:telaMedley, trechoMedley:telaTrechoMedley, sugestoes:telaSugestoes, whatsapp:telaWhatsApp };
+  if (ui.tela !== 'mes' && ui.tela !== 'sugestoes' && !ui.escalaId) ui.tela = 'mes';
+  const alvo = document.getElementById('tela');
+  alvo.innerHTML = telas[ui.tela]();
+  alvo.style.cssText = 'display:flex;flex-direction:column;height:100%';
+  const r = ROTEIROS.find(x => x.id === ui.roteiro);
+  if (r && !ui.concluido && r.pronto(s, ui)) ui.concluido = { toques: ui.toques };
+  renderPaineis();
+  ui.mudou = null;
+}
+if (window.innerWidth <= 1100) document.querySelectorAll('aside details').forEach(d => d.removeAttribute('open'));
+try { render(); } catch (err) { const t = document.getElementById('tela'); t.className = 'erro-boot'; t.textContent = 'O protótipo não conseguiu montar a tela neste ambiente: ' + (err && err.message ? err.message : err) + '\nAbra o arquivo index.html direto no Chrome ou Safari.'; }
+</script>
+</body>
+</html>

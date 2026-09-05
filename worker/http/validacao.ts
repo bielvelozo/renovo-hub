@@ -1,3 +1,5 @@
+export { ehMinutagem } from '../../src/dominio'
+
 export function ehData(valor: unknown): valor is string {
   if (typeof valor !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(valor)) return false
   return new Date(valor + 'T12:00:00Z').toISOString().slice(0, 10) === valor
@@ -29,9 +31,4 @@ export async function corpoJson<T>(requisicao: Request): Promise<T> {
   } catch {
     return {} as T
   }
-}
-
-export function ehMinutagem(valor: unknown): valor is string {
-  if (typeof valor !== 'string' || !/^\d{1,2}:\d{2}$/.test(valor)) return false
-  return Number(valor.split(':')[1]) < 60
 }

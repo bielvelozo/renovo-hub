@@ -22,6 +22,7 @@ export type {
 export {
   diaDaSemana,
   domingosDoMes,
+  ehMinutagem,
   fimDeSemanaDe,
   formatarDia,
   hojeEmBrasilia,

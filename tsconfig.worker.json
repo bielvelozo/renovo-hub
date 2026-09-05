@@ -13,7 +13,9 @@
     "src/api/tipos.ts",
     "src/escalas/equipe.ts",
     "src/escalas/mes.ts",
+    "src/escalas/rascunho.ts",
     "src/escalas/repertorio.ts",
+    "src/escalas/sugestoes.ts",
     "src/instalacao/plataforma.ts",
     "src/tema/tema.ts",
     "src/**/*.test.ts"

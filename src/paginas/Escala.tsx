@@ -125,7 +125,14 @@ export function Escala() {
         )}
 
         {dirige && escala.estado !== 'cancelada' && (
-          <p className="dica">Adicionar música e montar Medley entram na próxima etapa do app.</p>
+          <div className="chips">
+            <Link to={`/escalas/${id}/adicionar`} className="botao pequeno">
+              + Música
+            </Link>
+            <Link to={`/escalas/${id}/medley`} className="botao secundario pequeno">
+              + Medley
+            </Link>
+          </div>
         )}
       </div>
 
