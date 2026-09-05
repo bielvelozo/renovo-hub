@@ -2,6 +2,8 @@ import { Route, Routes } from 'react-router'
 import { Casca } from './casca/Casca'
 import { Admin } from './paginas/Admin'
 import { Entrar } from './paginas/Entrar'
+import { Equipe } from './paginas/Equipe'
+import { Escala } from './paginas/Escala'
 import { Esqueci } from './paginas/Esqueci'
 import { Inicio } from './paginas/Inicio'
 import { Instalar } from './paginas/Instalar'
@@ -22,6 +24,8 @@ export function App() {
         <Route path="/" element={<Casca />}>
           <Route index element={<Inicio />} />
           <Route path="mes" element={<Mes />} />
+          <Route path="escalas/:id" element={<Escala />} />
+          <Route path="escalas/:id/equipe" element={<Equipe />} />
           <Route path="musicas" element={<Musicas />} />
           <Route path="sugestoes" element={<Sugestoes />} />
           <Route path="perfil" element={<Perfil />} />
