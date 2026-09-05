@@ -13,3 +13,4 @@ node_modules/
 .scratch/proto.html
 .scratch/*.txt
 .scratch/*.docx
+.scratch/f*.mjs
