@@ -55,6 +55,7 @@ export {
   capaAlternativa,
   capaDaMusica,
   linkDaPlaylist,
+  linkDeVideos,
   linkDoVideo,
   videoIdDoLink,
   videosDaPlaylist,

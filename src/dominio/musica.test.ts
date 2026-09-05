@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { ministerioDeExemplo } from './exemplo'
-import { buscaNoCifraClub, capaAlternativa, capaDaMusica, linkDaPlaylist, linkDoVideo, videoIdDoLink } from './musica'
+import {
+  buscaNoCifraClub,
+  capaAlternativa,
+  capaDaMusica,
+  linkDaPlaylist,
+  linkDeVideos,
+  linkDoVideo,
+  videoIdDoLink,
+} from './musica'
 import { escalaPorId, musicaPorId } from './escala'
 import type { Ministerio } from './tipos'
 
@@ -66,6 +74,24 @@ describe('linkDaPlaylist', () => {
       })),
     }
     const link = linkDaPlaylist(m as Ministerio, cheia)
+
+    expect(link?.split('video_ids=')[1].split(',')).toHaveLength(50)
+  })
+})
+
+describe('linkDeVideos', () => {
+  it('monta o link a partir de uma lista de ids', () => {
+    expect(linkDeVideos(['hRJUcvsnqKs', 'IxpWNuxGmzc'])).toBe(
+      'https://www.youtube.com/watch_videos?video_ids=hRJUcvsnqKs,IxpWNuxGmzc',
+    )
+  })
+
+  it('devolve nulo sem ids', () => {
+    expect(linkDeVideos([])).toBeNull()
+  })
+
+  it('corta em 50 ids', () => {
+    const link = linkDeVideos(Array.from({ length: 60 }, () => 'hRJUcvsnqKs'))
 
     expect(link?.split('video_ids=')[1].split(',')).toHaveLength(50)
   })

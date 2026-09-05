@@ -31,9 +31,13 @@ export function videosDaPlaylist(m: Ministerio, escala: Escala): string[] {
     .slice(0, MAXIMO_DA_PLAYLIST)
 }
 
-export function linkDaPlaylist(m: Ministerio, escala: Escala): string | null {
-  const ids = videosDaPlaylist(m, escala)
+export function linkDeVideos(videoIds: string[]): string | null {
+  const ids = videoIds.slice(0, MAXIMO_DA_PLAYLIST)
   return ids.length ? 'https://www.youtube.com/watch_videos?video_ids=' + ids.join(',') : null
+}
+
+export function linkDaPlaylist(m: Ministerio, escala: Escala): string | null {
+  return linkDeVideos(videosDaPlaylist(m, escala))
 }
 
 export function buscaNoCifraClub(musica: Musica): string {
