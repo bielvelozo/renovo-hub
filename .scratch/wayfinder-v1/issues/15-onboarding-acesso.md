@@ -8,3 +8,7 @@ Map: ../map.md
 ## Question
 
 Uma pessoa recebe o link no WhatsApp e chega ao app instalado, com notificação ativa, em quantos passos? Protótipo real (precisa rodar num iPhone de verdade, não em simulador) do caminho: abrir link, "Oi, Gabriel", adicionar à tela inicial (passo a passo visual pro iOS e Android), abrir pelo ícone, permitir notificações, receber um push de teste. Também o caminho "esqueci / troquei de celular" com a lista de Membros. Medir onde as pessoas travam. É o teste que decide se PWA primeiro sobrevive.
+
+## Entradas de outros tickets
+
+- De [Playlist do Repertório no YouTube sem conta](20-playlist-repertorio-youtube.md): aproveitar o iPhone real do teste pra abrir um link `watch_videos` e ver se cai no app do YouTube ou no Safari, e se o botão "Repetir playlist" aparece. É o único ponto da pesquisa que exige aparelho.
