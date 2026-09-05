@@ -1,7 +1,7 @@
 # Protótipo do fluxo central do Ministro
 
 Type: prototype
-Status: claimed
+Status: resolved
 Blocked by: 06
 Map: ../map.md
 
@@ -87,3 +87,25 @@ Contagem v2, verificada por script:
 11. **Chip Ministro (depois da v2)**: só deve aparecer pra quem tem a opção pré-definida no cadastro. Corrigido: Membro ganha o papel de Ministro no cadastro (Isa e Marcos nos dados de exemplo), o chip só aparece pra eles e o domínio recusa a marca pra quem não tem o papel. Glossário e `escala.md` ajustados.
 
 Confirmado pelo Gabriel em 04/09/2026: depois da v2 o artefato passou a montar a tela no navegador. A causa do branco era o runtime do artefato bloquear HTML montado por string; a política padrão de Trusted Types resolveu. Fica como regra pra qualquer protótipo publicado como artefato.
+
+## Answer
+
+Resolvido em 05/09/2026. Veredito do Gabriel sobre a v2.1: "ficou bom". Protótipo em `prototype/fluxo-ministro` (commit f6dbf9d, `index.html` e `artifact.html`), publicado em https://claude.ai/code/artifact/4f70f368-76fa-4af4-be0a-0e59bb0bb623 pra mandar pro Ministro.
+
+**Resposta à pergunta do ticket: sim, o fluxo central sai em menos toques que no WhatsApp em todas as nove tarefas**, e em duas delas faz o que o WhatsApp não faz (corrigir o domingo passado e sugerir Tom com histórico e cobertura). Onde o app ganha por muito, é porque tira digitação: montar o mês com a Banda num toque (7 contra ~200), texto pronto pro grupo (2 contra ~250), promover Sugestão (3 contra ~20). Onde ganha por pouco, é porque ainda digita: Trecho com minutagem (14 contra ~30), Medley (23 contra ~70, 18 toques são dígitos e foco em campo), Escala avulsa (26 contra ~60). A digitação de minutagem é o ponto fraco declarado e foi pra neblina.
+
+**Veredito por tela**, a partir dos onze pontos do teste:
+
+- **Mês**: aprovada depois de ganhar Escala avulsa e o lote com o primeiro domingo Santa Ceia às 08h.
+- **Escala**: aprovada depois de ganhar edição de data e horário, marca de Santa Ceia, playlist do Repertório e observação por Item.
+- **Equipe**: era a tela mais errada. Reescrita por naipe (Vocal decidido no mês, Músicos na semana, Som), com Ministro como marca só pra quem tem o papel no cadastro e a Formação "Banda" aplicável num toque.
+- **Adicionar música e Tom**: aprovada depois do tom original da gravação como terceira fonte da sugestão.
+- **Medley**: aprovada depois da capa em montagem e da observação.
+- **Sugestões**: aprovada depois de data e apoio.
+- **Texto pro WhatsApp**: aprovado depois de agrupar a Equipe por naipe e levar observação e playlist.
+
+**Premissas desmentidas pelo protótipo**, já corrigidas no glossário, em `docs/dominio/escala.md` e com ponteiro em `premissas.md`: Ministro não é Função (é papel no cadastro e marca na Escala); a Equipe não é um-por-Função montada do zero (é vocal no mês, músicos na semana a partir de uma Formação); o preset do mês não é um só (Santa Ceia no primeiro domingo); Sugestão não é só link e observação (tem data e apoio).
+
+**Gerado pra outros tickets**: pesquisas 19 (tom original, resolvida) e 20 (playlist, resolvida); decisão 21 (ler do Cifra Club ou só linkar); entradas nos tickets 05, 07, 08, 14, 15 e 16.
+
+**Regra que fica**: protótipo publicado como artefato precisa registrar política padrão de Trusted Types, senão a tela fica em branco.

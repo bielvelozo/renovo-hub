@@ -12,3 +12,4 @@ Como funciona o link pessoal de convite ponta a ponta? Quem gera (Admin, Ministr
 ## Entradas de outros tickets
 
 - De [Estados da Escala](06-estados-escala-execucao.md), já decidido: editar Escala Realizada (Equipe, Repertório, Tom) é de Ministro e Admin, sem prazo. A matriz ainda precisa cobrir: marcar e desfazer Cancelada, criar Escala com data passada, arquivar e apagar Música, definir a marca musical/técnica de uma Função (Admin), e se "Ministro da Escala" difere de "qualquer Ministro" nessas ações.
+- Do protótipo do Ministro (13), depois do teste: a matriz ganha quem dá o papel de Ministro no cadastro (Admin), quem cria e edita Formações, quem edita data, horário e Santa Ceia de uma Escala, quem cria Escala avulsa, e que qualquer Membro pode apoiar Sugestão.
