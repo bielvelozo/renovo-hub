@@ -5,10 +5,10 @@ Decisões tomadas nas três rodadas de grilling que abriram o mapa. Não são ti
 ## Quem e onde
 - Ministério Renovo Music, da Igreja Missão Renovo (@igrejamissaorenovo). 13 a 15 Membros, 5 Ministros que se revezam. Culto recorrente: domingo 18h. Um só ministério, uma só igreja.
 - Papéis: **Membro** (vê tudo, sugere, edita o próprio perfil), **Ministro** (cria Escala, monta Equipe, adiciona Itens), **Admin** (tudo do Ministro mais gestão de Membros). Uma Escala pode ter mais de um Ministro dividindo a escolha; cada Item registra "ministrado por".
-- Funções: lista fixa editável pelo Admin. Um Membro pode ocupar mais de uma Função na mesma Escala. "Ministro" é uma Função da Equipe e dá permissão de editar o Repertório daquela Escala.
+- Funções: lista fixa editável pelo Admin. Um Membro pode ocupar mais de uma Função na mesma Escala. "Ministro" é uma Função da Equipe e dá permissão de editar o Repertório daquela Escala. **Atualizado em 04/09/2026** pelo teste do protótipo: Ministro não é Função, é marca por cima das Funções do Membro; Funções se agrupam em Naipes e os músicos vêm de uma Formação. Ver [ticket 13](./issues/13-fluxo-ministro.md) e CONTEXT.md.
 
 ## Escala e histórico
-- Escala = data + horário + rótulo opcional, criação livre (não presa a fim de semana). Preset: "Culto de Domingo 18h".
+- Escala = data + horário + rótulo opcional, criação livre (não presa a fim de semana). Preset: "Culto de Domingo 18h". **Atualizado em 04/09/2026**: o lote do mês nasce com o primeiro domingo como Santa Ceia às 08h; existe Escala avulsa pra evento fora de domingo; data e horário são editáveis. Ver [ticket 13](./issues/13-fluxo-ministro.md).
 - Equipe do mês é montada antes; o Repertório é preenchido ao longo da semana, um Item por vez.
 - Escala vira Realizada automaticamente quando a data passa. Só Execuções de Escalas Realizadas contam.
 - Tom pertence ao Item (execução), não à Música. Último Tom é a sugestão padrão; histórico mostra Tom por quem ministrou.

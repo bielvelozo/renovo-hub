@@ -2,7 +2,7 @@
 
 Type: task
 Status: open
-Blocked by: 09, 10, 11, 16
+Blocked by: 09, 10, 11, 16, 19, 20
 Map: ../map.md
 
 ## Question

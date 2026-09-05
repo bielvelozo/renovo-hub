@@ -11,18 +11,22 @@ Pessoa do ministério que pode entrar em uma Equipe. Vê tudo, sugere músicas e
 _Avoid_: usuário, músico (músico é uma função, não o papel)
 
 **Ministro**:
-Membro que dirige o louvor em uma Escala e escolhe as músicas dela. Pode criar Escalas, montar Equipes e adicionar músicas. Uma Escala pode ter mais de um Ministro dividindo a escolha.
-_Avoid_: líder, worship leader
+Membro que dirige o louvor em uma Escala e escolhe as músicas dela. Não é Função: é uma marca por cima das Funções que o Membro já tem naquela Equipe, e quem a carrega normalmente segue no vocal. Pode criar Escalas, montar Equipes e adicionar músicas. Uma Escala pode ter mais de um Ministro dividindo a escolha.
+_Avoid_: líder, worship leader, função de ministro
 
 **Admin**:
 Membro com tudo que o Ministro faz mais a gestão de Membros (convidar, editar papéis).
 
 **Função**:
-O que um Membro faz em uma Equipe (vocal, guitarra, baixo, bateria, teclado, ministro, som...). Um Membro pode ter mais de uma Função. Cada Função é musical ou técnica, marca definida pelo Admin.
+O que um Membro faz em uma Equipe (vocal, backing, guitarra, violão, baixo, bateria, teclado, som...). Um Membro pode ter mais de uma Função na mesma Escala. Cada Função pertence a um Naipe, definido pelo Admin. Ministro não é Função.
 _Avoid_: instrumento, cargo, role
 
+**Naipe**:
+Grupo de Funções pelo qual a Equipe se organiza e é avisada: Vocal (vocal, backing), Músicos (guitarra, violão, baixo, bateria, teclado) e Som (som). Vocal e Ministro são decididos antes, na Escala do mês; Músicos, durante a semana.
+_Avoid_: categoria, seção, time
+
 **Função musical**:
-Função de quem toca ou canta a Música: vocal, ministro, guitarra, violão, baixo, bateria, teclado, backing. É a única que credita Execução.
+Função dos naipes Vocal e Músicos, de quem toca ou canta a Música. É a única que credita Execução.
 
 **Função técnica**:
 Função de quem serve na Escala sem tocar a Música, como som. Entra na Equipe para tudo (escalado, avisado, presença), mas não credita Execução nem aparece em "quem já tocou".
@@ -31,19 +35,23 @@ _Avoid_: apoio, produção, staff
 ### Escala
 
 **Escala**:
-Um culto ou evento com data, que reúne uma Equipe e um Repertório. Criada livremente, não amarrada a fim de semana. Visível a todos os Membros desde a criação: não existe rascunho. Nasce Agendada, vira Realizada sozinha quando o dia termina, ou Cancelada se o Ministro marcar que não aconteceu.
+Um culto ou evento com data, horário e rótulo, que reúne uma Equipe e um Repertório. Criada uma a uma (avulsa, para evento fora de domingo) ou um mês de domingos de uma vez; data e horário podem ser editados depois. Visível a todos os Membros desde a criação: não existe rascunho. Nasce Agendada, vira Realizada sozinha quando o dia termina, ou Cancelada se o Ministro marcar que não aconteceu.
 _Avoid_: culto, evento, setlist (como sinônimo do todo)
 
 **Equipe**:
-Os Membros de uma Escala, cada um com sua Função. Normalmente planejada para o mês inteiro antes do Repertório existir.
+Os Membros de uma Escala, cada um com suas Funções e, se for o caso, a marca de Ministro. O vocal é planejado para o mês inteiro antes do Repertório existir; os músicos, na semana, quase sempre a partir de uma Formação.
 _Avoid_: escala de pessoas, time
+
+**Formação**:
+Conjunto nomeado e reutilizável de Membros com Função, aplicado numa Equipe de uma vez e ajustado depois. Existe porque os músicos são quase sempre os mesmos: sem ela, montar a Equipe cobraria digitar o que no WhatsApp era implícito.
+_Avoid_: template, grupo fixo, banda (é o nome de uma Formação, não o conceito)
 
 **Repertório**:
 Lista ordenada de Itens de uma Escala. Preenchido ao longo da semana, um item por vez.
 _Avoid_: setlist, lista de músicas
 
 **Item**:
-Uma entrada do Repertório: uma Música inteira, um Trecho de Música ou um Medley. Música inteira e Trecho carregam o Tom decidido para aquela execução; o Medley não tem Tom próprio, cada Trecho dele tem o seu.
+Uma entrada do Repertório: uma Música inteira, um Trecho de Música ou um Medley. Música inteira e Trecho carregam o Tom decidido para aquela execução; o Medley não tem Tom próprio, cada Trecho dele tem o seu. Pode levar uma observação do Ministro para o grupo ("começar mais baixo", "solo na transição"), que viaja para o texto do WhatsApp e para a visão do Membro.
 
 **Trecho**:
 Parte de uma Música delimitada por minutagem de início e fim no vídeo de referência. Carrega o próprio Tom, com o último Tom da Música como sugestão.
@@ -54,6 +62,10 @@ Item formado por dois ou mais Trechos encadeados. Montado dentro de uma Escala, 
 
 **Ministrado por**:
 O Ministro que puxa um Item. Preenchido sozinho quando a Escala tem um só Ministro; explícito quando há mais de um dividindo a escolha.
+
+**Santa Ceia**:
+Escala do culto de comunhão, sempre destacada como diferente e normalmente de manhã. Ao criar o mês de uma vez, o primeiro domingo nasce Santa Ceia às 08h; qualquer Escala pode receber a marca à mão.
+_Avoid_: ceia, culto especial
 
 **Agendada**:
 Estado da Escala que ainda vai acontecer. Ter ou não Itens no Repertório não muda o estado.
@@ -72,7 +84,7 @@ _Avoid_: adiada, suspensa
 Canção do catálogo do ministério, com link de referência (YouTube e/ou Spotify), data de entrada e histórico de Execuções.
 
 **Tom**:
-Tonalidade em que uma Música foi tocada em uma Execução. Pertence à Música inteira ou ao Trecho dentro do Item, nunca à Música do catálogo; o último Tom de cada Música é a sugestão padrão, venha de Execução inteira ou parcial.
+Tonalidade em que uma Música foi tocada em uma Execução. Pertence à Música inteira ou ao Trecho dentro do Item, nunca à Música do catálogo. A sugestão padrão é o último Tom de cada Música, venha de Execução inteira ou parcial; sem Execução, o último tom conhecido preenchido à mão; sem nada, o tom original da gravação, buscado fora do app.
 _Avoid_: key
 
 **Execução**:
@@ -94,4 +106,5 @@ Documento com a letra da Música na ordem em que é cantada, repetições por ex
 _Avoid_: arranjo, cifra, estrutura
 
 **Sugestão**:
-Música proposta por qualquer Membro para ser tocada, nova ou já conhecida, com link e observação. O Ministro pode promovê-la a Item de uma Escala.
+Música proposta por qualquer Membro para ser tocada, nova ou já conhecida, com link, observação e data. Outros Membros podem apoiá-la, para o Ministro ver quantos querem a música antes de promovê-la a Item de uma Escala.
+_Avoid_: pedido, voto (apoiar não é votação, é adesão)

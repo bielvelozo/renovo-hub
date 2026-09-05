@@ -12,6 +12,13 @@ Três estados, nenhum rascunho: a Escala é visível a todos os Membros desde qu
 | **Realizada** | O dia terminou. Suas Execuções contam. |
 | **Cancelada** | Não aconteceu. Não gera Execução e não conta presença de ninguém. |
 
+## Criação e edição
+
+- **Em lote**: um mês de domingos de uma vez. O primeiro domingo nasce **Santa Ceia às 08h**; os outros, Culto de Domingo 18h. Santa Ceia é sempre destacada como Escala diferente.
+- **Avulsa**: uma Escala com nome, data e horário livres, pra evento fora de domingo.
+- Data, horário e a marca de Santa Ceia são editáveis pelo Ministro, em Agendada e em Realizada (regra de edição do passado abaixo).
+- Cada Item pode levar uma **observação** do Ministro pro grupo, que viaja pro texto do WhatsApp e pra visão do Membro.
+
 ## Transições
 
 - **Agendada → Realizada**: automática, à meia-noite (horário de Brasília) do dia da Escala. Não vira no horário marcado: durante o culto ela continua sendo "a de hoje".
@@ -60,12 +67,16 @@ Risco aceito: um Medley em agosto faz a Música sair da lista de "faz tempo" sem
 - **Fins de semana seguidos**: um fim de semana conta como presente se o Membro estava na Equipe de pelo menos uma Escala Realizada dele. Quebra quando houve Escala Realizada no fim de semana e o Membro não estava em nenhuma. Fim de semana sem Escala, ou só com Cancelada, é neutro: não sobe e não quebra. Ninguém perde sequência por feriado.
 - Não se chama "sequência": esse nome já é o documento da letra. Mostrar por extenso, "5 fins de semana seguidos".
 
-## Funções
+## Funções, Naipes, Ministro e Formação
 
-- Cada Função tem a marca **musical** ou **técnica**, definida pelo Admin.
-- Musicais na partida: vocal, ministro, guitarra, violão, baixo, bateria, teclado, backing. Técnica: som.
-- Função técnica entra na Equipe pra tudo o mais: "você foi escalado", Escalas no ano, fins de semana seguidos, texto do WhatsApp, ver o Repertório. Só não aparece em "quem já tocou" nem na cobertura da Equipe.
+Revisado em 04/09/2026 pelo teste do protótipo do Ministro (ticket 13).
+
+- Cada Função pertence a um **Naipe**, definido pelo Admin: **Vocal** (vocal, backing), **Músicos** (guitarra, violão, baixo, bateria, teclado) e **Som** (som).
+- **Ministro não é Função**: é uma marca por cima das Funções que o Membro tem naquela Escala. Quem dirige normalmente segue no vocal e pode também tocar (Marcos: vocal, violão e Ministro).
+- Vocal e Ministro são decididos antes, na Escala do mês. Músicos são decididos na semana e são quase sempre os mesmos: a **Formação** (a "Banda") aplica o grupo de uma vez e o Ministro ajusta o que mudou. Formação é nomeada, reutilizável e editável.
+- Vocal e Músicos creditam Execução (Função musical). Som não credita (Função técnica), mas entra na Equipe pra tudo o mais: "você foi escalado", Escalas no ano, fins de semana seguidos, texto do WhatsApp, ver o Repertório. Só não aparece em "quem já tocou" nem na cobertura da Equipe.
 - Membro com uma Função musical e uma técnica na mesma Escala credita Execução.
+- No texto do WhatsApp e na tela, a Equipe sai agrupada: Ministro(s), Vocal, Músicos, Som.
 
 ## Cenários do ticket
 
