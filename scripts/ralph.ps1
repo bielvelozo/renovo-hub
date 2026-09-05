@@ -11,8 +11,9 @@ $inicio = Get-Date
 
 for ($i = 1; $i -le $Max; $i++) {
   $antes = Get-Content (Join-Path $raiz "ORCHESTRATION.md") -Raw -Encoding UTF8
-  if ($antes -match "ESTADO: CONCLUIDA") { Write-Host "Entrega concluída. Ver ORCHESTRATION.md."; break }
-  if ($antes -match "ESTADO: BLOQUEADA") { Write-Host "Entrega bloqueada. Ver a seção Blockers do ORCHESTRATION.md."; break }
+  $estado = ($antes -split "`r?`n")[0]
+  if ($estado -match "^ESTADO: CONCLUIDA") { Write-Host "Entrega concluída. Ver ORCHESTRATION.md."; break }
+  if ($estado -match "^ESTADO: BLOQUEADA") { Write-Host "Entrega bloqueada. Ver a seção Blockers do ORCHESTRATION.md."; break }
 
   $carimbo = Get-Date -Format "HH:mm:ss"
   $log = Join-Path $logs ("iteracao-{0:D2}.log" -f $i)
