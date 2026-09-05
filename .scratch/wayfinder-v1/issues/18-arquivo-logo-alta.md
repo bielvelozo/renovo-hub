@@ -19,4 +19,4 @@ Contexto e cores medidas em [docs/brand/README.md](../../../docs/brand/README.md
 
 ## Answer
 
-Resolvido em 05/09/2026: o Gabriel entregou a pasta com cinco PNGs de 1250 x 1250 (sem SVG, sem transparencia), salvos em `docs/brand/logo/` e descritos em [docs/brand/README.md](../../../docs/brand/README.md). A marca e uma so: "IGREJA MISSAO RENOVO" com a arvore como o O; a arvore sozinha no anel e o simbolo e vira o icone do app. Verde da arvore `#689C38`, anel `#242824`. Ainda sem o nome da fonte display das artes da conferencia; fica na pendencia da identidade visual.
+Resolvido em 05/09/2026: o Gabriel entregou a pasta com cinco PNGs de 1250 x 1250 (sem SVG, sem transparência), salvos em `docs/brand/logo/` e descritos em [docs/brand/README.md](../../../docs/brand/README.md). A marca é uma só: "IGREJA MISSÃO RENOVO" com a árvore como o O; a árvore sozinha no anel e o símbolo e vira o ícone do app. Verde da árvore `#689C38`, anel `#242824`. Ainda sem o nome da fonte display das artes da conferência; fica na pendência da identidade visual.
