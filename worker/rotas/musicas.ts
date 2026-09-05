@@ -1,0 +1,214 @@
+import { Hono } from 'hono'
+import type { Context } from 'hono'
+import {
+  cobertura,
+  combinaBusca,
+  ehLegado,
+  historicoDaMusica,
+  mesesDesde,
+  musicaPorId,
+  ultimaExecucao,
+  videoIdDoLink,
+} from '../../src/dominio'
+import type { Ministerio, Musica } from '../../src/dominio'
+import { exigirMembro, exigirMinistro } from '../autenticacao'
+import { lerAnexos } from '../dados/anexos'
+import { carregarMinisterio } from '../dados/ministerio'
+import {
+  apagarMusica,
+  atualizarMusica,
+  criarMusica,
+  definirArquivada,
+  estaEmAlgumRepertorio,
+  musicaPorVideo,
+} from '../dados/musicas'
+import { dadosDoVideo } from '../dados/oembed'
+import { apresentarMusica, naListaDeMusicas } from '../http/musica'
+import { corpoJson, ehTextoCheio } from '../http/validacao'
+import type { Contexto } from '../tipos'
+
+export const musicas = new Hono<Contexto>()
+
+musicas.post('/api/musicas/resolver', exigirMembro, async (c) => {
+  const { link } = await corpoJson<{ link?: unknown }>(c.req.raw)
+  const videoId = videoIdDoLink(typeof link === 'string' ? link : null)
+  if (!videoId) return c.json({ erro: LINK_INVALIDO }, 422)
+
+  const dados = await dadosDoVideo(videoId)
+  if (!dados) return c.json({ erro: VIDEO_DESCONHECIDO }, 404)
+
+  const existente = await musicaPorVideo(c.env.DB, videoId)
+
+  return c.json({ ...dados, musica: existente ? await responderMusica(c.env.DB, existente) : null })
+})
+
+musicas.post('/api/musicas', exigirMinistro, async (c) => {
+  const corpo = await corpoJson<Record<string, unknown>>(c.req.raw)
+  const videoId = videoIdDoLink(typeof corpo.link === 'string' ? corpo.link : null)
+  if (!videoId) return c.json({ erro: LINK_INVALIDO }, 422)
+
+  const existente = await musicaPorVideo(c.env.DB, videoId)
+  if (existente) {
+    return c.json({ erro: 'Esse vídeo já está no catálogo.', musica: await responderMusica(c.env.DB, existente) }, 409)
+  }
+
+  const dados = await dadosDoVideo(videoId)
+  const titulo = (typeof corpo.titulo === 'string' ? corpo.titulo.trim() : '') || (dados?.titulo ?? '')
+  if (!titulo) return c.json({ erro: 'Não deu pra ler o título do vídeo. Escreva o título.' }, 422)
+
+  const tons = lerTons(corpo)
+  if (tons === null) return c.json({ erro: TOM_INVALIDO }, 422)
+
+  const id = await criarMusica(c.env.DB, {
+    titulo,
+    artista: (typeof corpo.artista === 'string' ? corpo.artista.trim() : '') || (dados?.canal ?? ''),
+    videoId,
+    tomConhecido: tons.tomConhecido ?? null,
+    tomOriginal: tons.tomOriginal ?? null,
+  })
+
+  return c.json(await responderMusica(c.env.DB, id), 201)
+})
+
+musicas.get('/api/musicas', exigirMembro, async (c) => {
+  const m = await carregarMinisterio(c.env.DB)
+  const busca = c.req.query('busca') ?? ''
+  const filtro = c.req.query('filtro')
+  const meses = Number(c.req.query('meses'))
+  const comArquivadas = c.req.query('arquivadas') === '1'
+
+  const achadas = m.musicas
+    .filter((musica) => comArquivadas || !musica.arquivada)
+    .filter((musica) => combinaBusca(musica, busca))
+    .filter((musica) => cabeNoFiltro(m, musica, filtro))
+    .filter((musica) => cabeNosMeses(m, musica, meses))
+
+  return c.json({ musicas: porUltimaExecucao(m, achadas).map((musica) => naListaDeMusicas(m, musica)) })
+})
+
+musicas.get('/api/musicas/:id', exigirMembro, async (c) => {
+  const m = await carregarMinisterio(c.env.DB)
+  const musica = m.musicas.find((x) => x.id === c.req.param('id'))
+  if (!musica) return c.json({ erro: MUSICA_NAO_ENCONTRADA }, 404)
+
+  const escalaId = c.req.query('escalaId')
+  if (escalaId && !m.escalas.some((escala) => escala.id === escalaId)) {
+    return c.json({ erro: 'Escala não encontrada.' }, 404)
+  }
+
+  return c.json({
+    ...apresentarMusica(m, musica),
+    cobertura: escalaId ? cobertura(m, escalaId, musica.id) : null,
+    anexos: await lerAnexos(c.env.DB, musica.id),
+  })
+})
+
+musicas.patch('/api/musicas/:id', exigirMinistro, async (c) => {
+  const id = c.req.param('id')
+  const m = await carregarMinisterio(c.env.DB, { ids: [] })
+  if (!m.musicas.some((x) => x.id === id)) return c.json({ erro: MUSICA_NAO_ENCONTRADA }, 404)
+
+  const corpo = await corpoJson<Record<string, unknown>>(c.req.raw)
+
+  if (corpo.titulo !== undefined && !ehTextoCheio(corpo.titulo)) {
+    return c.json({ erro: 'A Música precisa de um título.' }, 422)
+  }
+  if (corpo.artista !== undefined && typeof corpo.artista !== 'string') {
+    return c.json({ erro: 'O artista é um texto.' }, 422)
+  }
+  if (corpo.revisar !== undefined && typeof corpo.revisar !== 'boolean') {
+    return c.json({ erro: 'A marca de revisar é sim ou não.' }, 422)
+  }
+
+  const tons = lerTons(corpo)
+  if (tons === null) return c.json({ erro: TOM_INVALIDO }, 422)
+
+  await atualizarMusica(c.env.DB, id, {
+    titulo: typeof corpo.titulo === 'string' ? corpo.titulo.trim() : undefined,
+    artista: typeof corpo.artista === 'string' ? corpo.artista.trim() : undefined,
+    revisar: corpo.revisar as boolean | undefined,
+    ...tons,
+  })
+
+  return c.json(await responderMusica(c.env.DB, id))
+})
+
+musicas.delete('/api/musicas/:id', exigirMinistro, async (c) => {
+  const id = c.req.param('id')
+  const m = await carregarMinisterio(c.env.DB)
+  const musica = m.musicas.find((x) => x.id === id)
+  if (!musica) return c.json({ erro: MUSICA_NAO_ENCONTRADA }, 404)
+
+  if (historicoDaMusica(m, id).length) {
+    return c.json({ erro: `${musica.titulo} já foi tocada: arquive em vez de apagar.` }, 409)
+  }
+
+  if (await estaEmAlgumRepertorio(c.env.DB, id)) {
+    return c.json({ erro: `${musica.titulo} está no Repertório de uma Escala. Tire de lá antes de apagar.` }, 409)
+  }
+
+  await apagarMusica(c.env.DB, id)
+
+  return c.json({ apagada: true })
+})
+
+musicas.post('/api/musicas/:id/arquivar', exigirMinistro, (c) => guardar(c, c.req.param('id'), true))
+
+musicas.post('/api/musicas/:id/desarquivar', exigirMinistro, (c) => guardar(c, c.req.param('id'), false))
+
+async function guardar(c: Context<Contexto>, id: string, arquivada: boolean) {
+  const m = await carregarMinisterio(c.env.DB)
+  const musica = m.musicas.find((x) => x.id === id)
+  if (!musica) return c.json({ erro: MUSICA_NAO_ENCONTRADA }, 404)
+
+  if (arquivada && !historicoDaMusica(m, id).length) {
+    return c.json({ erro: `${musica.titulo} nunca foi tocada: apague em vez de arquivar.` }, 422)
+  }
+
+  await definirArquivada(c.env.DB, id, arquivada)
+
+  return c.json(await responderMusica(c.env.DB, id))
+}
+
+function cabeNoFiltro(m: Ministerio, musica: Musica, filtro: string | undefined): boolean {
+  if (filtro === 'nova') return !musica.legado && !ultimaExecucao(m, musica.id)
+  if (filtro === 'legado') return ehLegado(m, musica)
+  if (filtro === 'revisar') return musica.revisar
+  return true
+}
+
+function cabeNosMeses(m: Ministerio, musica: Musica, meses: number): boolean {
+  if (!Number.isFinite(meses) || meses <= 0) return true
+  const ultima = ultimaExecucao(m, musica.id)
+  return !!ultima && mesesDesde(ultima.data, m.hoje) >= meses
+}
+
+// A ordem do protótipo: faz mais tempo primeiro, e quem nunca foi tocada no fim.
+function porUltimaExecucao(m: Ministerio, musicas: Musica[]): Musica[] {
+  const quando = (musica: Musica) => ultimaExecucao(m, musica.id)?.data ?? '9999-99-99'
+  return [...musicas].sort((a, b) => quando(a).localeCompare(quando(b)))
+}
+
+function lerTons(corpo: Record<string, unknown>): { tomConhecido?: string | null; tomOriginal?: string | null } | null {
+  const tons: { tomConhecido?: string | null; tomOriginal?: string | null } = {}
+
+  for (const campo of ['tomConhecido', 'tomOriginal'] as const) {
+    const valor = corpo[campo]
+    if (valor === undefined) continue
+    if (valor === null) tons[campo] = null
+    else if (ehTextoCheio(valor)) tons[campo] = valor.trim()
+    else return null
+  }
+
+  return tons
+}
+
+async function responderMusica(db: D1Database, id: string) {
+  const m = await carregarMinisterio(db)
+  return apresentarMusica(m, musicaPorId(m, id))
+}
+
+const LINK_INVALIDO = 'Cole o link do vídeo no YouTube.'
+const VIDEO_DESCONHECIDO = 'O YouTube não reconheceu esse vídeo.'
+const TOM_INVALIDO = 'O Tom é um texto ou vazio.'
+const MUSICA_NAO_ENCONTRADA = 'Música não encontrada.'
