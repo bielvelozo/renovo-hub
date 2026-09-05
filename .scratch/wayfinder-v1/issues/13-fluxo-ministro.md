@@ -83,3 +83,5 @@ Contagem v2, verificada por script:
 | 9. Escala avulsa (nome, data e hora digitados) | — | 26 | ~60 |
 
 **Pendente pro veredito**: Gabriel confere a v2 e, se der, um Ministro percorre os nove roteiros sem explicação prévia. O ticket fecha com o veredito por tela.
+
+11. **Chip Ministro (depois da v2)**: só deve aparecer pra quem tem a opção pré-definida no cadastro. Corrigido: Membro ganha o papel de Ministro no cadastro (Isa e Marcos nos dados de exemplo), o chip só aparece pra eles e o domínio recusa a marca pra quem não tem o papel. Glossário e `escala.md` ajustados.

@@ -11,7 +11,7 @@ Pessoa do ministério que pode entrar em uma Equipe. Vê tudo, sugere músicas e
 _Avoid_: usuário, músico (músico é uma função, não o papel)
 
 **Ministro**:
-Membro que dirige o louvor em uma Escala e escolhe as músicas dela. Não é Função: é uma marca por cima das Funções que o Membro já tem naquela Equipe, e quem a carrega normalmente segue no vocal. Pode criar Escalas, montar Equipes e adicionar músicas. Uma Escala pode ter mais de um Ministro dividindo a escolha.
+Membro que o Admin cadastrou como capaz de dirigir o louvor e que, numa Escala, recebe a marca de quem dirige e escolhe as músicas dela. Não é Função: a marca vai por cima das Funções que o Membro já tem naquela Equipe, só pode ir para quem tem o papel, e quem a carrega normalmente segue no vocal. Pode criar Escalas, montar Equipes e adicionar músicas. Uma Escala pode ter mais de um Ministro dividindo a escolha.
 _Avoid_: líder, worship leader, função de ministro
 
 **Admin**:

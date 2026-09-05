@@ -72,7 +72,7 @@ Risco aceito: um Medley em agosto faz a Música sair da lista de "faz tempo" sem
 Revisado em 04/09/2026 pelo teste do protótipo do Ministro (ticket 13).
 
 - Cada Função pertence a um **Naipe**, definido pelo Admin: **Vocal** (vocal, backing), **Músicos** (guitarra, violão, baixo, bateria, teclado) e **Som** (som).
-- **Ministro não é Função**: é uma marca por cima das Funções que o Membro tem naquela Escala. Quem dirige normalmente segue no vocal e pode também tocar (Marcos: vocal, violão e Ministro).
+- **Ministro não é Função**: é um papel que o Admin dá no cadastro do Membro e, em cada Escala, uma marca por cima das Funções de quem dirige. Só quem tem o papel pode receber a marca. Quem dirige normalmente segue no vocal e pode também tocar (Marcos: vocal, violão e Ministro).
 - Vocal e Ministro são decididos antes, na Escala do mês. Músicos são decididos na semana e são quase sempre os mesmos: a **Formação** (a "Banda") aplica o grupo de uma vez e o Ministro ajusta o que mudou. Formação é nomeada, reutilizável e editável.
 - Vocal e Músicos creditam Execução (Função musical). Som não credita (Função técnica), mas entra na Equipe pra tudo o mais: "você foi escalado", Escalas no ano, fins de semana seguidos, texto do WhatsApp, ver o Repertório. Só não aparece em "quem já tocou" nem na cobertura da Equipe.
 - Membro com uma Função musical e uma técnica na mesma Escala credita Execução.
