@@ -5,6 +5,21 @@ export const RAIZ = 'http://127.0.0.1:8787'
 
 export type Resposta = { status: number; corpo: any; texto: string; cabecalhos: Headers }
 
+// O Worker fecha o keep-alive enquanto um spawnSync bloqueia o event loop; o undici
+// reaproveita o socket morto e falha com ECONNRESET antes de o pedido chegar ao servidor.
+export async function buscar(url: string, init?: RequestInit): Promise<Response> {
+  for (let tentativa = 0; ; tentativa += 1) {
+    try {
+      return await fetch(url, init)
+    } catch (erro) {
+      const codigo = (erro as { cause?: { code?: string } }).cause?.code
+      const socketMorto = codigo === 'ECONNRESET' || codigo === 'UND_ERR_SOCKET'
+      if (!socketMorto || tentativa >= 2) throw erro
+      await new Promise((pronto) => setTimeout(pronto, 300))
+    }
+  }
+}
+
 export type Pedido = {
   metodo?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
   corpo?: unknown
@@ -36,7 +51,7 @@ export function criarProva() {
     if (pedido.cookie) cabecalhos.cookie = pedido.cookie
     if (pedido.corpo !== undefined) cabecalhos['content-type'] = 'application/json'
 
-    const resposta = await fetch(RAIZ + caminho, {
+    const resposta = await buscar(RAIZ + caminho, {
       method: pedido.metodo ?? (pedido.corpo !== undefined || pedido.formulario ? 'POST' : 'GET'),
       headers: cabecalhos,
       body: pedido.formulario ?? (pedido.corpo === undefined ? undefined : JSON.stringify(pedido.corpo)),

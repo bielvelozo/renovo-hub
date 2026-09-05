@@ -3,7 +3,7 @@ import type { ChildProcess } from 'node:child_process'
 import { existsSync, rmSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { cookieDaSessao, tokenDoConvite } from '../../src/fumaca/leitura'
-import { RAIZ } from './prova'
+import { RAIZ, buscar } from './prova'
 
 const PORTA = 8787
 
@@ -109,7 +109,7 @@ export async function sessaoPorConvite(raiz: string, nome: string): Promise<stri
 
   if (!token) throw new Error(`O convite de ${nome} não imprimiu link:\n${saida}`)
 
-  const resposta = await fetch(`${RAIZ}/entrar/${token}`, { redirect: 'manual' })
+  const resposta = await buscar(`${RAIZ}/entrar/${token}`, { redirect: 'manual' })
   const cookie = cookieDaSessao(resposta.headers.get('set-cookie'))
 
   if (!cookie) throw new Error(`Abrir /entrar/${token} não devolveu cookie de sessão (${resposta.status}).`)
@@ -118,7 +118,7 @@ export async function sessaoPorConvite(raiz: string, nome: string): Promise<stri
 }
 
 export async function sessaoPorEsqueci(membroId: string): Promise<string> {
-  const resposta = await fetch(`${RAIZ}/api/esqueci`, {
+  const resposta = await buscar(`${RAIZ}/api/esqueci`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ membroId }),

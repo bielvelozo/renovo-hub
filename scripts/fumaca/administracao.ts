@@ -1,6 +1,6 @@
 import { VIDEOS, exigir } from './cenario'
 import type { Cenario } from './cenario'
-import { RAIZ } from './prova'
+import { RAIZ, buscar } from './prova'
 import type { Prova } from './prova'
 
 const NOME_DA_SEQUENCIA = 'Sequência — Meia Noite.docx'
@@ -199,7 +199,7 @@ export async function fluxosDoAdmin(prova: Prova, cenario: Cenario): Promise<voi
   prova.conferir('a Sequência sobe como versão 1', anexo.versao === 1 && anexo.tamanho === 2048, anexo.nome)
   prova.conferir('o nome com acento e travessão volta inteiro', anexo.nome === NOME_DA_SEQUENCIA, anexo.nome)
 
-  const baixado = await fetch(`${RAIZ}/api/anexos/${anexo.id}`, { headers: { cookie: cenario.julia } })
+  const baixado = await buscar(`${RAIZ}/api/anexos/${anexo.id}`, { headers: { cookie: cenario.julia } })
   const bytes = new Uint8Array(await baixado.arrayBuffer())
 
   prova.conferir('o Membro baixa a Sequência com o mime do Word', baixado.headers.get('content-type') === MIME_DO_WORD)

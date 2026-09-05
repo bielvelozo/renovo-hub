@@ -4,7 +4,7 @@ import { webcrypto } from 'node:crypto'
 import { consultar, esperar } from './ambiente'
 import { exigir, ultimoItem } from './cenario'
 import type { Cenario } from './cenario'
-import { RAIZ } from './prova'
+import { RAIZ, buscar } from './prova'
 import type { Prova } from './prova'
 
 const PORTA_DO_SERVICO = 9099
@@ -201,7 +201,7 @@ export async function fluxosDeNotificacao(prova: Prova, cenario: Cenario): Promi
     )
 
     const antesDoCron = recebidos.filter((pedido) => pedido.url.includes('aparelho-da-isa')).length
-    const cron = await fetch(`${RAIZ}/__scheduled?cron=*/15+*+*+*+*`)
+    const cron = await buscar(`${RAIZ}/__scheduled?cron=*/15+*+*+*+*`)
     await esperar(800)
 
     prova.conferir('o gatilho de cron responde', cron.status === 200, String(cron.status))
