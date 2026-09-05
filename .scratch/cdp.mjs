@@ -8,6 +8,7 @@ const PORTA = 9222
 const BASE = 'http://localhost:8787'
 const COOKIE = process.argv[2]
 const TEMA = process.argv[3] ?? 'dark'
+const MODO = process.argv[4] ?? 'browser'
 
 const perfil = mkdtempSync(join(tmpdir(), 'cdp-'))
 const chrome = spawn(CHROME, [
@@ -84,6 +85,18 @@ await chamar('Emulation.setDeviceMetricsOverride', {
   mobile: true,
 })
 await chamar('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: TEMA }] })
+
+// `Emulation.setEmulatedMedia` não cobre display-mode: pra fingir o app na tela
+// inicial, a resposta do matchMedia é trocada antes do código da página rodar.
+if (MODO === 'standalone') {
+  await chamar('Page.addScriptToEvaluateOnNewDocument', {
+    source: `
+      const original = window.matchMedia.bind(window)
+      window.matchMedia = (consulta) =>
+        consulta.includes('display-mode: standalone') ? { matches: true, media: consulta, addEventListener() {}, removeEventListener() {} } : original(consulta)
+    `,
+  })
+}
 
 if (COOKIE) {
   const [nome, valor] = COOKIE.split('=')
