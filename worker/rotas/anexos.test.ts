@@ -1,6 +1,14 @@
 import { SELF } from 'cloudflare:test'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { cookieDe, criarFuncao, criarMembro, criarMusica, limparBanco } from '../testes/apoio'
+import {
+  cookieDe,
+  criarEscala,
+  criarFuncao,
+  criarItemInteira,
+  criarMembro,
+  criarMusica,
+  limparBanco,
+} from '../testes/apoio'
 
 const RAIZ = 'http://local.test'
 const WORD = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
@@ -27,11 +35,16 @@ function conteudo(tamanho: number): Uint8Array {
   return Uint8Array.from({ length: tamanho }, (_, i) => (i * 7) % 251)
 }
 
-async function enviar(bytes: Uint8Array, quem = 'marcos', nome = 'Sequência Rio.docx'): Promise<Response> {
+async function enviar(
+  bytes: Uint8Array,
+  quem = 'marcos',
+  nome = 'Sequência Rio.docx',
+  musicaId = 'rio',
+): Promise<Response> {
   const formulario = new FormData()
   formulario.append('arquivo', new File([bytes as BufferSource], nome, { type: WORD }))
 
-  return SELF.fetch(`${RAIZ}/api/musicas/rio/anexos`, {
+  return SELF.fetch(`${RAIZ}/api/musicas/${musicaId}/anexos`, {
     method: 'POST',
     body: formulario,
     headers: { cookie: await cookieDe(quem) },
@@ -106,6 +119,33 @@ describe('anexos da Sequência', () => {
   it('devolve 404 em Música e anexo que não existem', async () => {
     expect((await pedir('/api/musicas/nao-existe/anexos', 'marcos')).status).toBe(404)
     expect((await pedir('/api/anexos/nao-existe', 'marcos')).status).toBe(404)
+  })
+
+  it('a Escala traz os anexos de todas as Músicas do Repertório', async () => {
+    await criarMusica('dono', 'Dono da Minha Afeição', 'IxpWNuxGmzc')
+    await criarMusica('fora', 'Fora do Repertório', 'pXQRyiSZ8mQ')
+    await criarEscala({ id: 'e1', data: '2099-08-16' })
+    await criarItemInteira('i1', 'e1', 'rio', 'D', 1)
+    await criarItemInteira('i2', 'e1', 'dono', 'F', 2)
+    await enviar(conteudo(10))
+    await enviar(conteudo(20), 'marcos', 'Sequência Dono.docx', 'dono')
+    await enviar(conteudo(30), 'marcos', 'Sequência de fora.docx', 'fora')
+
+    const resposta = await pedir('/api/escalas/e1/anexos', 'julia')
+
+    expect(resposta.status).toBe(200)
+    const { anexos } = await resposta.json<{ anexos: Anexo[] }>()
+    expect(anexos.map((a) => a.musicaId).sort()).toEqual(['dono', 'rio'])
+  })
+
+  it('a Escala sem anexo nenhum devolve lista vazia, e a que não existe devolve 404', async () => {
+    await criarEscala({ id: 'e1', data: '2099-08-16' })
+    await criarItemInteira('i1', 'e1', 'rio', 'D', 1)
+
+    const { anexos } = await (await pedir('/api/escalas/e1/anexos', 'julia')).json<{ anexos: Anexo[] }>()
+
+    expect(anexos).toEqual([])
+    expect((await pedir('/api/escalas/nao-existe/anexos', 'julia')).status).toBe(404)
   })
 
   it('recusa quem não entrou', async () => {

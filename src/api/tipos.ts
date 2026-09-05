@@ -1,4 +1,4 @@
-import type { EntradaEquipe, EstadoEscala, GrupoEquipe, TomSugerido } from '../dominio'
+import type { EntradaEquipe, EstadoEscala, Funcao, GrupoEquipe, TomSugerido } from '../dominio'
 
 export type MusicaResumida = {
   id: string
@@ -62,6 +62,7 @@ export type EscalaResumida = {
   estado: EstadoEscala
   titulo: string
   ministros: string[]
+  membros: string[]
   quantidadeNaEquipe: number
   quantidadeDeItens: number
 }
@@ -147,4 +148,21 @@ export type SugestaoApresentada = {
   promovidaEm: string | null
   apoios: MembroResumido[]
   apoiei: boolean
+}
+
+export type MembroDetalhado = {
+  id: string
+  nome: string
+  funcoes: Funcao[]
+  ministro: boolean
+  admin: boolean
+  inativo: boolean
+}
+
+export type PerfilApresentado = {
+  membro: MembroDetalhado
+  escalasNoAno: number
+  ultimaEscala: EscalaResumida | null
+  finsDeSemanaSeguidos: number
+  textoDeFinsDeSemana: string | null
 }

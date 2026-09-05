@@ -55,6 +55,11 @@ export function ministradoPorDe(escala: Escala, item?: Item | null): string | nu
   return marcados.length === 1 ? marcados[0] : null
 }
 
+export function musicasDoItem(item: Item): string[] {
+  if (item.tipo !== 'medley') return [item.musicaId]
+  return [...new Set(item.trechos.map((trecho) => trecho.musicaId))]
+}
+
 export function membrosMusicais(m: Ministerio, escala: Escala): string[] {
   return escala.equipe.filter((x) => x.funcoes.some((f) => ehMusical(m, f))).map((x) => x.membroId)
 }

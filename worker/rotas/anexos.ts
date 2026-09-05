@@ -1,6 +1,8 @@
 import { Hono } from 'hono'
+import { musicasDoItem } from '../../src/dominio'
 import { exigirMembro, exigirMinistro } from '../autenticacao'
-import { criarAnexo, lerAnexo, lerAnexos, lerConteudo } from '../dados/anexos'
+import { criarAnexo, lerAnexo, lerAnexos, lerAnexosDeMusicas, lerConteudo } from '../dados/anexos'
+import { carregarMinisterio } from '../dados/ministerio'
 import type { Contexto } from '../tipos'
 
 const MAXIMO = 1024 * 1024
@@ -30,6 +32,16 @@ anexos.post('/api/musicas/:id/anexos', exigirMinistro, async (c) => {
   })
 
   return c.json(await lerAnexo(c.env.DB, id), 201)
+})
+
+anexos.get('/api/escalas/:id/anexos', exigirMembro, async (c) => {
+  const m = await carregarMinisterio(c.env.DB, { ids: [c.req.param('id')] })
+  const escala = m.escalas[0]
+  if (!escala) return c.json({ erro: 'Escala não encontrada.' }, 404)
+
+  const musicaIds = [...new Set(escala.itens.flatMap(musicasDoItem))]
+
+  return c.json({ anexos: await lerAnexosDeMusicas(c.env.DB, musicaIds) })
 })
 
 anexos.get('/api/anexos/:id', exigirMembro, async (c) => {

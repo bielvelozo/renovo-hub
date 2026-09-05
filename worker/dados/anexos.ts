@@ -50,6 +50,20 @@ export async function lerAnexos(db: D1Database, musicaId: string): Promise<Anexo
   return results.map(montar)
 }
 
+export async function lerAnexosDeMusicas(db: D1Database, musicaIds: string[]): Promise<Anexo[]> {
+  if (musicaIds.length === 0) return []
+
+  const lugares = musicaIds.map(() => '?').join(', ')
+  const { results } = await db
+    .prepare(
+      `select id, musica_id, nome, mime, tamanho, versao, criado_em from anexos where musica_id in (${lugares}) order by musica_id, versao desc`,
+    )
+    .bind(...musicaIds)
+    .all<LinhaDeAnexo>()
+
+  return results.map(montar)
+}
+
 export async function lerAnexo(db: D1Database, id: string): Promise<Anexo | null> {
   const linha = await db
     .prepare('select id, musica_id, nome, mime, tamanho, versao, criado_em from anexos where id = ?')

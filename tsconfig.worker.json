@@ -16,6 +16,9 @@
     "src/escalas/rascunho.ts",
     "src/escalas/repertorio.ts",
     "src/escalas/sugestoes.ts",
+    "src/inicio/proxima.ts",
+    "src/musicas/catalogo.ts",
+    "src/perfil/perfil.ts",
     "src/instalacao/plataforma.ts",
     "src/tema/tema.ts",
     "src/**/*.test.ts"

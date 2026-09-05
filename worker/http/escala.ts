@@ -53,6 +53,7 @@ export function resumirEscala(m: Ministerio, escala: Escala) {
     estado: estadoEscala(escala, m.hoje),
     titulo: tituloEscala(escala),
     ministros: ministros(escala).map((id) => membroPorId(m, id).nome),
+    membros: escala.equipe.map((entrada) => entrada.membroId),
     quantidadeNaEquipe: escala.equipe.length,
     quantidadeDeItens: escala.itens.length,
   }

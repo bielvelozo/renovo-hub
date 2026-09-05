@@ -42,6 +42,7 @@ export {
   ministradoPorDe,
   ministros,
   musicaPorId,
+  musicasDoItem,
   naipeDe,
   rotuloDoHorario,
   tituloEscala,

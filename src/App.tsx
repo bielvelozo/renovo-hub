@@ -10,6 +10,7 @@ import { Inicio } from './paginas/Inicio'
 import { Instalar } from './paginas/Instalar'
 import { Medley } from './paginas/Medley'
 import { Mes } from './paginas/Mes'
+import { Musica } from './paginas/Musica'
 import { Musicas } from './paginas/Musicas'
 import { NaoEncontrada } from './paginas/NaoEncontrada'
 import { Perfil } from './paginas/Perfil'
@@ -31,6 +32,7 @@ export function App() {
           <Route path="escalas/:id/adicionar" element={<Adicionar />} />
           <Route path="escalas/:id/medley" element={<Medley />} />
           <Route path="musicas" element={<Musicas />} />
+          <Route path="musicas/:id" element={<Musica />} />
           <Route path="sugestoes" element={<Sugestoes />} />
           <Route path="perfil" element={<Perfil />} />
           <Route path="admin" element={<Admin />} />

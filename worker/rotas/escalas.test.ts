@@ -126,6 +126,18 @@ describe('listar e ver', () => {
     })
   })
 
+  it('o resumo traz quem está na Equipe, pro Início achar a Escala do Membro', async () => {
+    await criarEscala({ id: 'minha', data: FUTURO })
+    await criarEscala({ id: 'alheia', data: FUTURO })
+    await porNaEquipe('minha', 'julia', ['vocal'])
+    await porNaEquipe('minha', 'davi', ['som'])
+
+    const { escalas } = await (await pedir('/api/escalas', 'julia')).json<{ escalas: { id: string; membros: string[] }[] }>()
+
+    expect(escalas.find((e) => e.id === 'minha')?.membros).toEqual(['julia', 'davi'])
+    expect(escalas.find((e) => e.id === 'alheia')?.membros).toEqual([])
+  })
+
   it('a Escala do passado aparece como Realizada e a do futuro como Agendada', async () => {
     await criarEscala({ id: 'velha', data: PASSADO })
     await criarEscala({ id: 'nova', data: FUTURO })

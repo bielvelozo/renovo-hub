@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { diaDaSugestao, textoDosApoios } from './sugestoes'
+import type { MusicaResumida, SugestaoApresentada } from '../api/tipos'
+import type { Escolha } from './rascunho'
+import { corpoDaSugestao, diaDaSugestao, podeApagar, textoDosApoios } from './sugestoes'
 
 describe('sugestoes', () => {
   it('mostra só o dia do carimbo de tempo que o banco guarda', () => {
@@ -19,5 +21,51 @@ describe('sugestoes', () => {
         { id: 'julia', nome: 'Júlia' },
       ]),
     ).toBe('Isa, Júlia apoiam')
+  })
+})
+
+const RIO: MusicaResumida = {
+  id: 'rio',
+  titulo: 'Rio',
+  artista: 'Central MSC',
+  videoId: 's1oU-6vYc4E',
+  capa: 'capa',
+  capaAlternativa: 'outra',
+}
+
+function escolha(parcial: Partial<Escolha>): Escolha {
+  return { musicaId: null, link: null, resumo: RIO, ...parcial }
+}
+
+describe('corpo da Sugestão', () => {
+  it('Música do catálogo viaja só com o id', () => {
+    expect(corpoDaSugestao(escolha({ musicaId: 'rio' }), '  cabe no fim  ')).toEqual({
+      musicaId: 'rio',
+      observacao: 'cabe no fim',
+    })
+  })
+
+  it('link solto leva o título que veio do oEmbed, que a API exige', () => {
+    expect(corpoDaSugestao(escolha({ link: 'https://youtu.be/abc' }), '')).toEqual({
+      link: 'https://youtu.be/abc',
+      titulo: 'Rio',
+      observacao: '',
+    })
+  })
+})
+
+describe('apagar Sugestão', () => {
+  const sugestao = { id: 's1', membro: { id: 'julia', nome: 'Júlia' } } as SugestaoApresentada
+
+  it('quem sugeriu apaga a própria', () => {
+    expect(podeApagar(sugestao, { id: 'julia', admin: false })).toBe(true)
+  })
+
+  it('o Admin apaga qualquer uma', () => {
+    expect(podeApagar(sugestao, { id: 'gabriel', admin: true })).toBe(true)
+  })
+
+  it('Membro comum não apaga a dos outros', () => {
+    expect(podeApagar(sugestao, { id: 'marcos', admin: false })).toBe(false)
   })
 })
