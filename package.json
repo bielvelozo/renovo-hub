@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "npm run build && wrangler dev --port 8787",
+    "dev": "npm run db:migrate && npm run db:seed && npm run build && wrangler dev --port 8787",
     "dev:front": "vite",
     "build": "vite build",
     "check": "tsc -b",
