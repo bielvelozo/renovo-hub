@@ -353,6 +353,16 @@ const Dominio = (() => {
 
 <script id="shell">
 // ===== TELA: casca descartável em volta do domínio. =====
+(function () {
+  // O artefato do claude.ai roda com Trusted Types: sem uma política padrão, innerHTML lança erro.
+  try { if (window.trustedTypes && trustedTypes.createPolicy && !trustedTypes.defaultPolicy) trustedTypes.createPolicy('default', { createHTML: (h) => h }); } catch (e) { window.__ttErro = String(e); }
+  window.addEventListener('error', (ev) => {
+    const alvo = document.getElementById('tela');
+    if (!alvo || alvo.childElementCount) return;
+    alvo.textContent = 'O protótipo não conseguiu desenhar a tela. Erro: ' + (ev.message || ev.error) + (window.__ttErro ? ' | Política Trusted Types: ' + window.__ttErro : '');
+    alvo.style.cssText = 'padding:24px;color:#991b1b;font-size:14px;white-space:pre-wrap';
+  });
+})();
 const D = Dominio;
 let s = D.estadoInicial();
 let ui = novaUi();
@@ -443,7 +453,7 @@ phone.addEventListener('keydown', (ev) => {
 }, true);
 
 // ---------- telas ----------
-const capa = (mu, g) => '<img class="capa' + (g ? ' g' : '') + '" src="https://i.ytimg.com/vi/' + mu.videoId + '/mqdefault.jpg" alt="" onerror="this.style.visibility=\'hidden\'">';
+const capa = (mu, g) => '<img class="capa' + (g ? ' g' : '') + '" src="https://i.ytimg.com/vi/' + mu.videoId + '/mqdefault.jpg" alt="" onerror="this.remove()">';
 const barra = (titulo, sub, voltar, direita) => '<div class="barra">' + (voltar ? '<button class="btn icone" onclick="' + voltar + '">‹</button>' : '') + '<h3>' + titulo + (sub ? '<span class="sub">' + sub + '</span>' : '') + '</h3>' + (direita || '') + '</div>';
 const tabbar = () => '<nav class="tabbar"><button class="' + (['mes','escala','equipe','escolher','tom','medley','trechoMedley','whatsapp'].includes(ui.tela) ? 'ativa' : '') + '" onclick="ir(\'mes\')">Mês</button><button class="' + (ui.tela === 'sugestoes' ? 'ativa' : '') + '" onclick="ir(\'sugestoes\')">Sugestões' + (s.sugestoes.length ? ' (' + s.sugestoes.length + ')' : '') + '</button></nav>';
 const badge = (e) => { const st = D.estadoEscala(e, s.hoje); return '<span class="badge ' + st + '">' + st + '</span>'; };
@@ -701,7 +711,10 @@ function render() {
   renderPaineis();
   ui.mudou = null;
 }
-if (window.innerWidth <= 1100) document.querySelectorAll('aside details').forEach(d => d.removeAttribute('open'));
+function ajustarPaineis() { const aberto = window.innerWidth > 1100; document.querySelectorAll('aside details').forEach(d => { d.open = aberto; }); }
+window.addEventListener('resize', ajustarPaineis);
+window.addEventListener('load', () => setTimeout(ajustarPaineis, 300));
+ajustarPaineis();
 render();
 </script>
 </body>
