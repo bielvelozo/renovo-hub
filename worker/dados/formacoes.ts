@@ -69,3 +69,7 @@ async function gravarEntradas(db: D1Database, id: string, entradas: EntradaDaFor
 
   if (comandos.length) await db.batch(comandos)
 }
+
+export async function apagarFormacao(db: D1Database, id: string): Promise<void> {
+  await db.prepare('delete from formacoes where id = ?').bind(id).run()
+}

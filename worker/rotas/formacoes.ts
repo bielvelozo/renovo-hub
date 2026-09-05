@@ -2,7 +2,14 @@ import { Hono } from 'hono'
 import type { EntradaEquipe, Ministerio } from '../../src/dominio'
 import { exigirMembro, exigirMinistro } from '../autenticacao'
 import { definirEntradaDaEquipe } from '../dados/escalas'
-import { criarFormacao, lerFormacao, lerFormacoes, renomearFormacao, trocarEntradas } from '../dados/formacoes'
+import {
+  apagarFormacao,
+  criarFormacao,
+  lerFormacao,
+  lerFormacoes,
+  renomearFormacao,
+  trocarEntradas,
+} from '../dados/formacoes'
 import type { EntradaDaFormacao } from '../dados/formacoes'
 import { carregarMinisterio } from '../dados/ministerio'
 import { apresentarEscala } from '../http/escala'
@@ -63,6 +70,15 @@ formacoes.patch('/api/formacoes/:id', exigirMinistro, async (c) => {
   if (typeof corpo.nome === 'string') await renomearFormacao(c.env.DB, id, corpo.nome.trim())
 
   return c.json(await lerFormacao(c.env.DB, id))
+})
+
+formacoes.delete('/api/formacoes/:id', exigirMinistro, async (c) => {
+  const id = c.req.param('id')
+  if (!(await lerFormacao(c.env.DB, id))) return c.json({ erro: FORMACAO_NAO_ENCONTRADA }, 404)
+
+  await apagarFormacao(c.env.DB, id)
+
+  return c.json({ apagada: true })
 })
 
 formacoes.post('/api/escalas/:id/formacao', exigirMinistro, async (c) => {

@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { acesso } from './rotas/acesso'
+import { admin } from './rotas/admin'
 import { anexos } from './rotas/anexos'
 import { escalas } from './rotas/escalas'
 import { formacoes } from './rotas/formacoes'
@@ -21,6 +22,7 @@ app.route('/', musicas)
 app.route('/', anexos)
 app.route('/', sugestoes)
 app.route('/', perfil)
+app.route('/', admin)
 
 app.notFound((c) => c.json({ erro: 'Rota não encontrada.' }, 404))
 
