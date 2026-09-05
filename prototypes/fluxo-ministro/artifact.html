@@ -162,8 +162,8 @@ const Dominio = (() => {
       hoje: HOJE, eu: EU,
       membros: [
         { id:'gabriel', nome:'Gabriel', funcoes:['guitarra'] },
-        { id:'isa', nome:'Isa', funcoes:['vocal'] },
-        { id:'marcos', nome:'Marcos', funcoes:['vocal','violao'] },
+        { id:'isa', nome:'Isa', funcoes:['vocal'], ministro:true },
+        { id:'marcos', nome:'Marcos', funcoes:['vocal','violao'], ministro:true },
         { id:'pedro', nome:'Pedro', funcoes:['baixo'] },
         { id:'ana', nome:'Ana', funcoes:['vocal'] },
         { id:'lucas', nome:'Lucas', funcoes:['bateria'] },
@@ -313,6 +313,7 @@ const Dominio = (() => {
       case 'editarEscala': { if (a.data) e.data = a.data; if (a.horario) e.horario = a.horario; if (typeof a.santaCeia === 'boolean') e.santaCeia = a.santaCeia; n.escalas.sort((x, y) => x.data.localeCompare(y.data)); return n; }
       case 'alternarFuncao': { const x = entradaDe(a.membroId); const i = x.funcoes.indexOf(a.funcaoId); if (i >= 0) x.funcoes.splice(i, 1); else x.funcoes.push(a.funcaoId); limpar(); return n; }
       case 'alternarMinistro': {
+        if (!membro(n, a.membroId).ministro) return n;
         const x = entradaDe(a.membroId);
         if (!x.ministro && !x.funcoes.some(f => naipeDe(f) === 'vocal')) { const fv = membro(n, a.membroId).funcoes.find(f => naipeDe(f) === 'vocal'); if (fv) x.funcoes.push(fv); }
         x.ministro = !x.ministro; limpar(); return n;
@@ -544,7 +545,7 @@ function telaEquipe() {
   const entrada = (mid) => e.equipe.find(x => x.membroId === mid);
   const temNaipe = (mb, naipe) => mb.funcoes.some(f => D.naipeDe(f) === naipe);
   const secoes = [
-    { nome:'Vocal', dica:'Decidido antes, na Escala do mês. Ministro é marca por cima: quem dirige continua no vocal.', membros: s.membros.filter(mb => temNaipe(mb, 'vocal')) },
+    { nome:'Vocal', dica:'Decidido antes, na Escala do mês. O chip Ministro só aparece pra quem o Admin cadastrou como Ministro; quem dirige continua no vocal.', membros: s.membros.filter(mb => temNaipe(mb, 'vocal')) },
     { nome:'Músicos', dica:'Decididos na semana. A Banda é o grupo de sempre: aplica num toque e ajusta o que mudar.', membros: s.membros.filter(mb => temNaipe(mb, 'instrumentos') && !temNaipe(mb, 'vocal')), banda:true },
     { nome:'Som', dica:'Escalado e avisado como todo mundo; não conta em "quem já tocou".', membros: s.membros.filter(mb => temNaipe(mb, 'tecnica')) },
   ];
@@ -556,7 +557,7 @@ function telaEquipe() {
       const x = entrada(mb.id);
       h += '<li><div class="cresce"><div class="titulo">' + mb.nome + '</div></div><div class="chips">';
       for (const f of mb.funcoes) { const fu = D.funcao(f); h += '<button class="chip ' + (x && x.funcoes.includes(f) ? 'sel' : '') + (fu.naipe === 'tecnica' ? ' tecnica' : '') + '" onclick="dispatch({tipo:\'alternarFuncao\', escalaId:\'' + e.id + '\', membroId:\'' + mb.id + '\', funcaoId:\'' + f + '\'})">' + fu.nome + '</button>'; }
-      if (temNaipe(mb, 'vocal')) h += '<button class="chip min ' + (x && x.ministro ? 'sel' : '') + '" onclick="dispatch({tipo:\'alternarMinistro\', escalaId:\'' + e.id + '\', membroId:\'' + mb.id + '\'})">Ministro</button>';
+      if (mb.ministro) h += '<button class="chip min ' + (x && x.ministro ? 'sel' : '') + '" onclick="dispatch({tipo:\'alternarMinistro\', escalaId:\'' + e.id + '\', membroId:\'' + mb.id + '\'})">Ministro</button>';
       h += '</div></li>';
     }
     h += '</ul></div>';
@@ -709,7 +710,7 @@ function renderEstado() {
   h += '<div class="sec"><h2>Execuções derivadas · ' + ex.length + ' no total</h2><table><tr><th>Data</th><th>Música</th><th>Tom</th><th>Creditou</th></tr>' + ex.slice(0, 8).map(x => '<tr class="' + (ui.mudou && e && x.escalaId === e.id ? 'mudou' : '') + '"><td>' + D.fmtData(x.data) + '</td><td>' + D.musica(s, x.musicaId).titulo + (x.parcial ? ' <span class="badge parcial">parcial</span>' : '') + '</td><td>' + x.tom + '</td><td>' + x.membros.map(id => D.membro(s, id).nome).join(', ') + '</td></tr>').join('') + '</table>' + (ex.length > 8 ? '<div class="dica">… e mais ' + (ex.length - 8) + '</div>' : '') + '</div>';
   h += '<div class="sec"><h2>Catálogo · tom de partida</h2><table><tr><th>Música</th><th>Sugestão</th><th>Origem</th><th>Última Execução</th></tr>' + s.musicas.map(mu => { const ut = D.ultimoTom(s, mu.id); const ue = D.ultimaExecucao(s, mu.id); return '<tr><td>' + mu.titulo + (D.ehLegado(s, mu) ? ' <span class="badge legado">Legado</span>' : '') + (!mu.legado ? ' <span class="badge">Nova</span>' : '') + '</td><td>' + (ut ? ut.tom : '—') + '</td><td>' + (ut ? { execucao:'última Execução', conhecido:'à mão', original:'gravação' }[ut.origem] : '—') + '</td><td>' + (ue ? D.fmtData(ue.data) + (ue.parcial ? ' (trecho)' : '') : '—') + '</td></tr>'; }).join('') + '</table></div>';
   h += '<div class="sec"><h2>Sugestões pendentes</h2><div class="dica">' + (s.sugestoes.length ? s.sugestoes.map(sg => D.musica(s, sg.musicaId).titulo + ' (' + D.membro(s, sg.membroId).nome + ', ' + D.fmtData(sg.data) + ', ' + sg.apoios.length + ' apoio' + (sg.apoios.length === 1 ? '' : 's') + ')').join(' · ') : 'nenhuma') + '</div></div>';
-  h += '<div class="sec"><h2>Regras em jogo</h2><ul class="dica" style="margin:0;padding-left:18px"><li>Realizada = dia da Escala já terminou (hoje é ' + D.fmtData(s.hoje) + ', terça).</li><li>Execução nasce do plano; credita vocal e músicos, não o som.</li><li>Ministro é marca por cima da Função.</li><li>Parcial vale tudo, marcada. Cancelada não gera nada.</li><li>Tom de partida: última Execução, senão o tom à mão, senão o da gravação.</li></ul></div>';
+  h += '<div class="sec"><h2>Regras em jogo</h2><ul class="dica" style="margin:0;padding-left:18px"><li>Realizada = dia da Escala já terminou (hoje é ' + D.fmtData(s.hoje) + ', terça).</li><li>Execução nasce do plano; credita vocal e músicos, não o som.</li><li>Ministro é papel no cadastro e marca na Escala, por cima da Função; só quem tem o papel pode receber a marca.</li><li>Parcial vale tudo, marcada. Cancelada não gera nada.</li><li>Tom de partida: última Execução, senão o tom à mão, senão o da gravação.</li></ul></div>';
   document.getElementById('estado-corpo').innerHTML = h;
 }
 
