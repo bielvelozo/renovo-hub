@@ -85,3 +85,5 @@ Contagem v2, verificada por script:
 **Pendente pro veredito**: Gabriel confere a v2 e, se der, um Ministro percorre os nove roteiros sem explicação prévia. O ticket fecha com o veredito por tela.
 
 11. **Chip Ministro (depois da v2)**: só deve aparecer pra quem tem a opção pré-definida no cadastro. Corrigido: Membro ganha o papel de Ministro no cadastro (Isa e Marcos nos dados de exemplo), o chip só aparece pra eles e o domínio recusa a marca pra quem não tem o papel. Glossário e `escala.md` ajustados.
+
+Confirmado pelo Gabriel em 04/09/2026: depois da v2 o artefato passou a montar a tela no navegador. A causa do branco era o runtime do artefato bloquear HTML montado por string; a política padrão de Trusted Types resolveu. Fica como regra pra qualquer protótipo publicado como artefato.
