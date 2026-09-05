@@ -83,6 +83,15 @@ O campo `funcoes` do CSV aceita mais de uma Função separada por `;` ou `|` (`M
 
 `npm run db:seed -- --demo` acrescenta 3 Escalas Realizadas em agosto e 1 Agendada com Equipe e Repertório, com os nomes do protótipo. Serve para demonstrar e é o que o smoke usa.
 
+Para recomeçar do zero (por exemplo, depois de um `npm run smoke`, que deixa as Escalas e Sugestões de teste no banco local), apague o D1 local e rode o `dev` de novo:
+
+```sh
+rm -rf .wrangler/state/v3/d1
+npm run dev
+```
+
+No PowerShell, o equivalente do `rm -rf` é `Remove-Item -Recurse -Force .wrangler\state3\d1`.
+
 ## Como adicionar os Membros
 
 Duas formas, e as duas valem:
