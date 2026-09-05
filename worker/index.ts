@@ -5,7 +5,9 @@ import { escalas } from './rotas/escalas'
 import { formacoes } from './rotas/formacoes'
 import { itens } from './rotas/itens'
 import { musicas } from './rotas/musicas'
+import { perfil } from './rotas/perfil'
 import { saude } from './rotas/saude'
+import { sugestoes } from './rotas/sugestoes'
 import type { Ambiente, Contexto } from './tipos'
 
 const app = new Hono<Contexto>()
@@ -17,6 +19,8 @@ app.route('/', formacoes)
 app.route('/', itens)
 app.route('/', musicas)
 app.route('/', anexos)
+app.route('/', sugestoes)
+app.route('/', perfil)
 
 app.notFound((c) => c.json({ erro: 'Rota não encontrada.' }, 404))
 

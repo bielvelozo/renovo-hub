@@ -5,6 +5,7 @@ export type MembroDeTeste = {
   nome: string
   admin?: boolean
   ministro?: boolean
+  inativo?: boolean
   funcoes?: string[]
 }
 
@@ -28,8 +29,10 @@ export async function criarFuncao(id: string, naipe: string, ordem: number, nome
 }
 
 export async function criarMembro(membro: MembroDeTeste): Promise<string> {
-  await env.DB.prepare('insert into membros (id, nome, admin, ministro, criado_em) values (?, ?, ?, ?, ?)')
-    .bind(membro.id, membro.nome, membro.admin ? 1 : 0, membro.ministro ? 1 : 0, AGORA)
+  await env.DB.prepare(
+    'insert into membros (id, nome, admin, ministro, inativo, criado_em) values (?, ?, ?, ?, ?, ?)',
+  )
+    .bind(membro.id, membro.nome, membro.admin ? 1 : 0, membro.ministro ? 1 : 0, membro.inativo ? 1 : 0, AGORA)
     .run()
 
   for (const funcaoId of membro.funcoes ?? []) {
@@ -136,4 +139,36 @@ export async function criarFormacao(id: string, nome: string, entradas: [string,
   }
 
   return id
+}
+
+export type SugestaoDeTeste = {
+  id: string
+  membroId: string
+  musicaId?: string | null
+  link?: string | null
+  titulo?: string | null
+  observacao?: string
+  data?: string
+}
+
+export async function criarSugestao(sugestao: SugestaoDeTeste): Promise<string> {
+  await env.DB.prepare(
+    'insert into sugestoes (id, membro_id, musica_id, link, titulo, observacao, data) values (?, ?, ?, ?, ?, ?, ?)',
+  )
+    .bind(
+      sugestao.id,
+      sugestao.membroId,
+      sugestao.musicaId ?? null,
+      sugestao.link ?? null,
+      sugestao.titulo ?? null,
+      sugestao.observacao ?? '',
+      sugestao.data ?? AGORA,
+    )
+    .run()
+
+  return sugestao.id
+}
+
+export async function apoiarNoBanco(sugestaoId: string, membroId: string): Promise<void> {
+  await env.DB.prepare('insert into apoios (sugestao_id, membro_id) values (?, ?)').bind(sugestaoId, membroId).run()
 }

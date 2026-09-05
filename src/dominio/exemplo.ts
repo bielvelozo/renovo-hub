@@ -19,6 +19,7 @@ const membro = (id: string, nome: string, funcoes: string[], papeis: Partial<Mem
   funcoes,
   ministro: false,
   admin: false,
+  inativo: false,
   ...papeis,
 })
 

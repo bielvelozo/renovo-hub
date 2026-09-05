@@ -17,6 +17,7 @@ export type Membro = {
   funcoes: string[]
   ministro: boolean
   admin: boolean
+  inativo: boolean
 }
 
 export type Musica = {

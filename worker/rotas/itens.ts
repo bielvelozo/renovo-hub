@@ -73,7 +73,7 @@ itens.delete('/api/escalas/:id/itens/:itemId', exigirMinistro, async (c) => {
   return c.json(await responderEscala(c.env.DB, escalaId))
 })
 
-function lerNovoItem(m: Ministerio, corpo: Record<string, unknown>): NovoItem | string {
+export function lerNovoItem(m: Ministerio, corpo: Record<string, unknown>): NovoItem | string {
   const observacao = typeof corpo.observacao === 'string' ? corpo.observacao.trim() : ''
 
   if (corpo.tipo === 'medley') {

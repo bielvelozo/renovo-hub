@@ -7,11 +7,12 @@ type LinhaDeMembro = {
   nome: string
   admin: number
   ministro: number
+  inativo: number
 }
 
 export async function membroPorId(db: D1Database, id: string): Promise<Membro | null> {
   const linha = await db
-    .prepare('select id, nome, admin, ministro from membros where id = ?')
+    .prepare('select id, nome, admin, ministro, inativo from membros where id = ?')
     .bind(id)
     .first<LinhaDeMembro>()
 
@@ -21,7 +22,7 @@ export async function membroPorId(db: D1Database, id: string): Promise<Membro | 
 export async function membroPorSessao(db: D1Database, token: string): Promise<Membro | null> {
   const linha = await db
     .prepare(
-      'select m.id, m.nome, m.admin, m.ministro from sessoes s join membros m on m.id = s.membro_id where s.token = ?',
+      'select m.id, m.nome, m.admin, m.ministro, m.inativo from sessoes s join membros m on m.id = s.membro_id where s.token = ? and m.inativo = 0',
     )
     .bind(token)
     .first<LinhaDeMembro>()
@@ -31,7 +32,7 @@ export async function membroPorSessao(db: D1Database, token: string): Promise<Me
 
 export async function listarMembros(db: D1Database): Promise<{ id: string; nome: string }[]> {
   const { results } = await db
-    .prepare('select id, nome from membros order by nome')
+    .prepare('select id, nome from membros where inativo = 0 order by nome')
     .all<{ id: string; nome: string }>()
 
   return results
@@ -93,6 +94,18 @@ export async function listaEsqueciLigada(db: D1Database): Promise<boolean> {
   return linha ? linha.valor !== '0' : true
 }
 
+export async function definirListaEsqueci(db: D1Database, ligada: boolean): Promise<void> {
+  if (ligada) {
+    await db.prepare('delete from configuracoes where chave = ?').bind(CHAVE_LISTA_ESQUECI).run()
+    return
+  }
+
+  await db
+    .prepare('insert or replace into configuracoes (chave, valor) values (?, ?)')
+    .bind(CHAVE_LISTA_ESQUECI, '0')
+    .run()
+}
+
 async function comFuncoes(db: D1Database, linha: LinhaDeMembro): Promise<Membro> {
   const { results } = await db
     .prepare(
@@ -106,6 +119,7 @@ async function comFuncoes(db: D1Database, linha: LinhaDeMembro): Promise<Membro>
     nome: linha.nome,
     admin: linha.admin === 1,
     ministro: linha.ministro === 1,
+    inativo: linha.inativo === 1,
     funcoes: results.map((funcao) => funcao.id),
   }
 }

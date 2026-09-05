@@ -141,6 +141,7 @@ describe('/api/eu', () => {
       nome: 'Marcos',
       admin: false,
       ministro: true,
+      inativo: false,
       funcoes: ['vocal'],
     })
   })
