@@ -9,6 +9,7 @@
     "worker",
     "src/dominio",
     "src/semente",
+    "src/fumaca",
     "src/admin/admin.ts",
     "src/api/cliente.ts",
     "src/api/erros.ts",
