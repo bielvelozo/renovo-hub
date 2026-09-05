@@ -30,3 +30,8 @@ export async function corpoJson<T>(requisicao: Request): Promise<T> {
     return {} as T
   }
 }
+
+export function ehMinutagem(valor: unknown): valor is string {
+  if (typeof valor !== 'string' || !/^\d{1,2}:\d{2}$/.test(valor)) return false
+  return Number(valor.split(':')[1]) < 60
+}
