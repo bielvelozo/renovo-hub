@@ -106,7 +106,7 @@ export function sqlDemonstracao(entrada: EntradaDemonstracao): string {
   }
 
   for (const musica of entrada.musicas) {
-    comandos.push(linhaDaMusica({ ...musica, revisar: false }, entrada.agora))
+    comandos.push(linhaDaMusica(musica, entrada.agora))
   }
 
   for (const escala of entrada.escalas) {
@@ -164,7 +164,7 @@ function linhasDoMembro(membro: MembroDeSemente | Membro, agora: string): string
   ]
 }
 
-function linhaDaMusica(musica: MusicaDeSemente | (Musica & { revisar: boolean }), agora: string): string {
+function linhaDaMusica(musica: MusicaDeSemente | Musica, agora: string): string {
   return inserirOuIgnorar('musicas', {
     id: musica.id,
     titulo: musica.titulo,

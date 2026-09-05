@@ -43,3 +43,24 @@ export function linkDaPlaylist(m: Ministerio, escala: Escala): string | null {
 export function buscaNoCifraClub(musica: Musica): string {
   return 'https://www.cifraclub.com.br/?q=' + encodeURIComponent(musica.titulo)
 }
+
+export function combinaBusca(musica: Musica, termo: string): boolean {
+  const busca = normalizar(termo)
+  if (!busca) return true
+  return normalizar(musica.titulo + ' ' + musica.artista).includes(busca)
+}
+
+export function mesesDesde(data: string, hoje: string): number {
+  const [ano, mes, dia] = data.split('-').map(Number)
+  const [anoHoje, mesHoje, diaHoje] = hoje.split('-').map(Number)
+  const meses = (anoHoje - ano) * 12 + (mesHoje - mes) - (diaHoje < dia ? 1 : 0)
+  return Math.max(0, meses)
+}
+
+function normalizar(texto: string): string {
+  return texto
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toLowerCase()
+    .trim()
+}

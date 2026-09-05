@@ -29,7 +29,7 @@ const musica = (
   videoId: string,
   tomOriginal: string | null,
   tomConhecido: string | null = null,
-): Musica => ({ id, titulo, artista, videoId, legado: true, tomOriginal, tomConhecido, arquivada: false })
+): Musica => ({ id, titulo, artista, videoId, legado: true, tomOriginal, tomConhecido, arquivada: false, revisar: false })
 
 const equipe = (membroId: string, funcoes: string[], ministro = false) => ({ membroId, funcoes, ministro })
 

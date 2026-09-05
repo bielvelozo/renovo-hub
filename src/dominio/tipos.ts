@@ -28,6 +28,7 @@ export type Musica = {
   tomConhecido: string | null
   tomOriginal: string | null
   arquivada: boolean
+  revisar: boolean
 }
 
 export type EntradaEquipe = {

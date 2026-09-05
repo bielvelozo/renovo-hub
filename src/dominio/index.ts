@@ -54,9 +54,11 @@ export {
   buscaNoCifraClub,
   capaAlternativa,
   capaDaMusica,
+  combinaBusca,
   linkDaPlaylist,
   linkDeVideos,
   linkDoVideo,
+  mesesDesde,
   videoIdDoLink,
   videosDaPlaylist,
 } from './musica'

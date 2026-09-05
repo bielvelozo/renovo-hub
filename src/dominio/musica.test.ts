@@ -4,9 +4,11 @@ import {
   buscaNoCifraClub,
   capaAlternativa,
   capaDaMusica,
+  combinaBusca,
   linkDaPlaylist,
   linkDeVideos,
   linkDoVideo,
+  mesesDesde,
   videoIdDoLink,
 } from './musica'
 import { escalaPorId, musicaPorId } from './escala'
@@ -102,5 +104,40 @@ describe('buscaNoCifraClub', () => {
     expect(buscaNoCifraClub(musicaPorId(m, 'em-teus-bracos'))).toBe(
       'https://www.cifraclub.com.br/?q=Em%20Teus%20Bra%C3%A7os',
     )
+  })
+})
+
+describe('combinaBusca', () => {
+  it('acha pelo pedaço do título, sem ligar pra caixa', () => {
+    expect(combinaBusca(musicaPorId(m, 'em-teus-bracos'), 'TEUS')).toBe(true)
+  })
+
+  it('acha pelo artista', () => {
+    expect(combinaBusca(musicaPorId(m, 'meia-noite'), 'fhop')).toBe(true)
+  })
+
+  it('acha sem acento quem foi escrito com acento', () => {
+    expect(combinaBusca(musicaPorId(m, 'em-teus-bracos'), 'bracos')).toBe(true)
+    expect(combinaBusca(musicaPorId(m, 'como-nao-te-amar'), 'nao te amar')).toBe(true)
+  })
+
+  it('recusa o que não está no título nem no artista', () => {
+    expect(combinaBusca(musicaPorId(m, 'meia-noite'), 'aleluia')).toBe(false)
+  })
+
+  it('busca vazia deixa tudo passar', () => {
+    expect(combinaBusca(musicaPorId(m, 'meia-noite'), '  ')).toBe(true)
+  })
+})
+
+describe('mesesDesde', () => {
+  it('conta os meses cheios entre duas datas', () => {
+    expect(mesesDesde('2026-03-05', '2026-09-05')).toBe(6)
+    expect(mesesDesde('2026-03-06', '2026-09-05')).toBe(5)
+    expect(mesesDesde('2025-09-05', '2026-09-05')).toBe(12)
+  })
+
+  it('data no futuro não conta mês nenhum', () => {
+    expect(mesesDesde('2026-10-05', '2026-09-05')).toBe(0)
   })
 })
