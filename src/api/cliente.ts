@@ -18,16 +18,30 @@ export type Opcoes = {
 
 export async function api<T>(caminho: string, opcoes: Opcoes = {}): Promise<T> {
   const temCorpo = opcoes.corpo !== undefined
+
+  return pedir<T>(caminho, {
+    method: opcoes.metodo ?? 'GET',
+    headers: temCorpo ? { 'content-type': 'application/json' } : undefined,
+    body: temCorpo ? JSON.stringify(opcoes.corpo) : undefined,
+    signal: opcoes.sinal,
+  })
+}
+
+export async function enviarArquivo<T>(caminho: string, arquivo: File, campo = 'arquivo'): Promise<T> {
+  const formulario = new FormData()
+  formulario.append(campo, arquivo)
+
+  return pedir<T>(caminho, { method: 'POST', body: formulario })
+}
+
+type Pedido = RequestInit & { credentials?: 'same-origin' }
+
+async function pedir<T>(caminho: string, opcoes: Pedido): Promise<T> {
+  const pedido: Pedido = { credentials: 'same-origin', ...opcoes }
   let resposta: Response
 
   try {
-    resposta = await fetch(caminho, {
-      method: opcoes.metodo ?? 'GET',
-      credentials: 'same-origin',
-      headers: temCorpo ? { 'content-type': 'application/json' } : undefined,
-      body: temCorpo ? JSON.stringify(opcoes.corpo) : undefined,
-      signal: opcoes.sinal,
-    })
+    resposta = await fetch(caminho, pedido)
   } catch (erro) {
     if (erro instanceof DOMException && erro.name === 'AbortError') throw erro
     throw new ErroDaApi(0, SEM_CONEXAO)

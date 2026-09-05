@@ -2,6 +2,14 @@ import { Route, Routes } from 'react-router'
 import { Casca } from './casca/Casca'
 import { Adicionar } from './paginas/Adicionar'
 import { Admin } from './paginas/Admin'
+import { Convites } from './paginas/admin/Convites'
+import { EditarFormacao } from './paginas/admin/EditarFormacao'
+import { Formacoes } from './paginas/admin/Formacoes'
+import { Funcoes } from './paginas/admin/Funcoes'
+import { Membros } from './paginas/admin/Membros'
+import { MusicasARevisar } from './paginas/admin/MusicasARevisar'
+import { Painel } from './paginas/admin/Painel'
+import { Sequencias } from './paginas/admin/Sequencias'
 import { Entrar } from './paginas/Entrar'
 import { Equipe } from './paginas/Equipe'
 import { Escala } from './paginas/Escala'
@@ -35,7 +43,16 @@ export function App() {
           <Route path="musicas/:id" element={<Musica />} />
           <Route path="sugestoes" element={<Sugestoes />} />
           <Route path="perfil" element={<Perfil />} />
-          <Route path="admin" element={<Admin />} />
+          <Route path="admin" element={<Admin />}>
+            <Route index element={<Painel />} />
+            <Route path="membros" element={<Membros />} />
+            <Route path="convites" element={<Convites />} />
+            <Route path="funcoes" element={<Funcoes />} />
+            <Route path="formacoes" element={<Formacoes />} />
+            <Route path="formacoes/:id" element={<EditarFormacao />} />
+            <Route path="musicas" element={<MusicasARevisar />} />
+            <Route path="sequencias" element={<Sequencias />} />
+          </Route>
           <Route path="*" element={<NaoEncontrada />} />
         </Route>
       </Routes>

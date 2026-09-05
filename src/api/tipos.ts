@@ -1,4 +1,4 @@
-import type { EntradaEquipe, EstadoEscala, Funcao, GrupoEquipe, TomSugerido } from '../dominio'
+import type { EntradaEquipe, EstadoEscala, Funcao, GrupoEquipe, Membro, TomSugerido } from '../dominio'
 
 export type MusicaResumida = {
   id: string
@@ -157,6 +157,19 @@ export type MembroDetalhado = {
   ministro: boolean
   admin: boolean
   inativo: boolean
+}
+
+export type MembroComAcesso = Membro & {
+  sessoes: number
+  convites: number
+  convitesUsados: number
+  push: number
+}
+
+export type Convite = {
+  token: string
+  link: string
+  membro: MembroResumido
 }
 
 export type PerfilApresentado = {
