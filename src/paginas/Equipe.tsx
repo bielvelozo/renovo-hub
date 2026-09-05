@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { ReactNode } from 'react'
-import { Link, useParams } from 'react-router'
+import { Link, Navigate, useParams } from 'react-router'
 import { api } from '../api/cliente'
 import type { EscalaApresentada, Formacao } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
@@ -20,9 +20,11 @@ import {
 } from '../escalas/equipe'
 import type { EstadoNaEquipe, SecaoDaEquipe } from '../escalas/equipe'
 import { rotuloDoDia } from '../escalas/mes'
+import { usarEu } from '../sessao/sessao'
 
 export function Equipe() {
   const { id = '' } = useParams()
+  const eu = usarEu()
   const escala = usarBusca<EscalaApresentada>(`/api/escalas/${id}`)
   const pessoas = usarBusca<{ membros: Membro[] }>('/api/membros')
   const papeis = usarBusca<{ funcoes: Funcao[] }>('/api/funcoes')
@@ -34,6 +36,7 @@ export function Equipe() {
   const erro = escala.erro ?? pessoas.erro ?? papeis.erro ?? formacoes.erro
   const atual = escala.dados
 
+  if (!eu.ministro && !eu.admin) return <Navigate to={`/escalas/${id}`} replace />
   if (erro) return <p className="aviso">{erro}</p>
   if (!atual || !pessoas.dados || !papeis.dados || !formacoes.dados) {
     return <div className="girando" role="status" aria-label="Carregando" />

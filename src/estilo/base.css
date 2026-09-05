@@ -235,6 +235,7 @@ a {
   color: inherit;
   font: inherit;
   text-align: left;
+  text-decoration: none;
   cursor: pointer;
 }
 
@@ -606,4 +607,11 @@ textarea.texto-longo {
   border-radius: var(--raio-g) var(--raio-g) 0 0;
   background: var(--superficie);
   box-shadow: var(--sombra-alta);
+}
+
+.item .titulo {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
