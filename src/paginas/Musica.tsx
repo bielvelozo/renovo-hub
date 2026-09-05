@@ -4,7 +4,7 @@ import { usarBusca } from '../api/usarBusca'
 import { Barra } from '../componentes/Barra'
 import { Capa } from '../componentes/Capa'
 import { formatarDia } from '../dominio'
-import { textoDoTomSugerido } from '../escalas/rascunho'
+import { textoDoUltimoTom } from '../musicas/catalogo'
 
 export function Musica() {
   const { id = '' } = useParams()
@@ -23,7 +23,7 @@ export function Musica() {
         <p className="dica">{situacao(musica)}</p>
       </div>
 
-      <p className="cobertura">{textoDoTomSugerido(musica.tomSugerido)}</p>
+      <p className="cobertura">{textoDoUltimoTom(musica.tomSugerido)}</p>
 
       <div className="secao">
         <h2>Histórico</h2>

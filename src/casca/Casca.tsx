@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, Navigate, Outlet } from 'react-router'
+import { Link, Navigate, Outlet, useLocation } from 'react-router'
 import { api } from '../api/cliente'
 import { ProvedorDoEu, usarSessao } from '../sessao/sessao'
 import type { Eu } from '../sessao/sessao'
@@ -55,6 +55,7 @@ function Dentro({ eu }: { eu: Eu }) {
 
 function usarContagemDeSugestoes(): number {
   const [quantas, guardar] = useState(0)
+  const { pathname } = useLocation()
 
   useEffect(() => {
     const controle = new AbortController()
@@ -64,7 +65,7 @@ function usarContagemDeSugestoes(): number {
       .catch(() => guardar(0))
 
     return () => controle.abort()
-  }, [])
+  }, [pathname])
 
   return quantas
 }

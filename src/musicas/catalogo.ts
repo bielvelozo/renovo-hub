@@ -1,3 +1,6 @@
+import type { TomSugeridoApresentado } from '../api/tipos'
+import { formatarDia } from '../dominio'
+
 export type FiltroDoCatalogo = 'todas' | 'nova' | 'legado' | 'meses-3' | 'meses-6' | 'meses-12'
 
 export const FILTROS: { valor: FiltroDoCatalogo; rotulo: string }[] = [
@@ -28,4 +31,18 @@ export function textoDoVazio(filtro: FiltroDoCatalogo, busca: string): string {
 
 function mesesDoFiltro(filtro: FiltroDoCatalogo): string {
   return filtro.replace('meses-', '')
+}
+
+export function textoDoUltimoTom(sugerido: TomSugeridoApresentado | null): string {
+  if (!sugerido) return 'Sem Tom conhecido: ninguém tocou e ninguém preencheu à mão.'
+
+  if (sugerido.origem === 'execucao') {
+    const quem = sugerido.ministradoPorNome ? ' com ' + sugerido.ministradoPorNome : ''
+    const parcial = sugerido.parcial ? ' (trecho)' : ''
+    return `Último Tom: ${sugerido.tom}, tocado em ${formatarDia(sugerido.data ?? '')}${quem}${parcial}.`
+  }
+
+  if (sugerido.origem === 'conhecido') return `Último tom conhecido: ${sugerido.tom}, preenchido à mão.`
+
+  return `Tom original da gravação: ${sugerido.tom}.`
 }

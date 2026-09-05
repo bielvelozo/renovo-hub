@@ -3,7 +3,7 @@ import { api } from '../api/cliente'
 import type { PerfilApresentado } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
-import { textoDaUltimaEscala, textoDasEscalasNoAno, textoDeSeguidos } from '../perfil/perfil'
+import { rotuloDeEscalasNoAno, rotuloDeSeguidos, textoDaUltimaEscala } from '../perfil/perfil'
 import { usarEu } from '../sessao/sessao'
 import { usarTema } from '../tema/ProvedorDeTema'
 import { PREFERENCIAS, rotuloDaPreferencia } from '../tema/tema'
@@ -57,11 +57,11 @@ export function Perfil() {
           <div className="numeros">
             <div className="numero">
               <b>{busca.dados.escalasNoAno}</b>
-              <span className="dica">{textoDasEscalasNoAno(busca.dados.escalasNoAno)} no ano</span>
+              <span className="dica">{rotuloDeEscalasNoAno(busca.dados.escalasNoAno)}</span>
             </div>
             <div className="numero">
               <b>{busca.dados.finsDeSemanaSeguidos}</b>
-              <span className="dica">{textoDeSeguidos(busca.dados.finsDeSemanaSeguidos)}</span>
+              <span className="dica">{rotuloDeSeguidos(busca.dados.finsDeSemanaSeguidos)}</span>
             </div>
           </div>
         </>

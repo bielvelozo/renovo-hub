@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { EscalaResumida } from '../api/tipos'
-import { textoDaUltimaEscala, textoDasEscalasNoAno, textoDeSeguidos } from './perfil'
+import { rotuloDeEscalasNoAno, rotuloDeSeguidos, textoDaUltimaEscala } from './perfil'
 
 const ULTIMA: EscalaResumida = {
   id: 'e0830',
@@ -18,10 +18,10 @@ const ULTIMA: EscalaResumida = {
 }
 
 describe('números do Perfil', () => {
-  it('conta as Escalas do ano por extenso', () => {
-    expect(textoDasEscalasNoAno(0)).toBe('nenhuma ainda')
-    expect(textoDasEscalasNoAno(1)).toBe('1 Escala')
-    expect(textoDasEscalasNoAno(3)).toBe('3 Escalas')
+  it('o rótulo do número não repete o número, que já está no bloco', () => {
+    expect(rotuloDeEscalasNoAno(0)).toBe('Escalas no ano')
+    expect(rotuloDeEscalasNoAno(1)).toBe('Escala no ano')
+    expect(rotuloDeEscalasNoAno(3)).toBe('Escalas no ano')
   })
 
   it('escreve a última Escala com título e dia', () => {
@@ -32,9 +32,9 @@ describe('números do Perfil', () => {
     expect(textoDaUltimaEscala(null)).toBe('nenhuma ainda')
   })
 
-  it('usa o texto do domínio pros fins de semana seguidos', () => {
-    expect(textoDeSeguidos(0)).toBe('nenhum ainda')
-    expect(textoDeSeguidos(1)).toBe('1 fim de semana seguido')
-    expect(textoDeSeguidos(3)).toBe('3 fins de semana seguidos')
+  it('lido junto com o número, sai por extenso como o escala.md pede', () => {
+    expect(rotuloDeSeguidos(0)).toBe('fins de semana seguidos')
+    expect(rotuloDeSeguidos(1)).toBe('fim de semana seguido')
+    expect(rotuloDeSeguidos(3)).toBe('fins de semana seguidos')
   })
 })

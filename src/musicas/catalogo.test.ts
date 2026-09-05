@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { FILTROS, caminhoDoCatalogo, textoDoVazio } from './catalogo'
+import type { TomSugeridoApresentado } from '../api/tipos'
+import { FILTROS, caminhoDoCatalogo, textoDoUltimoTom, textoDoVazio } from './catalogo'
 
 describe('filtros do catálogo', () => {
   it('todas não leva nada na URL', () => {
@@ -38,5 +39,33 @@ describe('catálogo vazio', () => {
   it('com busca, o vazio fala da busca', () => {
     expect(textoDoVazio('todas', 'coracao')).toBe('Nenhuma Música com esse texto.')
     expect(textoDoVazio('legado', 'coracao')).toBe('Nenhuma Música com esse texto.')
+  })
+})
+
+describe('último Tom fora da tela de adicionar', () => {
+  const sugerido = (parcial: Partial<TomSugeridoApresentado> = {}): TomSugeridoApresentado => ({
+    tom: 'C',
+    origem: 'execucao',
+    data: '2026-08-16',
+    ministradoPor: 'marcos',
+    ministradoPorNome: 'Marcos',
+    parcial: false,
+    ...parcial,
+  })
+
+  it('não promete seleção nenhuma, porque aqui não há grade de Tons', () => {
+    expect(textoDoUltimoTom(sugerido())).toBe('Último Tom: C, tocado em 16/08 com Marcos.')
+    expect(textoDoUltimoTom(sugerido({ parcial: true }))).toBe('Último Tom: C, tocado em 16/08 com Marcos (trecho).')
+  })
+
+  it('diz de onde veio o Tom quando não há Execução', () => {
+    expect(textoDoUltimoTom(sugerido({ origem: 'conhecido', tom: 'G' }))).toBe(
+      'Último tom conhecido: G, preenchido à mão.',
+    )
+    expect(textoDoUltimoTom(sugerido({ origem: 'original', tom: 'E' }))).toBe('Tom original da gravação: E.')
+  })
+
+  it('Música sem Tom nenhum explica o vazio em vez de mandar escolher', () => {
+    expect(textoDoUltimoTom(null)).toBe('Sem Tom conhecido: ninguém tocou e ninguém preencheu à mão.')
   })
 })

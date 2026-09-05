@@ -8,6 +8,7 @@ import type {
   TomSugeridoApresentado,
 } from '../api/tipos'
 import { capaAlternativa, capaDaMusica, ehMinutagem, formatarDia, videoIdDoLink } from '../dominio'
+import { textoDoUltimoTom } from '../musicas/catalogo'
 
 export type ModoDoItem = 'inteira' | 'trecho'
 
@@ -142,17 +143,7 @@ export function corpoDoMedley(trechos: TrechoPronto[], observacao: string) {
 export function textoDoTomSugerido(sugerido: TomSugeridoApresentado | null): string {
   if (!sugerido) return 'Sem tom de partida: escolha.'
 
-  if (sugerido.origem === 'execucao') {
-    const quem = sugerido.ministradoPorNome ? ' com ' + sugerido.ministradoPorNome : ''
-    const parcial = sugerido.parcial ? ' (trecho)' : ''
-    return `Último Tom: ${sugerido.tom}, tocado em ${formatarDia(sugerido.data ?? '')}${quem}${parcial}. Já selecionado.`
-  }
-
-  if (sugerido.origem === 'conhecido') {
-    return `Último tom conhecido: ${sugerido.tom}, preenchido à mão. Já selecionado.`
-  }
-
-  return `Tom original da gravação: ${sugerido.tom}. Já selecionado.`
+  return textoDoUltimoTom(sugerido) + ' Já selecionado.'
 }
 
 export function textoDoHistorico(historico: ExecucaoApresentada[]): string {
