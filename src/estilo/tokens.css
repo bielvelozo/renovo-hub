@@ -1,0 +1,54 @@
+/* Cada token traz o par claro/escuro em light-dark(); quem troca o tema é o color-scheme
+   logo abaixo, então a paleta é escrita uma vez só. */
+:root {
+  color-scheme: light dark;
+
+  --fundo: light-dark(#f5f0e8, #282828);
+  --superficie: light-dark(#ffffff, #2f2f2f);
+  --superficie-alta: light-dark(#fbf8f3, #383838);
+  --linha: light-dark(#e4ded4, #3f3f3d);
+  --texto: light-dark(#282020, #e0d8d0);
+  --texto-2: light-dark(#6b6560, #a8a29e);
+
+  --acento: light-dark(#a34418, #ff5c30);
+  --acento-forte: light-dark(#8a3812, #ff7a55);
+  --acento-suave: light-dark(#f7e6dc, #3d2419);
+  --sobre-acento: light-dark(#fff6ee, #231007);
+
+  --verde-marca: #689c38;
+  --sucesso: light-dark(#4a7226, #7cb44a);
+
+  --agendada-fundo: light-dark(#dbeafe, #1e3356);
+  --agendada-texto: light-dark(#1e40af, #bcd4ff);
+  --realizada-fundo: light-dark(#e3f0d8, #20361c);
+  --realizada-texto: light-dark(#3f6321, #a8d688);
+  --cancelada-fundo: light-dark(#fee2e2, #4a2020);
+  --cancelada-texto: light-dark(#991b1b, #ffb4a8);
+  --ceia-fundo: light-dark(#ede9fe, #332a4d);
+  --ceia-texto: light-dark(#5b21b6, #cfc0f5);
+  --legado-fundo: light-dark(#eae4db, #3a3a38);
+  --legado-texto: light-dark(#57534e, #c0b8b0);
+  --parcial-fundo: light-dark(#fef3c7, #43331a);
+  --parcial-texto: light-dark(#92400e, #f0c675);
+
+  --fonte-corpo: 'Kodchasan', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --fonte-rotulo: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --raio: 10px;
+  --raio-g: 16px;
+  --raio-total: 999px;
+  --sombra: 0 1px 2px light-dark(rgb(40 32 32 / 8%), rgb(0 0 0 / 30%));
+  --sombra-alta: 0 -1px 12px light-dark(rgb(40 32 32 / 10%), rgb(0 0 0 / 35%));
+
+  --toque: 44px;
+  --seguro-baixo: env(safe-area-inset-bottom, 0px);
+  --seguro-alto: env(safe-area-inset-top, 0px);
+}
+
+:root[data-tema='claro'] {
+  color-scheme: light;
+}
+
+:root[data-tema='escuro'] {
+  color-scheme: dark;
+}

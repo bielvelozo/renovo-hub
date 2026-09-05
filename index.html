@@ -3,7 +3,40 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#282828" />
+    <meta name="description" content="Escalas, repertório e Tons do ministério de louvor Renovo Music." />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Renovo Hub" />
     <title>Renovo Hub</title>
+
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="icon" href="/icone-192.png" sizes="192x192" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@700&family=Kodchasan:wght@300;600&display=swap"
+    />
+
+    <script>
+      // Aplica o tema antes da primeira pintura, pra tela não piscar clara e depois escura.
+      // A chave repete a CHAVE_DO_TEMA de src/tema/tema.ts: aqui não dá pra importar módulo.
+      ;(function () {
+        try {
+          var escolhido = localStorage.getItem('renovo:tema')
+          if (escolhido === 'claro' || escolhido === 'escuro') document.documentElement.dataset.tema = escolhido
+          var escuro =
+            escolhido === 'escuro' ||
+            (escolhido !== 'claro' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+          document.querySelector('meta[name="theme-color"]').content = escuro ? '#282828' : '#F5F0E8'
+        } catch (erro) {
+          /* armazenamento bloqueado: fica no tema do sistema */
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="raiz"></div>
