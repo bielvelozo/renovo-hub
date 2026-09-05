@@ -1,4 +1,4 @@
-param([int]$Max = 30)
+﻿param([int]$Max = 30)
 
 $raiz = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 Set-Location $raiz
