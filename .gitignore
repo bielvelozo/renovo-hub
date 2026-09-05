@@ -11,3 +11,5 @@ node_modules/
 .scratch/*.json
 .scratch/*.log
 .scratch/proto.html
+.scratch/*.txt
+.scratch/*.docx
