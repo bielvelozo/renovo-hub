@@ -90,7 +90,7 @@ rm -rf .wrangler/state/v3/d1
 npm run dev
 ```
 
-No PowerShell, o equivalente do `rm -rf` é `Remove-Item -Recurse -Force .wrangler\state3\d1`.
+No PowerShell, o equivalente do `rm -rf` é `Remove-Item -Recurse -Force .wrangler\state\v3\d1`.
 
 ## Como adicionar os Membros
 
