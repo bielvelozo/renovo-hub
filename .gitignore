@@ -1,2 +1,8 @@
-node_modules/
+.dev.vars
 .env*
+.ralph/
+.wrangler/
+/CHECKPOINT.md
+/ORCHESTRATION.md
+dist/
+node_modules/
