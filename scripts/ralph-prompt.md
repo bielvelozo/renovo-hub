@@ -11,5 +11,5 @@ Roteiro desta sessão:
 5. Commite na branch v1 com mensagem em português, sem linha de atribuição. Vários commits por fase são bem-vindos.
 6. Atualize ORCHESTRATION.md: a linha da fase em Progress (estado concluida ou em andamento, SHA, evidência resumida), o contador de progresso, a seção Next action com a próxima fase, e Decision history com toda decisão que o spec não cobria e você tomou.
 7. Se a fase não fechou nesta sessão, deixe em andamento com a lista exata do que falta e encerre; a próxima iteração continua.
-8. Se todas as 14 fases estiverem concluídas com evidência, troque a primeira linha do arquivo para ESTADO: CONCLUIDA. Se um bloqueio humano real impedir qualquer fase, registre em Blockers e troque para ESTADO: BLOQUEADA.
+8. Se todas as 14 fases estiverem concluídas com evidência, troque a linha ESTADO: no topo do arquivo para ESTADO: CONCLUIDA. Se um bloqueio humano real impedir qualquer fase, registre em Blockers e troque essa linha para ESTADO: BLOQUEADA.
 9. Encerre a sessão. Não comece outra fase.
