@@ -1,10 +1,11 @@
 import { Hono } from 'hono'
 import type { Context } from 'hono'
-import { estadoEscala, ministradoPorDe, videoIdDoLink } from '../../src/dominio'
+import { descricaoDaMudanca, estadoEscala, ministradoPorDe, videoIdDoLink } from '../../src/dominio'
 import type { Membro, Ministerio } from '../../src/dominio'
 import { exigirMembro, exigirMinistro } from '../autenticacao'
 import { criarItem } from '../dados/itens'
 import { carregarMinisterio } from '../dados/ministerio'
+import { avisarMudancaDeMusica } from '../push/gatilhos'
 import { criarMusica, musicaPorVideo } from '../dados/musicas'
 import { dadosDoVideo } from '../dados/oembed'
 import {
@@ -106,13 +107,25 @@ sugestoes.post('/api/sugestoes/:id/promover', exigirMinistro, async (c) => {
   const novo = lerNovoItem(depois, { ...forma, musicaId })
   if (typeof novo === 'string') return c.json({ erro: novo }, 422)
 
-  await criarItem(c.env.DB, escalaId, novo, {
+  const itemId = await criarItem(c.env.DB, escalaId, novo, {
     ministradoPor: ministradoPorDe(depois.escalas[0], null),
     origemSugestaoId: sugestao.id,
   })
   await marcarPromovida(c.env.DB, sugestao.id, musicaId)
 
   const final = await carregarMinisterio(c.env.DB, { ids: [escalaId] })
+  const criado = final.escalas[0].itens.find((x) => x.id === itemId)
+
+  if (criado) {
+    await avisarMudancaDeMusica(
+      c.env.DB,
+      final,
+      final.escalas[0],
+      { acao: 'entrou', descricao: descricaoDaMudanca(final, criado) },
+      c.get('membro').id,
+      new Date(),
+    )
+  }
 
   return c.json(
     {

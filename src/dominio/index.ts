@@ -26,6 +26,7 @@ export {
   fimDeSemanaDe,
   formatarDia,
   hojeEmBrasilia,
+  horaEmBrasilia,
   nomeDoDia,
   segundos,
   somarDias,
@@ -64,6 +65,21 @@ export {
   videoIdDoLink,
   videosDaPlaylist,
 } from './musica'
+
+export type { AcaoNaMusica, Aviso, TipoDeNotificacao } from './notificacoes'
+
+export {
+  HORA_DO_LEMBRETE,
+  avisoDeCancelada,
+  avisoDeEscalado,
+  avisoDeLembrete,
+  avisoDeMudanca,
+  avisoDeRemarcada,
+  avisoDeVariasMudancas,
+  caminhoDaEscala,
+  dataDoLembrete,
+  descricaoDaMudanca,
+} from './notificacoes'
 
 export { INSTRUCAO_DA_PLAYLIST, descricaoDoItem, textoDeFinsDeSemana, textoParaWhatsApp } from './texto'
 

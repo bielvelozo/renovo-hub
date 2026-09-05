@@ -28,3 +28,19 @@ export function fingirRede(rotas: Record<string, RespostaFalsa>): RedeFalsa {
 
   return { chamadas }
 }
+
+export type PushFalso = { pedidos: Request[] }
+
+// O despacho precisa do pedido inteiro (cabeçalhos e corpo cifrado), não só da URL.
+export function fingirPush(status: (endpoint: string) => number): PushFalso {
+  const pedidos: Request[] = []
+
+  vi.stubGlobal('fetch', async (entrada: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+    const pedido = entrada instanceof Request ? entrada : new Request(String(entrada), init)
+    pedidos.push(pedido.clone())
+
+    return new Response(null, { status: status(pedido.url) })
+  })
+
+  return { pedidos }
+}

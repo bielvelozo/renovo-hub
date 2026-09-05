@@ -14,15 +14,20 @@ import {
   serviuEmEscalaRealizada,
 } from '../dados/membros'
 import { lerFuncoes, lerMembros } from '../dados/ministerio'
+import { contarInscricoes } from '../dados/push'
 import { corpoJson, ehListaDeTextos, ehTextoCheio } from '../http/validacao'
 import type { Contexto } from '../tipos'
 
 export const admin = new Hono<Contexto>()
 
 admin.get('/api/membros', exigirMembro, async (c) => {
-  const membros = await lerMembros(c.env.DB)
+  const [membros, push] = await Promise.all([lerMembros(c.env.DB), contarInscricoes(c.env.DB)])
 
-  return c.json({ membros: membros.filter((membro) => !membro.inativo) })
+  return c.json({
+    membros: membros
+      .filter((membro) => !membro.inativo)
+      .map((membro) => ({ ...membro, push: push.get(membro.id) ?? 0 })),
+  })
 })
 
 admin.get('/api/funcoes', exigirMembro, async (c) => {

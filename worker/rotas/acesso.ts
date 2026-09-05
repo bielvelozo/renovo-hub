@@ -12,6 +12,7 @@ import {
   usarConvite,
 } from '../dados/acesso'
 import { NOME_DA_SESSAO, opcoesDoCookie } from '../http/cookies'
+import { estaSilenciado } from '../dados/push'
 import type { Contexto } from '../tipos'
 
 export const acesso = new Hono<Contexto>()
@@ -37,7 +38,11 @@ acesso.get('/entrar/:token', async (c) => {
   return c.redirect('/instalar', 302)
 })
 
-acesso.get('/api/eu', exigirMembro, (c) => c.json(c.get('membro')))
+acesso.get('/api/eu', exigirMembro, async (c) => {
+  const membro = c.get('membro')
+
+  return c.json({ ...membro, silenciado: await estaSilenciado(c.env.DB, membro.id) })
+})
 
 acesso.get('/api/esqueci', async (c) => {
   if (!(await listaEsqueciLigada(c.env.DB))) return c.json({ erro: RECUSA_DA_LISTA }, 403)

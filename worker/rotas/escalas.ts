@@ -22,7 +22,9 @@ import {
 import { carregarMinisterio } from '../dados/ministerio'
 import { videosConfirmados } from '../dados/oembed'
 import { apresentarEscala, resumirEscala } from '../http/escala'
+import { avisarCancelada, avisarEscalados, avisarRemarcada } from '../push/gatilhos'
 import { corpoJson, ehData, ehHorario, ehListaDeTextos, ehMes, ehTextoCheio } from '../http/validacao'
+import type { Escala } from '../../src/dominio'
 import type { Contexto } from '../tipos'
 
 export const escalas = new Hono<Contexto>()
@@ -112,7 +114,12 @@ escalas.patch('/api/escalas/:id', exigirMinistro, async (c) => {
     santaCeia: corpo.santaCeia as boolean | undefined,
   })
 
-  return c.json(await responderEscala(c.env.DB, id))
+  const depois = await carregarMinisterio(c.env.DB, { ids: [id] })
+  if (remarcou(m.escalas[0], depois.escalas[0])) {
+    await avisarRemarcada(c.env.DB, m, m.escalas[0], depois.escalas[0], new Date())
+  }
+
+  return c.json(apresentarEscala(depois, depois.escalas[0]))
 })
 
 escalas.post('/api/escalas/:id/cancelar', exigirMinistro, (c) => marcarCancelada(c, c.req.param('id'), true))
@@ -145,7 +152,10 @@ escalas.put('/api/escalas/:id/equipe/:membroId', exigirMinistro, async (c) => {
 
   await definirEntradaDaEquipe(c.env.DB, id, { membroId: membro.id, funcoes: [...new Set(funcoes)], ministro })
 
-  return c.json(await responderEscala(c.env.DB, id))
+  const depois = await carregarMinisterio(c.env.DB, { ids: [id] })
+  await avisarEscalados(c.env.DB, depois, depois.escalas[0], [membro.id], new Date())
+
+  return c.json(apresentarEscala(depois, depois.escalas[0]))
 })
 
 escalas.delete('/api/escalas/:id/equipe/:membroId', exigirMinistro, async (c) => {
@@ -189,7 +199,13 @@ async function marcarCancelada(c: Context<Contexto>, id: string, cancelada: bool
 
   await definirCancelada(c.env.DB, id, cancelada)
 
+  if (cancelada) await avisarCancelada(c.env.DB, m, m.escalas[0], new Date())
+
   return c.json(await responderEscala(c.env.DB, id))
+}
+
+function remarcou(antes: Escala, depois: Escala): boolean {
+  return antes.data !== depois.data || antes.horario !== depois.horario
 }
 
 async function responderEscala(db: D1Database, id: string) {

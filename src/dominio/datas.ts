@@ -8,8 +8,18 @@ const formatador = new Intl.DateTimeFormat('en-CA', {
   day: '2-digit',
 })
 
+const formatadorDeHora = new Intl.DateTimeFormat('en-GB', {
+  timeZone: FUSO,
+  hour: '2-digit',
+  hour12: false,
+})
+
 export function hojeEmBrasilia(agora: Date = new Date()): string {
   return formatador.format(agora)
+}
+
+export function horaEmBrasilia(agora: Date = new Date()): number {
+  return Number(formatadorDeHora.format(agora))
 }
 
 function comoUtc(data: string): Date {

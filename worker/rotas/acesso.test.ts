@@ -132,7 +132,7 @@ describe('convites', () => {
 })
 
 describe('/api/eu', () => {
-  it('devolve o Membro da sessão, com as Funções', async () => {
+  it('devolve o Membro da sessão, com as Funções e a marca de silenciado', async () => {
     const resposta = await SELF.fetch(`${RAIZ}/api/eu`, { headers: { cookie: await cookieDe('marcos') } })
 
     expect(resposta.status).toBe(200)
@@ -143,6 +143,7 @@ describe('/api/eu', () => {
       ministro: true,
       inativo: false,
       funcoes: ['vocal'],
+      silenciado: false,
     })
   })
 

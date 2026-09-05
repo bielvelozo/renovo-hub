@@ -13,6 +13,7 @@ import {
 import type { EntradaDaFormacao } from '../dados/formacoes'
 import { carregarMinisterio } from '../dados/ministerio'
 import { apresentarEscala } from '../http/escala'
+import { avisarEscalados } from '../push/gatilhos'
 import { corpoJson, ehListaDeTextos, ehTextoCheio } from '../http/validacao'
 import type { Contexto } from '../tipos'
 
@@ -102,6 +103,14 @@ formacoes.post('/api/escalas/:id/formacao', exigirMinistro, async (c) => {
   }
 
   const depois = await carregarMinisterio(c.env.DB, { ids: [escalaId] })
+
+  await avisarEscalados(
+    c.env.DB,
+    depois,
+    depois.escalas[0],
+    formacao.entradas.map((entrada) => entrada.membroId),
+    new Date(),
+  )
 
   return c.json(apresentarEscala(depois, depois.escalas[0]))
 })

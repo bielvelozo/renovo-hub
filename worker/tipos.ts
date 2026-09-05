@@ -2,6 +2,9 @@ import type { Membro } from '../src/dominio/tipos'
 
 export type Ambiente = {
   DB: D1Database
+  VAPID_PUBLIC?: string
+  VAPID_PRIVATE?: string
+  VAPID_SUBJECT?: string
 }
 
 export type Contexto = {

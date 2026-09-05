@@ -7,8 +7,10 @@ import { formacoes } from './rotas/formacoes'
 import { itens } from './rotas/itens'
 import { musicas } from './rotas/musicas'
 import { perfil } from './rotas/perfil'
+import { push } from './rotas/push'
 import { saude } from './rotas/saude'
 import { sugestoes } from './rotas/sugestoes'
+import { rodarNotificacoes } from './push/despacho'
 import type { Ambiente, Contexto } from './tipos'
 
 const app = new Hono<Contexto>()
@@ -22,6 +24,7 @@ app.route('/', musicas)
 app.route('/', anexos)
 app.route('/', sugestoes)
 app.route('/', perfil)
+app.route('/', push)
 app.route('/', admin)
 
 app.notFound((c) => c.json({ erro: 'Rota não encontrada.' }, 404))
@@ -33,5 +36,7 @@ app.onError((erro, c) => {
 
 export default {
   fetch: app.fetch,
-  async scheduled() {},
+  async scheduled(_evento: ScheduledController, env: Ambiente, contexto: ExecutionContext) {
+    contexto.waitUntil(rodarNotificacoes(env))
+  },
 } satisfies ExportedHandler<Ambiente>

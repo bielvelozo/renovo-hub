@@ -5,6 +5,9 @@ declare global {
     interface Env {
       DB: D1Database
       MIGRACOES: D1Migration[]
+      VAPID_PUBLIC: string
+      VAPID_PRIVATE: string
+      VAPID_SUBJECT: string
     }
   }
 }

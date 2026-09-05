@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { ministradoPorDe, ministros, musicaPorId } from '../../src/dominio'
+import { descricaoDaMudanca, ministradoPorDe, ministros, musicaPorId } from '../../src/dominio'
 import type { Escala, Item, Ministerio } from '../../src/dominio'
 import { exigirMinistro } from '../autenticacao'
 import { atualizarItem, criarItem, removerItem, reordenarItens, trocarTrechos } from '../dados/itens'
@@ -7,6 +7,7 @@ import type { NovoItem, TrechoNovo } from '../dados/itens'
 import { carregarMinisterio } from '../dados/ministerio'
 import { apresentarEscala } from '../http/escala'
 import { corpoJson, ehMinutagem, ehTextoCheio } from '../http/validacao'
+import { avisarMudancaDeMusica } from '../push/gatilhos'
 import type { Contexto } from '../tipos'
 
 export const itens = new Hono<Contexto>()
@@ -24,9 +25,22 @@ itens.post('/api/escalas/:id/itens', exigirMinistro, async (c) => {
   const marca = lerMinistradoPor(escala, corpo.ministradoPor)
   if ('erro' in marca) return c.json({ erro: marca.erro }, 422)
 
-  await criarItem(c.env.DB, escalaId, novo, { ministradoPor: marca.quem })
+  const itemId = await criarItem(c.env.DB, escalaId, novo, { ministradoPor: marca.quem })
+  const depois = await carregarMinisterio(c.env.DB, { ids: [escalaId] })
+  const criado = depois.escalas[0].itens.find((x) => x.id === itemId)
 
-  return c.json(await responderEscala(c.env.DB, escalaId), 201)
+  if (criado) {
+    await avisarMudancaDeMusica(
+      c.env.DB,
+      depois,
+      depois.escalas[0],
+      { acao: 'entrou', descricao: descricaoDaMudanca(depois, criado) },
+      c.get('membro').id,
+      new Date(),
+    )
+  }
+
+  return c.json(apresentarEscala(depois, depois.escalas[0]), 201)
 })
 
 itens.patch('/api/escalas/:id/itens/:itemId', exigirMinistro, async (c) => {
@@ -55,7 +69,21 @@ itens.patch('/api/escalas/:id/itens/:itemId', exigirMinistro, async (c) => {
     await reordenarItens(c.env.DB, comOItemNaPosicao(escala, item.id, corpo.ordem as number))
   }
 
-  return c.json(await responderEscala(c.env.DB, escalaId))
+  const depois = await carregarMinisterio(c.env.DB, { ids: [escalaId] })
+  const editado = depois.escalas[0].itens.find((x) => x.id === item.id)
+
+  if (mexeuNaMusica(corpo) && editado) {
+    await avisarMudancaDeMusica(
+      c.env.DB,
+      depois,
+      depois.escalas[0],
+      { acao: 'mudou', descricao: descricaoDaMudanca(depois, editado) },
+      c.get('membro').id,
+      new Date(),
+    )
+  }
+
+  return c.json(apresentarEscala(depois, depois.escalas[0]))
 })
 
 itens.delete('/api/escalas/:id/itens/:itemId', exigirMinistro, async (c) => {
@@ -67,8 +95,19 @@ itens.delete('/api/escalas/:id/itens/:itemId', exigirMinistro, async (c) => {
   const item = escala.itens.find((x) => x.id === c.req.param('itemId'))
   if (!item) return c.json({ erro: ITEM_NAO_ENCONTRADO }, 404)
 
+  const descricao = descricaoDaMudanca(m, item)
+
   await removerItem(c.env.DB, item.id)
   await reordenarItens(c.env.DB, escala.itens.filter((x) => x.id !== item.id).map((x) => x.id))
+
+  await avisarMudancaDeMusica(
+    c.env.DB,
+    m,
+    escala,
+    { acao: 'saiu', descricao },
+    c.get('membro').id,
+    new Date(),
+  )
 
   return c.json(await responderEscala(c.env.DB, escalaId))
 })
@@ -162,6 +201,11 @@ function conferirEdicao(m: Ministerio, item: Item, corpo: Record<string, unknown
   if (corpo.fim !== undefined && !ehMinutagem(corpo.fim)) return MINUTAGEM_INVALIDA
 
   return null
+}
+
+// Reordenar não é mudança de Repertório pra quem recebe o aviso.
+function mexeuNaMusica(corpo: Record<string, unknown>): boolean {
+  return ['tom', 'inicio', 'fim', 'observacao', 'trechos'].some((campo) => corpo[campo] !== undefined)
 }
 
 function comOItemNaPosicao(escala: Escala, itemId: string, posicao: number): string[] {

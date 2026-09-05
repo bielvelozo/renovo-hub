@@ -85,6 +85,22 @@ export async function encerrarSessao(db: D1Database, token: string): Promise<voi
   await db.prepare('delete from sessoes where token = ?').bind(token).run()
 }
 
+export async function lerConfiguracao(db: D1Database, chave: string): Promise<string | null> {
+  const linha = await db
+    .prepare('select valor from configuracoes where chave = ?')
+    .bind(chave)
+    .first<{ valor: string }>()
+
+  return linha?.valor ?? null
+}
+
+export async function gravarConfiguracao(db: D1Database, chave: string, valor: string): Promise<void> {
+  await db
+    .prepare('insert or replace into configuracoes (chave, valor) values (?, ?)')
+    .bind(chave, valor)
+    .run()
+}
+
 export async function listaEsqueciLigada(db: D1Database): Promise<boolean> {
   const linha = await db
     .prepare('select valor from configuracoes where chave = ?')
