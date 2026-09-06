@@ -1,4 +1,16 @@
-import type { Escala, EstadoEscala, Funcao, GrupoEquipe, Item, Membro, Ministerio, Musica, Naipe } from './tipos'
+import type {
+  EntradaDaFormacao,
+  EntradaEquipe,
+  Escala,
+  EstadoEscala,
+  Funcao,
+  GrupoEquipe,
+  Item,
+  Membro,
+  Ministerio,
+  Musica,
+  Naipe,
+} from './tipos'
 
 export function membroPorId(m: Ministerio, id: string): Membro {
   const achado = m.membros.find((x) => x.id === id)
@@ -30,6 +42,15 @@ export function naipeDe(m: Ministerio, funcaoId: string): Naipe {
 
 export function ehMusical(m: Ministerio, funcaoId: string): boolean {
   return naipeDe(m, funcaoId) !== 'tecnica'
+}
+
+export function daFormacao(m: Ministerio, equipe: EntradaEquipe[]): EntradaDaFormacao[] {
+  return equipe
+    .map((entrada) => ({
+      membroId: entrada.membroId,
+      funcoes: entrada.funcoes.filter((funcaoId) => naipeDe(m, funcaoId) === 'instrumentos'),
+    }))
+    .filter((entrada) => entrada.funcoes.length > 0)
 }
 
 export function estadoEscala(escala: Escala, hoje: string): EstadoEscala {

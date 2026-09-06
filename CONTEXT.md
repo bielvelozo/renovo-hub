@@ -43,7 +43,7 @@ Os Membros de uma Escala, cada um com suas Funções e, se for o caso, a marca d
 _Avoid_: escala de pessoas, time
 
 **Formação**:
-Conjunto nomeado e reutilizável de Membros com Função, aplicado numa Equipe de uma vez e ajustado depois. Existe porque os músicos são quase sempre os mesmos: sem ela, montar a Equipe cobraria digitar o que no WhatsApp era implícito.
+Conjunto nomeado e reutilizável de Músicos com Função de instrumento, aplicado numa Equipe de uma vez e ajustado depois. Guarda só os músicos: vocal e som não entram nela. Existe porque os músicos são quase sempre os mesmos: sem ela, montar a Equipe cobraria digitar o que no WhatsApp era implícito.
 _Avoid_: template, grupo fixo, banda (é o nome de uma Formação, não o conceito)
 
 **Repertório**:

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { ministerioDeExemplo } from './exemplo'
 import {
+  daFormacao,
   ehMusical,
   escalaPorId,
   estadoEscala,
@@ -134,5 +135,22 @@ describe('gruposEquipe', () => {
 
     expect(grupos.find((g) => g.nome === 'Vocal')?.itens).toEqual(['Júlia', 'Bia (backing)'])
     expect(gruposEquipe(m, emEscala('e0920'))).toEqual([])
+  })
+})
+
+describe('daFormacao', () => {
+  it('guarda só as Funções de instrumento da Equipe', () => {
+    const escala = escalaPorId(m, 'e0830')
+
+    expect(daFormacao(m, escala.equipe)).toEqual([
+      { membroId: 'gabriel', funcoes: ['guitarra'] },
+      { membroId: 'marcos', funcoes: ['violao'] },
+      { membroId: 'lucas', funcoes: ['bateria'] },
+    ])
+  })
+
+  it('tira quem só tem vocal ou técnica, e a marca de Ministro', () => {
+    expect(daFormacao(m, [{ membroId: 'isa', funcoes: ['vocal'], ministro: true }])).toEqual([])
+    expect(daFormacao(m, [{ membroId: 'davi', funcoes: ['som'], ministro: false }])).toEqual([])
   })
 })

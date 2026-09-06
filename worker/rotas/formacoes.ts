@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
-import type { EntradaEquipe, Ministerio } from '../../src/dominio'
+import { daFormacao } from '../../src/dominio'
+import type { Ministerio } from '../../src/dominio'
 import { exigirMembro, exigirMinistro } from '../autenticacao'
 import { definirEntradaDaEquipe } from '../dados/escalas'
 import {
@@ -36,8 +37,12 @@ formacoes.post('/api/formacoes', exigirMinistro, async (c) => {
     return c.json({ erro: 'Escala não encontrada.' }, 404)
   }
 
-  const daEquipe = m.escalas[0]?.equipe.map(comoEntrada)
-  const entradas = daEquipe ?? (corpo.entradas === undefined ? [] : lerEntradas(corpo.entradas))
+  const escala = m.escalas[0]
+  const entradas = escala
+    ? daFormacao(m, escala.equipe)
+    : corpo.entradas === undefined
+      ? []
+      : lerEntradas(corpo.entradas)
 
   if (!entradas) return c.json({ erro: ENTRADAS_INVALIDAS }, 422)
 
@@ -115,10 +120,6 @@ formacoes.post('/api/escalas/:id/formacao', exigirMinistro, async (c) => {
   return c.json(apresentarEscala(depois, depois.escalas[0]))
 })
 
-function comoEntrada(entrada: EntradaEquipe): EntradaDaFormacao {
-  return { membroId: entrada.membroId, funcoes: entrada.funcoes }
-}
-
 function lerEntradas(valor: unknown): EntradaDaFormacao[] | null {
   if (!Array.isArray(valor)) return null
 
@@ -140,8 +141,11 @@ function conferirEntradas(m: Ministerio, entradas: EntradaDaFormacao[]): string 
       return `Membro desconhecido: ${entrada.membroId}.`
     }
 
-    const desconhecida = entrada.funcoes.find((funcaoId) => !m.funcoes.some((f) => f.id === funcaoId))
-    if (desconhecida) return `Função desconhecida: ${desconhecida}.`
+    for (const funcaoId of entrada.funcoes) {
+      const funcao = m.funcoes.find((f) => f.id === funcaoId)
+      if (!funcao) return `Função desconhecida: ${funcaoId}.`
+      if (funcao.naipe !== 'instrumentos') return FORMACAO_SO_DE_MUSICOS
+    }
   }
 
   return null
@@ -149,4 +153,5 @@ function conferirEntradas(m: Ministerio, entradas: EntradaDaFormacao[]): string 
 
 const NOME_OBRIGATORIO = 'Dê um nome para a Formação.'
 const ENTRADAS_INVALIDAS = 'Cada entrada da Formação precisa de membroId e da lista de Funções.'
+const FORMACAO_SO_DE_MUSICOS = 'A Formação guarda só os Músicos.'
 const FORMACAO_NAO_ENCONTRADA = 'Formação não encontrada.'

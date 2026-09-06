@@ -66,6 +66,15 @@ export function secoesDaEquipe(membros: MembroComPush[], funcoes: Funcao[]): Sec
   }))
 }
 
+export function musicosDaFormacao(membros: MembroComPush[], funcoes: Funcao[]): MembroDaSecao[] {
+  return membros
+    .map((membro) => ({
+      membro,
+      funcoes: funcoesDoMembro(membro, funcoes).filter((funcao) => funcao.naipe === 'instrumentos'),
+    }))
+    .filter((linha) => linha.funcoes.length > 0)
+}
+
 export function alternarFuncao(atual: EstadoNaEquipe | undefined, funcaoId: string): EstadoNaEquipe {
   const funcoes = atual?.funcoes ?? []
 

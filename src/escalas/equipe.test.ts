@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { FUNCOES, ministerioDeExemplo } from '../dominio'
 import type { Membro } from '../dominio'
 import {
+  musicosDaFormacao,
   alternarFuncao,
   alternarMinistro,
   comEntrada,
@@ -133,5 +134,21 @@ describe('naoRecebeNotificacao', () => {
 
   it('fica quieto quando a rota não trouxe a contagem', () => {
     expect(naoRecebeNotificacao(m.membros[0], true)).toBe(false)
+  })
+})
+
+describe('musicosDaFormacao', () => {
+  const lista = musicosDaFormacao(m.membros, FUNCOES)
+
+  it('traz quem tem Função de instrumento, mesmo quem também canta', () => {
+    expect(lista.map((linha) => linha.membro.id)).toContain('marcos')
+    expect(lista.map((linha) => linha.membro.id)).not.toContain('davi')
+    expect(lista.map((linha) => linha.membro.id)).not.toContain('isa')
+  })
+
+  it('mostra só as Funções de instrumento de cada um', () => {
+    const marcos = lista.find((linha) => linha.membro.id === 'marcos')
+
+    expect(marcos?.funcoes.map((funcao) => funcao.id)).toEqual(['violao'])
   })
 })

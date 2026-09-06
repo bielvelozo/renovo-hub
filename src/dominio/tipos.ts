@@ -38,6 +38,11 @@ export type EntradaEquipe = {
   ministro: boolean
 }
 
+export type EntradaDaFormacao = {
+  membroId: string
+  funcoes: string[]
+}
+
 export type Trecho = {
   musicaId: string
   tom: string

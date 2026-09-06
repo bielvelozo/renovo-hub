@@ -1,4 +1,5 @@
 export type {
+  EntradaDaFormacao,
   EntradaEquipe,
   Escala,
   EstadoEscala,
@@ -34,6 +35,7 @@ export {
 } from './datas'
 
 export {
+  daFormacao,
   ehMusical,
   escalaPorId,
   estadoEscala,

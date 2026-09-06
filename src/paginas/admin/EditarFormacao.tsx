@@ -7,7 +7,7 @@ import { usarAcao } from '../../api/usarAcao'
 import { usarBusca } from '../../api/usarBusca'
 import { Barra } from '../../componentes/Barra'
 import type { Funcao, Membro } from '../../dominio'
-import { secoesDaEquipe } from '../../escalas/equipe'
+import { musicosDaFormacao } from '../../escalas/equipe'
 
 type Entrada = { membroId: string; funcoes: string[] }
 
@@ -57,6 +57,7 @@ export function EditarFormacao() {
     })
   }
 
+  const musicos = musicosDaFormacao(pessoas.dados.membros, papeis.dados.funcoes)
   const quantos = atual.entradas.length
 
   return (
@@ -81,40 +82,38 @@ export function EditarFormacao() {
 
       <p className="dica">A marca de Ministro não entra na Formação: ela é decidida em cada Escala.</p>
 
-      {secoesDaEquipe(pessoas.dados.membros, papeis.dados.funcoes).map((secao) => (
-        <div key={secao.chave} className="secao">
-          <h2>{secao.nome}</h2>
+      <div className="secao">
+        <h2>Músicos</h2>
 
-          {secao.membros.length === 0 ? (
-            <p className="dica">Ninguém com Função deste naipe.</p>
-          ) : (
-            <ul className="lista cartao">
-              {secao.membros.map(({ membro, funcoes }) => {
-                const entrada = atual.entradas.find((x) => x.membroId === membro.id)
+        {musicos.length === 0 ? (
+          <p className="vazio">Ninguém com Função de instrumento.</p>
+        ) : (
+          <ul className="lista cartao">
+            {musicos.map(({ membro, funcoes }) => {
+              const entrada = atual.entradas.find((x) => x.membroId === membro.id)
 
-                return (
-                  <li key={membro.id} className="pessoa">
-                    <span className="titulo cresce">{membro.nome}</span>
-                    <span className="chips">
-                      {funcoes.map((funcao) => (
-                        <button
-                          key={funcao.id}
-                          type="button"
-                          className={`chip${funcao.naipe === 'tecnica' ? ' tecnica' : ''}`}
-                          aria-pressed={entrada?.funcoes.includes(funcao.id) ?? false}
-                          onClick={() => trocar(membro.id, funcao.id)}
-                        >
-                          {funcao.nome}
-                        </button>
-                      ))}
-                    </span>
-                  </li>
-                )
-              })}
-            </ul>
-          )}
-        </div>
-      ))}
+              return (
+                <li key={membro.id} className="pessoa">
+                  <span className="titulo cresce">{membro.nome}</span>
+                  <span className="chips">
+                    {funcoes.map((funcao) => (
+                      <button
+                        key={funcao.id}
+                        type="button"
+                        className="chip"
+                        aria-pressed={entrada?.funcoes.includes(funcao.id) ?? false}
+                        onClick={() => trocar(membro.id, funcao.id)}
+                      >
+                        {funcao.nome}
+                      </button>
+                    ))}
+                  </span>
+                </li>
+              )
+            })}
+          </ul>
+        )}
+      </div>
 
       {confirmando ? (
         <>

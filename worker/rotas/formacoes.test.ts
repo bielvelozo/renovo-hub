@@ -51,8 +51,9 @@ describe('listar', () => {
 })
 
 describe('salvar a partir da Equipe', () => {
-  it('guarda os Membros e Funções da Equipe da Escala', async () => {
+  it('guarda só os Músicos da Equipe da Escala, sem o vocal', async () => {
     await porNaEquipe('e1', 'marcos', ['vocal', 'violao'], true)
+    await porNaEquipe('e1', 'julia', ['vocal'])
     await porNaEquipe('e1', 'pedro', ['baixo'])
 
     const resposta = await pedir('/api/formacoes', 'marcos', {
@@ -64,14 +65,14 @@ describe('salvar a partir da Equipe', () => {
     expect(await resposta.json()).toMatchObject({
       nome: 'Banda de domingo',
       entradas: [
-        { membroId: 'marcos', funcoes: ['vocal', 'violao'] },
+        { membroId: 'marcos', funcoes: ['violao'] },
         { membroId: 'pedro', funcoes: ['baixo'] },
       ],
     })
   })
 
   it('a marca de Ministro não entra na Formação', async () => {
-    await porNaEquipe('e1', 'marcos', ['vocal'], true)
+    await porNaEquipe('e1', 'marcos', ['vocal', 'violao'], true)
 
     const formacao = await (
       await pedir('/api/formacoes', 'marcos', {
@@ -80,7 +81,16 @@ describe('salvar a partir da Equipe', () => {
       })
     ).json<{ entradas: Record<string, unknown>[] }>()
 
-    expect(formacao.entradas[0]).toEqual({ membroId: 'marcos', funcoes: ['vocal'] })
+    expect(formacao.entradas[0]).toEqual({ membroId: 'marcos', funcoes: ['violao'] })
+  })
+
+  it('recusa entrada com Função que não é de instrumento', async () => {
+    const resposta = await pedir('/api/formacoes', 'marcos', {
+      method: 'POST',
+      body: JSON.stringify({ nome: 'Banda', entradas: [{ membroId: 'julia', funcoes: ['vocal'] }] }),
+    })
+
+    expect(resposta.status).toBe(422)
   })
 
   it('salva a Formação direto pelas entradas, sem Escala', async () => {
