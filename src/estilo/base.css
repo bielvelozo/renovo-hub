@@ -621,6 +621,31 @@ textarea.texto-longo {
   color: var(--agendada-texto);
 }
 
+.selos.musica {
+  margin-top: 6px;
+}
+
+.selo.tom {
+  background: var(--acento-suave);
+  color: var(--acento-forte);
+  font-size: 12px;
+  padding: 4px 10px;
+}
+
+.selo.quando {
+  background: var(--realizada-fundo);
+  color: var(--realizada-texto);
+  font-size: 12px;
+  padding: 4px 10px;
+}
+
+.selo.nunca {
+  background: var(--parcial-fundo);
+  color: var(--parcial-texto);
+  font-size: 12px;
+  padding: 4px 10px;
+}
+
 .tons {
   display: grid;
   grid-template-columns: repeat(6, 1fr);

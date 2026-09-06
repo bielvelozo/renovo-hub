@@ -5,11 +5,10 @@ import { usarAcao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
 import { combinaBusca } from '../dominio'
 import type { Escolha } from '../escalas/rascunho'
-import { descricaoNaLista, escolhaDaMusica, escolhaDoLink, seloDaMusica } from '../escalas/rascunho'
+import { escolhaDaMusica, escolhaDoLink } from '../escalas/rascunho'
 import { Barra } from './Barra'
 import { Capa } from './Capa'
-
-const SELOS = { legado: 'Legado', nova: 'Nova' }
+import { SelosDaMusica } from './SelosDaMusica'
 
 export function EscolhaDeMusica({
   titulo,
@@ -81,23 +80,18 @@ export function EscolhaDeMusica({
 
         {achadas.length > 0 && (
           <ul className="lista cartao">
-            {achadas.map((musica) => {
-              const selo = seloDaMusica(musica)
-
-              return (
-                <li key={musica.id}>
-                  <button type="button" className="toque" onClick={() => aoEscolher(escolhaDaMusica(musica))}>
-                    <Capa musicas={[musica]} />
-                    <span className="cresce">
-                      <span className="titulo">{musica.titulo}</span>
-                      <span className="dica">
-                        {selo && <span className={`selo ${selo}`}>{SELOS[selo]}</span>} {descricaoNaLista(musica)}
-                      </span>
-                    </span>
-                  </button>
-                </li>
-              )
-            })}
+            {achadas.map((musica) => (
+              <li key={musica.id}>
+                <button type="button" className="toque" onClick={() => aoEscolher(escolhaDaMusica(musica))}>
+                  <Capa musicas={[musica]} />
+                  <span className="cresce">
+                    <span className="titulo">{musica.titulo}</span>
+                    <span className="dica">{musica.artista}</span>
+                    <SelosDaMusica musica={musica} />
+                  </span>
+                </button>
+              </li>
+            ))}
           </ul>
         )}
       </div>

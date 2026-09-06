@@ -1,0 +1,416 @@
+[
+ [
+  "src/admin/admin.ts",
+  12,
+  "dica-ts",
+  "Cadastrar, editar Funções e papéis, remover."
+ ],
+ [
+  "src/admin/admin.ts",
+  16,
+  "dica-ts",
+  "Gerar o link de cada Membro, ver quem entrou e ligar a lista do «esqueci»."
+ ],
+ [
+  "src/admin/admin.ts",
+  18,
+  "dica-ts",
+  "Nome, naipe e ordem de cada Função."
+ ],
+ [
+  "src/admin/admin.ts",
+  19,
+  "dica-ts",
+  "Os grupos que a Equipe aplica de uma vez."
+ ],
+ [
+  "src/admin/admin.ts",
+  20,
+  "dica-ts",
+  "Arrumar título e artista do que veio da playlist."
+ ],
+ [
+  "src/admin/admin.ts",
+  21,
+  "dica-ts",
+  "Enviar o Word da letra e guardar as versões."
+ ],
+ [
+  "src/componentes/BlocoDeMinutagem.tsx",
+  13,
+  "dica",
+  "O trecho do vídeo de referência, no formato 1:05."
+ ],
+ [
+  "src/componentes/BlocoDeTom.tsx",
+  35,
+  "dica",
+  "Histórico: {textoDoHistorico(historico)}"
+ ],
+ [
+  "src/componentes/EscolhaDeMusica.tsx",
+  47,
+  "dica",
+  "Título, capa e artista vêm sozinhos. A Música só entra no catálogo quando você confirmar."
+ ],
+ [
+  "src/componentes/EscolhaDeMusica.tsx",
+  80,
+  "vazio",
+  "Nenhuma Música com esse texto."
+ ],
+ [
+  "src/componentes/FolhasDaEscala.tsx",
+  49,
+  "vazio",
+  "Esta Escala ainda não tem músicas."
+ ],
+ [
+  "src/componentes/FolhasDaEscala.tsx",
+  59,
+  "dica",
+  "{playlist.ignorados.length} {playlist.ignorados.length === 1 ? 'vídeo ficou' : 'vídeos ficaram'} de fora: o YouTube não achou o link."
+ ],
+ [
+  "src/componentes/Notificacoes.tsx",
+  50,
+  "dica",
+  "Silenciar mantém a inscrição deste aparelho: é só religar quando quiser voltar."
+ ],
+ [
+  "src/escalas/equipe.ts",
+  30,
+  "dica-ts",
+  "Decidido antes, na Escala do mês. O chip Ministro só aparece pra quem tem o papel; quem dirige continua no vocal."
+ ],
+ [
+  "src/escalas/equipe.ts",
+  36,
+  "dica-ts",
+  "Decididos na semana, quase sempre os mesmos: aplique uma Formação e ajuste o que mudou."
+ ],
+ [
+  "src/escalas/equipe.ts",
+  42,
+  "dica-ts",
+  "Escalado e avisado como todo mundo; não conta em \"quem já tocou\"."
+ ],
+ [
+  "src/paginas/Adicionar.tsx",
+  41,
+  "aviso",
+  "Sugestão não encontrada."
+ ],
+ [
+  "src/paginas/Adicionar.tsx",
+  164,
+  "dica",
+  "Música nova: ninguém da Equipe tocou ainda."
+ ],
+ [
+  "src/paginas/Equipe.tsx",
+  121,
+  "dica",
+  "A Formação soma à Equipe: quem já está continua, com as Funções que já tinha."
+ ],
+ [
+  "src/paginas/Equipe.tsx",
+  173,
+  "dica",
+  "Ninguém com Função deste naipe ainda."
+ ],
+ [
+  "src/paginas/Equipe.tsx",
+  263,
+  "dica",
+  "A Formação guarda quem está na Equipe agora, com as Funções de cada um. A marca de Ministro não vai junto: ela é decidida em cada Escala."
+ ],
+ [
+  "src/paginas/Escala.tsx",
+  79,
+  "dica",
+  "Realizada. Editar aqui corrige o histórico e não avisa ninguém."
+ ],
+ [
+  "src/paginas/Escala.tsx",
+  102,
+  "dica",
+  "Ninguém escalado ainda."
+ ],
+ [
+  "src/paginas/Escala.tsx",
+  125,
+  "dica",
+  "Nenhuma música ainda."
+ ],
+ [
+  "src/paginas/Escala.tsx",
+  176,
+  "dica",
+  "A Escala fica Cancelada: nada dela vira Execução e ninguém perde presença. Dá pra desfazer depois."
+ ],
+ [
+  "src/paginas/Esqueci.tsx",
+  43,
+  "dica",
+  "Toque no seu nome pra entrar neste aparelho. Se o seu nome não estiver aqui, peça um link de convite a um Ministro."
+ ],
+ [
+  "src/paginas/Esqueci.tsx",
+  52,
+  "vazio",
+  "Nenhum Membro cadastrado ainda."
+ ],
+ [
+  "src/paginas/Inicio.tsx",
+  34,
+  "dica",
+  "Nenhuma Escala Agendada por enquanto. Quando o mês for criado, ela aparece aqui."
+ ],
+ [
+  "src/paginas/Inicio.tsx",
+  84,
+  "dica",
+  "Você não está escalado. Esta é a próxima Escala do ministério."
+ ],
+ [
+  "src/paginas/Inicio.tsx",
+  97,
+  "dica",
+  "O Ministro ainda não escolheu as músicas."
+ ],
+ [
+  "src/paginas/Instalar.tsx",
+  22,
+  "dica",
+  "O Renovo Hub é o app das Escalas do Renovo Music. Deixe ele na tela inicial do seu celular: é assim que ele abre rápido e pode avisar você quando entrar numa Escala."
+ ],
+ [
+  "src/paginas/Instalar.tsx",
+  30,
+  "dica",
+  "Você está usando o Renovo Hub pelo ícone da tela inicial. É daqui que ele notifica você."
+ ],
+ [
+  "src/paginas/Medley.tsx",
+  109,
+  "dica",
+  "Nenhum Trecho ainda. O Medley não tem Tom próprio: cada Trecho tem o seu, e a capa é a montagem das capas dos Trechos."
+ ],
+ [
+  "src/paginas/Medley.tsx",
+  117,
+  "dica",
+  "A capa do Medley é a montagem das capas dos Trechos."
+ ],
+ [
+  "src/paginas/Medley.tsx",
+  170,
+  "dica",
+  "Falta pelo menos mais um Trecho."
+ ],
+ [
+  "src/paginas/Mes.tsx",
+  60,
+  "vazio",
+  "Nenhuma Escala em {nomeDoMes(mes)}."
+ ],
+ [
+  "src/paginas/Mes.tsx",
+  94,
+  "dica",
+  "O segundo domingo nasce Santa Ceia às 08h; os outros, Culto de Domingo 18h."
+ ],
+ [
+  "src/paginas/Mes.tsx",
+  128,
+  "dica",
+  "Evento fora de domingo: nome, data e horário livres."
+ ],
+ [
+  "src/paginas/Musica.tsx",
+  47,
+  "dica",
+  "Nenhuma Execução ainda."
+ ],
+ [
+  "src/paginas/Musica.tsx",
+  68,
+  "dica",
+  "Nenhuma Sequência anexada."
+ ],
+ [
+  "src/paginas/Musicas.tsx",
+  23,
+  "dica",
+  "Faz mais tempo primeiro; quem nunca foi tocada fica no fim."
+ ],
+ [
+  "src/paginas/NaoEncontrada.tsx",
+  7,
+  "dica",
+  "O endereço que você abriu não existe no Renovo Hub."
+ ],
+ [
+  "src/paginas/Perfil.tsx",
+  85,
+  "dica",
+  "Do sistema segue o tema do seu celular."
+ ],
+ [
+  "src/paginas/Perfil.tsx",
+  99,
+  "dica",
+  "Sair apaga a sessão daqui. Pra voltar, use o link de convite ou a lista do «esqueci»."
+ ],
+ [
+  "src/paginas/Sugestoes.tsx",
+  66,
+  "dica",
+  "Qualquer Membro sugere e apoia; o Ministro promove pra uma Escala."
+ ],
+ [
+  "src/paginas/Sugestoes.tsx",
+  75,
+  "vazio",
+  "Nenhuma Sugestão aberta."
+ ],
+ [
+  "src/paginas/Sugestoes.tsx",
+  141,
+  "dica",
+  "Nenhuma Escala Agendada. Crie o mês antes de promover."
+ ],
+ [
+  "src/paginas/Sugestoes.tsx",
+  196,
+  "dica",
+  "{escolha.musicaId ? 'Está no catálogo. O Ministro vê a Sugestão e os apoios.' : 'Ainda não está no catálogo: entra quando o Ministro promover.'}"
+ ],
+ [
+  "src/paginas/Sugestoes.tsx",
+  212,
+  "dica",
+  "Sugerir já conta como o seu apoio."
+ ],
+ [
+  "src/paginas/admin/Convites.tsx",
+  44,
+  "dica",
+  "Cada link abre uma sessão no aparelho de quem tocar nele. Pode ser reaberto no computador e no celular: cada abertura é uma sessão nova. Mande pelo WhatsApp só pra pessoa certa."
+ ],
+ [
+  "src/paginas/admin/Convites.tsx",
+  104,
+  "dica",
+  "O link não expira e serve pra quantos aparelhos precisar. Se a pessoa trocar de celular, gere outro ou deixe a lista do «esqueci» ligada."
+ ],
+ [
+  "src/paginas/admin/EditarFormacao.tsx",
+  31,
+  "aviso",
+  "Formação não encontrada."
+ ],
+ [
+  "src/paginas/admin/EditarFormacao.tsx",
+  83,
+  "dica",
+  "A marca de Ministro não entra na Formação: ela é decidida em cada Escala."
+ ],
+ [
+  "src/paginas/admin/EditarFormacao.tsx",
+  89,
+  "vazio",
+  "Ninguém com Função de instrumento."
+ ],
+ [
+  "src/paginas/admin/EditarFormacao.tsx",
+  120,
+  "aviso",
+  "Apagar a Formação não mexe em nenhuma Escala já montada com ela."
+ ],
+ [
+  "src/paginas/admin/Formacoes.tsx",
+  49,
+  "dica",
+  "A Formação existe porque os músicos são quase sempre os mesmos: aplicada numa Equipe, ela põe todo mundo de uma vez e o Ministro ajusta o que mudou."
+ ],
+ [
+  "src/paginas/admin/Formacoes.tsx",
+  70,
+  "vazio",
+  "Nenhuma Formação ainda."
+ ],
+ [
+  "src/paginas/admin/Formacoes.tsx",
+  86,
+  "dica",
+  "Ela nasce vazia; monte quem entra na tela seguinte."
+ ],
+ [
+  "src/paginas/admin/Funcoes.tsx",
+  40,
+  "dica",
+  "Vocal e Músicos creditam Execução. Som entra na Equipe pra tudo, menos pra «quem já tocou». A ordem manda na posição em todas as listas."
+ ],
+ [
+  "src/paginas/admin/Funcoes.tsx",
+  50,
+  "dica",
+  "Nenhuma Função neste naipe."
+ ],
+ [
+  "src/paginas/admin/Funcoes.tsx",
+  151,
+  "aviso",
+  "Apagar tira {funcao.nome} de todo mundo. Função já usada em alguma Equipe não apaga: edite o nome."
+ ],
+ [
+  "src/paginas/admin/Membros.tsx",
+  62,
+  "vazio",
+  "Nenhum Membro cadastrado ainda."
+ ],
+ [
+  "src/paginas/admin/MusicasARevisar.tsx",
+  39,
+  "dica",
+  "Vieram da playlist do YouTube com o título e o canal do vídeo. Arrume o nome da Música e o artista de verdade; marcar como revisada tira daqui."
+ ],
+ [
+  "src/paginas/admin/MusicasARevisar.tsx",
+  45,
+  "vazio",
+  "Nenhuma Música esperando revisão. O catálogo está em dia."
+ ],
+ [
+  "src/paginas/admin/Painel.tsx",
+  8,
+  "dica",
+  "A gestão do ministério. Só quem é Admin vê esta tela."
+ ],
+ [
+  "src/paginas/admin/Sequencias.tsx",
+  26,
+  "dica",
+  "A Sequência fica anexada à Música e aparece pro Membro na tela de Início e no detalhe da Música. Enviar de novo não apaga nada: guarda uma versão nova."
+ ],
+ [
+  "src/paginas/admin/Sequencias.tsx",
+  41,
+  "vazio",
+  "Nenhuma Música com esse texto."
+ ],
+ [
+  "src/paginas/admin/Sequencias.tsx",
+  60,
+  "dica",
+  "Mostrando as 30 primeiras. Busque pelo título pra achar a sua."
+ ],
+ [
+  "src/paginas/admin/Sequencias.tsx",
+  109,
+  "dica",
+  "Nenhuma Sequência anexada ainda."
+ ]
+]

@@ -1,4 +1,4 @@
-import type { TomSugeridoApresentado } from '../api/tipos'
+import type { MusicaNaLista, TomSugeridoApresentado } from '../api/tipos'
 import { formatarDia } from '../dominio'
 
 export type FiltroDoCatalogo = 'todas' | 'nova' | 'legado' | 'meses-3' | 'meses-6' | 'meses-12'
@@ -45,4 +45,30 @@ export function textoDoUltimoTom(sugerido: TomSugeridoApresentado | null): strin
   if (sugerido.origem === 'conhecido') return `Último tom conhecido: ${sugerido.tom}, preenchido à mão.`
 
   return `Tom original da gravação: ${sugerido.tom}.`
+}
+
+export type SeloDaMusica = { chave: string; texto: string }
+
+export function selosDaMusica(musica: MusicaNaLista): SeloDaMusica[] {
+  const selos: SeloDaMusica[] = []
+  const ultima = musica.ultimaExecucao
+
+  if (ultima) {
+    selos.push({ chave: 'tom', texto: `Tom ${ultima.tom}` })
+    selos.push({
+      chave: 'quando',
+      texto: formatarDia(ultima.data) + (ultima.ministradoPorNome ? ` · ${ultima.ministradoPorNome}` : ''),
+    })
+    if (ultima.parcial) selos.push({ chave: 'parcial', texto: 'trecho' })
+  } else {
+    if (musica.tomConhecido) selos.push({ chave: 'tom', texto: `Tom ${musica.tomConhecido}` })
+    else if (musica.tomOriginal) selos.push({ chave: 'tom', texto: `Tom ${musica.tomOriginal} · original` })
+
+    selos.push({ chave: 'nunca', texto: 'nunca tocada' })
+  }
+
+  if (musica.legado) selos.push({ chave: 'legado', texto: 'Legado' })
+  else if (musica.nova) selos.push({ chave: 'nova', texto: 'Nova' })
+
+  return selos
 }

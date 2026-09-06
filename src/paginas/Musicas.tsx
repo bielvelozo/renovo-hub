@@ -3,12 +3,10 @@ import { Link } from 'react-router'
 import type { MusicaNaLista } from '../api/tipos'
 import { usarBusca } from '../api/usarBusca'
 import { Capa } from '../componentes/Capa'
+import { SelosDaMusica } from '../componentes/SelosDaMusica'
 import { combinaBusca } from '../dominio'
-import { descricaoNaLista, seloDaMusica } from '../escalas/rascunho'
 import type { FiltroDoCatalogo } from '../musicas/catalogo'
 import { FILTROS, caminhoDoCatalogo, textoDoVazio } from '../musicas/catalogo'
-
-const SELOS = { legado: 'Legado', nova: 'Nova' }
 
 export function Musicas() {
   const [filtro, filtrar] = useState<FiltroDoCatalogo>('todas')
@@ -53,23 +51,18 @@ export function Musicas() {
 
       {achadas.length > 0 && (
         <ul className="lista cartao">
-          {achadas.map((musica) => {
-            const selo = seloDaMusica(musica)
-
-            return (
-              <li key={musica.id}>
-                <Link to={`/musicas/${musica.id}`} className="toque">
-                  <Capa musicas={[musica]} />
-                  <span className="cresce">
-                    <span className="titulo">{musica.titulo}</span>
-                    <span className="dica">
-                      {selo && <span className={`selo ${selo}`}>{SELOS[selo]}</span>} {descricaoNaLista(musica)}
-                    </span>
-                  </span>
-                </Link>
-              </li>
-            )
-          })}
+          {achadas.map((musica) => (
+            <li key={musica.id}>
+              <Link to={`/musicas/${musica.id}`} className="toque">
+                <Capa musicas={[musica]} />
+                <span className="cresce">
+                  <span className="titulo">{musica.titulo}</span>
+                  <span className="dica">{musica.artista}</span>
+                  <SelosDaMusica musica={musica} />
+                </span>
+              </Link>
+            </li>
+          ))}
         </ul>
       )}
     </section>
