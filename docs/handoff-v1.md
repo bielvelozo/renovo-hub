@@ -4,7 +4,7 @@ Escrito em 05/09/2026 pra uma sessão nova, sem contexto nenhum, conseguir fazer
 
 ## Estado em 05/09/2026
 
-- O app inteiro está na branch **`v1`**, 39 commits à frente da `main`, **nunca empurrada**. A `main` tem só o mapa de decisões, a pesquisa e a documentação; nada de código. Quem decide quando mergear é o Gabriel.
+- O app inteiro está na **`main`** desde 05/09/2026, por merge fast-forward da branch `v1` (que continua existindo, idêntica). **Nada foi empurrado pra remoto.**
 - A V1 foi construída de madrugada por um loop autônomo de 14 fases (ver [construcao-v1/decisoes.md](construcao-v1/decisoes.md)) e verificada de fora na manhã seguinte: `npm run check` limpo, `npm test` com 565 testes em 47 arquivos, `npm run build` verde, `npm run smoke` com 141 conferências e nenhuma falha. A verificação consertou três coisas: o smoke repetia um pedido num socket keep-alive morto, o CSV da playlist truncava 45 títulos no `|`, e o README não dizia como zerar o banco local.
 - Falta, e é tudo humano: publicar no Cloudflare (`wrangler login`), testar o push num iPhone real, cadastrar os Membros de verdade pelo Admin, revisar os títulos das 101 Músicas importadas. Tudo no [README](../README.md).
 
@@ -54,7 +54,7 @@ O smoke apaga o D1 local, semeia com `--demo`, sobe o Worker sozinho e percorre 
 - Tudo em PT-BR: código, textos de tela, commits, testes. Commits em português, um assunto por commit, sem linha de atribuição.
 - Sem comentário no código, salvo o que explica um porquê não óbvio.
 - TDD: teste vermelho, código, teste verde. Componentes sem lógica podem ficar sem teste; regra de negócio nunca.
-- Trabalhar na `v1` ou numa branch criada a partir dela. Não commitar na `main`. Não dar `git push` sem o Gabriel pedir.
+- Trabalhar na `main` ou numa branch criada a partir dela. Não dar `git push` sem o Gabriel pedir.
 - Ajuste que muda domínio atualiza `CONTEXT.md` e `escala.md` na mesma sessão; ajuste que contraria uma decisão de `construcao-v1/decisoes.md` registra a decisão nova lá embaixo, com data e motivo.
 - Ajuste que resolve um ticket aberto do mapa fecha o ticket (`Status: resolved`, `## Answer`) e aponta no `map.md`.
 
