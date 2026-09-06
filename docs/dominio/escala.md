@@ -14,7 +14,7 @@ Três estados, nenhum rascunho: a Escala é visível a todos os Membros desde qu
 
 ## Criação e edição
 
-- **Em lote**: um mês de domingos de uma vez. O primeiro domingo nasce **Santa Ceia às 08h**; os outros, Culto de Domingo 18h. Santa Ceia é sempre destacada como Escala diferente.
+- **Em lote**: um mês de domingos de uma vez. O segundo domingo nasce **Santa Ceia às 08h**; os outros, Culto de Domingo 18h. Santa Ceia é sempre destacada como Escala diferente.
 - **Avulsa**: uma Escala com nome, data e horário livres, pra evento fora de domingo.
 - Data, horário e a marca de Santa Ceia são editáveis pelo Ministro, em Agendada e em Realizada (regra de edição do passado abaixo).
 - Cada Item pode levar uma **observação** do Ministro pro grupo, que viaja pro texto do WhatsApp e pra visão do Membro.

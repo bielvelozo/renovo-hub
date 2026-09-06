@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import type { Context } from 'hono'
 import {
   INSTRUCAO_DA_PLAYLIST,
+  domingoDaSantaCeia,
   domingosDoMes,
   linkDeVideos,
   textoParaWhatsApp,
@@ -46,10 +47,12 @@ escalas.post('/api/escalas/mes', exigirMinistro, async (c) => {
   const domingos = domingosDoMes(ano, numero)
   const existentes = await datasJaCriadas(c.env.DB, domingos)
 
-  for (const [posicao, data] of domingos.entries()) {
+  const ceia = domingoDaSantaCeia(domingos)
+
+  for (const data of domingos) {
     if (existentes.includes(data)) continue
 
-    const santaCeia = posicao === 0
+    const santaCeia = data === ceia
     await criarEscala(c.env.DB, {
       data,
       horario: santaCeia ? HORARIO_DA_SANTA_CEIA : HORARIO_DE_DOMINGO,

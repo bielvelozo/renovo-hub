@@ -44,7 +44,7 @@ async function pedir(caminho: string, quem: string, init: RequestInit = {}): Pro
 }
 
 describe('lote do mês', () => {
-  it('cria os domingos do mês com o primeiro em Santa Ceia às 08h', async () => {
+  it('cria os domingos do mês com o segundo em Santa Ceia às 08h', async () => {
     const resposta = await pedir('/api/escalas/mes', 'marcos', {
       method: 'POST',
       body: JSON.stringify({ mes: '2026-09' }),
@@ -55,8 +55,10 @@ describe('lote do mês', () => {
 
     expect(criadas).toHaveLength(4)
     expect(criadas.map((e) => e.data)).toEqual(['2026-09-06', '2026-09-13', '2026-09-20', '2026-09-27'])
-    expect(criadas[0]).toMatchObject({ horario: '08:00', santaCeia: true, titulo: 'Santa Ceia 08h' })
-    expect(criadas.slice(1).every((e) => e.horario === '18:00' && !e.santaCeia)).toBe(true)
+    expect(criadas[1]).toMatchObject({ horario: '08:00', santaCeia: true, titulo: 'Santa Ceia 08h' })
+    expect(
+      [criadas[0], ...criadas.slice(2)].every((e) => e.horario === '18:00' && !e.santaCeia),
+    ).toBe(true)
   })
 
   it('um mês de cinco domingos cria cinco Escalas', async () => {

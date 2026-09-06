@@ -91,7 +91,7 @@ export function Mes() {
               <button type="button" className="botao largo" disabled={acao.ocupado} onClick={criarDomingos}>
                 Criar {faltam.length === 1 ? 'o domingo' : `os ${faltam.length} domingos`} de {nomeDoMes(mes)}
               </button>
-              <p className="dica">O primeiro domingo nasce Santa Ceia às 08h; os outros, Culto de Domingo 18h.</p>
+              <p className="dica">O segundo domingo nasce Santa Ceia às 08h; os outros, Culto de Domingo 18h.</p>
             </>
           )}
 

@@ -55,6 +55,10 @@ export function domingosDoMes(ano: number, mes: number): string[] {
   return out
 }
 
+export function domingoDaSantaCeia(domingos: string[]): string | null {
+  return domingos[1] ?? null
+}
+
 export function fimDeSemanaDe(data: string): string | null {
   const dia = diaDaSemana(data)
   if (dia === 0) return data

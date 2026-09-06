@@ -21,6 +21,7 @@ export type {
 
 export {
   diaDaSemana,
+  domingoDaSantaCeia,
   domingosDoMes,
   ehMinutagem,
   fimDeSemanaDe,

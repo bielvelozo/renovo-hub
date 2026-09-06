@@ -64,7 +64,7 @@ Item formado por dois ou mais Trechos encadeados. Montado dentro de uma Escala, 
 O Ministro que puxa um Item. Preenchido sozinho quando a Escala tem um só Ministro; explícito quando há mais de um dividindo a escolha.
 
 **Santa Ceia**:
-Escala do culto de comunhão, sempre destacada como diferente e normalmente de manhã. Ao criar o mês de uma vez, o primeiro domingo nasce Santa Ceia às 08h; qualquer Escala pode receber a marca à mão.
+Escala do culto de comunhão, sempre destacada como diferente e normalmente de manhã. Ao criar o mês de uma vez, o segundo domingo nasce Santa Ceia às 08h; qualquer Escala pode receber a marca à mão.
 _Avoid_: ceia, culto especial
 
 **Agendada**:

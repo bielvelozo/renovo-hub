@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { diaDaSemana, domingosDoMes, fimDeSemanaDe, formatarDia, hojeEmBrasilia, nomeDoDia, segundos } from './datas'
+import { diaDaSemana, domingoDaSantaCeia, domingosDoMes, fimDeSemanaDe, formatarDia, hojeEmBrasilia, nomeDoDia, segundos } from './datas'
 
 describe('hojeEmBrasilia', () => {
   it('usa o fuso de Brasília, não o UTC', () => {
@@ -54,5 +54,16 @@ describe('formatarDia e segundos', () => {
     expect(segundos('2:10')).toBe(130)
     expect(segundos('')).toBe(0)
     expect(segundos('abc')).toBe(0)
+  })
+})
+
+describe('domingoDaSantaCeia', () => {
+  it('é o segundo domingo do mês', () => {
+    expect(domingoDaSantaCeia(domingosDoMes(2026, 9))).toBe('2026-09-13')
+    expect(domingoDaSantaCeia(domingosDoMes(2026, 8))).toBe('2026-08-09')
+  })
+
+  it('devolve nulo quando não há segundo domingo', () => {
+    expect(domingoDaSantaCeia(['2026-09-06'])).toBeNull()
   })
 })
