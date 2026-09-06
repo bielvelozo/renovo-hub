@@ -121,7 +121,7 @@ Remover Membro tem duas pontas, e o app escolhe sozinho: quem nunca serviu em Es
 
 `npm run smoke` é a prova de que o app está de pé. Ele **apaga o D1 local**, migra, semeia com `--demo`, sobe o `wrangler dev` sozinho, gera o convite do primeiro Admin e percorre por HTTP:
 
-- os nove roteiros do protótipo (montar o mês, adicionar por link, Trecho com minutagem, Medley, promover Sugestão, texto do WhatsApp, corrigir o domingo passado, cancelar, Escala avulsa);
+- os nove roteiros do protótipo (montar o mês, adicionar por link, Trecho com minutagem, Medley, promover Sugestão, texto do WhatsApp, corrigir o domingo passado, cancelar, Escala criada uma a uma);
 - as telas do Membro (Início, Músicas com filtros e busca, Sugestões, Perfil) e o portão de papel;
 - as telas do Admin (Membros, Funções, Formações, Músicas a revisar, Sequência, Convites e a lista do "esqueci");
 - o Web Push de ponta a ponta, contra um serviço de push falso que **decifra** o que o Worker manda, mais o cron por `/__scheduled`.

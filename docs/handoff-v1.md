@@ -60,7 +60,7 @@ O smoke apaga o D1 local, semeia com `--demo`, sobe o Worker sozinho e percorre 
 
 ## Pontos vistos na verificação que merecem olhar
 
-- Uma Escala avulsa marcada como Santa Ceia aparece no Mês como "Santa Ceia 08h", e o rótulo dela (por exemplo "Conferência") some do título. Decidir se Santa Ceia substitui o rótulo ou acompanha.
+- Uma Escala criada uma a uma e marcada como Santa Ceia aparece no Mês como "Santa Ceia 08h", e o rótulo dela (por exemplo "Conferência") some do título. Decidir se Santa Ceia substitui o rótulo ou acompanha.
 - Os títulos importados da playlist vêm crus do YouTube, com o canal depois do `|` ("Meia Noite (Ao Vivo) | fhop music"). Estão marcados `revisar` e o Admin arruma um a um; se forem muitos, vale limpar no seed.
 - Na primeira abertura pelo convite, o front chama `/api/eu` antes de o cookie existir e o console mostra um 401 inofensivo.
 - `npm run dev` roda migration, semente e build toda vez antes de subir. Rápido hoje; se incomodar, `npm run dev:front` com o Worker de pé dá hot reload.

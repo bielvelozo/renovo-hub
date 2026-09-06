@@ -14,7 +14,7 @@ export function Mes() {
   const eu = usarEu()
   const dirige = eu.ministro || eu.admin
   const [mes, verMes] = useState(() => mesDaData(hojeEmBrasilia()))
-  const [avulsa, abrirAvulsa] = useState(false)
+  const [nova, abrirNova] = useState(false)
   const busca = usarBusca<{ escalas: EscalaResumida[] }>(`/api/escalas?mes=${mes}`)
   const acao = usarAcao()
 
@@ -95,18 +95,18 @@ export function Mes() {
             </>
           )}
 
-          <button type="button" className="botao secundario largo" onClick={() => abrirAvulsa(true)}>
-            Escala avulsa
+          <button type="button" className="botao secundario largo" onClick={() => abrirNova(true)}>
+            Nova escala
           </button>
         </div>
       )}
 
-      {avulsa && <FolhaDaAvulsa mes={mes} fechar={() => abrirAvulsa(false)} />}
+      {nova && <FolhaDaNovaEscala mes={mes} fechar={() => abrirNova(false)} />}
     </section>
   )
 }
 
-function FolhaDaAvulsa({ mes, fechar }: { mes: string; fechar: () => void }) {
+function FolhaDaNovaEscala({ mes, fechar }: { mes: string; fechar: () => void }) {
   const navegar = useNavigate()
   const acao = usarAcao()
   const [rotulo, escreverRotulo] = useState('')
@@ -124,7 +124,7 @@ function FolhaDaAvulsa({ mes, fechar }: { mes: string; fechar: () => void }) {
   }
 
   return (
-    <Folha titulo="Escala avulsa" fechar={fechar}>
+    <Folha titulo="Nova escala" fechar={fechar}>
       <p className="dica">Evento fora de domingo: nome, data e horário livres.</p>
 
       {acao.erro && <p className="aviso">{acao.erro}</p>}

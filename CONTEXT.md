@@ -35,7 +35,7 @@ _Avoid_: apoio, produção, staff
 ### Escala
 
 **Escala**:
-Um culto ou evento com data, horário e rótulo, que reúne uma Equipe e um Repertório. Criada uma a uma (avulsa, para evento fora de domingo) ou um mês de domingos de uma vez; data e horário podem ser editados depois. Visível a todos os Membros desde a criação: não existe rascunho. Nasce Agendada, vira Realizada sozinha quando o dia termina, ou Cancelada se o Ministro marcar que não aconteceu.
+Um culto ou evento com data, horário e rótulo, que reúne uma Equipe e um Repertório. Criada uma a uma (para evento fora de domingo) ou um mês de domingos de uma vez; data e horário podem ser editados depois. Visível a todos os Membros desde a criação: não existe rascunho. Nasce Agendada, vira Realizada sozinha quando o dia termina, ou Cancelada se o Ministro marcar que não aconteceu.
 _Avoid_: culto, evento, setlist (como sinônimo do todo)
 
 **Equipe**:
