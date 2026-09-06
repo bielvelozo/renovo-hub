@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ministerioDeExemplo } from './exemplo'
+import { medley, ministerioDeExemplo } from './exemplo'
 import {
   buscaNoCifraClub,
   capaAlternativa,
@@ -52,13 +52,32 @@ describe('capaDaMusica', () => {
 })
 
 describe('linkDaPlaylist', () => {
-  it('leva só as Músicas inteiras, na ordem do Repertório', () => {
+  it('leva todo o Repertório na ordem, inteiras e Trechos', () => {
     expect(linkDaPlaylist(m, escalaPorId(m, 'e0830'))).toBe(
-      'https://www.youtube.com/watch_videos?video_ids=hRJUcvsnqKs,IxpWNuxGmzc',
+      'https://www.youtube.com/watch_videos?video_ids=hRJUcvsnqKs,IxpWNuxGmzc,7GWZwO0MdsY',
     )
   })
 
-  it('devolve nulo quando o Repertório não tem Música inteira', () => {
+  it('abre o Medley trecho a trecho, no lugar dele na ordem', () => {
+    const escala = escalaPorId(m, 'e0830')
+    const comMedley = {
+      ...escala,
+      itens: [
+        escala.itens[0],
+        medley('i9', [
+          { musicaId: 'sublime', tom: 'A', inicio: '0:00', fim: '2:30' },
+          { musicaId: 'grato', tom: 'C', inicio: '1:12', fim: '3:05' },
+        ]),
+      ],
+    }
+
+    expect(linkDaPlaylist(m, comMedley)).toBe(
+      'https://www.youtube.com/watch_videos?video_ids=hRJUcvsnqKs,7GWZwO0MdsY,' +
+        musicaPorId(m, 'grato').videoId,
+    )
+  })
+
+  it('devolve nulo quando o Repertório está vazio', () => {
     expect(linkDaPlaylist(m, escalaPorId(m, 'e0920'))).toBeNull()
   })
 

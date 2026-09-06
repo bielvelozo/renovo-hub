@@ -156,6 +156,13 @@ Exportado em 05/09/2026 do `ORCHESTRATION.md` (arquivo de orquestração, fora d
 
 - 2026-09-05 (manhã, verificação, continuação): o CSV da playlist que a sessão de preparo gerou cortava o título no pipe escapado da tabela markdown, e 45 dos 101 títulos entravam truncados com uma barra sobrando e o resto na coluna do canal; regenerado com separação só no pipe não escapado, commit na v1, banco local resemeado. A visão do app no navegador confirmou onboarding, Início, Mês, Músicas, Sugestões, Perfil e Admin com os dados de demonstração; único erro de console é o primeiro `/api/eu` antes de o convite gravar o cookie. README ganhou a receita de recomeçar o banco local, porque o smoke deixa Escalas e Sugestões de teste.
 
+## Ajustes depois da V1
+
+Decisões do Gabriel na sessão de 06/09/2026, revendo o que a V1 entregou. Cada uma contraria uma escolha registrada acima ou uma linha da spec.
+
+- 2026-09-06: **a Santa Ceia nasce no segundo domingo do mês**, não no primeiro. A spec dizia primeiro domingo e a V1 seguiu; a regra da igreja é o segundo. A escolha do domingo virou `domingoDaSantaCeia` em `src/dominio/datas.ts`, porque é regra de negócio e estava inline na rota. O domingo da Santa Ceia continua tendo **uma só Escala**, às 08h, no lugar do Culto das 18h: a Santa Ceia é uma vez por mês.
+- 2026-09-06: **a playlist leva o Repertório inteiro na ordem**, e não só as Músicas inteiras como a spec pedia. Trecho entra como vídeo inteiro e Medley entra aberto, um vídeo por Trecho, no lugar dele na ordem. O link do YouTube (`watch_videos`) não guarda minutagem por vídeo, então o Trecho vai tocar inteiro — aceitável porque a playlist é pra ouvir antes do culto, e uma playlist que ignora metade do Repertório engana quem confia nela.
+
 ## Deferred work
 
 - **Publicar no Cloudflare**: fica pro Gabriel, com o roteiro completo na seção «Publicar no Cloudflare» do README. Precisa de `wrangler login`, do `database_id` colado no `wrangler.toml` e dos três `wrangler secret put` de VAPID. Nunca foi executado, por decisão do plano.

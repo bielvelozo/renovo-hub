@@ -26,8 +26,10 @@ export function capaAlternativa(videoId: string): string {
 
 export function videosDaPlaylist(m: Ministerio, escala: Escala): string[] {
   return escala.itens
-    .filter((item) => item.tipo === 'inteira')
-    .map((item) => musicaPorId(m, item.musicaId).videoId)
+    .flatMap((item) =>
+      item.tipo === 'medley' ? item.trechos.map((trecho) => trecho.musicaId) : [item.musicaId],
+    )
+    .map((musicaId) => musicaPorId(m, musicaId).videoId)
     .slice(0, MAXIMO_DA_PLAYLIST)
 }
 

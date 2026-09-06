@@ -46,7 +46,7 @@ describe('textoParaWhatsApp', () => {
         '3. Sublime (2:10–4:35) · Tom A · Fhop Music',
         '   https://youtu.be/7GWZwO0MdsY?t=130',
         '',
-        'Playlist pra ouvir em loop: https://www.youtube.com/watch_videos?video_ids=hRJUcvsnqKs,IxpWNuxGmzc',
+        'Playlist pra ouvir em loop: https://www.youtube.com/watch_videos?video_ids=hRJUcvsnqKs,IxpWNuxGmzc,7GWZwO0MdsY',
       ].join('\n'),
     )
   })
@@ -80,13 +80,15 @@ describe('textoParaWhatsApp', () => {
     )
   })
 
-  it('não põe playlist quando o Repertório só tem Trecho', () => {
+  it('põe o Trecho na playlist, como vídeo inteiro', () => {
     const soTrecho: Ministerio = {
       ...m,
       escalas: m.escalas.map((e) => (e.id === 'e0920' ? { ...e, itens: [trecho('i-t', 'rio', 'D', '0:30', '1:40')] } : e)),
     }
 
-    expect(textoParaWhatsApp(soTrecho, 'e0920')).not.toContain('Playlist')
+    expect(textoParaWhatsApp(soTrecho, 'e0920')).toContain(
+      'Playlist pra ouvir em loop: https://www.youtube.com/watch_videos?video_ids=s1oU-6vYc4E',
+    )
   })
 })
 

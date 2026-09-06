@@ -46,9 +46,7 @@ export function FolhaDaPlaylist({ escalaId, fechar }: { escalaId: string; fechar
       {busca.carregando && <div className="girando" role="status" aria-label="Carregando" />}
 
       {playlist && !playlist.link && (
-        <p className="dica">
-          A playlist sai das músicas inteiras do Repertório. Esta Escala ainda não tem nenhuma música inteira.
-        </p>
+        <p className="vazio">Esta Escala ainda não tem músicas.</p>
       )}
 
       {playlist?.link && (
