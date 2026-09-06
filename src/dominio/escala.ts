@@ -53,6 +53,22 @@ export function daFormacao(m: Ministerio, equipe: EntradaEquipe[]): EntradaDaFor
     .filter((entrada) => entrada.funcoes.length > 0)
 }
 
+export function unicoDoSom(m: Ministerio): EntradaEquipe | null {
+  const candidatos = m.membros.filter(
+    (membro) => !membro.inativo && membro.funcoes.some((funcaoId) => naipeDe(m, funcaoId) === 'tecnica'),
+  )
+
+  if (candidatos.length !== 1) return null
+
+  const membro = candidatos[0]
+
+  return {
+    membroId: membro.id,
+    funcoes: membro.funcoes.filter((funcaoId) => naipeDe(m, funcaoId) === 'tecnica'),
+    ministro: false,
+  }
+}
+
 export function estadoEscala(escala: Escala, hoje: string): EstadoEscala {
   if (escala.cancelada) return 'cancelada'
   return escala.data < hoje ? 'realizada' : 'agendada'

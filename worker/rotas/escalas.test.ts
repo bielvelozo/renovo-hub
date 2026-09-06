@@ -36,6 +36,12 @@ beforeEach(async () => {
   await criarMembro({ id: 'davi', nome: 'Davi', funcoes: ['som'] })
 })
 
+async function avisosNaFila(): Promise<number> {
+  const linha = await env.DB.prepare('select count(*) as n from notificacoes').first<{ n: number }>()
+
+  return linha?.n ?? 0
+}
+
 async function pedir(caminho: string, quem: string, init: RequestInit = {}): Promise<Response> {
   return SELF.fetch(`${RAIZ}${caminho}`, {
     ...init,
@@ -84,6 +90,33 @@ describe('lote do mês', () => {
 
     expect(corpo.criadas.map((e) => e.data)).toEqual(['2026-09-06', '2026-09-20', '2026-09-27'])
     expect(corpo.existentes).toEqual(['2026-09-13'])
+  })
+
+  it('já põe na Equipe o único Membro do Som, sem avisar ninguém', async () => {
+    const resposta = await pedir('/api/escalas/mes', 'marcos', {
+      method: 'POST',
+      body: JSON.stringify({ mes: '2099-09' }),
+    })
+
+    const { criadas } = await resposta.json<{ criadas: { id: string }[] }>()
+    const m = await carregarMinisterio(env.DB, { ids: [criadas[0].id] })
+
+    expect(m.escalas[0].equipe).toEqual([{ membroId: 'davi', funcoes: ['som'], ministro: false }])
+    expect(await avisosNaFila()).toBe(0)
+  })
+
+  it('não escala o Som quando há mais de um', async () => {
+    await criarMembro({ id: 'outro', nome: 'Outro', funcoes: ['som'] })
+
+    const resposta = await pedir('/api/escalas/mes', 'marcos', {
+      method: 'POST',
+      body: JSON.stringify({ mes: '2099-09' }),
+    })
+
+    const { criadas } = await resposta.json<{ criadas: { id: string }[] }>()
+    const m = await carregarMinisterio(env.DB, { ids: [criadas[0].id] })
+
+    expect(m.escalas[0].equipe).toEqual([])
   })
 
   it('recusa mês em formato inválido', async () => {

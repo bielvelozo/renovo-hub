@@ -6,6 +6,7 @@ import {
   domingosDoMes,
   linkDeVideos,
   textoParaWhatsApp,
+  unicoDoSom,
   videosDaPlaylist,
 } from '../../src/dominio'
 import { exigirMembro, exigirMinistro } from '../autenticacao'
@@ -48,17 +49,20 @@ escalas.post('/api/escalas/mes', exigirMinistro, async (c) => {
   const existentes = await datasJaCriadas(c.env.DB, domingos)
 
   const ceia = domingoDaSantaCeia(domingos)
+  const som = unicoDoSom(await carregarMinisterio(c.env.DB, { ids: [] }))
 
   for (const data of domingos) {
     if (existentes.includes(data)) continue
 
     const santaCeia = data === ceia
-    await criarEscala(c.env.DB, {
+    const id = await criarEscala(c.env.DB, {
       data,
       horario: santaCeia ? HORARIO_DA_SANTA_CEIA : HORARIO_DE_DOMINGO,
       rotulo: ROTULO_DE_DOMINGO,
       santaCeia,
     })
+
+    if (som) await definirEntradaDaEquipe(c.env.DB, id, som)
   }
 
   const m = await carregarMinisterio(c.env.DB, { mes })
@@ -82,6 +86,9 @@ escalas.post('/api/escalas', exigirMinistro, async (c) => {
     rotulo: corpo.rotulo.trim(),
     santaCeia: corpo.santaCeia === true,
   })
+
+  const som = unicoDoSom(await carregarMinisterio(c.env.DB, { ids: [] }))
+  if (som) await definirEntradaDaEquipe(c.env.DB, id, som)
 
   return c.json(await responderEscala(c.env.DB, id), 201)
 })

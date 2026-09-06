@@ -50,6 +50,7 @@ export {
   naipeDe,
   rotuloDoHorario,
   tituloEscala,
+  unicoDoSom,
 } from './escala'
 
 export { cobertura, ehLegado, execucoes, historicoDaMusica, ultimaExecucao, ultimoTom } from './execucoes'

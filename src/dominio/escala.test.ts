@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { ministerioDeExemplo } from './exemplo'
 import {
   daFormacao,
+  membroPorId,
+  unicoDoSom,
   ehMusical,
   escalaPorId,
   estadoEscala,
@@ -152,5 +154,26 @@ describe('daFormacao', () => {
   it('tira quem só tem vocal ou técnica, e a marca de Ministro', () => {
     expect(daFormacao(m, [{ membroId: 'isa', funcoes: ['vocal'], ministro: true }])).toEqual([])
     expect(daFormacao(m, [{ membroId: 'davi', funcoes: ['som'], ministro: false }])).toEqual([])
+  })
+})
+
+describe('unicoDoSom', () => {
+  it('acha o Membro quando ele é o único com Função de som', () => {
+    expect(unicoDoSom(m)).toEqual({ membroId: 'davi', funcoes: ['som'], ministro: false })
+  })
+
+  it('devolve nulo quando há mais de um', () => {
+    const dois = { ...m, membros: [...m.membros, { ...membroPorId(m, 'davi'), id: 'outro', nome: 'Outro' }] }
+
+    expect(unicoDoSom(dois)).toBeNull()
+  })
+
+  it('não conta quem está inativo', () => {
+    const inativo = {
+      ...m,
+      membros: m.membros.map((membro) => (membro.id === 'davi' ? { ...membro, inativo: true } : membro)),
+    }
+
+    expect(unicoDoSom(inativo)).toBeNull()
   })
 })
