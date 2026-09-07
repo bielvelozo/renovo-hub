@@ -13,7 +13,7 @@ run_worker_first = ["/api/*", "/entrar/*", "/__scheduled"]
 [[d1_databases]]
 binding = "DB"
 database_name = "renovo-hub"
-database_id = "trocar-no-deploy"
+database_id = "83106102-f186-40d4-9545-677a433ce44f"
 migrations_dir = "migrations"
 
 [triggers]
