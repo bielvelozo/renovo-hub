@@ -1,3 +1,6 @@
+export const NOTAS_BRANCAS = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+export const NOTAS_PRETAS = ['C#', 'Eb', 'F#', 'Ab', 'Bb']
+
 import { segundos } from './datas'
 import { musicaPorId } from './escala'
 import type { Escala, Ministerio, Musica } from './tipos'
@@ -65,4 +68,25 @@ function normalizar(texto: string): string {
     .replace(/\p{Diacritic}/gu, '')
     .toLowerCase()
     .trim()
+}
+
+export function tomDe(nota: string, menor: boolean): string {
+  return nota + (menor ? 'm' : '')
+}
+
+export function partesDoTom(tom: string): { nota: string; menor: boolean } {
+  const achado = /^([A-G][#b]?)(m?)$/.exec(String(tom ?? '').trim())
+  if (!achado) return { nota: '', menor: false }
+
+  return { nota: achado[1], menor: achado[2] === 'm' }
+}
+
+export function termoDoCifraClub(musica: Pick<Musica, 'titulo' | 'artista'>): string {
+  const titulo = musica.titulo
+    .split(/\||•|\s[-–—]\s/)[0]
+    .replace(/\([^)]*\)|\[[^\]]*\]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  return [titulo || musica.titulo.trim(), musica.artista.trim()].filter(Boolean).join(' ')
 }

@@ -1,6 +1,6 @@
 import type { ExecucaoApresentada, TomSugeridoApresentado } from '../api/tipos'
-import { TONS } from '../dominio'
 import { textoDoHistorico, textoDoTomSugerido } from '../escalas/rascunho'
+import { SeletorDeTom } from './SeletorDeTom'
 
 export function BlocoDeTom({
   tom,
@@ -18,19 +18,7 @@ export function BlocoDeTom({
       <h2>Tom</h2>
       <p className="dica">{textoDoTomSugerido(sugerido)}</p>
 
-      <div className="tons">
-        {TONS.map((cada) => (
-          <button
-            key={cada}
-            type="button"
-            className={sugerido?.tom === cada ? 'sugerido' : undefined}
-            aria-pressed={tom === cada}
-            onClick={() => escolher(cada)}
-          >
-            {cada}
-          </button>
-        ))}
-      </div>
+      <SeletorDeTom tom={tom} sugerido={sugerido?.tom ?? null} escolher={escolher} />
 
       {historico.length > 0 && <p className="dica">Histórico: {textoDoHistorico(historico)}</p>}
     </div>

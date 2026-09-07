@@ -1,6 +1,6 @@
 import { vi } from 'vitest'
 
-export type RespostaFalsa = { status: number; corpo?: unknown; falha?: boolean }
+export type RespostaFalsa = { status: number; corpo?: unknown; texto?: string; falha?: boolean }
 
 export type RedeFalsa = { chamadas: string[] }
 
@@ -19,6 +19,10 @@ export function fingirRede(rotas: Record<string, RespostaFalsa>): RedeFalsa {
 
     const resposta = rotas[chave]
     if (resposta.falha) throw new Error('rede fora do ar')
+
+    if (resposta.texto !== undefined) {
+      return new Response(resposta.texto, { status: resposta.status, headers: { 'content-type': 'text/html' } })
+    }
 
     return new Response(resposta.corpo === undefined ? null : JSON.stringify(resposta.corpo), {
       status: resposta.status,

@@ -84,7 +84,7 @@ _Avoid_: adiada, suspensa
 Canção do catálogo do ministério, com link de referência (YouTube e/ou Spotify), data de entrada e histórico de Execuções.
 
 **Tom**:
-Tonalidade em que uma Música foi tocada em uma Execução. Pertence à Música inteira ou ao Trecho dentro do Item, nunca à Música do catálogo. A sugestão padrão é o último Tom de cada Música, venha de Execução inteira ou parcial; sem Execução, o último tom conhecido preenchido à mão; sem nada, o tom original da gravação, buscado fora do app.
+Tonalidade em que uma Música foi tocada em uma Execução. Pertence à Música inteira ou ao Trecho dentro do Item, nunca à Música do catálogo. Escrito como nota mais qualidade — `G` ou `Bm` —, escolhido num teclado de doze notas com um botão de maior ou menor. A sugestão padrão é o último Tom de cada Música, venha de Execução inteira ou parcial; sem Execução, o último tom conhecido preenchido à mão; sem nada, o **Tom original**: o tom da gravação, guardado na Música e preenchido pelo Ministro ou pelo Admin, à mão ou confirmando o que o Cifra Club devolveu.
 _Avoid_: key
 
 **Execução**:

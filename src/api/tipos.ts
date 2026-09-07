@@ -122,6 +122,13 @@ export type MusicaDetalhada = MusicaNaLista & {
   anexos: Anexo[]
 }
 
+export type AchadoNoCifraClub = {
+  titulo: string
+  artista: string
+  tom: string
+  url: string
+}
+
 export type AchadoNoYoutube = {
   videoId: string
   titulo: string

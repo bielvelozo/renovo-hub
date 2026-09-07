@@ -673,6 +673,108 @@ textarea.texto-longo {
   padding: 4px 10px;
 }
 
+.achado {
+  margin: 10px 0;
+  padding: 12px 14px;
+  border: 1px solid var(--acento);
+  border-radius: var(--raio);
+  background: var(--acento-suave);
+}
+
+.achado .titulo {
+  margin: 0 0 4px;
+}
+
+.achado .dica {
+  margin: 0 0 10px;
+}
+
+.achado .acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.qualidades {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.qualidades .chip {
+  flex: 1;
+  justify-content: center;
+  min-height: 38px;
+}
+
+/* Teclado de piano: as sete brancas ocupam duas colunas cada, e as cinco pretas
+   caem na fresta entre elas — por isso a grade tem 14 colunas e não 7. */
+.teclado {
+  display: grid;
+  grid-template-columns: repeat(14, 1fr);
+  gap: 4px;
+}
+
+.tecla {
+  grid-row: 2;
+  min-height: var(--toque);
+  grid-column: span 2;
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  background: var(--superficie);
+  color: var(--texto);
+  font: 700 15px/1 var(--fonte-rotulo);
+  cursor: pointer;
+}
+
+.tecla.preta {
+  grid-row: 1;
+  min-height: 38px;
+  background: var(--superficie-alta);
+  color: var(--texto-2);
+  font-size: 13px;
+}
+
+.tecla.preta[data-nota='C#'] {
+  grid-column: 2 / span 2;
+}
+
+.tecla.preta[data-nota='Eb'] {
+  grid-column: 4 / span 2;
+}
+
+.tecla.preta[data-nota='F#'] {
+  grid-column: 8 / span 2;
+}
+
+.tecla.preta[data-nota='Ab'] {
+  grid-column: 10 / span 2;
+}
+
+.tecla.preta[data-nota='Bb'] {
+  grid-column: 12 / span 2;
+}
+
+.tecla .qualidade {
+  font-size: 0.75em;
+  opacity: 0.7;
+}
+
+.tecla.sugerido {
+  border-color: var(--acento);
+}
+
+.tecla[aria-pressed='true'] {
+  background: var(--acento);
+  border-color: var(--acento);
+  color: var(--sobre-acento);
+}
+
+.tecla[disabled] {
+  opacity: 0.5;
+  cursor: default;
+}
+
 .tons {
   display: grid;
   grid-template-columns: repeat(6, 1fr);

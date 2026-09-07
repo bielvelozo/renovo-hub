@@ -239,6 +239,58 @@ describe('buscar no YouTube', () => {
   })
 })
 
+describe('tom pelo Cifra Club', () => {
+  const PAGINA = '<div id="key"><p>Tom</p><p class="x">F#m</p></div>'
+
+  it('devolve a música achada e o tom, pro Ministro confirmar', async () => {
+    const rede = fingirRede({
+      'solr.sscdn.co': {
+        status: 200,
+        corpo: { response: { docs: [{ t: '2', m: 'Rio', a: 'Nívea Soares', d: 'nivea-soares', u: 'rio' }] } },
+      },
+      'cifraclub.com.br/nivea-soares/rio': { status: 200, texto: PAGINA },
+    })
+
+    const resposta = await pedir('/api/musicas/rio/cifraclub', 'marcos')
+
+    expect(resposta.status).toBe(200)
+    expect(await resposta.json()).toEqual({
+      achado: {
+        titulo: 'Rio',
+        artista: 'Nívea Soares',
+        tom: 'F#m',
+        url: 'https://www.cifraclub.com.br/nivea-soares/rio/',
+      },
+    })
+    expect(rede.chamadas[0]).toContain('solr.sscdn.co')
+  })
+
+  it('devolve nada quando a busca não acha a música', async () => {
+    fingirRede({ 'solr.sscdn.co': { status: 200, corpo: { response: { docs: [] } } } })
+
+    const resposta = await pedir('/api/musicas/rio/cifraclub', 'marcos')
+
+    expect(resposta.status).toBe(200)
+    expect(await resposta.json()).toEqual({ achado: null })
+  })
+
+  it('devolve nada quando a página não mostra o tom', async () => {
+    fingirRede({
+      'solr.sscdn.co': {
+        status: 200,
+        corpo: { response: { docs: [{ t: '2', m: 'Rio', a: 'Nívea Soares', d: 'nivea-soares', u: 'rio' }] } },
+      },
+      'cifraclub.com.br/nivea-soares/rio': { status: 200, texto: '<div>sem cartão</div>' },
+    })
+
+    expect(await (await pedir('/api/musicas/rio/cifraclub', 'marcos')).json()).toEqual({ achado: null })
+  })
+
+  it('Membro comum não consulta', async () => {
+    expect((await pedir('/api/musicas/rio/cifraclub', 'julia')).status).toBe(403)
+  })
+})
+
 describe('listar Músicas', () => {
   it('ordena por última Execução, faz mais tempo primeiro, e as sem Execução no fim', async () => {
     const musicas = await listar('')

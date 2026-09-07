@@ -8,6 +8,7 @@ import {
   mesesDesde,
   musicaPorId,
   ordenarPorExecucao,
+  termoDoCifraClub,
   ultimaExecucao,
   vezesTocada,
   videoIdDoLink,
@@ -15,6 +16,7 @@ import {
 import type { Ministerio, Musica, OrdemDoCatalogo } from '../../src/dominio'
 import { exigirMembro, exigirMinistro } from '../autenticacao'
 import { lerAnexos } from '../dados/anexos'
+import { acharNoCifraClub } from '../dados/cifraclub'
 import { carregarMinisterio } from '../dados/ministerio'
 import {
   apagarMusica,
@@ -102,6 +104,14 @@ musicas.get('/api/musicas', exigirMembro, async (c) => {
   const ordem: OrdemDoCatalogo = c.req.query('ordem') === 'menos-tempo' ? 'menos-tempo' : 'mais-tempo'
 
   return c.json({ musicas: ordenarPorExecucao(m, achadas, ordem).map((musica) => naListaDeMusicas(m, musica)) })
+})
+
+musicas.get('/api/musicas/:id/cifraclub', exigirMinistro, async (c) => {
+  const m = await carregarMinisterio(c.env.DB, { ids: [] })
+  const musica = m.musicas.find((x) => x.id === c.req.param('id'))
+  if (!musica) return c.json({ erro: MUSICA_NAO_ENCONTRADA }, 404)
+
+  return c.json({ achado: await acharNoCifraClub(termoDoCifraClub(musica)) })
 })
 
 musicas.get('/api/musicas/:id', exigirMembro, async (c) => {

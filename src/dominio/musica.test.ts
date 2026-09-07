@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { medley, ministerioDeExemplo } from './exemplo'
 import {
+  NOTAS_BRANCAS,
+  NOTAS_PRETAS,
   buscaNoCifraClub,
   capaAlternativa,
   capaDaMusica,
@@ -9,6 +11,9 @@ import {
   linkDeVideos,
   linkDoVideo,
   mesesDesde,
+  partesDoTom,
+  termoDoCifraClub,
+  tomDe,
   videoIdDoLink,
 } from './musica'
 import { escalaPorId, musicaPorId } from './escala'
@@ -167,5 +172,54 @@ describe('mesesDesde', () => {
 
   it('data no futuro não conta mês nenhum', () => {
     expect(mesesDesde('2026-10-05', '2026-09-05')).toBe(0)
+  })
+})
+
+describe('tom maior e menor', () => {
+  it('monta o Tom a partir da nota e da qualidade', () => {
+    expect(tomDe('G', false)).toBe('G')
+    expect(tomDe('B', true)).toBe('Bm')
+    expect(tomDe('F#', true)).toBe('F#m')
+  })
+
+  it('separa o Tom escrito de volta em nota e qualidade', () => {
+    expect(partesDoTom('G')).toEqual({ nota: 'G', menor: false })
+    expect(partesDoTom('Bm')).toEqual({ nota: 'B', menor: true })
+    expect(partesDoTom('Ebm')).toEqual({ nota: 'Eb', menor: true })
+  })
+
+  it('devolve nota vazia pro que não é Tom', () => {
+    expect(partesDoTom('')).toEqual({ nota: '', menor: false })
+    expect(partesDoTom('qualquer coisa')).toEqual({ nota: '', menor: false })
+  })
+
+  it('as doze notas cobrem o teclado, brancas e pretas', () => {
+    expect([...NOTAS_BRANCAS, ...NOTAS_PRETAS].sort()).toEqual(
+      ['A', 'Ab', 'B', 'Bb', 'C', 'C#', 'D', 'E', 'Eb', 'F', 'F#', 'G'].sort(),
+    )
+  })
+})
+
+describe('termoDoCifraClub', () => {
+  const musica = (titulo: string, artista: string) => ({ titulo, artista })
+
+  it('joga fora o canal depois do pipe e a marca de ao vivo', () => {
+    expect(termoDoCifraClub(musica('Meia Noite (Ao Vivo) | fhop music', 'Fhop Music'))).toBe('Meia Noite Fhop Music')
+  })
+
+  it('corta o que vem depois do travessão e dos convidados', () => {
+    expect(
+      termoDoCifraClub(musica('Firme Fundamento (Ao Vivo) - Central MSC feat. Ana Paula Rocha', 'Central MSC')),
+    ).toBe('Firme Fundamento Central MSC')
+  })
+
+  it('corta no bolinha e tira o subtítulo entre parênteses', () => {
+    expect(termoDoCifraClub(musica('Grato Sou (I Thank God) - Ao vivo • DROPS', 'drops'))).toBe('Grato Sou drops')
+  })
+
+  it('aguenta título sem nada pra cortar', () => {
+    expect(termoDoCifraClub(musica('Permanecerei', 'Eric & Evellyn Emerick'))).toBe(
+      'Permanecerei Eric & Evellyn Emerick',
+    )
   })
 })
