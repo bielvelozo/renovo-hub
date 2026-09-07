@@ -5,7 +5,8 @@ Escrito em 05/09/2026 pra uma sessão nova, sem contexto nenhum, conseguir fazer
 ## Estado em 06/09/2026
 
 - Dez ajustes pedidos pelo Gabriel entraram na `main` em 06/09/2026, cada um num commit, todos registrados na seção **Ajustes depois da V1** de [construcao-v1/decisoes.md](construcao-v1/decisoes.md): Santa Ceia no segundo domingo; playlist com o Repertório inteiro; Formação só com Músicos; único Membro do Som escalado sozinho ao criar a Escala; "Escala avulsa" virou "Nova escala"; 19 textos de regra saíram das telas; último Tom e última vez tocada viraram selos; ordenação, filtro de tocadas uma vez e aba de Sugestões na escolha da música; Tom original editável na tela da Música; busca por nome no YouTube.
-- Portões depois dos ajustes: `npm run check` limpo, 597 testes em 47 arquivos, `npm run build` verde, `npm run smoke` com 143 conferências e nenhuma falha. Continua sem `git push`.
+- Portões depois dos ajustes: `npm run check` limpo, 609 testes em 47 arquivos, `npm run build` verde, `npm run smoke` com 143 conferências e nenhuma falha. Continua sem `git push`.
+- Dois ajustes entraram depois, no mesmo dia: o **Tom passou a aceitar menor** (`Bm`), num seletor em forma de teclado de piano com botão de maior ou menor, e o **Cifra Club sugere o tom original** pro Ministro confirmar com um toque. O segundo fechou o ticket 21 e tem ADR próprio.
 - Migrations agora são **cinco**: a 0005 limpa as Formações que guardavam vocal e som.
 - Variável nova: `YOUTUBE_API_KEY` no `.dev.vars` e como `wrangler secret` no deploy. Sem ela, só a busca por nome para de funcionar.
 
@@ -19,10 +20,10 @@ Escrito em 05/09/2026 pra uma sessão nova, sem contexto nenhum, conseguir fazer
 
 1. [CONTEXT.md](../CONTEXT.md): o glossário. Membro, Ministro, Função musical e técnica, Escala, Agendada, Realizada, Cancelada, Equipe, Repertório, Item, Trecho, Medley, Execução, Tom, Legado, Arquivada, Sugestão. Se um ajuste muda o significado de um termo, o glossário muda junto, na mesma sessão.
 2. [docs/dominio/escala.md](dominio/escala.md): estados, transições, regras da Execução derivada, Tom por Trecho, presença, naipes, Ministro como marca, Formação.
-3. [docs/adr/0001](adr/0001-execucao-derivada-do-plano.md): por que a Execução é derivada do plano e não registrada. Difícil de reverter; não mexer sem ADR novo.
+3. [docs/adr/0001](adr/0001-execucao-derivada-do-plano.md): por que a Execução é derivada do plano e não registrada. Difícil de reverter; não mexer sem ADR novo. E [docs/adr/0002](adr/0002-ler-o-tom-no-cifra-club.md): por que o app lê o tom no Cifra Club mesmo com o Aviso Legal do site proibindo extração — risco assumido pelo Gabriel, com a saída de emergência escrita lá.
 4. [.scratch/wayfinder-v1/spec-v1.md](../.scratch/wayfinder-v1/spec-v1.md): a spec da V1. A tabela **Premissas assumidas** no fim lista o que foi decidido só pra construir e ainda vai ser revisto: stack, acesso, notificações, importação, identidade, visão do Membro, onboarding, tom original, cadastro.
 5. [docs/construcao-v1/decisoes.md](construcao-v1/decisoes.md): 148 decisões que as iterações do loop tomaram sozinhas, com o porquê. Antes de "consertar" algo que parece estranho no código, procurar aqui: quase sempre foi deliberado.
-6. [.scratch/wayfinder-v1/map.md](../.scratch/wayfinder-v1/map.md) e `issues/`: o mapa de decisões. Tickets ainda abertos: 05 cadastro inicial, 07 acesso e permissões, 08 notificações, 09 stack, 10 e 11 importação, 12 identidade visual, 14 visão do Membro, 15 onboarding, 21 tom original no Cifra Club. Uma decisão nova sobre esses assuntos deve fechar o ticket correspondente.
+6. [.scratch/wayfinder-v1/map.md](../.scratch/wayfinder-v1/map.md) e `issues/`: o mapa de decisões. Tickets ainda abertos: 05 cadastro inicial, 07 acesso e permissões, 08 notificações, 09 stack, 10 e 11 importação, 12 identidade visual, 14 visão do Membro, 15 onboarding. O 21 (tom original no Cifra Club) foi fechado em 06/09/2026, com [ADR 0002](adr/0002-ler-o-tom-no-cifra-club.md). Uma decisão nova sobre esses assuntos deve fechar o ticket correspondente.
 7. A branch `prototype/fluxo-ministro` é a referência de comportamento do fluxo do Ministro, testada pelo Gabriel com dez pontos de feedback, todos absorvidos na V1.
 8. `ORCHESTRATION.md` na raiz: existe só no disco desta máquina, fora do git, e é o original do item 5. Não recriar, não apagar.
 
