@@ -118,7 +118,6 @@ export function Equipe() {
 
       {escolhendo && (
         <Folha titulo="Aplicar Formação" fechar={() => abrirEscolha(false)}>
-          <p className="dica">A Formação soma à Equipe: quem já está continua, com as Funções que já tinha.</p>
           <ul className="lista">
             {lista.map((formacao) => (
               <li key={formacao.id}>
@@ -167,8 +166,6 @@ function Secao({
         <h2>{secao.nome}</h2>
         {formacoes}
       </div>
-      <p className="dica">{secao.dica}</p>
-
       {secao.membros.length === 0 ? (
         <p className="dica">Ninguém com Função deste naipe ainda.</p>
       ) : (
@@ -261,8 +258,7 @@ function FolhaDeSalvar({
   return (
     <Folha titulo="Salvar Formação" fechar={fechar}>
       <p className="dica">
-        A Formação guarda quem está na Equipe agora, com as Funções de cada um. A marca de Ministro não vai junto: ela é
-        decidida em cada Escala.
+        Guarda os Músicos que estão na Equipe agora.
       </p>
 
       {formacoes.length > 0 && (

@@ -24,8 +24,7 @@ export function Sequencias() {
       {catalogo.carregando && <div className="girando" role="status" aria-label="Carregando" />}
 
       <p className="dica">
-        A Sequência fica anexada à Música e aparece pro Membro na tela de Início e no detalhe da Música. Enviar de novo
-        não apaga nada: guarda uma versão nova.
+Enviar de novo não apaga nada: guarda uma versão nova.
       </p>
 
       <label className="campo">

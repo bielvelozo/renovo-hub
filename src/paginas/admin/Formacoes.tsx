@@ -46,11 +46,6 @@ export function Formacoes() {
       {erro && <p className="aviso">{erro}</p>}
       {acao.erro && <p className="aviso">{acao.erro}</p>}
 
-      <p className="dica">
-        A Formação existe porque os músicos são quase sempre os mesmos: aplicada numa Equipe, ela põe todo mundo de uma
-        vez e o Ministro ajusta o que mudou.
-      </p>
-
       {lista.length > 0 && membros && funcoes && (
         <ul className="lista cartao">
           {lista.map((formacao) => (

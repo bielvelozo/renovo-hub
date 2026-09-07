@@ -77,7 +77,6 @@ export type Playlist = {
   link: string | null
   videoIds: string[]
   ignorados: string[]
-  instrucao: string
 }
 
 export type ExecucaoApresentada = {

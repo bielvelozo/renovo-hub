@@ -4,7 +4,7 @@ import { usarBusca } from '../api/usarBusca'
 import { Folha } from './Folha'
 
 export function FolhaDoWhatsapp({ escalaId, fechar }: { escalaId: string; fechar: () => void }) {
-  const busca = usarBusca<{ texto: string; instrucao: string }>(`/api/escalas/${escalaId}/whatsapp`)
+  const busca = usarBusca<{ texto: string }>(`/api/escalas/${escalaId}/whatsapp`)
   const [copiado, marcarCopiado] = useState(false)
 
   async function copiar() {
@@ -29,7 +29,6 @@ export function FolhaDoWhatsapp({ escalaId, fechar }: { escalaId: string; fechar
           <button type="button" className="botao largo" onClick={copiar}>
             {copiado ? 'Copiado' : 'Copiar'}
           </button>
-          <p className="dica">{busca.dados.instrucao}</p>
         </>
       )}
     </Folha>
@@ -54,7 +53,6 @@ export function FolhaDaPlaylist({ escalaId, fechar }: { escalaId: string; fechar
           <a className="botao largo" href={playlist.link} target="_blank" rel="noopener">
             Abrir no YouTube ({playlist.videoIds.length} {playlist.videoIds.length === 1 ? 'música' : 'músicas'})
           </a>
-          <p className="dica">{playlist.instrucao}</p>
           {playlist.ignorados.length > 0 && (
             <p className="dica">
               {playlist.ignorados.length} {playlist.ignorados.length === 1 ? 'vídeo ficou' : 'vídeos ficaram'} de fora:

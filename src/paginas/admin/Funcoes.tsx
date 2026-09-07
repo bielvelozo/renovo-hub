@@ -38,8 +38,7 @@ export function Funcoes() {
       {papeis.carregando && <div className="girando" role="status" aria-label="Carregando" />}
 
       <p className="dica">
-        Vocal e Músicos creditam Execução. Som entra na Equipe pra tudo, menos pra «quem já tocou». A ordem manda na
-        posição em todas as listas.
+A ordem manda na posição em todas as listas.
       </p>
 
       {porNaipe(funcoes).map((grupo) => (

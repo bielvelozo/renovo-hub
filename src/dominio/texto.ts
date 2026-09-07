@@ -3,8 +3,6 @@ import { escalaPorId, gruposEquipe, musicaPorId, tituloEscala } from './escala'
 import { linkDaPlaylist, linkDoVideo } from './musica'
 import type { Item, Ministerio } from './tipos'
 
-export const INSTRUCAO_DA_PLAYLIST = 'Toque em Repetir playlist no YouTube pra ouvir em loop.'
-
 export function descricaoDoItem(m: Ministerio, item: Item): string {
   if (item.tipo === 'medley') {
     const partes = item.trechos.map(

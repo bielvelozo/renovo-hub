@@ -388,21 +388,17 @@ describe('Equipe', () => {
 })
 
 describe('texto do WhatsApp', () => {
-  it('devolve o texto pronto e a instrução da playlist', async () => {
+  it('devolve o texto pronto', async () => {
     await criarMusica('meia-noite', 'Meia Noite', 'hRJUcvsnqKs')
     await criarEscala({ id: 'e1', data: '2026-09-13' })
     await porNaEquipe('e1', 'marcos', ['vocal'], true)
     await criarItemInteira('i1', 'e1', 'meia-noite', 'G', 1)
 
-    const corpo = await (await pedir('/api/escalas/e1/whatsapp', 'julia')).json<{
-      texto: string
-      instrucao: string
-    }>()
+    const corpo = await (await pedir('/api/escalas/e1/whatsapp', 'julia')).json<{ texto: string }>()
 
     expect(corpo.texto).toContain('*Culto de Domingo 18h · 13/09*')
     expect(corpo.texto).toContain('Ministro: Marcos')
     expect(corpo.texto).toContain('1. Meia Noite · Tom G · Canal')
-    expect(corpo.instrucao).toContain('Repetir playlist')
   })
 })
 

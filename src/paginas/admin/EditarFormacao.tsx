@@ -80,7 +80,6 @@ export function EditarFormacao() {
         <input value={atual.nome} onChange={(evento) => mudar({ ...atual, nome: evento.target.value })} />
       </label>
 
-      <p className="dica">A marca de Ministro não entra na Formação: ela é decidida em cada Escala.</p>
 
       <div className="secao">
         <h2>Músicos</h2>

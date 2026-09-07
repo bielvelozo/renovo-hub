@@ -1,7 +1,6 @@
 import { Hono } from 'hono'
 import type { Context } from 'hono'
 import {
-  INSTRUCAO_DA_PLAYLIST,
   domingoDaSantaCeia,
   domingosDoMes,
   linkDeVideos,
@@ -183,7 +182,7 @@ escalas.get('/api/escalas/:id/whatsapp', exigirMembro, async (c) => {
   const m = await carregarMinisterio(c.env.DB, { ids: [id] })
   if (!m.escalas.length) return c.json({ erro: ESCALA_NAO_ENCONTRADA }, 404)
 
-  return c.json({ texto: textoParaWhatsApp(m, id), instrucao: INSTRUCAO_DA_PLAYLIST })
+  return c.json({ texto: textoParaWhatsApp(m, id) })
 })
 
 escalas.get('/api/escalas/:id/playlist', exigirMembro, async (c) => {
@@ -199,7 +198,6 @@ escalas.get('/api/escalas/:id/playlist', exigirMembro, async (c) => {
     link: linkDeVideos(videoIds),
     videoIds,
     ignorados: pedidos.filter((videoId) => !videoIds.includes(videoId)),
-    instrucao: INSTRUCAO_DA_PLAYLIST,
   })
 })
 

@@ -107,15 +107,13 @@ export function Medley() {
 
       {trechos.length === 0 ? (
         <p className="dica">
-          Nenhum Trecho ainda. O Medley não tem Tom próprio: cada Trecho tem o seu, e a capa é a montagem das capas dos
-          Trechos.
+          Nenhum Trecho ainda.
         </p>
       ) : (
         <>
           <div className="cabecalho-da-musica">
             <Capa musicas={trechos.slice(0, MAXIMO_DE_CAPAS).map((trecho) => trecho.escolha.resumo)} grande />
-            <p className="dica">A capa do Medley é a montagem das capas dos Trechos.</p>
-          </div>
+            </div>
 
           <ul className="lista cartao">
             {trechos.map((trecho, indice) => (

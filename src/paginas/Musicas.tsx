@@ -18,7 +18,6 @@ export function Musicas() {
   return (
     <section className="pagina">
       <h1>Músicas</h1>
-      <p className="dica">Faz mais tempo primeiro; quem nunca foi tocada fica no fim.</p>
 
       <label className="campo">
         <span className="rotulo">Buscar</span>

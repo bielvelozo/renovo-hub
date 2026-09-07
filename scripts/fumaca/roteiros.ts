@@ -1,4 +1,4 @@
-import { INSTRUCAO_DA_PLAYLIST, segundos } from '../../src/dominio'
+import { segundos } from '../../src/dominio'
 import { consultar } from './ambiente'
 import { VIDEOS, escalaPorData, exigir, grupo, proximoSabado, ultimoItem } from './cenario'
 import type { Cenario } from './cenario'
@@ -333,7 +333,6 @@ export async function roteiroDoWhatsapp(prova: Prova, cenario: Cenario): Promise
     texto.includes('Obs: Começar mais baixo, diferente do clipe'),
   )
   prova.conferir('a linha da playlist entra no texto', texto.includes('Playlist pra ouvir em loop: https://'))
-  prova.conferir('a instrução de repetir vem ao lado', folha.instrucao === INSTRUCAO_DA_PLAYLIST, folha.instrucao)
   prova.conferir('o texto sai inteiro num toque', texto.length > 300, `${texto.length} caracteres`)
 
   const playlist = exigir(
@@ -342,8 +341,8 @@ export async function roteiroDoWhatsapp(prova: Prova, cenario: Cenario): Promise
     'gerar a playlist',
   )
   prova.conferir(
-    'a playlist só leva as Músicas inteiras, validadas no oEmbed',
-    playlist.videoIds.length === 2 && !playlist.videoIds.includes(VIDEOS.sublime),
+    'a playlist leva o Repertório inteiro, validado no oEmbed',
+    playlist.videoIds.length === 3 && playlist.videoIds.includes(VIDEOS.sublime),
     playlist.videoIds.join(','),
   )
   prova.conferir('o link da playlist é do YouTube', String(playlist.link).includes('watch_videos?video_ids='))

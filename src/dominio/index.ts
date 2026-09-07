@@ -85,6 +85,6 @@ export {
   descricaoDaMudanca,
 } from './notificacoes'
 
-export { INSTRUCAO_DA_PLAYLIST, descricaoDoItem, textoDeFinsDeSemana, textoParaWhatsApp } from './texto'
+export { descricaoDoItem, textoDeFinsDeSemana, textoParaWhatsApp } from './texto'
 
 export { FUNCOES, TONS, ministerioDeExemplo } from './exemplo'

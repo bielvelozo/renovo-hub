@@ -5,7 +5,6 @@ export function Painel() {
   return (
     <section className="pagina">
       <h1>Admin</h1>
-      <p className="dica">A gestão do ministério. Só quem é Admin vê esta tela.</p>
 
       <ul className="lista cartao">
         {SECOES.map((secao) => (

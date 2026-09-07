@@ -43,7 +43,6 @@ export function EscolhaDeMusica({
 
       <div className="secao">
         <h2>Link do YouTube</h2>
-        <p className="dica">Título, capa e artista vêm sozinhos. A Música só entra no catálogo quando você confirmar.</p>
         <div className="campo-com-botao">
           <input
             inputMode="url"

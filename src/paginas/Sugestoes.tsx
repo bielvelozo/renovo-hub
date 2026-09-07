@@ -63,7 +63,6 @@ export function Sugestoes() {
   return (
     <section className="pagina">
       <h1>Sugestões</h1>
-      <p className="dica">Qualquer Membro sugere e apoia; o Ministro promove pra uma Escala.</p>
 
       <button type="button" className="botao largo" onClick={() => sugerir('escolhendo')}>
         + Sugerir uma música
@@ -193,11 +192,6 @@ function Envio({
 
       <div className="cabecalho-da-musica">
         <Capa musicas={[escolha.resumo]} grande />
-        <p className="dica">
-          {escolha.musicaId
-            ? 'Está no catálogo. O Ministro vê a Sugestão e os apoios.'
-            : 'Ainda não está no catálogo: entra quando o Ministro promover.'}
-        </p>
       </div>
 
       <label className="campo">
@@ -209,7 +203,6 @@ function Envio({
         />
       </label>
 
-      <p className="dica">Sugerir já conta como o seu apoio.</p>
 
       <button type="button" className="botao largo" disabled={acao.ocupado} onClick={enviar}>
         Enviar Sugestão

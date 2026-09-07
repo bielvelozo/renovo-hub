@@ -13,7 +13,6 @@ export type SecaoDaEquipe = {
   chave: ChaveDaSecao
   naipe: Naipe
   nome: string
-  dica: string
   membros: MembroDaSecao[]
 }
 
@@ -23,24 +22,9 @@ export type EstadoNaEquipe = {
 }
 
 const SECOES: Omit<SecaoDaEquipe, 'membros'>[] = [
-  {
-    chave: 'vocal',
-    naipe: 'vocal',
-    nome: 'Vocal',
-    dica: 'Decidido antes, na Escala do mês. O chip Ministro só aparece pra quem tem o papel; quem dirige continua no vocal.',
-  },
-  {
-    chave: 'musicos',
-    naipe: 'instrumentos',
-    nome: 'Músicos',
-    dica: 'Decididos na semana, quase sempre os mesmos: aplique uma Formação e ajuste o que mudou.',
-  },
-  {
-    chave: 'som',
-    naipe: 'tecnica',
-    nome: 'Som',
-    dica: 'Escalado e avisado como todo mundo; não conta em "quem já tocou".',
-  },
+  { chave: 'vocal', naipe: 'vocal', nome: 'Vocal' },
+  { chave: 'musicos', naipe: 'instrumentos', nome: 'Músicos' },
+  { chave: 'som', naipe: 'tecnica', nome: 'Som' },
 ]
 
 export function funcoesDoMembro(membro: Membro, funcoes: Funcao[]): Funcao[] {

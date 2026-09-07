@@ -76,7 +76,7 @@ export function Escala() {
       )}
 
       {escala.estado === 'realizada' && (
-        <p className="dica">Realizada. Editar aqui corrige o histórico e não avisa ninguém.</p>
+        <p className="dica">Editar aqui não avisa ninguém.</p>
       )}
 
       <div className="secao">
@@ -174,7 +174,7 @@ export function Escala() {
       {aberta === 'cancelar' && (
         <Folha titulo={`Não vai ter culto dia ${rotuloDoDia(escala.data)}?`} fechar={() => abrir(null)}>
           <p className="dica">
-            A Escala fica Cancelada: nada dela vira Execução e ninguém perde presença. Dá pra desfazer depois.
+            Dá pra desfazer depois.
           </p>
           <button
             type="button"
