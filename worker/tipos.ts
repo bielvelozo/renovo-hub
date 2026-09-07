@@ -5,6 +5,7 @@ export type Ambiente = {
   VAPID_PUBLIC?: string
   VAPID_PRIVATE?: string
   VAPID_SUBJECT?: string
+  YOUTUBE_API_KEY?: string
 }
 
 export type Contexto = {

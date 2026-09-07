@@ -196,6 +196,49 @@ describe('criar Música', () => {
   })
 })
 
+describe('buscar no YouTube', () => {
+  const RESPOSTA = {
+    items: [
+      { id: { videoId: MEIA_NOITE }, snippet: { title: 'Meia Noite (Ao Vivo)', channelTitle: 'Fhop Music' } },
+      { id: { videoId: 'VPQ2NqTdWM8' }, snippet: { title: 'Eric &amp; Evellyn', channelTitle: 'TELOS' } },
+    ],
+  }
+
+  it('devolve os vídeos achados pelo título, com o & do YouTube desfeito', async () => {
+    const rede = fingirRede({ 'youtube/v3/search': { status: 200, corpo: RESPOSTA } })
+
+    const resposta = await pedir('/api/musicas/buscar?termo=meia%20noite', 'marcos')
+    const corpo = await resposta.json<{ achados: { videoId: string; titulo: string; canal: string }[] }>()
+
+    expect(resposta.status).toBe(200)
+    expect(corpo.achados).toEqual([
+      expect.objectContaining({ videoId: MEIA_NOITE, titulo: 'Meia Noite (Ao Vivo)', canal: 'Fhop Music' }),
+      expect.objectContaining({ videoId: 'VPQ2NqTdWM8', titulo: 'Eric & Evellyn' }),
+    ])
+    expect(rede.chamadas[0]).toContain('q=meia%20noite')
+  })
+
+  it('recusa busca vazia', async () => {
+    expect((await pedir('/api/musicas/buscar?termo=%20', 'marcos')).status).toBe(422)
+  })
+
+  it('avisa quando a chave da API não está configurada', async () => {
+    const guardada = env.YOUTUBE_API_KEY
+    env.YOUTUBE_API_KEY = undefined
+
+    const resposta = await pedir('/api/musicas/buscar?termo=meia', 'marcos')
+
+    expect(resposta.status).toBe(503)
+    env.YOUTUBE_API_KEY = guardada
+  })
+
+  it('avisa quando o YouTube recusa a chamada', async () => {
+    fingirRede({ 'youtube/v3/search': { status: 403 } })
+
+    expect((await pedir('/api/musicas/buscar?termo=meia', 'marcos')).status).toBe(502)
+  })
+})
+
 describe('listar Músicas', () => {
   it('ordena por última Execução, faz mais tempo primeiro, e as sem Execução no fim', async () => {
     const musicas = await listar('')

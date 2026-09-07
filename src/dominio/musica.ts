@@ -7,7 +7,7 @@ const MAXIMO_DA_PLAYLIST = 50
 export function videoIdDoLink(link: string | null | undefined): string | null {
   const texto = String(link ?? '').trim()
   if (/^[A-Za-z0-9_-]{11}$/.test(texto)) return texto
-  const achado = /(?:youtu\.be\/|v=|shorts\/|embed\/)([A-Za-z0-9_-]{11})/.exec(texto)
+  const achado = /(?:youtu\.be\/|v=|shorts\/|embed\/|live\/)([A-Za-z0-9_-]{11})/.exec(texto)
   return achado ? achado[1] : null
 }
 

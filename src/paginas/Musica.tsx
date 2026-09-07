@@ -1,15 +1,20 @@
 import { useParams } from 'react-router'
+import { api } from '../api/cliente'
 import type { MusicaDetalhada } from '../api/tipos'
+import { usarAcao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
 import { Barra } from '../componentes/Barra'
 import { Capa } from '../componentes/Capa'
-import { formatarDia } from '../dominio'
+import { TONS, formatarDia } from '../dominio'
 import { textoDoUltimoTom } from '../musicas/catalogo'
+import { usarEu } from '../sessao/sessao'
 
 export function Musica() {
   const { id = '' } = useParams()
+  const eu = usarEu()
   const busca = usarBusca<MusicaDetalhada>(`/api/musicas/${id}`)
   const musica = busca.dados
+  const dirige = eu.ministro || eu.admin
 
   if (busca.erro) return <p className="aviso">{busca.erro}</p>
   if (!musica) return <div className="girando" role="status" aria-label="Carregando" />
@@ -47,6 +52,8 @@ export function Musica() {
           <p className="dica">Nenhuma Execução ainda.</p>
         )}
       </div>
+
+      {dirige && <TomOriginal musica={musica} trocar={busca.definir} />}
 
       <div className="secao">
         <h2>Sequência</h2>
@@ -87,4 +94,40 @@ function situacao(musica: MusicaDetalhada): string {
   if (musica.nova) return 'Nova: está no catálogo e ainda não foi tocada.'
 
   return 'Já tocada no app.'
+}
+
+function TomOriginal({ musica, trocar }: { musica: MusicaDetalhada; trocar: (nova: MusicaDetalhada) => void }) {
+  const acao = usarAcao()
+
+  const definir = (tom: string | null) => {
+    acao.executar(async () => {
+      const nova = await api<MusicaDetalhada>(`/api/musicas/${musica.id}`, {
+        metodo: 'PATCH',
+        corpo: { tomOriginal: tom },
+      })
+      trocar({ ...musica, ...nova })
+    })
+  }
+
+  return (
+    <div className="secao">
+      <h2>Tom original</h2>
+
+      {acao.erro && <p className="aviso">{acao.erro}</p>}
+
+      <div className="tons">
+        {TONS.map((cada) => (
+          <button
+            key={cada}
+            type="button"
+            aria-pressed={musica.tomOriginal === cada}
+            disabled={acao.ocupado}
+            onClick={() => definir(musica.tomOriginal === cada ? null : cada)}
+          >
+            {cada}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
 }

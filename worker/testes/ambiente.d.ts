@@ -8,6 +8,7 @@ declare global {
       VAPID_PUBLIC: string
       VAPID_PRIVATE: string
       VAPID_SUBJECT: string
+      YOUTUBE_API_KEY: string | undefined
     }
   }
 }

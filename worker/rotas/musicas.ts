@@ -25,6 +25,7 @@ import {
   musicaPorVideo,
 } from '../dados/musicas'
 import { dadosDoVideo } from '../dados/oembed'
+import { buscarNoYoutube } from '../dados/youtube'
 import { apresentarMusica, naListaDeMusicas } from '../http/musica'
 import { corpoJson, ehTextoCheio } from '../http/validacao'
 import type { Contexto } from '../tipos'
@@ -42,6 +43,19 @@ musicas.post('/api/musicas/resolver', exigirMembro, async (c) => {
   const existente = await musicaPorVideo(c.env.DB, videoId)
 
   return c.json({ ...dados, musica: existente ? await responderMusica(c.env.DB, existente) : null })
+})
+
+musicas.get('/api/musicas/buscar', exigirMembro, async (c) => {
+  const termo = (c.req.query('termo') ?? '').trim()
+  if (!termo) return c.json({ erro: 'Escreva o nome da música.' }, 422)
+
+  const chave = c.env.YOUTUBE_API_KEY
+  if (!chave) return c.json({ erro: BUSCA_SEM_CHAVE }, 503)
+
+  const achados = await buscarNoYoutube(chave, termo)
+  if (!achados) return c.json({ erro: BUSCA_FALHOU }, 502)
+
+  return c.json({ achados })
 })
 
 musicas.post('/api/musicas', exigirMinistro, async (c) => {
@@ -211,3 +225,5 @@ const LINK_INVALIDO = 'Cole o link do vídeo no YouTube.'
 const VIDEO_DESCONHECIDO = 'O YouTube não reconheceu esse vídeo.'
 const TOM_INVALIDO = 'O Tom é um texto ou vazio.'
 const MUSICA_NAO_ENCONTRADA = 'Música não encontrada.'
+const BUSCA_SEM_CHAVE = 'A busca no YouTube ainda não está configurada. Cole o link do vídeo.'
+const BUSCA_FALHOU = 'O YouTube não respondeu a busca. Tente de novo ou cole o link.'

@@ -122,6 +122,14 @@ export type MusicaDetalhada = MusicaNaLista & {
   anexos: Anexo[]
 }
 
+export type AchadoNoYoutube = {
+  videoId: string
+  titulo: string
+  canal: string
+  capa: string
+  capaAlternativa: string
+}
+
 export type Resolucao = {
   videoId: string
   titulo: string

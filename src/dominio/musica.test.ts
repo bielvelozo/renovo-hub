@@ -24,6 +24,15 @@ describe('videoIdDoLink', () => {
     expect(videoIdDoLink('https://www.youtube.com/embed/hRJUcvsnqKs')).toBe('hRJUcvsnqKs')
   })
 
+  it('aceita o link do YouTube Music, com e sem parâmetro de origem', () => {
+    expect(videoIdDoLink('https://music.youtube.com/watch?v=hRJUcvsnqKs')).toBe('hRJUcvsnqKs')
+    expect(videoIdDoLink('https://music.youtube.com/watch?v=hRJUcvsnqKs&si=abc123')).toBe('hRJUcvsnqKs')
+  })
+
+  it('aceita o link de transmissão ao vivo', () => {
+    expect(videoIdDoLink('https://www.youtube.com/live/hRJUcvsnqKs?feature=share')).toBe('hRJUcvsnqKs')
+  })
+
   it('aceita o id colado sozinho', () => {
     expect(videoIdDoLink('hRJUcvsnqKs')).toBe('hRJUcvsnqKs')
   })

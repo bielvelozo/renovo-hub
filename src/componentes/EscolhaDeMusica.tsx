@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { api } from '../api/cliente'
-import type { MusicaNaLista, Resolucao, SugestaoApresentada } from '../api/tipos'
+import type { AchadoNoYoutube, MusicaNaLista, Resolucao, SugestaoApresentada } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
-import { combinaBusca } from '../dominio'
+import { combinaBusca, videoIdDoLink } from '../dominio'
 import type { OrdemDoCatalogo } from '../dominio'
 import type { Escolha } from '../escalas/rascunho'
 import { escolhaDaMusica, escolhaDaSugestao, escolhaDoLink } from '../escalas/rascunho'
@@ -30,15 +30,31 @@ export function EscolhaDeMusica({
   const [filtro, filtrar] = useState<FiltroDoCatalogo>('todas')
   const [ordem, ordenar] = useState<OrdemDoCatalogo>('mais-tempo')
   const [link, escreverLink] = useState('')
+  const [achados, guardarAchados] = useState<AchadoNoYoutube[] | null>(null)
   const [termo, escreverTermo] = useState('')
   const catalogo = usarBusca<{ musicas: MusicaNaLista[] }>(caminhoDoCatalogo(filtro, ordem))
   const sugestoes = usarBusca<{ sugestoes: SugestaoApresentada[] }>(aoEscolherSugestao ? '/api/sugestoes' : null)
   const acao = usarAcao()
 
-  const resolver = () => {
+  const escolherVideo = (endereco: string) =>
     acao.executar(async () => {
-      const resolucao = await api<Resolucao>('/api/musicas/resolver', { metodo: 'POST', corpo: { link } })
-      aoEscolher(escolhaDoLink(resolucao, link.trim()))
+      const resolucao = await api<Resolucao>('/api/musicas/resolver', { metodo: 'POST', corpo: { link: endereco } })
+      aoEscolher(escolhaDoLink(resolucao, endereco))
+    })
+
+  const procurar = () => {
+    const escrito = link.trim()
+
+    if (videoIdDoLink(escrito)) {
+      guardarAchados(null)
+      return escolherVideo(escrito)
+    }
+
+    acao.executar(async () => {
+      const { achados: vindos } = await api<{ achados: AchadoNoYoutube[] }>(
+        `/api/musicas/buscar?termo=${encodeURIComponent(escrito)}`,
+      )
+      guardarAchados(vindos)
     })
   }
 
@@ -96,18 +112,46 @@ export function EscolhaDeMusica({
       ) : (
         <>
           <div className="secao">
-            <h2>Link do YouTube</h2>
+            <h2>Buscar no YouTube</h2>
             <div className="campo-com-botao">
               <input
-                inputMode="url"
-                placeholder="https://youtu.be/…"
+                placeholder="nome da música ou link"
                 value={link}
-                onChange={(evento) => escreverLink(evento.target.value)}
+                onChange={(evento) => {
+                  escreverLink(evento.target.value)
+                  guardarAchados(null)
+                }}
+                onKeyDown={(evento) => {
+                  if (evento.key === 'Enter' && link.trim()) procurar()
+                }}
               />
-              <button type="button" className="botao" disabled={acao.ocupado || !link.trim()} onClick={resolver}>
+              <button type="button" className="botao" disabled={acao.ocupado || !link.trim()} onClick={procurar}>
                 Buscar
               </button>
             </div>
+
+            {achados?.length === 0 && <p className="vazio">Nenhum vídeo com esse nome.</p>}
+
+            {achados && achados.length > 0 && (
+              <ul className="lista cartao">
+                {achados.map((achado) => (
+                  <li key={achado.videoId}>
+                    <button
+                      type="button"
+                      className="toque"
+                      disabled={acao.ocupado}
+                      onClick={() => escolherVideo(`https://youtu.be/${achado.videoId}`)}
+                    >
+                      <Capa musicas={[{ ...achado, id: achado.videoId, titulo: achado.titulo, artista: achado.canal }]} />
+                      <span className="cresce">
+                        <span className="titulo">{achado.titulo}</span>
+                        <span className="dica">{achado.canal}</span>
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           <div className="secao">
