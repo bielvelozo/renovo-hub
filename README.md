@@ -44,9 +44,12 @@ Crie um arquivo `.dev.vars` na raiz e cole o que o `npm run vapid` imprimiu:
 VAPID_PUBLIC=...
 VAPID_PRIVATE=...
 VAPID_SUBJECT=mailto:seu-email@exemplo.com
+YOUTUBE_API_KEY=...
 ```
 
-O `.dev.vars` é ignorado pelo git. **Trocar as chaves invalida as inscrições de push já feitas**: quem já tinha ativado precisa ativar de novo.
+O `.dev.vars` é ignorado pelo git. **Trocar as chaves VAPID invalida as inscrições de push já feitas**: quem já tinha ativado precisa ativar de novo.
+
+O `YOUTUBE_API_KEY` é a chave da **YouTube Data API v3**, que faz a busca por nome na hora de adicionar uma música (colar o link não precisa dela). Sai do [Google Cloud](https://console.cloud.google.com): projeto novo, ativar a YouTube Data API v3 na Biblioteca, criar uma Chave de API em Credenciais e restringi-la a essa API. São 10.000 unidades por dia de graça e cada busca custa 100, ou seja **100 buscas por dia**. Sem a chave o app não quebra: a busca por nome responde pedindo o link.
 
 Depois, um comando só:
 
@@ -154,6 +157,7 @@ npx wrangler d1 migrations apply renovo-hub --remote
 npx wrangler secret put VAPID_PUBLIC
 npx wrangler secret put VAPID_PRIVATE
 npx wrangler secret put VAPID_SUBJECT
+npx wrangler secret put YOUTUBE_API_KEY
 npm run deploy
 ```
 

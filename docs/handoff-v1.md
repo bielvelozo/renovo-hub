@@ -2,6 +2,13 @@
 
 Escrito em 05/09/2026 pra uma sessão nova, sem contexto nenhum, conseguir fazer ajustes no app sem quebrar o que já foi decidido. Numa sessão nova, o primeiro pedido deve ser: **"leia docs/handoff-v1.md antes de qualquer coisa"**. Depois, descreva o ajuste.
 
+## Estado em 06/09/2026
+
+- Dez ajustes pedidos pelo Gabriel entraram na `main` em 06/09/2026, cada um num commit, todos registrados na seção **Ajustes depois da V1** de [construcao-v1/decisoes.md](construcao-v1/decisoes.md): Santa Ceia no segundo domingo; playlist com o Repertório inteiro; Formação só com Músicos; único Membro do Som escalado sozinho ao criar a Escala; "Escala avulsa" virou "Nova escala"; 19 textos de regra saíram das telas; último Tom e última vez tocada viraram selos; ordenação, filtro de tocadas uma vez e aba de Sugestões na escolha da música; Tom original editável na tela da Música; busca por nome no YouTube.
+- Portões depois dos ajustes: `npm run check` limpo, 597 testes em 47 arquivos, `npm run build` verde, `npm run smoke` com 143 conferências e nenhuma falha. Continua sem `git push`.
+- Migrations agora são **cinco**: a 0005 limpa as Formações que guardavam vocal e som.
+- Variável nova: `YOUTUBE_API_KEY` no `.dev.vars` e como `wrangler secret` no deploy. Sem ela, só a busca por nome para de funcionar.
+
 ## Estado em 05/09/2026
 
 - O app inteiro está na **`main`** desde 05/09/2026, por merge fast-forward da branch `v1` (que continua existindo, idêntica). **Nada foi empurrado pra remoto.**
@@ -44,7 +51,7 @@ O smoke apaga o D1 local, semeia com `--demo`, sobe o Worker sozinho e percorre 
 - `src/dominio/`: domínio puro em TypeScript, sem DOM e sem D1, com testes ao lado. Estados da Escala com meia-noite de Brasília, Execuções derivadas, último Tom, cobertura, grupos da Equipe, texto do WhatsApp, playlist, presença. Usado pelo Worker e pelo front. Regra: lógica de negócio nova entra aqui, nunca em componente ou rota.
 - `src/`: front React com Vite. Pastas por tela: `inicio`, `escalas`, `musicas`, `perfil`, `admin`, `instalacao`; `casca` (abas e rotas), `componentes`, `estilo` (tokens de tema escuro e claro), `tema`, `sessao`, `push`, `api` (cliente HTTP). `src/semente/` e `src/fumaca/` são a parte pura dos scripts de seed e smoke, testadas no vitest.
 - `worker/`: API Hono e cron. `index.ts`, `autenticacao.ts`, `rotas/` (uma por área), `dados/` (acesso ao D1), `http/`, `push/` (VAPID via WebCrypto e fila), `testes/` (rodam no pool de Workers com D1 real).
-- `migrations/`: quatro migrations SQL do D1; migration nova é um arquivo novo, nunca editar as existentes.
+- `migrations/`: cinco migrations SQL do D1; migration nova é um arquivo novo, nunca editar as existentes.
 - `seed/`: `membros.csv` (só Gabriel) e `playlist.csv` (101 vídeos).
 - `scripts/`: `seed.ts`, `convite.ts`, `vapid.ts`, `icones.ts` (gera os ícones do PWA a partir da logo), `smoke.ts` com `fumaca/`, e `ralph.ps1` com `ralph-prompt.md`, o loop autônomo.
 - `docs/brand/`: logo real em `logo/`, cores medidas e fontes em `README.md`.
@@ -60,10 +67,11 @@ O smoke apaga o D1 local, semeia com `--demo`, sobe o Worker sozinho e percorre 
 
 ## Pontos vistos na verificação que merecem olhar
 
-- Uma Escala criada uma a uma e marcada como Santa Ceia aparece no Mês como "Santa Ceia 08h", e o rótulo dela (por exemplo "Conferência") some do título. Decidir se Santa Ceia substitui o rótulo ou acompanha.
+- Uma Escala criada uma a uma e marcada como Santa Ceia aparece no Mês como "Santa Ceia 08h", e o rótulo dela (por exemplo "Conferência") some do título. Decidir se Santa Ceia substitui o rótulo ou acompanha. **Ainda em aberto.**
 - Os títulos importados da playlist vêm crus do YouTube, com o canal depois do `|` ("Meia Noite (Ao Vivo) | fhop music"). Estão marcados `revisar` e o Admin arruma um a um; se forem muitos, vale limpar no seed.
 - Na primeira abertura pelo convite, o front chama `/api/eu` antes de o cookie existir e o console mostra um 401 inofensivo.
 - `npm run dev` roda migration, semente e build toda vez antes de subir. Rápido hoje; se incomodar, `npm run dev:front` com o Worker de pé dá hot reload.
+- O tom automático pelo Cifra Club (ticket 21) foi investigado em 06/09/2026 e **não foi implementado**. O caminho existe e funciona: a busca do próprio site (`https://solr.sscdn.co/cc/h2/?q=<termo>&e=1`, JSON com o slug do artista e da música) leva à página, e nela o tom fica dentro do cartão de `id="key"` — âncora estável, ao contrário das classes, que são geradas a cada build. Dois problemas seguram: a busca erra a música quando o título é comum (procurar "Como Não Te Amar" devolveu "Amar Como Você"), então o resultado precisa de confirmação do Ministro; e o tom vem como o da gravação, inclusive **menor** ("Bm"), que não cabe nos doze botões maiores do seletor de Tom. Decidir as duas coisas antes de codar.
 
 ## Ajustes em lote com o loop
 
