@@ -19,14 +19,19 @@ export async function roteiroDoMes(prova: Prova, cenario: Cenario): Promise<void
   const criadas = lote.criadas
   prova.conferir('o lote cria os domingos do mês', criadas.length >= 4, `${criadas.length} em ${cenario.mesDeTrabalho}`)
   prova.conferir(
-    'o primeiro domingo nasce Santa Ceia às 08h',
-    criadas[0].santaCeia === true && criadas[0].horario === '08:00',
-    criadas[0].titulo,
+    'o segundo domingo nasce Santa Ceia às 08h',
+    criadas[1].santaCeia === true && criadas[1].horario === '08:00',
+    criadas[1].titulo,
   )
   prova.conferir(
     'os outros nascem Culto de Domingo 18h',
-    criadas.slice(1).every((e: any) => !e.santaCeia && e.horario === '18:00'),
-    criadas[1]?.titulo,
+    [criadas[0], ...criadas.slice(2)].every((e: any) => !e.santaCeia && e.horario === '18:00'),
+    criadas[0]?.titulo,
+  )
+  prova.conferir(
+    'o único Membro do Som já nasce na Equipe, sem ninguém escalar',
+    criadas.every((e: any) => e.membros.includes('davi')),
+    criadas[0].membros.join(', '),
   )
 
   cenario.escalaDoMes = criadas[0].id
@@ -64,6 +69,16 @@ export async function roteiroDoMes(prova: Prova, cenario: Cenario): Promise<void
     'pôr a Ana no vocal',
   )
 
+  exigir(
+    await prova.api(`/api/escalas/${cenario.escalaDoMes}/equipe/julia`, {
+      metodo: 'PUT',
+      cookie: cenario.gabriel,
+      corpo: { funcoes: ['vocal'] },
+    }),
+    200,
+    'pôr a Júlia no vocal',
+  )
+
   const modelo = await escalaPorData(prova, cenario.gabriel, '2026-08-23')
   const formacao = exigir(
     await prova.api('/api/formacoes', {
@@ -74,9 +89,13 @@ export async function roteiroDoMes(prova: Prova, cenario: Cenario): Promise<void
     'salvar a Formação a partir da Equipe',
   )
   prova.conferir(
-    'salvar Formação a partir da Equipe guarda os Membros sem a marca de Ministro',
-    formacao.entradas.length >= 6 && formacao.entradas.every((e: any) => !('ministro' in e)),
-    `${formacao.entradas.length} entradas`,
+    'salvar Formação a partir da Equipe guarda só os Músicos, sem marca de Ministro',
+    formacao.entradas.length === 3 && formacao.entradas.every((e: any) => !('ministro' in e)),
+    formacao.entradas.map((e: any) => `${e.membroId}: ${e.funcoes.join(', ')}`).join(' | '),
+  )
+  prova.conferir(
+    'a Formação não leva vocal nem som',
+    formacao.entradas.every((e: any) => !['isa', 'julia', 'bia', 'davi'].includes(e.membroId)),
   )
 
   const montada = exigir(
@@ -100,8 +119,13 @@ export async function roteiroDoMes(prova: Prova, cenario: Cenario): Promise<void
     montada.grupos.map((g: any) => `${g.nome}: ${g.itens.join(', ')}`).join(' | '),
   )
   prova.conferir(
-    'a Júlia entrou na Equipe pela Formação',
-    montada.equipe.some((e: any) => e.membroId === 'julia'),
+    'o Rafa entrou na Equipe pela Formação',
+    montada.equipe.some((e: any) => e.membroId === 'rafa'),
+  )
+  prova.conferir(
+    'aplicar a Formação não mexe em quem já estava no vocal',
+    grupo(montada, 'Vocal').includes('Ana') && grupo(montada, 'Vocal').includes('Júlia'),
+    grupo(montada, 'Vocal').join(', '),
   )
 }
 
@@ -460,20 +484,20 @@ export async function roteiroDeCancelar(prova: Prova, cenario: Cenario): Promise
 }
 
 export async function roteiroDaAvulsa(prova: Prova, cenario: Cenario): Promise<void> {
-  prova.grupo('Roteiro 9 · Criar uma Escala avulsa')
+  prova.grupo('Roteiro 9 · Criar uma Escala uma a uma')
 
   const data = proximoSabado(cenario.hoje)
-  const avulsa = exigir(
+  const nova = exigir(
     await prova.api('/api/escalas', {
       cookie: cenario.gabriel,
       corpo: { data, horario: '19:30', rotulo: 'Conferência' },
     }),
     201,
-    'criar a Escala avulsa',
+    'criar a Escala',
   )
 
-  prova.conferir('a avulsa nasce com nome, data e horário livres', avulsa.data === data, avulsa.titulo)
-  prova.conferir('a avulsa nasce Agendada', avulsa.estado === 'agendada', avulsa.estado)
+  prova.conferir('a Escala nasce com nome, data e horário livres', nova.data === data, nova.titulo)
+  prova.conferir('a Escala nasce Agendada', nova.estado === 'agendada', nova.estado)
 
   const recusa = await prova.api('/api/escalas', {
     cookie: cenario.gabriel,
@@ -482,7 +506,7 @@ export async function roteiroDaAvulsa(prova: Prova, cenario: Cenario): Promise<v
   prova.conferir('data fora do formato devolve 422', recusa.status === 422, recusa.corpo?.erro)
 
   const santaCeia = exigir(
-    await prova.api(`/api/escalas/${avulsa.id}`, {
+    await prova.api(`/api/escalas/${nova.id}`, {
       metodo: 'PATCH',
       cookie: cenario.gabriel,
       corpo: { santaCeia: true, horario: '08:00' },
