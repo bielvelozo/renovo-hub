@@ -1,5 +1,5 @@
 import { escalaPorId, estadoEscala, membroPorId, membrosMusicais, ministradoPorDe, musicaPorId } from './escala'
-import type { Execucao, Ministerio, Musica, TomSugerido } from './tipos'
+import type { Execucao, Ministerio, Musica, OrdemDoCatalogo, TomSugerido } from './tipos'
 
 export function execucoes(m: Ministerio): Execucao[] {
   const derivadas: Execucao[] = []
@@ -66,4 +66,19 @@ export function cobertura(m: Ministerio, escalaId: string, musicaId: string): { 
   }
 
   return { ja, nunca }
+}
+
+export function vezesTocada(m: Ministerio, musicaId: string): number {
+  return historicoDaMusica(m, musicaId).length
+}
+
+export function ordenarPorExecucao(m: Ministerio, musicas: Musica[], ordem: OrdemDoCatalogo): Musica[] {
+  const quando = (musica: Musica) => ultimaExecucao(m, musica.id)?.data ?? null
+
+  return [...musicas].sort((a, b) => {
+    const [x, y] = [quando(a), quando(b)]
+    if (!x || !y) return x === y ? 0 : x ? -1 : 1
+
+    return ordem === 'mais-tempo' ? x.localeCompare(y) : y.localeCompare(x)
+  })
 }

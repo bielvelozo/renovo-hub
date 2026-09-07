@@ -91,6 +91,8 @@ export type Execucao = {
   membros: string[]
 }
 
+export type OrdemDoCatalogo = 'mais-tempo' | 'menos-tempo'
+
 export type OrigemDoTom = 'execucao' | 'conhecido' | 'original'
 
 export type TomSugerido = {

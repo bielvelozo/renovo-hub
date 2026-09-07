@@ -252,6 +252,18 @@ describe('listar Músicas', () => {
     expect(musicas.map((m) => m.id)).toEqual(['rio', 'dono'])
   })
 
+  it('inverte a ordem quando pedem faz menos tempo, com as sem Execução ainda no fim', async () => {
+    expect((await listar('?ordem=menos-tempo')).map((m) => m.id)).toEqual(['dono', 'rio', 'sublime'])
+  })
+
+  it('o filtro de tocada uma vez só traz quem tem exatamente uma Execução', async () => {
+    await criarEscala({ id: 'esegunda', data: '2020-09-13' })
+    await porNaEquipe('esegunda', 'marcos', ['vocal'], true)
+    await criarItemInteira('isegunda', 'esegunda', 'rio', 'D')
+
+    expect((await listar('?filtro=uma-vez')).map((m) => m.id)).toEqual(['dono'])
+  })
+
   it('deixa o Membro comum ver o catálogo', async () => {
     expect((await listar('', 'julia')).length).toBe(3)
   })

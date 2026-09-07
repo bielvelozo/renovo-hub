@@ -3,24 +3,43 @@ import type { MusicaNaLista, TomSugeridoApresentado } from '../api/tipos'
 import { FILTROS, caminhoDoCatalogo, selosDaMusica, textoDoUltimoTom, textoDoVazio } from './catalogo'
 
 describe('filtros do catálogo', () => {
-  it('todas não leva nada na URL', () => {
-    expect(caminhoDoCatalogo('todas')).toBe('/api/musicas')
+  it('todas na ordem de sempre não leva nada na URL', () => {
+    expect(caminhoDoCatalogo('todas', 'mais-tempo')).toBe('/api/musicas')
+  })
+
+  it('a ordem invertida entra na URL, com ou sem filtro', () => {
+    expect(caminhoDoCatalogo('todas', 'menos-tempo')).toBe('/api/musicas?ordem=menos-tempo')
+    expect(caminhoDoCatalogo('nova', 'menos-tempo')).toBe('/api/musicas?filtro=nova&ordem=menos-tempo')
+  })
+
+  it('tocadas uma vez só é filtro da rota', () => {
+    expect(caminhoDoCatalogo('uma-vez', 'mais-tempo')).toBe('/api/musicas?filtro=uma-vez')
   })
 
   it('Nova e Legado viram o filtro da rota', () => {
-    expect(caminhoDoCatalogo('nova')).toBe('/api/musicas?filtro=nova')
-    expect(caminhoDoCatalogo('legado')).toBe('/api/musicas?filtro=legado')
+    expect(caminhoDoCatalogo('nova', 'mais-tempo')).toBe('/api/musicas?filtro=nova')
+    expect(caminhoDoCatalogo('legado', 'mais-tempo')).toBe('/api/musicas?filtro=legado')
   })
 
   it('faz tempo vira meses, que a rota conta a partir da última Execução', () => {
-    expect(caminhoDoCatalogo('meses-3')).toBe('/api/musicas?meses=3')
-    expect(caminhoDoCatalogo('meses-12')).toBe('/api/musicas?meses=12')
+    expect(caminhoDoCatalogo('meses-3', 'mais-tempo')).toBe('/api/musicas?meses=3')
+    expect(caminhoDoCatalogo('meses-12', 'mais-tempo')).toBe('/api/musicas?meses=12')
   })
 
   it('todo filtro oferecido tem rótulo e caminho', () => {
-    expect(FILTROS.map((filtro) => filtro.valor)).toEqual(['todas', 'nova', 'legado', 'meses-3', 'meses-6', 'meses-12'])
+    expect(FILTROS.map((filtro) => filtro.valor)).toEqual([
+      'todas',
+      'nova',
+      'legado',
+      'uma-vez',
+      'meses-3',
+      'meses-6',
+      'meses-12',
+    ])
     expect(FILTROS.every((filtro) => filtro.rotulo.length > 0)).toBe(true)
-    expect(FILTROS.every((filtro) => caminhoDoCatalogo(filtro.valor).startsWith('/api/musicas'))).toBe(true)
+    expect(FILTROS.every((filtro) => caminhoDoCatalogo(filtro.valor, 'mais-tempo').startsWith('/api/musicas'))).toBe(
+      true,
+    )
   })
 
   it('os rótulos dos meses dizem o corte', () => {

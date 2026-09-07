@@ -58,6 +58,7 @@ export function Adicionar() {
         sub="cole um link ou escolha do catálogo"
         aoVoltar={() => navegar(`/escalas/${id}`)}
         aoEscolher={escolher}
+        aoEscolherSugestao={(sugestao) => navegar(`/escalas/${id}/adicionar?sugestao=${sugestao.id}`)}
       />
     )
   }

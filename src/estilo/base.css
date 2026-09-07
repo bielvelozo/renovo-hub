@@ -525,6 +525,33 @@ a {
   gap: 6px;
 }
 
+.abas {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.abas .chip {
+  flex: 1;
+  justify-content: center;
+  min-height: var(--toque);
+  font-size: 15px;
+}
+
+.abas .conta {
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: var(--raio-total);
+  background: var(--acento);
+  color: var(--sobre-acento);
+  font: 700 11px/1.5 var(--fonte-rotulo);
+}
+
+.abas .chip[aria-pressed='true'] .conta {
+  background: var(--sobre-acento);
+  color: var(--acento-forte);
+}
+
 .chip {
   min-height: 34px;
   padding: 0 12px;

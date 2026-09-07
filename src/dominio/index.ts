@@ -14,6 +14,7 @@ export type {
   Ministerio,
   Musica,
   Naipe,
+  OrdemDoCatalogo,
   OrigemDoTom,
   TipoItem,
   TomSugerido,
@@ -53,7 +54,16 @@ export {
   unicoDoSom,
 } from './escala'
 
-export { cobertura, ehLegado, execucoes, historicoDaMusica, ultimaExecucao, ultimoTom } from './execucoes'
+export {
+  cobertura,
+  ehLegado,
+  execucoes,
+  historicoDaMusica,
+  ordenarPorExecucao,
+  ultimaExecucao,
+  ultimoTom,
+  vezesTocada,
+} from './execucoes'
 
 export { escalasNoAno, finsDeSemanaSeguidos, presencaDoMembro, ultimaEscala } from './presenca'
 

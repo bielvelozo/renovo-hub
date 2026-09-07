@@ -7,10 +7,12 @@ import {
   historicoDaMusica,
   mesesDesde,
   musicaPorId,
+  ordenarPorExecucao,
   ultimaExecucao,
+  vezesTocada,
   videoIdDoLink,
 } from '../../src/dominio'
-import type { Ministerio, Musica } from '../../src/dominio'
+import type { Ministerio, Musica, OrdemDoCatalogo } from '../../src/dominio'
 import { exigirMembro, exigirMinistro } from '../autenticacao'
 import { lerAnexos } from '../dados/anexos'
 import { carregarMinisterio } from '../dados/ministerio'
@@ -83,7 +85,9 @@ musicas.get('/api/musicas', exigirMembro, async (c) => {
     .filter((musica) => cabeNoFiltro(m, musica, filtro))
     .filter((musica) => cabeNosMeses(m, musica, meses))
 
-  return c.json({ musicas: porUltimaExecucao(m, achadas).map((musica) => naListaDeMusicas(m, musica)) })
+  const ordem: OrdemDoCatalogo = c.req.query('ordem') === 'menos-tempo' ? 'menos-tempo' : 'mais-tempo'
+
+  return c.json({ musicas: ordenarPorExecucao(m, achadas, ordem).map((musica) => naListaDeMusicas(m, musica)) })
 })
 
 musicas.get('/api/musicas/:id', exigirMembro, async (c) => {
@@ -174,6 +178,7 @@ function cabeNoFiltro(m: Ministerio, musica: Musica, filtro: string | undefined)
   if (filtro === 'nova') return !musica.legado && !ultimaExecucao(m, musica.id)
   if (filtro === 'legado') return ehLegado(m, musica)
   if (filtro === 'revisar') return musica.revisar
+  if (filtro === 'uma-vez') return vezesTocada(m, musica.id) === 1
   return true
 }
 
@@ -181,12 +186,6 @@ function cabeNosMeses(m: Ministerio, musica: Musica, meses: number): boolean {
   if (!Number.isFinite(meses) || meses <= 0) return true
   const ultima = ultimaExecucao(m, musica.id)
   return !!ultima && mesesDesde(ultima.data, m.hoje) >= meses
-}
-
-// A ordem do protótipo: faz mais tempo primeiro, e quem nunca foi tocada no fim.
-function porUltimaExecucao(m: Ministerio, musicas: Musica[]): Musica[] {
-  const quando = (musica: Musica) => ultimaExecucao(m, musica.id)?.data ?? '9999-99-99'
-  return [...musicas].sort((a, b) => quando(a).localeCompare(quando(b)))
 }
 
 function lerTons(corpo: Record<string, unknown>): { tomConhecido?: string | null; tomOriginal?: string | null } | null {

@@ -1,22 +1,33 @@
 import type { MusicaNaLista, TomSugeridoApresentado } from '../api/tipos'
+import type { OrdemDoCatalogo } from '../dominio'
 import { formatarDia } from '../dominio'
 
-export type FiltroDoCatalogo = 'todas' | 'nova' | 'legado' | 'meses-3' | 'meses-6' | 'meses-12'
+export type FiltroDoCatalogo = 'todas' | 'nova' | 'legado' | 'uma-vez' | 'meses-3' | 'meses-6' | 'meses-12'
 
 export const FILTROS: { valor: FiltroDoCatalogo; rotulo: string }[] = [
   { valor: 'todas', rotulo: 'Todas' },
   { valor: 'nova', rotulo: 'Novas' },
   { valor: 'legado', rotulo: 'Legado' },
+  { valor: 'uma-vez', rotulo: 'Tocadas uma vez' },
   { valor: 'meses-3', rotulo: '+ de 3 meses' },
   { valor: 'meses-6', rotulo: '+ de 6 meses' },
   { valor: 'meses-12', rotulo: '+ de 12 meses' },
 ]
 
-export function caminhoDoCatalogo(filtro: FiltroDoCatalogo): string {
-  if (filtro === 'todas') return '/api/musicas'
-  if (filtro === 'nova' || filtro === 'legado') return `/api/musicas?filtro=${filtro}`
+export const ORDENS: { valor: OrdemDoCatalogo; rotulo: string }[] = [
+  { valor: 'mais-tempo', rotulo: 'Faz mais tempo' },
+  { valor: 'menos-tempo', rotulo: 'Faz menos tempo' },
+]
 
-  return `/api/musicas?meses=${mesesDoFiltro(filtro)}`
+export function caminhoDoCatalogo(filtro: FiltroDoCatalogo, ordem: OrdemDoCatalogo): string {
+  const partes: string[] = []
+
+  if (filtro === 'nova' || filtro === 'legado' || filtro === 'uma-vez') partes.push(`filtro=${filtro}`)
+  else if (filtro !== 'todas') partes.push(`meses=${mesesDoFiltro(filtro)}`)
+
+  if (ordem === 'menos-tempo') partes.push('ordem=menos-tempo')
+
+  return '/api/musicas' + (partes.length ? '?' + partes.join('&') : '')
 }
 
 export function textoDoVazio(filtro: FiltroDoCatalogo, busca: string): string {
@@ -24,6 +35,7 @@ export function textoDoVazio(filtro: FiltroDoCatalogo, busca: string): string {
 
   if (filtro === 'nova') return 'Nenhuma Música Nova: todas já foram tocadas ou vieram da playlist.'
   if (filtro === 'legado') return 'Nenhuma Música de Legado: todas já foram tocadas no app.'
+  if (filtro === 'uma-vez') return 'Nenhuma Música tocada uma vez só.'
   if (filtro === 'todas') return 'Nenhuma Música no catálogo ainda.'
 
   return `Nenhuma Música parada há mais de ${mesesDoFiltro(filtro)} meses.`

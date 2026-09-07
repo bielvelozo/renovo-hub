@@ -5,13 +5,15 @@ import { usarBusca } from '../api/usarBusca'
 import { Capa } from '../componentes/Capa'
 import { SelosDaMusica } from '../componentes/SelosDaMusica'
 import { combinaBusca } from '../dominio'
+import type { OrdemDoCatalogo } from '../dominio'
 import type { FiltroDoCatalogo } from '../musicas/catalogo'
-import { FILTROS, caminhoDoCatalogo, textoDoVazio } from '../musicas/catalogo'
+import { FILTROS, ORDENS, caminhoDoCatalogo, textoDoVazio } from '../musicas/catalogo'
 
 export function Musicas() {
   const [filtro, filtrar] = useState<FiltroDoCatalogo>('todas')
+  const [ordem, ordenar] = useState<OrdemDoCatalogo>('mais-tempo')
   const [termo, escreverTermo] = useState('')
-  const catalogo = usarBusca<{ musicas: MusicaNaLista[] }>(caminhoDoCatalogo(filtro))
+  const catalogo = usarBusca<{ musicas: MusicaNaLista[] }>(caminhoDoCatalogo(filtro, ordem))
 
   const achadas = (catalogo.dados?.musicas ?? []).filter((musica) => combinaBusca(musica, termo))
 
@@ -28,6 +30,20 @@ export function Musicas() {
           onChange={(evento) => escreverTermo(evento.target.value)}
         />
       </label>
+
+      <div className="chips" role="group" aria-label="Ordem">
+        {ORDENS.map((opcao) => (
+          <button
+            key={opcao.valor}
+            type="button"
+            className="chip"
+            aria-pressed={opcao.valor === ordem}
+            onClick={() => ordenar(opcao.valor)}
+          >
+            {opcao.rotulo}
+          </button>
+        ))}
+      </div>
 
       <div className="chips" role="group" aria-label="Filtros">
         {FILTROS.map((opcao) => (

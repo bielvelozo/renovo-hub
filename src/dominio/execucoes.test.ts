@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest'
 import { medley, ministerioDeExemplo } from './exemplo'
-import { cobertura, ehLegado, execucoes, historicoDaMusica, ultimaExecucao, ultimoTom } from './execucoes'
+import {
+  cobertura,
+  ehLegado,
+  execucoes,
+  historicoDaMusica,
+  ordenarPorExecucao,
+  ultimaExecucao,
+  ultimoTom,
+  vezesTocada,
+} from './execucoes'
 import { musicaPorId } from './escala'
 import type { Ministerio } from './tipos'
 
@@ -150,5 +159,39 @@ describe('cobertura', () => {
       ja: [],
       nunca: ['Isa', 'Gabriel', 'Pedro', 'Ana', 'Lucas'],
     })
+  })
+})
+
+const m = ministerioDeExemplo()
+
+describe('ordenarPorExecucao', () => {
+  const catalogo = ['firme', 'meia-noite', 'grato', 'algo-novo'].map((id) =>
+    m.musicas.find((musica) => musica.id === id) ?? { ...musicaPorId(m, 'grato'), id },
+  )
+
+  it('põe quem faz mais tempo primeiro, e quem nunca foi tocada no fim', () => {
+    expect(ordenarPorExecucao(m, catalogo, 'mais-tempo').map((musica) => musica.id)).toEqual([
+      'firme',
+      'grato',
+      'meia-noite',
+      'algo-novo',
+    ])
+  })
+
+  it('inverte pra faz menos tempo, e quem nunca foi tocada continua no fim', () => {
+    expect(ordenarPorExecucao(m, catalogo, 'menos-tempo').map((musica) => musica.id)).toEqual([
+      'meia-noite',
+      'grato',
+      'firme',
+      'algo-novo',
+    ])
+  })
+})
+
+describe('vezesTocada', () => {
+  it('conta as Execuções da Música', () => {
+    expect(vezesTocada(m, 'meia-noite')).toBe(2)
+    expect(vezesTocada(m, 'grato')).toBe(1)
+    expect(vezesTocada(m, 'algo-novo')).toBe(0)
   })
 })
