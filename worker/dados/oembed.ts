@@ -20,15 +20,13 @@ export async function dadosDoVideo(videoId: string): Promise<DadosDoVideo | null
   return (await consultar(videoId)).dados
 }
 
-export async function videosConfirmados(videoIds: string[]): Promise<string[]> {
-  const confirmados: string[] = []
+// Nulo quando o YouTube não respondeu: não dá pra concluir que o vídeo sumiu, e
+// um indeterminado não pode virar registro nem tirar o vídeo da playlist.
+export async function existeNoYoutube(videoId: string): Promise<boolean | null> {
+  const { dados, conclusiva } = await consultar(videoId)
+  if (!conclusiva) return null
 
-  for (const videoId of videoIds) {
-    const { dados, conclusiva } = await consultar(videoId)
-    if (dados || !conclusiva) confirmados.push(videoId)
-  }
-
-  return confirmados
+  return dados !== null
 }
 
 async function consultar(videoId: string): Promise<Consulta> {

@@ -12,6 +12,7 @@ import {
   linkDoVideo,
   mesesDesde,
   partesDoTom,
+  precisaReconferir,
   termoDoCifraClub,
   tomDe,
   videoIdDoLink,
@@ -221,5 +222,19 @@ describe('termoDoCifraClub', () => {
     expect(termoDoCifraClub(musica('Permanecerei', 'Eric & Evellyn Emerick'))).toBe(
       'Permanecerei Eric & Evellyn Emerick',
     )
+  })
+})
+
+describe('precisaReconferir', () => {
+  it('aceita o que foi conferido nesta semana', () => {
+    expect(precisaReconferir('2026-09-08T10:00:00Z', new Date('2026-09-10T10:00:00Z'))).toBe(false)
+  })
+
+  it('manda reconferir o que passou de sete dias', () => {
+    expect(precisaReconferir('2026-09-01T09:59:00Z', new Date('2026-09-08T10:00:00Z'))).toBe(true)
+  })
+
+  it('manda reconferir quando a data não presta', () => {
+    expect(precisaReconferir('', new Date('2026-09-10T10:00:00Z'))).toBe(true)
   })
 })

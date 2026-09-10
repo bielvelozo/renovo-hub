@@ -21,7 +21,7 @@ import {
   tirarDaEquipe,
 } from '../dados/escalas'
 import { carregarMinisterio } from '../dados/ministerio'
-import { videosConfirmados } from '../dados/oembed'
+import { conferirVideos, reconferirVideos } from '../dados/videos'
 import { apresentarEscala, resumirEscala } from '../http/escala'
 import { avisarCancelada, avisarEscalados, avisarRemarcada } from '../push/gatilhos'
 import { corpoJson, ehData, ehHorario, ehListaDeTextos, ehMes, ehTextoCheio } from '../http/validacao'
@@ -192,12 +192,15 @@ escalas.get('/api/escalas/:id/playlist', exigirMembro, async (c) => {
   if (!escala) return c.json({ erro: ESCALA_NAO_ENCONTRADA }, 404)
 
   const pedidos = videosDaPlaylist(m, escala)
-  const videoIds = await videosConfirmados(pedidos)
+  const agora = new Date()
+  const { confirmados, aReconferir } = await conferirVideos(c.env.DB, pedidos, agora)
+
+  if (aReconferir.length) c.executionCtx.waitUntil(reconferirVideos(c.env.DB, aReconferir, agora))
 
   return c.json({
-    link: linkDeVideos(videoIds),
-    videoIds,
-    ignorados: pedidos.filter((videoId) => !videoIds.includes(videoId)),
+    link: linkDeVideos(confirmados),
+    videoIds: confirmados,
+    ignorados: pedidos.filter((videoId) => !confirmados.includes(videoId)),
   })
 })
 

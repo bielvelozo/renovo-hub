@@ -35,6 +35,18 @@ beforeEach(async () => {
   await criarMembro({ id: 'davi', nome: 'Davi', funcoes: ['som'] })
 })
 
+async function envelhecerConferencias(quando: string): Promise<void> {
+  await env.DB.prepare('update videos_conferidos set conferido_em = ?').bind(quando).run()
+}
+
+async function conferenciaVelha(): Promise<number> {
+  const linha = await env.DB.prepare(
+    "select count(*) as n from videos_conferidos where conferido_em < '2021'",
+  ).first<{ n: number }>()
+
+  return linha?.n ?? 0
+}
+
 async function avisosNaFila(): Promise<number> {
   const linha = await env.DB.prepare('select count(*) as n from notificacoes').first<{ n: number }>()
 
@@ -442,17 +454,35 @@ describe('playlist', () => {
     expect(corpo.ignorados).toEqual(['FKKytz49Fhg'])
   })
 
-  it('usa o cache em memória: o segundo pedido não chama o oEmbed de novo', async () => {
+  it('guarda a conferência no banco: o segundo pedido não chama o oEmbed de novo', async () => {
     const rede = fingirRede({
       hRJUcvsnqKs: { status: 200, corpo: { title: 'Meia Noite' } },
       FKKytz49Fhg: { status: 200, corpo: { title: 'Firme Fundamento' } },
     })
 
     await pedir('/api/escalas/e1/playlist', 'julia')
+    limparCacheDeVideos()
     const segundo = await (await pedir('/api/escalas/e1/playlist', 'julia')).json<{ link: string }>()
 
     expect(segundo.link).toBe('https://www.youtube.com/watch_videos?video_ids=hRJUcvsnqKs,FKKytz49Fhg')
     expect(rede.chamadas).toHaveLength(2)
+  })
+
+  it('reconfere o que está guardado há mais de uma semana, sem segurar a resposta', async () => {
+    const rede = fingirRede({
+      hRJUcvsnqKs: { status: 200, corpo: { title: 'Meia Noite' } },
+      FKKytz49Fhg: { status: 200, corpo: { title: 'Firme Fundamento' } },
+    })
+
+    await pedir('/api/escalas/e1/playlist', 'julia')
+    limparCacheDeVideos()
+    await envelhecerConferencias('2020-01-01T00:00:00.000Z')
+
+    const corpo = await (await pedir('/api/escalas/e1/playlist', 'julia')).json<{ link: string }>()
+
+    expect(corpo.link).toBe('https://www.youtube.com/watch_videos?video_ids=hRJUcvsnqKs,FKKytz49Fhg')
+    await vi.waitFor(() => expect(rede.chamadas.length).toBe(4))
+    expect(await conferenciaVelha()).toBe(0)
   })
 
   it('devolve link nulo quando o Repertório não tem Música inteira', async () => {

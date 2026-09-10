@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { fingirRede } from '../testes/rede'
-import { dadosDoVideo, limparCacheDeVideos, videosConfirmados } from './oembed'
+import { dadosDoVideo, existeNoYoutube, limparCacheDeVideos } from './oembed'
 
 const MEIA_NOITE = 'hRJUcvsnqKs'
 const FIRME = 'FKKytz49Fhg'
@@ -57,24 +57,25 @@ describe('dadosDoVideo', () => {
   })
 })
 
-describe('videosConfirmados', () => {
-  it('deixa passar só o que o oEmbed conhece', async () => {
+describe('existeNoYoutube', () => {
+  it('diz que sim pro vídeo que o oEmbed conhece, e não pro que sumiu', async () => {
     fingirRede({ [MEIA_NOITE]: { status: 200, corpo: { title: 'Meia Noite' } }, [FIRME]: { status: 404 } })
 
-    expect(await videosConfirmados([MEIA_NOITE, FIRME])).toEqual([MEIA_NOITE])
+    expect(await existeNoYoutube(MEIA_NOITE)).toBe(true)
+    expect(await existeNoYoutube(FIRME)).toBe(false)
   })
 
-  it('mantém o vídeo quando o YouTube devolve erro de servidor', async () => {
+  it('não conclui nada quando o YouTube devolve erro de servidor', async () => {
     fingirRede({ [MEIA_NOITE]: { status: 503 } })
 
-    expect(await videosConfirmados([MEIA_NOITE])).toEqual([MEIA_NOITE])
+    expect(await existeNoYoutube(MEIA_NOITE)).toBeNull()
   })
 
-  it('mantém o vídeo quando a rede cai, pra não esvaziar a playlist', async () => {
+  it('não conclui nada quando a rede cai, e tenta de novo na próxima', async () => {
     const rede = fingirRede({ [MEIA_NOITE]: { status: 200, falha: true } })
 
-    expect(await videosConfirmados([MEIA_NOITE])).toEqual([MEIA_NOITE])
-    expect(await videosConfirmados([MEIA_NOITE])).toEqual([MEIA_NOITE])
+    expect(await existeNoYoutube(MEIA_NOITE)).toBeNull()
+    expect(await existeNoYoutube(MEIA_NOITE)).toBeNull()
     expect(rede.chamadas).toHaveLength(2)
   })
 })

@@ -90,3 +90,12 @@ export function termoDoCifraClub(musica: Pick<Musica, 'titulo' | 'artista'>): st
 
   return [titulo || musica.titulo.trim(), musica.artista.trim()].filter(Boolean).join(' ')
 }
+
+const DIAS_PARA_RECONFERIR = 7
+
+export function precisaReconferir(conferidoEm: string, agora: Date): boolean {
+  const quando = Date.parse(conferidoEm)
+  if (Number.isNaN(quando)) return true
+
+  return agora.getTime() - quando >= DIAS_PARA_RECONFERIR * 24 * 60 * 60 * 1000
+}

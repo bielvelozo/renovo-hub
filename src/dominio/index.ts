@@ -76,6 +76,7 @@ export {
   NOTAS_PRETAS,
   linkDaPlaylist,
   partesDoTom,
+  precisaReconferir,
   termoDoCifraClub,
   tomDe,
   linkDeVideos,
