@@ -68,7 +68,7 @@ describe('porNaipe', () => {
     const grupos = porNaipe([...FUNCOES].reverse())
 
     expect(grupos.map((grupo) => grupo.nome)).toEqual(['Vocal', 'Músicos', 'Som'])
-    expect(grupos[0].funcoes.map((funcao) => funcao.id)).toEqual(['vocal', 'backing'])
+    expect(grupos[0].funcoes.map((funcao) => funcao.id)).toEqual(['vocal'])
     expect(grupos[1].funcoes.map((funcao) => funcao.id)).toEqual(['guitarra', 'violao', 'baixo', 'bateria', 'teclado'])
     expect(grupos[2].funcoes.map((funcao) => funcao.id)).toEqual(['som'])
   })
@@ -83,7 +83,7 @@ describe('porNaipe', () => {
 
 describe('proximaOrdem', () => {
   it('põe a Função nova no fim da fila', () => {
-    expect(proximaOrdem(FUNCOES)).toBe(9)
+    expect(proximaOrdem(FUNCOES)).toBe(8)
   })
 
   it('começa em 1 quando não existe nenhuma', () => {

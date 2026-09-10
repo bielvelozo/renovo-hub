@@ -122,7 +122,7 @@ export async function fluxosDeNotificacao(prova: Prova, cenario: Cenario): Promi
       await prova.api(`/api/escalas/${cenario.escalaDoMes}/equipe/bia`, {
         metodo: 'PUT',
         cookie: cenario.gabriel,
-        corpo: { funcoes: ['backing'] },
+        corpo: { funcoes: ['vocal'] },
       }),
       200,
       'escalar a Bia',

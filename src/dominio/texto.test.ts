@@ -33,7 +33,7 @@ describe('textoParaWhatsApp', () => {
       [
         '*Culto de Domingo 18h · 30/08*',
         'Ministro: Isa',
-        'Vocal: Ana, Bia (backing)',
+        'Vocal: Ana, Bia',
         'Músicos: Gabriel (guitarra), Marcos (violão), Lucas (bateria)',
         'Som: Davi',
         '',

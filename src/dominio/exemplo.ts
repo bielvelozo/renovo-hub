@@ -2,13 +2,12 @@ import type { Escala, Funcao, Item, Membro, Ministerio, Musica, Trecho } from '.
 
 export const FUNCOES: Funcao[] = [
   { id: 'vocal', nome: 'Vocal', naipe: 'vocal', ordem: 1 },
-  { id: 'backing', nome: 'Backing', naipe: 'vocal', ordem: 2 },
-  { id: 'guitarra', nome: 'Guitarra', naipe: 'instrumentos', ordem: 3 },
-  { id: 'violao', nome: 'Violão', naipe: 'instrumentos', ordem: 4 },
-  { id: 'baixo', nome: 'Baixo', naipe: 'instrumentos', ordem: 5 },
-  { id: 'bateria', nome: 'Bateria', naipe: 'instrumentos', ordem: 6 },
-  { id: 'teclado', nome: 'Teclado', naipe: 'instrumentos', ordem: 7 },
-  { id: 'som', nome: 'Som', naipe: 'tecnica', ordem: 8 },
+  { id: 'guitarra', nome: 'Guitarra', naipe: 'instrumentos', ordem: 2 },
+  { id: 'violao', nome: 'Violão', naipe: 'instrumentos', ordem: 3 },
+  { id: 'baixo', nome: 'Baixo', naipe: 'instrumentos', ordem: 4 },
+  { id: 'bateria', nome: 'Bateria', naipe: 'instrumentos', ordem: 5 },
+  { id: 'teclado', nome: 'Teclado', naipe: 'instrumentos', ordem: 6 },
+  { id: 'som', nome: 'Som', naipe: 'tecnica', ordem: 7 },
 ]
 
 export const TONS = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B']
@@ -92,7 +91,7 @@ export function ministerioDeExemplo(hoje = '2026-09-08'): Ministerio {
       membro('ana', 'Ana', ['vocal']),
       membro('lucas', 'Lucas', ['bateria']),
       membro('rafa', 'Rafa', ['baixo', 'teclado']),
-      membro('bia', 'Bia', ['backing']),
+      membro('bia', 'Bia', ['vocal']),
       membro('julia', 'Júlia', ['vocal', 'teclado']),
       membro('davi', 'Davi', ['som']),
     ],
@@ -131,7 +130,7 @@ export function ministerioDeExemplo(hoje = '2026-09-08'): Ministerio {
           equipe('rafa', ['baixo']),
           equipe('julia', ['vocal']),
           equipe('lucas', ['bateria']),
-          equipe('bia', ['backing']),
+          equipe('bia', ['vocal']),
           equipe('davi', ['som']),
         ],
         [inteira('i3', 'grato', 'Bb'), inteira('i4', 'permanecerei', 'A')],
@@ -145,7 +144,7 @@ export function ministerioDeExemplo(hoje = '2026-09-08'): Ministerio {
           equipe('marcos', ['violao']),
           equipe('ana', ['vocal']),
           equipe('lucas', ['bateria']),
-          equipe('bia', ['backing']),
+          equipe('bia', ['vocal']),
           equipe('davi', ['som']),
         ],
         [

@@ -51,11 +51,11 @@ it('descarta vídeo repetido no CSV', () => {
   expect(musicas).toHaveLength(1)
 })
 
-it('semeia as oito Funções com naipe e ordem', () => {
+it('semeia as sete Funções com naipe e ordem', () => {
   const sql = base()
 
-  expect(sql).toContain("INSERT OR IGNORE INTO funcoes (id, nome, naipe, ordem) VALUES ('som', 'Som', 'tecnica', 8);")
-  expect(sql.match(/INSERT OR IGNORE INTO funcoes /g)).toHaveLength(8)
+  expect(sql).toContain("INSERT OR IGNORE INTO funcoes (id, nome, naipe, ordem) VALUES ('som', 'Som', 'tecnica', 7);")
+  expect(sql.match(/INSERT OR IGNORE INTO funcoes /g)).toHaveLength(7)
 })
 
 it('semeia o membro, suas funções e a Formação Banda vazia', () => {

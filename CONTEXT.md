@@ -18,11 +18,11 @@ _Avoid_: líder, worship leader, função de ministro
 Membro com tudo que o Ministro faz mais a gestão de Membros (convidar, editar papéis).
 
 **Função**:
-O que um Membro faz em uma Equipe (vocal, backing, guitarra, violão, baixo, bateria, teclado, som...). Um Membro pode ter mais de uma Função na mesma Escala. Cada Função pertence a um Naipe, definido pelo Admin. Ministro não é Função.
+O que um Membro faz em uma Equipe (vocal, guitarra, violão, baixo, bateria, teclado, som...). Um Membro pode ter mais de uma Função na mesma Escala. Cada Função pertence a um Naipe, definido pelo Admin. Ministro não é Função.
 _Avoid_: instrumento, cargo, role
 
 **Naipe**:
-Grupo de Funções pelo qual a Equipe se organiza e é avisada: Vocal (vocal, backing), Músicos (guitarra, violão, baixo, bateria, teclado) e Som (som). Vocal e Ministro são decididos antes, na Escala do mês; Músicos, durante a semana.
+Grupo de Funções pelo qual a Equipe se organiza e é avisada: Vocal (vocal), Músicos (guitarra, violão, baixo, bateria, teclado) e Som (som). Vocal e Ministro são decididos antes, na Escala do mês; Músicos, durante a semana.
 _Avoid_: categoria, seção, time
 
 **Função musical**:

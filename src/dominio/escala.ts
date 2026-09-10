@@ -125,7 +125,7 @@ export function gruposEquipe(m: Ministerio, escala: Escala): GrupoEquipe[] {
   if (vocal.length) {
     grupos.push({
       nome: 'Vocal',
-      itens: vocal.map((x) => nome(x.membroId) + (x.funcoes.includes('backing') ? ' (backing)' : '')),
+      itens: vocal.map((x) => nome(x.membroId)),
     })
   }
 

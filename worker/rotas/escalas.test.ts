@@ -26,7 +26,6 @@ beforeEach(async () => {
   limparCacheDeVideos()
   await limparBanco()
   await criarFuncao('vocal', 'vocal', 1)
-  await criarFuncao('backing', 'vocal', 2)
   await criarFuncao('guitarra', 'instrumentos', 3)
   await criarFuncao('violao', 'instrumentos', 4, 'Violão')
   await criarFuncao('som', 'tecnica', 8)

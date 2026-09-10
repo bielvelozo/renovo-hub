@@ -132,10 +132,10 @@ describe('gruposEquipe', () => {
     expect(gruposEquipe(m, doisMinistros)[0]).toEqual({ nome: 'Ministros', itens: ['Marcos (violão)', 'Ana'] })
   })
 
-  it('marca o backing e omite grupo vazio', () => {
+  it('lista o vocal pelos nomes e omite grupo vazio', () => {
     const grupos = gruposEquipe(m, emEscala('e0823'))
 
-    expect(grupos.find((g) => g.nome === 'Vocal')?.itens).toEqual(['Júlia', 'Bia (backing)'])
+    expect(grupos.find((g) => g.nome === 'Vocal')?.itens).toEqual(['Júlia', 'Bia'])
     expect(gruposEquipe(m, emEscala('e0920'))).toEqual([])
   })
 })
