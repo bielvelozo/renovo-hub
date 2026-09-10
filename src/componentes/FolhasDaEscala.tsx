@@ -1,6 +1,8 @@
 import { useState } from 'react'
-import type { Playlist } from '../api/tipos'
+import type { ItemApresentado, Playlist } from '../api/tipos'
 import { usarBusca } from '../api/usarBusca'
+import { linkDeVideos } from '../dominio'
+import { videosDoRepertorio } from '../escalas/repertorio'
 import { Folha } from './Folha'
 
 export function FolhaDoWhatsapp({ escalaId, fechar }: { escalaId: string; fechar: () => void }) {
@@ -35,28 +37,38 @@ export function FolhaDoWhatsapp({ escalaId, fechar }: { escalaId: string; fechar
   )
 }
 
-export function FolhaDaPlaylist({ escalaId, fechar }: { escalaId: string; fechar: () => void }) {
+// O link é montado na hora com os vídeos que a tela já tem, pra a folha abrir sem
+// espera. O servidor só confere se algum vídeo sumiu do YouTube e corrige depois.
+export function FolhaDaPlaylist({
+  escalaId,
+  itens,
+  fechar,
+}: {
+  escalaId: string
+  itens: ItemApresentado[]
+  fechar: () => void
+}) {
   const busca = usarBusca<Playlist>(`/api/escalas/${escalaId}/playlist`)
-  const playlist = busca.dados
+  const conferida = busca.dados
+
+  const videoIds = conferida?.videoIds ?? videosDoRepertorio(itens)
+  const link = conferida?.link ?? linkDeVideos(videoIds)
+  const ignorados = conferida?.ignorados.length ?? 0
 
   return (
     <Folha titulo="Playlist pra ouvir" fechar={fechar}>
       {busca.erro && <p className="aviso">{busca.erro}</p>}
-      {busca.carregando && <div className="girando" role="status" aria-label="Carregando" />}
 
-      {playlist && !playlist.link && (
-        <p className="vazio">Esta Escala ainda não tem músicas.</p>
-      )}
+      {!link && <p className="vazio">Esta Escala ainda não tem músicas.</p>}
 
-      {playlist?.link && (
+      {link && (
         <>
-          <a className="botao largo" href={playlist.link} target="_blank" rel="noopener">
-            Abrir no YouTube ({playlist.videoIds.length} {playlist.videoIds.length === 1 ? 'música' : 'músicas'})
+          <a className="botao largo" href={link} target="_blank" rel="noopener">
+            Abrir no YouTube ({videoIds.length} {videoIds.length === 1 ? 'música' : 'músicas'})
           </a>
-          {playlist.ignorados.length > 0 && (
+          {ignorados > 0 && (
             <p className="dica">
-              {playlist.ignorados.length} {playlist.ignorados.length === 1 ? 'vídeo ficou' : 'vídeos ficaram'} de fora:
-              o YouTube não achou o link.
+              {ignorados} {ignorados === 1 ? 'vídeo ficou' : 'vídeos ficaram'} de fora: o YouTube não achou o link.
             </p>
           )}
         </>

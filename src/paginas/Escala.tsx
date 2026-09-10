@@ -187,7 +187,7 @@ export function Escala() {
       )}
 
       {aberta === 'whatsapp' && <FolhaDoWhatsapp escalaId={id} fechar={() => abrir(null)} />}
-      {aberta === 'playlist' && <FolhaDaPlaylist escalaId={id} fechar={() => abrir(null)} />}
+      {aberta === 'playlist' && <FolhaDaPlaylist escalaId={id} itens={escala.itens} fechar={() => abrir(null)} />}
     </section>
   )
 }

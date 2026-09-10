@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { ItemApresentado, MusicaResumida } from '../api/tipos'
-import { capasDoItem, resumoDoItem, tituloDoItem } from './repertorio'
+import { capasDoItem, resumoDoItem, tituloDoItem, videosDoRepertorio } from './repertorio'
 
 const musica = (id: string, titulo: string): MusicaResumida => ({
   id,
@@ -87,3 +87,33 @@ describe('capasDoItem', () => {
     expect(capasDoItem(cheio)).toHaveLength(4)
   })
 })
+
+describe('videosDoRepertorio', () => {
+  it('leva os vídeos na ordem, com o Medley aberto trecho a trecho', () => {
+    const itens: ItemApresentado[] = [
+      { ...base, tipo: 'inteira', musicaId: 'a', tom: 'G', musica: resumo('aaa'), link: '' },
+      { ...base, id: 'i2', tipo: 'trecho', musicaId: 'b', tom: 'C', inicio: '1:00', fim: '2:00', musica: resumo('bbb'), link: '' },
+      {
+        ...base,
+        id: 'i3',
+        tipo: 'medley',
+        trechos: [
+          { musicaId: 'c', tom: 'D', inicio: '0:00', fim: '1:00', musica: resumo('ccc'), link: '' },
+          { musicaId: 'd', tom: 'E', inicio: '0:00', fim: '1:00', musica: resumo('ddd'), link: '' },
+        ],
+      },
+    ]
+
+    expect(videosDoRepertorio(itens)).toEqual(['aaa', 'bbb', 'ccc', 'ddd'])
+  })
+
+  it('devolve nada quando não há Item', () => {
+    expect(videosDoRepertorio([])).toEqual([])
+  })
+})
+
+const base = { id: 'i1', observacao: '', ministradoPor: null, descricao: '' }
+
+function resumo(videoId: string) {
+  return { id: videoId, titulo: 'Música', artista: 'Artista', videoId, capa: '', capaAlternativa: '' }
+}

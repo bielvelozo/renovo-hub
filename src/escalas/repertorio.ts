@@ -22,3 +22,9 @@ export function capasDoItem(item: ItemApresentado): MusicaResumida[] {
   if (item.tipo === 'medley') return item.trechos.slice(0, MAXIMO_DE_CAPAS).map((trecho) => trecho.musica)
   return [item.musica]
 }
+
+export function videosDoRepertorio(itens: ItemApresentado[]): string[] {
+  return itens.flatMap((item) =>
+    item.tipo === 'medley' ? item.trechos.map((trecho) => trecho.musica.videoId) : [item.musica.videoId],
+  )
+}
