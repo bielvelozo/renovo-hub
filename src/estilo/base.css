@@ -135,6 +135,24 @@ a {
   color: var(--acento);
 }
 
+.icone-do-passo {
+  width: 22px;
+  height: 22px;
+  margin-left: 6px;
+  vertical-align: -5px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  color: var(--acento);
+}
+
+.icone-do-passo circle {
+  fill: currentColor;
+  stroke: none;
+}
+
 .abas svg {
   width: 24px;
   height: 24px;

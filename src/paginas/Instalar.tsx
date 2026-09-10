@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import { Marca } from '../casca/Marca'
 import { Notificacoes } from '../componentes/Notificacoes'
+import { IconeDoPasso } from '../instalacao/IconeDoPasso'
 import { PLATAFORMAS, passosDeInstalacao, plataformaDoAgente } from '../instalacao/plataforma'
 import type { Plataforma } from '../instalacao/plataforma'
 import { usarSessao } from '../sessao/sessao'
@@ -47,7 +48,10 @@ export function Instalar() {
           <h2>{instrucao.titulo}</h2>
           <ol className="passos">
             {instrucao.passos.map((passo) => (
-              <li key={passo}>{passo}</li>
+              <li key={passo.texto}>
+                {passo.texto}
+                {passo.icone && <IconeDoPasso nome={passo.icone} />}
+              </li>
             ))}
           </ol>
         </div>

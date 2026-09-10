@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import type { Plataforma } from './plataforma'
 import { PLATAFORMAS, passosDeInstalacao, plataformaDoAgente } from './plataforma'
 
 const IPHONE =
@@ -42,14 +43,42 @@ describe('passosDeInstalacao', () => {
       expect(aba.length).toBeGreaterThan(0)
       expect(titulo.length).toBeGreaterThan(0)
       expect(passos.length).toBeGreaterThan(0)
+      expect(passos.every((passo) => passo.texto.length > 0)).toBe(true)
     }
   })
 
   it('o passo do iPhone é Compartilhar e Adicionar à Tela de Início', () => {
-    expect(passosDeInstalacao('ios').passos.join(' ')).toContain('Adicionar à Tela de Início')
+    expect(textos('ios')).toContain('Adicionar à Tela de Início')
   })
 
   it('o passo do Android é instalar pelo menu', () => {
-    expect(passosDeInstalacao('android').passos.join(' ')).toContain('Instalar app')
+    expect(textos('android')).toContain('Instalar app')
+  })
+
+  it('desenha o botão de Compartilhar e o de adicionar nos passos do iPhone', () => {
+    const passos = passosDeInstalacao('ios').passos
+
+    expect(passos.find((passo) => passo.texto.includes('Compartilhar'))?.icone).toBe('compartilhar')
+    expect(passos.find((passo) => passo.texto.includes('Tela de Início'))?.icone).toBe('adicionar')
+  })
+
+  it('desenha os três pontinhos no passo do Android', () => {
+    const passos = passosDeInstalacao('android').passos
+
+    expect(passos.find((passo) => passo.texto.includes('pontinhos'))?.icone).toBe('menu')
+  })
+
+  it('só põe ícone no passo que manda tocar em algo', () => {
+    for (const plataforma of PLATAFORMAS) {
+      for (const passo of passosDeInstalacao(plataforma).passos) {
+        if (passo.icone) expect(passo.texto).toMatch(/Toque|procure/i)
+      }
+    }
   })
 })
+
+function textos(plataforma: Plataforma): string {
+  return passosDeInstalacao(plataforma)
+    .passos.map((passo) => passo.texto)
+    .join(' ')
+}

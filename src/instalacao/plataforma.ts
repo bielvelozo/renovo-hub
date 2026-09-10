@@ -1,9 +1,16 @@
 export type Plataforma = 'ios' | 'android' | 'outra'
 
+export type IconeDoPasso = 'compartilhar' | 'adicionar' | 'menu' | 'instalar'
+
+export type Passo = {
+  texto: string
+  icone?: IconeDoPasso
+}
+
 export type Instrucao = {
   aba: string
   titulo: string
-  passos: string[]
+  passos: Passo[]
 }
 
 export const PLATAFORMAS: readonly Plataforma[] = ['ios', 'android', 'outra']
@@ -13,31 +20,31 @@ const INSTRUCOES: Record<Plataforma, Instrucao> = {
     aba: 'iPhone',
     titulo: 'No iPhone ou iPad',
     passos: [
-      'Abra este link no Safari (não funciona no Chrome do iPhone).',
-      'Toque no botão Compartilhar, o quadrado com a seta pra cima.',
-      'Role a lista e toque em Adicionar à Tela de Início.',
-      'Toque em Adicionar. O Renovo Hub vira um ícone na sua tela.',
-      'Abra o app pelo ícone. Só assim ele pode notificar você.',
+      { texto: 'Abra este link no Safari (não funciona no Chrome do iPhone).' },
+      { texto: 'Toque no botão Compartilhar, na barra de baixo do Safari:', icone: 'compartilhar' },
+      { texto: 'Role a lista e toque em Adicionar à Tela de Início, com este ícone:', icone: 'adicionar' },
+      { texto: 'Toque em Adicionar. O Renovo Hub vira um ícone na sua tela.' },
+      { texto: 'Abra o app pelo ícone. Só assim ele pode notificar você.' },
     ],
   },
   android: {
     aba: 'Android',
     titulo: 'No Android',
     passos: [
-      'Abra este link no Chrome.',
-      'Toque nos três pontinhos do canto.',
-      'Toque em Instalar app (ou Adicionar à tela inicial).',
-      'Confirme. O Renovo Hub vira um ícone na sua tela.',
-      'Abra o app pelo ícone. Só assim ele pode notificar você.',
+      { texto: 'Abra este link no Chrome.' },
+      { texto: 'Toque nos três pontinhos do canto:', icone: 'menu' },
+      { texto: 'Toque em Instalar app (ou Adicionar à tela inicial).', icone: 'instalar' },
+      { texto: 'Confirme. O Renovo Hub vira um ícone na sua tela.' },
+      { texto: 'Abra o app pelo ícone. Só assim ele pode notificar você.' },
     ],
   },
   outra: {
     aba: 'Computador',
     titulo: 'No computador',
     passos: [
-      'Dá pra usar o Renovo Hub aqui mesmo, pelo navegador.',
-      'Pra instalar, procure o ícone de instalar na barra de endereço do Chrome ou do Edge.',
-      'As notificações são feitas pro celular: instale também no seu telefone.',
+      { texto: 'Dá pra usar o Renovo Hub aqui mesmo, pelo navegador.' },
+      { texto: 'Pra instalar, procure este ícone na barra de endereço do Chrome ou do Edge:', icone: 'instalar' },
+      { texto: 'As notificações são feitas pro celular: instale também no seu telefone.' },
     ],
   },
 }
