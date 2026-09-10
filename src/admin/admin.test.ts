@@ -8,6 +8,7 @@ import {
   alternar,
   avisoDeRemocao,
   dataDoEnvio,
+  ordensDepoisDeMover,
   porGrupo,
   proximaOrdem,
   recusaDoArquivo,
@@ -186,5 +187,29 @@ describe('alternar', () => {
     expect(alternar([], 'guitarra')).toEqual(['guitarra'])
     expect(alternar(['guitarra'], 'guitarra')).toEqual([])
     expect(alternar(['vocal'], 'guitarra')).toEqual(['vocal', 'guitarra'])
+  })
+})
+
+describe('ordensDepoisDeMover', () => {
+  const funcoes = FUNCOES
+
+  it('renumera a lista inteira e devolve só quem mudou de posição', () => {
+    const mudancas = ordensDepoisDeMover(funcoes, 'instrumentos', 0, 2)
+
+    expect(mudancas).toEqual([
+      { id: 'violao', ordem: 2 },
+      { id: 'baixo', ordem: 3 },
+      { id: 'guitarra', ordem: 4 },
+    ])
+  })
+
+  it('não mexe em quem está em outro grupo', () => {
+    const mudancas = ordensDepoisDeMover(funcoes, 'instrumentos', 0, 1)
+
+    expect(mudancas.some((mudanca) => ['vocal', 'som'].includes(mudanca.id))).toBe(false)
+  })
+
+  it('devolve nada quando o item fica no lugar', () => {
+    expect(ordensDepoisDeMover(funcoes, 'instrumentos', 1, 1)).toEqual([])
   })
 })

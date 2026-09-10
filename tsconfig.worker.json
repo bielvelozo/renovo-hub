@@ -14,6 +14,7 @@
     "src/api/cliente.ts",
     "src/api/erros.ts",
     "src/api/tipos.ts",
+    "src/componentes/ordenacao.ts",
     "src/escalas/equipe.ts",
     "src/escalas/mes.ts",
     "src/escalas/rascunho.ts",

@@ -107,6 +107,37 @@ a {
   margin-inline: auto;
 }
 
+.alca {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  min-height: var(--toque);
+  padding: 0;
+  border: none;
+  border-radius: var(--raio);
+  background: none;
+  color: var(--texto-2);
+  cursor: grab;
+  touch-action: none;
+}
+
+.alca:active {
+  cursor: grabbing;
+}
+
+.alca svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.item.arrastando {
+  background: var(--superficie-alta);
+  box-shadow: var(--sombra);
+}
+
 .chips.formacao {
   flex-direction: column;
   align-items: stretch;

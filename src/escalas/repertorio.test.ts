@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { ItemApresentado, MusicaResumida } from '../api/tipos'
-import { capasDoItem, podeDescer, podeSubir, resumoDoItem, tituloDoItem } from './repertorio'
+import { capasDoItem, resumoDoItem, tituloDoItem } from './repertorio'
 
 const musica = (id: string, titulo: string): MusicaResumida => ({
   id,
@@ -85,14 +85,5 @@ describe('capasDoItem', () => {
 
     const cheio = { ...medley, trechos: [...medley.trechos, ...medley.trechos, ...medley.trechos] }
     expect(capasDoItem(cheio)).toHaveLength(4)
-  })
-})
-
-describe('mover', () => {
-  it('não sobe o primeiro nem desce o último', () => {
-    expect(podeSubir(0)).toBe(false)
-    expect(podeSubir(1)).toBe(true)
-    expect(podeDescer(2, 3)).toBe(false)
-    expect(podeDescer(1, 3)).toBe(true)
   })
 })

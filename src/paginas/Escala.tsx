@@ -7,12 +7,15 @@ import { usarAcao } from '../api/usarAcao'
 import type { Acao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
 import { Barra } from '../componentes/Barra'
+import { Alca } from '../componentes/Alca'
 import { Capa } from '../componentes/Capa'
+import type { Ordenacao } from '../componentes/usarOrdenacao'
+import { usarOrdenacao } from '../componentes/usarOrdenacao'
 import { Folha } from '../componentes/Folha'
 import { FolhaDaPlaylist, FolhaDoWhatsapp } from '../componentes/FolhasDaEscala'
 import { Selos } from '../componentes/Selos'
 import { rotuloDoDia } from '../escalas/mes'
-import { capasDoItem, podeDescer, podeSubir, resumoDoItem, tituloDoItem } from '../escalas/repertorio'
+import { capasDoItem, resumoDoItem, tituloDoItem } from '../escalas/repertorio'
 import { usarEu } from '../sessao/sessao'
 
 type Aberta = 'menu' | 'editar' | 'cancelar' | 'whatsapp' | 'playlist' | null
@@ -107,20 +110,13 @@ export function Escala() {
         <h2>Repertório</h2>
 
         {escala.itens.length ? (
-          <ul className="lista cartao">
-            {escala.itens.map((item, indice) => (
-              <ItemDoRepertorio
-                key={item.id}
-                item={item}
-                indice={indice}
-                total={escala.itens.length}
-                podeEditar={dirige && escala.estado !== 'cancelada'}
-                acao={acao}
-                mudar={mudar}
-                escalaId={id}
-              />
-            ))}
-          </ul>
+          <Repertorio
+            itens={escala.itens}
+            podeEditar={dirige && escala.estado !== 'cancelada'}
+            acao={acao}
+            mudar={mudar}
+            escalaId={id}
+          />
         ) : (
           <p className="dica">Nenhuma música ainda.</p>
         )}
@@ -196,28 +192,64 @@ export function Escala() {
   )
 }
 
-function ItemDoRepertorio({
-  item,
-  indice,
-  total,
+function Repertorio({
+  itens,
   podeEditar,
   acao,
   mudar,
   escalaId,
 }: {
-  item: ItemApresentado
-  indice: number
-  total: number
+  itens: ItemApresentado[]
   podeEditar: boolean
   acao: Acao
   mudar: Mudanca
   escalaId: string
 }) {
+  const ordenacao = usarOrdenacao(itens.length, (de, para) =>
+    mudar(`/api/escalas/${escalaId}/itens/${itens[de].id}`, { metodo: 'PATCH', corpo: { ordem: para } }),
+  )
+
+  return (
+    <ul className="lista cartao">
+      {ordenacao.ordem.map((original, indice) => (
+        <ItemDoRepertorio
+          key={itens[original].id}
+          item={itens[original]}
+          indice={indice}
+          podeEditar={podeEditar}
+          acao={acao}
+          mudar={mudar}
+          escalaId={escalaId}
+          ordenacao={ordenacao}
+        />
+      ))}
+    </ul>
+  )
+}
+
+function ItemDoRepertorio({
+  item,
+  indice,
+  podeEditar,
+  acao,
+  mudar,
+  escalaId,
+  ordenacao,
+}: {
+  item: ItemApresentado
+  indice: number
+  podeEditar: boolean
+  acao: Acao
+  mudar: Mudanca
+  escalaId: string
+  ordenacao: Ordenacao
+}) {
   const caminho = `/api/escalas/${escalaId}/itens/${item.id}`
   const titulo = tituloDoItem(item)
 
   return (
-    <li className="item">
+    <li className={`item${ordenacao.arrastando === indice ? ' arrastando' : ''}`} ref={ordenacao.linha(indice)}>
+      {podeEditar && <Alca rotulo={titulo} {...ordenacao.alca(indice)} />}
       <Capa musicas={capasDoItem(item)} />
 
       <div className="cresce">
@@ -232,24 +264,6 @@ function ItemDoRepertorio({
 
       {podeEditar && (
         <div className="acoes">
-          <button
-            type="button"
-            className="botao secundario icone"
-            aria-label={`Subir ${titulo}`}
-            disabled={acao.ocupado || !podeSubir(indice)}
-            onClick={() => mudar(caminho, { metodo: 'PATCH', corpo: { ordem: indice - 1 } })}
-          >
-            ↑
-          </button>
-          <button
-            type="button"
-            className="botao secundario icone"
-            aria-label={`Descer ${titulo}`}
-            disabled={acao.ocupado || !podeDescer(indice, total)}
-            onClick={() => mudar(caminho, { metodo: 'PATCH', corpo: { ordem: indice + 1 } })}
-          >
-            ↓
-          </button>
           <button
             type="button"
             className="botao secundario icone"

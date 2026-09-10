@@ -22,11 +22,3 @@ export function capasDoItem(item: ItemApresentado): MusicaResumida[] {
   if (item.tipo === 'medley') return item.trechos.slice(0, MAXIMO_DE_CAPAS).map((trecho) => trecho.musica)
   return [item.musica]
 }
-
-export function podeSubir(indice: number): boolean {
-  return indice > 0
-}
-
-export function podeDescer(indice: number, total: number): boolean {
-  return indice < total - 1
-}

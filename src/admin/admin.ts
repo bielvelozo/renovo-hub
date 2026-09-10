@@ -1,6 +1,7 @@
 import type { Formacao, MembroComAcesso } from '../api/tipos'
+import { mover } from '../componentes/ordenacao'
 import { formatarDia } from '../dominio'
-import type { Funcao, Membro, Grupo } from '../dominio'
+import type { Funcao, Grupo, Membro } from '../dominio'
 
 export type SecaoDoAdmin = {
   caminho: string
@@ -110,4 +111,16 @@ export function textoDaListaEsqueci(ligada: boolean): string {
 
 export function alternar(lista: string[], valor: string): string[] {
   return lista.includes(valor) ? lista.filter((item) => item !== valor) : [...lista, valor]
+}
+
+export type NovaOrdem = { id: string; ordem: number }
+
+export function ordensDepoisDeMover(funcoes: Funcao[], grupo: Grupo, de: number, para: number): NovaOrdem[] {
+  const inteira = porGrupo(funcoes).flatMap((cada) =>
+    cada.grupo === grupo ? mover(cada.funcoes, de, para) : cada.funcoes,
+  )
+
+  return inteira
+    .map((funcao, indice) => ({ id: funcao.id, ordem: indice + 1 }))
+    .filter(({ id, ordem }) => funcoes.find((funcao) => funcao.id === id)?.ordem !== ordem)
 }

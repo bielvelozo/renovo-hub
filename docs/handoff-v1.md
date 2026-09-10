@@ -2,6 +2,13 @@
 
 Escrito em 05/09/2026 pra uma sessão nova, sem contexto nenhum, conseguir fazer ajustes no app sem quebrar o que já foi decidido. Numa sessão nova, o primeiro pedido deve ser: **"leia docs/handoff-v1.md antes de qualquer coisa"**. Depois, descreva o ajuste.
 
+## Estado em 09/09/2026
+
+- O app está **publicado** em `https://renovo-hub.renovo.workers.dev`, na conta Cloudflare do Gabriel, com banco D1 `renovo-hub`, os quatro secrets e a semente de verdade (7 Funções, o Gabriel como Admin, 101 Músicas). Testado no iPhone, instalado na tela inicial. **Continua sem `git push`**: o remoto não tem nada.
+- Dez ajustes do teste no celular entraram em 09/09/2026, um por commit, registrados na seção **Ajustes de 09/09/2026** de [construcao-v1/decisoes.md](construcao-v1/decisoes.md): Backing saiu; naipe virou Grupo; a rolagem parou de esticar; os passos de instalação ganharam ícones; a playlist responde na hora; Tom original e Cifra Club entraram na Escala; reordenar virou arrastar; a ordem sumiu da tela do Admin; os botões da Formação dizem o que fazem.
+- Migrations agora são **oito**: 0006 tira o Backing, 0007 renomeia a coluna `naipe` para `grupo`, 0008 cria `videos_conferidos`. **As três ainda não foram aplicadas no banco publicado.**
+- Falta provar: **push em aparelho real**. O banco publicado mostrava zero inscrições na última conferência.
+
 ## Estado em 06/09/2026
 
 - Dez ajustes pedidos pelo Gabriel entraram na `main` em 06/09/2026, cada um num commit, todos registrados na seção **Ajustes depois da V1** de [construcao-v1/decisoes.md](construcao-v1/decisoes.md): Santa Ceia no segundo domingo; playlist com o Repertório inteiro; Formação só com Músicos; único Membro do Som escalado sozinho ao criar a Escala; "Escala avulsa" virou "Nova escala"; 19 textos de regra saíram das telas; último Tom e última vez tocada viraram selos; ordenação, filtro de tocadas uma vez e aba de Sugestões na escolha da música; Tom original editável na tela da Música; busca por nome no YouTube.
@@ -52,7 +59,7 @@ O smoke apaga o D1 local, semeia com `--demo`, sobe o Worker sozinho e percorre 
 - `src/dominio/`: domínio puro em TypeScript, sem DOM e sem D1, com testes ao lado. Estados da Escala com meia-noite de Brasília, Execuções derivadas, último Tom, cobertura, grupos da Equipe, texto do WhatsApp, playlist, presença. Usado pelo Worker e pelo front. Regra: lógica de negócio nova entra aqui, nunca em componente ou rota.
 - `src/`: front React com Vite. Pastas por tela: `inicio`, `escalas`, `musicas`, `perfil`, `admin`, `instalacao`; `casca` (abas e rotas), `componentes`, `estilo` (tokens de tema escuro e claro), `tema`, `sessao`, `push`, `api` (cliente HTTP). `src/semente/` e `src/fumaca/` são a parte pura dos scripts de seed e smoke, testadas no vitest.
 - `worker/`: API Hono e cron. `index.ts`, `autenticacao.ts`, `rotas/` (uma por área), `dados/` (acesso ao D1), `http/`, `push/` (VAPID via WebCrypto e fila), `testes/` (rodam no pool de Workers com D1 real).
-- `migrations/`: cinco migrations SQL do D1; migration nova é um arquivo novo, nunca editar as existentes.
+- `migrations/`: oito migrations SQL do D1; migration nova é um arquivo novo, nunca editar as existentes.
 - `seed/`: `membros.csv` (só Gabriel) e `playlist.csv` (101 vídeos).
 - `scripts/`: `seed.ts`, `convite.ts`, `vapid.ts`, `icones.ts` (gera os ícones do PWA a partir da logo), `smoke.ts` com `fumaca/`, e `ralph.ps1` com `ralph-prompt.md`, o loop autônomo.
 - `docs/brand/`: logo real em `logo/`, cores medidas e fontes em `README.md`.
