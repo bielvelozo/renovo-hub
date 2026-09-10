@@ -4,7 +4,7 @@ Escrito em 05/09/2026 pra uma sessão nova, sem contexto nenhum, conseguir fazer
 
 ## Estado em 09/09/2026
 
-- O app está **publicado** em `https://renovo-hub.renovo.workers.dev`, na conta Cloudflare do Gabriel, com banco D1 `renovo-hub`, os quatro secrets e a semente de verdade (7 Funções, o Gabriel como Admin, 101 Músicas). Testado no iPhone, instalado na tela inicial. **Continua sem `git push`**: o remoto não tem nada.
+- O app está **publicado** em `https://renovo-hub.renovo.workers.dev`, na conta Cloudflare do Gabriel, com banco D1 `renovo-hub`, os quatro secrets e a semente de verdade (7 Funções, o Gabriel como Admin, 101 Músicas). Testado no iPhone, instalado na tela inicial. O código está em **https://github.com/bielvelozo/renovo-hub**, repositório privado, com as oito branches (`main`, `v1`, `prototype/fluxo-ministro` e as cinco de pesquisa).
 - Dez ajustes do teste no celular entraram em 09/09/2026, um por commit, registrados na seção **Ajustes de 09/09/2026** de [construcao-v1/decisoes.md](construcao-v1/decisoes.md): Backing saiu; naipe virou Grupo; a rolagem parou de esticar; os passos de instalação ganharam ícones; a playlist responde na hora; Tom original e Cifra Club entraram na Escala; reordenar virou arrastar; a ordem sumiu da tela do Admin; os botões da Formação dizem o que fazem.
 - Migrations agora são **oito**: 0006 tira o Backing, 0007 renomeia a coluna `naipe` para `grupo`, 0008 cria `videos_conferidos`. **As três ainda não foram aplicadas no banco publicado.**
 - Falta provar: **push em aparelho real**. O banco publicado mostrava zero inscrições na última conferência.
@@ -31,8 +31,10 @@ Escrito em 05/09/2026 pra uma sessão nova, sem contexto nenhum, conseguir fazer
 4. [.scratch/wayfinder-v1/spec-v1.md](../.scratch/wayfinder-v1/spec-v1.md): a spec da V1. A tabela **Premissas assumidas** no fim lista o que foi decidido só pra construir e ainda vai ser revisto: stack, acesso, notificações, importação, identidade, visão do Membro, onboarding, tom original, cadastro.
 5. [docs/construcao-v1/decisoes.md](construcao-v1/decisoes.md): 148 decisões que as iterações do loop tomaram sozinhas, com o porquê. Antes de "consertar" algo que parece estranho no código, procurar aqui: quase sempre foi deliberado.
 6. [.scratch/wayfinder-v1/map.md](../.scratch/wayfinder-v1/map.md) e `issues/`: o mapa de decisões. Tickets ainda abertos: 05 cadastro inicial, 07 acesso e permissões, 08 notificações, 09 stack, 10 e 11 importação, 12 identidade visual, 14 visão do Membro, 15 onboarding. O 21 (tom original no Cifra Club) foi fechado em 06/09/2026, com [ADR 0002](adr/0002-ler-o-tom-no-cifra-club.md). Uma decisão nova sobre esses assuntos deve fechar o ticket correspondente.
-7. A branch `prototype/fluxo-ministro` é a referência de comportamento do fluxo do Ministro, testada pelo Gabriel com dez pontos de feedback, todos absorvidos na V1.
+7. A branch `prototype/fluxo-ministro` é a referência de comportamento do fluxo do Ministro, testada pelo Gabriel com dez pontos de feedback, todos absorvidos na V1. Está no remoto, como as cinco `research/*` que sustentam o ADR 0002 e os tickets.
 8. `ORCHESTRATION.md` na raiz: existe só no disco desta máquina, fora do git, e é o original do item 5. Não recriar, não apagar.
+
+O que **não** está no remoto, e some se a máquina morrer: o `ORCHESTRATION.md` do item 8 e o `.dev.vars` com as chaves VAPID e a do YouTube. As chaves também vivem como `wrangler secret` no Cloudflare, mas as VAPID não dá pra ler de volta de lá — trocá-las derruba as inscrições de push de todo mundo. Vale uma cópia fora daqui.
 
 ## Como rodar
 
@@ -69,7 +71,7 @@ O smoke apaga o D1 local, semeia com `--demo`, sobe o Worker sozinho e percorre 
 - Tudo em PT-BR: código, textos de tela, commits, testes. Commits em português, um assunto por commit, sem linha de atribuição.
 - Sem comentário no código, salvo o que explica um porquê não óbvio.
 - TDD: teste vermelho, código, teste verde. Componentes sem lógica podem ficar sem teste; regra de negócio nunca.
-- Trabalhar na `main` ou numa branch criada a partir dela. Não dar `git push` sem o Gabriel pedir.
+- Trabalhar na `main` ou numa branch criada a partir dela. O remoto existe desde 10/09/2026, mas não dar `git push` sem o Gabriel pedir.
 - Ajuste que muda domínio atualiza `CONTEXT.md` e `escala.md` na mesma sessão; ajuste que contraria uma decisão de `construcao-v1/decisoes.md` registra a decisão nova lá embaixo, com data e motivo.
 - Ajuste que resolve um ticket aberto do mapa fecha o ticket (`Status: resolved`, `## Answer`) e aponta no `map.md`.
 
