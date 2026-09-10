@@ -81,14 +81,35 @@ export function partesDoTom(tom: string): { nota: string; menor: boolean } {
   return { nota: achado[1], menor: achado[2] === 'm' }
 }
 
-export function tituloParaBusca(titulo: string): string {
-  const limpo = titulo
-    .split(/\||•|\s[-–—]\s/)[0]
-    .replace(/\([^)]*\)|\[[^\]]*\]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
+// O YouTube escreve tanto "Música - Artista" quanto "Artista - Música", e nenhum dos
+// dois lados é confiável: os dois viram candidatos e quem decide é `achadoCombina`.
+export function pedacosDoTitulo(titulo: string): string[] {
+  const pedacos = titulo
+    .split(/\||•|\s[-–—]\s/)
+    .map((pedaco) =>
+      pedaco
+        .replace(/\([^)]*\)|\[[^\]]*\]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim(),
+    )
+    .filter(Boolean)
 
-  return limpo || titulo.trim()
+  return pedacos.length ? pedacos : [titulo.trim()]
+}
+
+// A busca do Cifra Club é frouxa: procurar pelo nome do artista devolve qualquer
+// música dele. Só vale o achado cujo nome esteja mesmo no título que veio do YouTube.
+export function achadoCombina(nomeAchado: string, tituloOriginal: string): boolean {
+  const alvo = normalizar(tituloOriginal)
+  const palavras = normalizar(nomeAchado.replace(/\([^)]*\)/g, ' '))
+    .split(' ')
+    .filter((palavra) => palavra.length > 2)
+
+  if (!palavras.length) return false
+
+  const dentro = palavras.filter((palavra) => alvo.includes(palavra)).length
+
+  return dentro / palavras.length >= 0.7
 }
 
 const DIAS_PARA_RECONFERIR = 7

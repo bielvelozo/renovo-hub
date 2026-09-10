@@ -1,3 +1,4 @@
+import { achadoCombina, pedacosDoTitulo } from '../../src/dominio'
 export type AchadoNoCifraClub = {
   titulo: string
   artista: string
@@ -5,16 +6,22 @@ export type AchadoNoCifraClub = {
   url: string
 }
 
-// O artista de uma Música importada é o canal do YouTube, que muitas vezes não é o
-// artista de verdade ("ONE Sounds" por Eric & Evellyn Emerick) e afunda a busca. Por
-// isso a segunda tentativa é só o título.
+// Cada pedaço do título vira candidato, com e sem o artista: o YouTube tanto escreve
+// "Artista - Música" quanto "Música - Artista", e o artista às vezes é só o canal
+// ("ONE Sounds" por Eric & Evellyn Emerick). Vence o primeiro achado que combine com
+// o título de verdade — sem essa conferência, procurar pelo nome do artista devolve
+// qualquer música dele.
 export async function acharNoCifraClub(titulo: string, artista = ''): Promise<AchadoNoCifraClub | null> {
-  const termos = artista.trim() ? [`${titulo} ${artista.trim()}`, titulo] : [titulo]
+  const nome = artista.trim()
+  const termos = pedacosDoTitulo(titulo).flatMap((pedaco) => (nome ? [`${pedaco} ${nome}`, pedaco] : [pedaco]))
 
   let achado = null
-  for (const termo of termos) {
-    achado = await primeiroDaBusca(termo)
-    if (achado) break
+  for (const termo of [...new Set(termos)]) {
+    const candidato = await primeiroDaBusca(termo)
+    if (candidato && achadoCombina(candidato.titulo, titulo)) {
+      achado = candidato
+      break
+    }
   }
 
   if (!achado) return null

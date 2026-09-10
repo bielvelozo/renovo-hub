@@ -295,6 +295,27 @@ describe('tom pelo Cifra Club', () => {
     expect((await pedir('/api/cifraclub?termo=%20', 'marcos')).status).toBe(422)
   })
 
+  it('recusa o achado que não combina com o título e segue tentando', async () => {
+    const rede = fingirRede({
+      'solr.sscdn.co': {
+        status: 200,
+        corpo: {
+          response: {
+            docs: [{ t: '2', m: 'Quero Conhecer Jesus', a: 'Alessandro Vilas Boas', d: 'avb', u: 'quero' }],
+          },
+        },
+      },
+    })
+
+    const resposta = await pedir(
+      '/api/cifraclub?termo=Alessandro%20Vilas%20Boas%20-%20Vem%20Habitar&artista=Alessandro%20Vilas%20Boas',
+      'marcos',
+    )
+
+    expect(await resposta.json()).toEqual({ achado: null })
+    expect(rede.chamadas.length).toBeGreaterThan(1)
+  })
+
   it('tenta de novo só com o título quando o canal afunda a busca', async () => {
     const rede = fingirRede({
       'solr.sscdn.co': { status: 200, corpo: { response: { docs: [] } } },

@@ -13,7 +13,8 @@ import {
   mesesDesde,
   partesDoTom,
   precisaReconferir,
-  tituloParaBusca,
+  achadoCombina,
+  pedacosDoTitulo,
   tomDe,
   videoIdDoLink,
 } from './musica'
@@ -201,25 +202,47 @@ describe('tom maior e menor', () => {
   })
 })
 
-describe('tituloParaBusca', () => {
-  it('joga fora o canal depois do pipe e a marca de ao vivo', () => {
-    expect(tituloParaBusca('Meia Noite (Ao Vivo) | fhop music')).toBe('Meia Noite')
+describe('pedacosDoTitulo', () => {
+  it('separa os dois lados do travessão, porque o YouTube escreve dos dois jeitos', () => {
+    expect(pedacosDoTitulo('Alessandro Vilas Boas - Vem Habitar (Clipe Oficial)')).toEqual([
+      'Alessandro Vilas Boas',
+      'Vem Habitar',
+    ])
+    expect(pedacosDoTitulo('Permanecerei - Eric & Evellyn Emerick')).toEqual([
+      'Permanecerei',
+      'Eric & Evellyn Emerick',
+    ])
   })
 
-  it('corta o que vem depois do travessão e dos convidados', () => {
-    expect(tituloParaBusca('Firme Fundamento (Ao Vivo) - Central MSC feat. Ana Paula Rocha')).toBe('Firme Fundamento')
+  it('separa no pipe e no bolinha, e tira o que está entre parênteses', () => {
+    expect(pedacosDoTitulo('Meia Noite (Ao Vivo) | fhop music')).toEqual(['Meia Noite', 'fhop music'])
+    expect(pedacosDoTitulo('Grato Sou (I Thank God) - Ao vivo • DROPS')).toEqual(['Grato Sou', 'Ao vivo', 'DROPS'])
   })
 
-  it('corta no bolinha e tira o subtítulo entre parênteses', () => {
-    expect(tituloParaBusca('Grato Sou (I Thank God) - Ao vivo • DROPS')).toBe('Grato Sou')
+  it('devolve o título cru quando não há o que separar', () => {
+    expect(pedacosDoTitulo('Permanecerei')).toEqual(['Permanecerei'])
+    expect(pedacosDoTitulo('(Ao Vivo)')).toEqual(['(Ao Vivo)'])
+  })
+})
+
+describe('achadoCombina', () => {
+  const titulo = 'Alessandro Vilas Boas - Vem Habitar (Clipe Oficial)'
+
+  it('aceita quando o nome achado está no título original', () => {
+    expect(achadoCombina('Vem Habitar', titulo)).toBe(true)
   })
 
-  it('aguenta título sem nada pra cortar', () => {
-    expect(tituloParaBusca('Permanecerei')).toBe('Permanecerei')
+  it('recusa outra música do mesmo artista', () => {
+    expect(achadoCombina('Quero Conhecer Jesus', titulo)).toBe(false)
   })
 
-  it('devolve o título cru quando o corte esvaziaria tudo', () => {
-    expect(tituloParaBusca('(Ao Vivo)')).toBe('(Ao Vivo)')
+  it('não se importa com acento, caixa nem subtítulo', () => {
+    expect(achadoCombina('Lugar Secreto', 'LUGAR SECRETO | CLIPE OFICIAL | GABRIELA ROCHA')).toBe(true)
+    expect(achadoCombina('Grato Sou (I Thank God)', 'Grato Sou - Ao vivo • DROPS')).toBe(true)
+  })
+
+  it('recusa nome vazio', () => {
+    expect(achadoCombina('', titulo)).toBe(false)
   })
 })
 
