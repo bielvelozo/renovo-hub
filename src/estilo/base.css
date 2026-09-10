@@ -10,12 +10,20 @@ body,
   height: 100%;
 }
 
-/* Quem rola é `.conteudo`, não a página. Sem isto o iPhone estica a tela inteira
-   no fim da lista e abre um vazio acima do cabeçalho e abaixo das abas. */
+/* Dentro do app quem rola é `.conteudo`, não a página. Sem isto o iPhone estica a
+   tela inteira no fim da lista e abre um vazio acima do cabeçalho e abaixo das abas. */
 html,
 body {
   overflow: hidden;
   overscroll-behavior: none;
+}
+
+/* As telas de fora da casca (convite, «esqueci», instalação) não têm `.conteudo`:
+   sem rolagem aqui elas ficam cortadas. Com a casca dentro, `#raiz` tem exatamente
+   a altura da tela e não rola, então o elástico continua fora. */
+#raiz {
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 body {
