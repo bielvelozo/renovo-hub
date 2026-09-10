@@ -93,14 +93,14 @@ export function Equipe() {
           gravar={gravar}
           formacoes={
             secao.chave === 'musicos' ? (
-              <div className="chips">
+              <div className="chips formacao">
                 <button
                   type="button"
                   className="botao pequeno"
                   disabled={acao.ocupado || lista.length === 0}
                   onClick={() => (lista.length === 1 ? aplicar(lista[0].id) : abrirEscolha(true))}
                 >
-                  {lista.length === 1 ? `Aplicar ${lista[0].nome}` : 'Aplicar Formação'}
+                  {lista.length === 1 ? `Escalar a ${lista[0].nome}` : 'Escalar uma Formação'}
                 </button>
                 <button
                   type="button"
@@ -108,8 +108,12 @@ export function Equipe() {
                   disabled={acao.ocupado || atual.equipe.length === 0}
                   onClick={() => abrirSalvar(true)}
                 >
-                  Salvar Formação
+                  Salvar como Formação
                 </button>
+                <p className="dica">
+                  Formação é um grupo de músicos guardado pra reusar: escalar traz todos de uma vez, salvar guarda os
+                  que estão aqui agora.
+                </p>
               </div>
             ) : null
           }
@@ -117,7 +121,8 @@ export function Equipe() {
       ))}
 
       {escolhendo && (
-        <Folha titulo="Aplicar Formação" fechar={() => abrirEscolha(false)}>
+        <Folha titulo="Escalar uma Formação" fechar={() => abrirEscolha(false)}>
+          <p className="dica">Põe todo mundo da Formação na Equipe de uma vez. Quem já está continua.</p>
           <ul className="lista">
             {lista.map((formacao) => (
               <li key={formacao.id}>
@@ -256,7 +261,7 @@ function FolhaDeSalvar({
   }
 
   return (
-    <Folha titulo="Salvar Formação" fechar={fechar}>
+    <Folha titulo="Salvar como Formação" fechar={fechar}>
       <p className="dica">
         Guarda os Músicos que estão na Equipe agora.
       </p>

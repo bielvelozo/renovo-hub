@@ -107,6 +107,16 @@ a {
   margin-inline: auto;
 }
 
+.chips.formacao {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.chips.formacao .dica {
+  margin: 0;
+}
+
 .abas {
   flex: none;
   display: flex;
