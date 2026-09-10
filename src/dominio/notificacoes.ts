@@ -94,7 +94,7 @@ function nomeDaEscala(escala: Escala): string {
   return escala.santaCeia ? 'Santa Ceia' : escala.rotulo
 }
 
-// Sem gênero no cadastro de Função: o «a» final acerta os naipes do ministério
+// Sem gênero no cadastro de Função: o «a» final acerta os grupos do ministério
 // (guitarra, bateria) e o resto cai no masculino.
 function comPreposicao(nome: string): string {
   return (nome.endsWith('a') ? 'na ' : 'no ') + nome

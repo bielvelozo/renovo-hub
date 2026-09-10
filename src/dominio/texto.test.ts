@@ -28,7 +28,7 @@ describe('descricaoDoItem', () => {
 })
 
 describe('textoParaWhatsApp', () => {
-  it('escreve título, Equipe por naipe, Repertório numerado com links e a playlist', () => {
+  it('escreve título, Equipe por grupo, Repertório numerado com links e a playlist', () => {
     expect(textoParaWhatsApp(m, 'e0830')).toBe(
       [
         '*Culto de Domingo 18h · 30/08*',

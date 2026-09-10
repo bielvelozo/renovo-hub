@@ -1,4 +1,4 @@
-import type { EntradaEquipe, Funcao, Membro, Naipe } from '../dominio'
+import type { EntradaEquipe, Funcao, Membro, Grupo } from '../dominio'
 
 export type ChaveDaSecao = 'vocal' | 'musicos' | 'som'
 
@@ -11,7 +11,7 @@ export type MembroDaSecao = {
 
 export type SecaoDaEquipe = {
   chave: ChaveDaSecao
-  naipe: Naipe
+  grupo: Grupo
   nome: string
   membros: MembroDaSecao[]
 }
@@ -22,9 +22,9 @@ export type EstadoNaEquipe = {
 }
 
 const SECOES: Omit<SecaoDaEquipe, 'membros'>[] = [
-  { chave: 'vocal', naipe: 'vocal', nome: 'Vocal' },
-  { chave: 'musicos', naipe: 'instrumentos', nome: 'Músicos' },
-  { chave: 'som', naipe: 'tecnica', nome: 'Som' },
+  { chave: 'vocal', grupo: 'vocal', nome: 'Vocal' },
+  { chave: 'musicos', grupo: 'instrumentos', nome: 'Músicos' },
+  { chave: 'som', grupo: 'tecnica', nome: 'Som' },
 ]
 
 export function funcoesDoMembro(membro: Membro, funcoes: Funcao[]): Funcao[] {
@@ -46,7 +46,7 @@ export function secoesDaEquipe(membros: MembroComPush[], funcoes: Funcao[]): Sec
 
   return SECOES.map((secao) => ({
     ...secao,
-    membros: linhas.filter((linha) => naipeQueManda(linha.funcoes) === secao.naipe),
+    membros: linhas.filter((linha) => grupoQueManda(linha.funcoes) === secao.grupo),
   }))
 }
 
@@ -54,7 +54,7 @@ export function musicosDaFormacao(membros: MembroComPush[], funcoes: Funcao[]): 
   return membros
     .map((membro) => ({
       membro,
-      funcoes: funcoesDoMembro(membro, funcoes).filter((funcao) => funcao.naipe === 'instrumentos'),
+      funcoes: funcoesDoMembro(membro, funcoes).filter((funcao) => funcao.grupo === 'instrumentos'),
     }))
     .filter((linha) => linha.funcoes.length > 0)
 }
@@ -90,8 +90,8 @@ export function comEntrada(equipe: EntradaEquipe[], membroId: string, proximo: E
     : [...equipe, nova]
 }
 
-function naipeQueManda(funcoes: Funcao[]): Naipe {
-  if (funcoes.some((funcao) => funcao.naipe === 'vocal')) return 'vocal'
-  if (funcoes.some((funcao) => funcao.naipe === 'instrumentos')) return 'instrumentos'
+function grupoQueManda(funcoes: Funcao[]): Grupo {
+  if (funcoes.some((funcao) => funcao.grupo === 'vocal')) return 'vocal'
+  if (funcoes.some((funcao) => funcao.grupo === 'instrumentos')) return 'instrumentos'
   return 'tecnica'
 }

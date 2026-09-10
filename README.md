@@ -77,7 +77,7 @@ Depois do primeiro Admin, os convites saem pela tela: **Admin → Convites e ace
 
 `npm run db:seed` é idempotente e carrega:
 
-- as 8 Funções (vocal e backing no naipe Vocal; guitarra, violão, baixo, bateria e teclado em Músicos; som em Som);
+- as 7 Funções (vocal no Grupo Vocal; guitarra, violão, baixo, bateria e teclado em Músicos; som em Som);
 - os Membros de `seed/membros.csv`, que começa só com `Gabriel,guitarra,0,1`;
 - a Formação "Banda", vazia até alguém montar;
 - as 101 Músicas de `seed/playlist.csv`, todas como Legado e marcadas para revisão.

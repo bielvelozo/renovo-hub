@@ -144,7 +144,7 @@ function conferirEntradas(m: Ministerio, entradas: EntradaDaFormacao[]): string 
     for (const funcaoId of entrada.funcoes) {
       const funcao = m.funcoes.find((f) => f.id === funcaoId)
       if (!funcao) return `Função desconhecida: ${funcaoId}.`
-      if (funcao.naipe !== 'instrumentos') return FORMACAO_SO_DE_MUSICOS
+      if (funcao.grupo !== 'instrumentos') return FORMACAO_SO_DE_MUSICOS
     }
   }
 

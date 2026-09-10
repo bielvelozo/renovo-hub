@@ -1,4 +1,4 @@
-export type Naipe = 'vocal' | 'instrumentos' | 'tecnica'
+export type Grupo = 'vocal' | 'instrumentos' | 'tecnica'
 
 export type EstadoEscala = 'agendada' | 'realizada' | 'cancelada'
 
@@ -7,7 +7,7 @@ export type TipoItem = 'inteira' | 'trecho' | 'medley'
 export type Funcao = {
   id: string
   nome: string
-  naipe: Naipe
+  grupo: Grupo
   ordem: number
 }
 

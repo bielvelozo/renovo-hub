@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import { porNaipe, proximaOrdem } from '../../admin/admin'
+import { porGrupo, proximaOrdem } from '../../admin/admin'
 import { api } from '../../api/cliente'
 import { usarAcao } from '../../api/usarAcao'
 import { usarBusca } from '../../api/usarBusca'
 import { Barra } from '../../componentes/Barra'
 import { Folha } from '../../componentes/Folha'
-import type { Funcao, Naipe } from '../../dominio'
+import type { Funcao, Grupo } from '../../dominio'
 
-const NAIPES: { valor: Naipe; rotulo: string }[] = [
+const GRUPOS: { valor: Grupo; rotulo: string }[] = [
   { valor: 'vocal', rotulo: 'Vocal' },
   { valor: 'instrumentos', rotulo: 'Músicos' },
   { valor: 'tecnica', rotulo: 'Som' },
@@ -41,12 +41,12 @@ export function Funcoes() {
 A ordem manda na posição em todas as listas.
       </p>
 
-      {porNaipe(funcoes).map((grupo) => (
-        <div key={grupo.naipe} className="secao">
+      {porGrupo(funcoes).map((grupo) => (
+        <div key={grupo.grupo} className="secao">
           <h2>{grupo.nome}</h2>
 
           {grupo.funcoes.length === 0 ? (
-            <p className="dica">Nenhuma Função neste naipe.</p>
+            <p className="dica">Nenhuma Função neste grupo.</p>
           ) : (
             <ul className="lista cartao">
               {grupo.funcoes.map((funcao) => (
@@ -95,7 +95,7 @@ function FolhaDaFuncao({
   gravar: (tarefa: () => Promise<void>) => void
 }) {
   const [nome, escrever] = useState(funcao?.nome ?? '')
-  const [naipe, escolher] = useState<Naipe>(funcao?.naipe ?? 'instrumentos')
+  const [grupo, escolher] = useState<Grupo>(funcao?.grupo ?? 'instrumentos')
   const [ordem, mudarOrdem] = useState(String(funcao?.ordem ?? ordemNova))
   const [confirmando, confirmar] = useState(false)
 
@@ -104,7 +104,7 @@ function FolhaDaFuncao({
 
   const salvar = () =>
     gravar(async () => {
-      const corpo = { nome: nome.trim(), naipe, ordem: numero }
+      const corpo = { nome: nome.trim(), grupo, ordem: numero }
 
       if (funcao) await api(`/api/admin/funcoes/${funcao.id}`, { metodo: 'PATCH', corpo })
       else await api('/api/admin/funcoes', { metodo: 'POST', corpo })
@@ -120,13 +120,13 @@ function FolhaDaFuncao({
       </label>
 
       <div className="campo">
-        <span className="rotulo">Naipe</span>
-        <div className="segmento" role="group" aria-label="Naipe">
-          {NAIPES.map((opcao) => (
+        <span className="rotulo">Grupo</span>
+        <div className="segmento" role="group" aria-label="Grupo">
+          {GRUPOS.map((opcao) => (
             <button
               key={opcao.valor}
               type="button"
-              aria-pressed={opcao.valor === naipe}
+              aria-pressed={opcao.valor === grupo}
               onClick={() => escolher(opcao.valor)}
             >
               {opcao.rotulo}

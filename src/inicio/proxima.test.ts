@@ -22,10 +22,10 @@ function escala(id: string, data: string, membros: string[], extra: Partial<Esca
 }
 
 const FUNCOES: Funcao[] = [
-  { id: 'vocal', nome: 'vocal', naipe: 'vocal', ordem: 1 },
-  { id: 'guitarra', nome: 'guitarra', naipe: 'instrumentos', ordem: 3 },
-  { id: 'violao', nome: 'Violão', naipe: 'instrumentos', ordem: 4 },
-  { id: 'som', nome: 'som', naipe: 'tecnica', ordem: 8 },
+  { id: 'vocal', nome: 'vocal', grupo: 'vocal', ordem: 1 },
+  { id: 'guitarra', nome: 'guitarra', grupo: 'instrumentos', ordem: 3 },
+  { id: 'violao', nome: 'Violão', grupo: 'instrumentos', ordem: 4 },
+  { id: 'som', nome: 'som', grupo: 'tecnica', ordem: 8 },
 ]
 
 describe('próxima Escala do Membro', () => {

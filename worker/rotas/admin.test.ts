@@ -31,7 +31,7 @@ type MembroJson = {
   push?: number
 }
 
-type FuncaoJson = { id: string; nome: string; naipe: string; ordem: number }
+type FuncaoJson = { id: string; nome: string; grupo: string; ordem: number }
 
 beforeEach(async () => {
   await limparBanco()
@@ -66,7 +66,7 @@ describe('listas abertas ao Membro', () => {
     const { funcoes } = await corpoDe<{ funcoes: FuncaoJson[] }>(await pedir('/api/funcoes', 'julia'))
 
     expect(funcoes.map((f) => f.id)).toEqual(['vocal', 'guitarra'])
-    expect(funcoes[0]).toEqual({ id: 'vocal', nome: 'Vocal', naipe: 'vocal', ordem: 1 })
+    expect(funcoes[0]).toEqual({ id: 'vocal', nome: 'Vocal', grupo: 'vocal', ordem: 1 })
   })
 })
 
@@ -226,26 +226,26 @@ describe('Membros do Admin', () => {
 })
 
 describe('Funções do Admin', () => {
-  it('cria com naipe e ordem', async () => {
+  it('cria com grupo e ordem', async () => {
     const resposta = await pedir('/api/admin/funcoes', 'gabriel', {
       method: 'POST',
-      body: JSON.stringify({ nome: 'Baixo', naipe: 'instrumentos', ordem: 4 }),
+      body: JSON.stringify({ nome: 'Baixo', grupo: 'instrumentos', ordem: 4 }),
     })
 
     expect(resposta.status).toBe(201)
-    expect(await corpoDe<FuncaoJson>(resposta)).toMatchObject({ nome: 'Baixo', naipe: 'instrumentos', ordem: 4 })
+    expect(await corpoDe<FuncaoJson>(resposta)).toMatchObject({ nome: 'Baixo', grupo: 'instrumentos', ordem: 4 })
   })
 
-  it('recusa naipe fora dos três', async () => {
+  it('recusa grupo fora dos três', async () => {
     const resposta = await pedir('/api/admin/funcoes', 'gabriel', {
       method: 'POST',
-      body: JSON.stringify({ nome: 'Dança', naipe: 'palco' }),
+      body: JSON.stringify({ nome: 'Dança', grupo: 'palco' }),
     })
 
     expect(resposta.status).toBe(422)
   })
 
-  it('edita nome, naipe e ordem', async () => {
+  it('edita nome, grupo e ordem', async () => {
     const resposta = await pedir('/api/admin/funcoes/guitarra', 'gabriel', {
       method: 'PATCH',
       body: JSON.stringify({ nome: 'Guitarra elétrica', ordem: 9 }),

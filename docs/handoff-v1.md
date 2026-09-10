@@ -19,7 +19,7 @@ Escrito em 05/09/2026 pra uma sessão nova, sem contexto nenhum, conseguir fazer
 ## Onde está a verdade, em ordem
 
 1. [CONTEXT.md](../CONTEXT.md): o glossário. Membro, Ministro, Função musical e técnica, Escala, Agendada, Realizada, Cancelada, Equipe, Repertório, Item, Trecho, Medley, Execução, Tom, Legado, Arquivada, Sugestão. Se um ajuste muda o significado de um termo, o glossário muda junto, na mesma sessão.
-2. [docs/dominio/escala.md](dominio/escala.md): estados, transições, regras da Execução derivada, Tom por Trecho, presença, naipes, Ministro como marca, Formação.
+2. [docs/dominio/escala.md](dominio/escala.md): estados, transições, regras da Execução derivada, Tom por Trecho, presença, Grupos de Funções, Ministro como marca, Formação.
 3. [docs/adr/0001](adr/0001-execucao-derivada-do-plano.md): por que a Execução é derivada do plano e não registrada. Difícil de reverter; não mexer sem ADR novo. E [docs/adr/0002](adr/0002-ler-o-tom-no-cifra-club.md): por que o app lê o tom no Cifra Club mesmo com o Aviso Legal do site proibindo extração — risco assumido pelo Gabriel, com a saída de emergência escrita lá.
 4. [.scratch/wayfinder-v1/spec-v1.md](../.scratch/wayfinder-v1/spec-v1.md): a spec da V1. A tabela **Premissas assumidas** no fim lista o que foi decidido só pra construir e ainda vai ser revisto: stack, acesso, notificações, importação, identidade, visão do Membro, onboarding, tom original, cadastro.
 5. [docs/construcao-v1/decisoes.md](construcao-v1/decisoes.md): 148 decisões que as iterações do loop tomaram sozinhas, com o porquê. Antes de "consertar" algo que parece estranho no código, procurar aqui: quase sempre foi deliberado.

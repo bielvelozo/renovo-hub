@@ -97,18 +97,18 @@ export async function fluxosDoAdmin(prova: Prova, cenario: Cenario): Promise<voi
   const percussao = exigir(
     await prova.api('/api/admin/funcoes', {
       cookie: cenario.gabriel,
-      corpo: { nome: 'Percussão', naipe: 'instrumentos', ordem: 9 },
+      corpo: { nome: 'Percussão', grupo: 'instrumentos', ordem: 9 },
     }),
     201,
     'criar Função',
   )
-  prova.conferir('criar Função grava naipe e ordem', percussao.naipe === 'instrumentos' && percussao.ordem === 9)
+  prova.conferir('criar Função grava grupo e ordem', percussao.grupo === 'instrumentos' && percussao.ordem === 9)
 
-  const naipeTorto = await prova.api('/api/admin/funcoes', {
+  const grupoTorto = await prova.api('/api/admin/funcoes', {
     cookie: cenario.gabriel,
-    corpo: { nome: 'Palco', naipe: 'palco' },
+    corpo: { nome: 'Palco', grupo: 'palco' },
   })
-  prova.conferir('naipe inventado devolve 422', naipeTorto.status === 422, naipeTorto.corpo?.erro)
+  prova.conferir('grupo inventado devolve 422', grupoTorto.status === 422, grupoTorto.corpo?.erro)
 
   const usada = await prova.api('/api/admin/funcoes/vocal', { metodo: 'DELETE', cookie: cenario.gabriel })
   prova.conferir('apagar Função já usada devolve 409', usada.status === 409, usada.corpo?.erro)

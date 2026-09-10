@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { alternar, avisoDeRemocao, porNaipe, resumoDeAcesso, textoDaRemocao } from '../../admin/admin'
+import { alternar, avisoDeRemocao, porGrupo, resumoDeAcesso, textoDaRemocao } from '../../admin/admin'
 import { api } from '../../api/cliente'
 import type { MembroComAcesso } from '../../api/tipos'
 import { usarAcao } from '../../api/usarAcao'
@@ -131,15 +131,15 @@ function FolhaDoMembro({
 
       <div className="campo">
         <span className="rotulo">Funções</span>
-        {porNaipe(funcoes).map((grupo) => (
-          <div key={grupo.naipe} className="grupo">
+        {porGrupo(funcoes).map((grupo) => (
+          <div key={grupo.grupo} className="grupo">
             <span className="dica">{grupo.nome}</span>
             <span className="chips">
               {grupo.funcoes.map((funcao) => (
                 <button
                   key={funcao.id}
                   type="button"
-                  className={`chip${funcao.naipe === 'tecnica' ? ' tecnica' : ''}`}
+                  className={`chip${funcao.grupo === 'tecnica' ? ' tecnica' : ''}`}
                   aria-pressed={escolhidas.includes(funcao.id)}
                   onClick={() => escolher(alternar(escolhidas, funcao.id))}
                 >

@@ -6,7 +6,7 @@ import { cookieDe, criarEscala, criarFuncao, criarMembro, limparBanco, porNaEqui
 const RAIZ = 'http://local.test'
 
 type PerfilJson = {
-  membro: { id: string; nome: string; ministro: boolean; inativo: boolean; funcoes: { id: string; nome: string; naipe: string }[] }
+  membro: { id: string; nome: string; ministro: boolean; inativo: boolean; funcoes: { id: string; nome: string; grupo: string }[] }
   escalasNoAno: number
   ultimaEscala: { id: string; data: string; titulo: string; estado: string } | null
   finsDeSemanaSeguidos: number
@@ -45,7 +45,7 @@ describe('GET /api/perfil/:id', () => {
     const corpo = await resposta.json<PerfilJson>()
 
     expect(corpo.membro).toMatchObject({ id: 'gabriel', nome: 'Gabriel', inativo: false })
-    expect(corpo.membro.funcoes).toEqual([{ id: 'vocal', nome: 'Vocal', naipe: 'vocal', ordem: 1 }])
+    expect(corpo.membro.funcoes).toEqual([{ id: 'vocal', nome: 'Vocal', grupo: 'vocal', ordem: 1 }])
     expect(corpo.escalasNoAno).toBe(NO_ANO)
     expect(corpo.ultimaEscala).toMatchObject({ id: 'e0', data: DOMINGOS[0], estado: 'realizada' })
     expect(corpo.finsDeSemanaSeguidos).toBe(3)

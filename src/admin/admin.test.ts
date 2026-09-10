@@ -8,7 +8,7 @@ import {
   alternar,
   avisoDeRemocao,
   dataDoEnvio,
-  porNaipe,
+  porGrupo,
   proximaOrdem,
   recusaDoArquivo,
   resumoDaFormacao,
@@ -63,9 +63,9 @@ describe('resumoDeAcesso', () => {
   })
 })
 
-describe('porNaipe', () => {
-  it('agrupa as Funções nos três naipes, cada um em ordem', () => {
-    const grupos = porNaipe([...FUNCOES].reverse())
+describe('porGrupo', () => {
+  it('agrupa as Funções nos três grupos, cada um em ordem', () => {
+    const grupos = porGrupo([...FUNCOES].reverse())
 
     expect(grupos.map((grupo) => grupo.nome)).toEqual(['Vocal', 'Músicos', 'Som'])
     expect(grupos[0].funcoes.map((funcao) => funcao.id)).toEqual(['vocal'])
@@ -73,8 +73,8 @@ describe('porNaipe', () => {
     expect(grupos[2].funcoes.map((funcao) => funcao.id)).toEqual(['som'])
   })
 
-  it('mantém o naipe vazio na lista, pra ele poder receber a primeira Função', () => {
-    const grupos = porNaipe(FUNCOES.filter((funcao) => funcao.naipe === 'vocal'))
+  it('mantém o grupo vazio na lista, pra ele poder receber a primeira Função', () => {
+    const grupos = porGrupo(FUNCOES.filter((funcao) => funcao.grupo === 'vocal'))
 
     expect(grupos).toHaveLength(3)
     expect(grupos[2].funcoes).toEqual([])

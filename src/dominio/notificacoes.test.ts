@@ -36,9 +36,9 @@ const m: Ministerio = {
     { id: 'davi', nome: 'Davi', funcoes: [], ministro: true, admin: false, inativo: false },
   ],
   funcoes: [
-    { id: 'baixo', nome: 'Baixo', naipe: 'instrumentos', ordem: 1 },
-    { id: 'guitarra', nome: 'Guitarra', naipe: 'instrumentos', ordem: 2 },
-    { id: 'vocal', nome: 'Vocal', naipe: 'vocal', ordem: 3 },
+    { id: 'baixo', nome: 'Baixo', grupo: 'instrumentos', ordem: 1 },
+    { id: 'guitarra', nome: 'Guitarra', grupo: 'instrumentos', ordem: 2 },
+    { id: 'vocal', nome: 'Vocal', grupo: 'vocal', ordem: 3 },
   ],
   musicas: [],
   escalas: [escala],

@@ -183,7 +183,7 @@ describe('listar e ver', () => {
     expect(nova.estado).toBe('agendada')
   })
 
-  it('a Escala traz a Equipe agrupada por naipe', async () => {
+  it('a Escala traz a Equipe agrupada por grupo', async () => {
     await criarEscala({ id: 'e1', data: FUTURO })
     await porNaEquipe('e1', 'marcos', ['vocal', 'violao'], true)
     await porNaEquipe('e1', 'julia', ['vocal'])

@@ -18,15 +18,15 @@ _Avoid_: líder, worship leader, função de ministro
 Membro com tudo que o Ministro faz mais a gestão de Membros (convidar, editar papéis).
 
 **Função**:
-O que um Membro faz em uma Equipe (vocal, guitarra, violão, baixo, bateria, teclado, som...). Um Membro pode ter mais de uma Função na mesma Escala. Cada Função pertence a um Naipe, definido pelo Admin. Ministro não é Função.
+O que um Membro faz em uma Equipe (vocal, guitarra, violão, baixo, bateria, teclado, som...). Um Membro pode ter mais de uma Função na mesma Escala. Cada Função pertence a um Grupo, definido pelo Admin. Ministro não é Função.
 _Avoid_: instrumento, cargo, role
 
-**Naipe**:
-Grupo de Funções pelo qual a Equipe se organiza e é avisada: Vocal (vocal), Músicos (guitarra, violão, baixo, bateria, teclado) e Som (som). Vocal e Ministro são decididos antes, na Escala do mês; Músicos, durante a semana.
+**Grupo de Funções**:
+Conjunto de Funções pelo qual a Equipe se organiza, é avisada e sai agrupada no texto do WhatsApp: Vocal (vocal), Músicos (guitarra, violão, baixo, bateria, teclado) e Som (som). Vocal e Ministro são decididos antes, na Escala do mês; Músicos, durante a semana.
 _Avoid_: categoria, seção, time
 
 **Função musical**:
-Função dos naipes Vocal e Músicos, de quem toca ou canta a Música. É a única que credita Execução.
+Função dos Grupos Vocal e Músicos, de quem toca ou canta a Música. É a única que credita Execução.
 
 **Função técnica**:
 Função de quem serve na Escala sem tocar a Música, como som. Entra na Equipe para tudo (escalado, avisado, presença), mas não credita Execução nem aparece em "quem já tocou".

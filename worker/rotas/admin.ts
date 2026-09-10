@@ -114,12 +114,12 @@ admin.delete('/api/admin/membros/:id', exigirAdmin, async (c) => {
 admin.post('/api/admin/funcoes', exigirAdmin, async (c) => {
   const corpo = await corpoJson<Record<string, unknown>>(c.req.raw)
   if (!ehTextoCheio(corpo.nome)) return c.json({ erro: NOME_DA_FUNCAO }, 422)
-  if (!ehNaipe(corpo.naipe)) return c.json({ erro: NAIPE_INVALIDO }, 422)
+  if (!ehNaipe(corpo.grupo)) return c.json({ erro: NAIPE_INVALIDO }, 422)
   if (corpo.ordem !== undefined && !Number.isInteger(corpo.ordem)) return c.json({ erro: ORDEM_INVALIDA }, 422)
 
   const id = await criarFuncao(c.env.DB, {
     nome: corpo.nome.trim(),
-    naipe: corpo.naipe,
+    grupo: corpo.grupo,
     ordem: (corpo.ordem as number | undefined) ?? 0,
   })
 
@@ -132,12 +132,12 @@ admin.patch('/api/admin/funcoes/:id', exigirAdmin, async (c) => {
 
   const corpo = await corpoJson<Record<string, unknown>>(c.req.raw)
   if (corpo.nome !== undefined && !ehTextoCheio(corpo.nome)) return c.json({ erro: NOME_DA_FUNCAO }, 422)
-  if (corpo.naipe !== undefined && !ehNaipe(corpo.naipe)) return c.json({ erro: NAIPE_INVALIDO }, 422)
+  if (corpo.grupo !== undefined && !ehNaipe(corpo.grupo)) return c.json({ erro: NAIPE_INVALIDO }, 422)
   if (corpo.ordem !== undefined && !Number.isInteger(corpo.ordem)) return c.json({ erro: ORDEM_INVALIDA }, 422)
 
   await atualizarFuncao(c.env.DB, id, {
     nome: typeof corpo.nome === 'string' ? corpo.nome.trim() : undefined,
-    naipe: ehNaipe(corpo.naipe) ? corpo.naipe : undefined,
+    grupo: ehNaipe(corpo.grupo) ? corpo.grupo : undefined,
     ordem: corpo.ordem as number | undefined,
   })
 
@@ -196,7 +196,7 @@ async function responderFuncao(db: D1Database, id: string): Promise<Funcao | und
 
 const NOME_DO_MEMBRO = 'O Membro precisa de um nome.'
 const NOME_DA_FUNCAO = 'A Função precisa de um nome.'
-const NAIPE_INVALIDO = 'O Naipe é vocal, instrumentos ou tecnica.'
+const NAIPE_INVALIDO = 'O Grupo é vocal, instrumentos ou tecnica.'
 const ORDEM_INVALIDA = 'A ordem da Função é um número inteiro.'
 const MEMBRO_NAO_ENCONTRADO = 'Membro não encontrado.'
 const FUNCAO_NAO_ENCONTRADA = 'Função não encontrada.'

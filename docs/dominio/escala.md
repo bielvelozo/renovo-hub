@@ -67,11 +67,11 @@ Risco aceito: um Medley em agosto faz a Música sair da lista de "faz tempo" sem
 - **Fins de semana seguidos**: um fim de semana conta como presente se o Membro estava na Equipe de pelo menos uma Escala Realizada dele. Quebra quando houve Escala Realizada no fim de semana e o Membro não estava em nenhuma. Fim de semana sem Escala, ou só com Cancelada, é neutro: não sobe e não quebra. Ninguém perde sequência por feriado.
 - Não se chama "sequência": esse nome já é o documento da letra. Mostrar por extenso, "5 fins de semana seguidos".
 
-## Funções, Naipes, Ministro e Formação
+## Funções, Grupos, Ministro e Formação
 
 Revisado em 04/09/2026 pelo teste do protótipo do Ministro (ticket 13).
 
-- Cada Função pertence a um **Naipe**, definido pelo Admin: **Vocal** (vocal), **Músicos** (guitarra, violão, baixo, bateria, teclado) e **Som** (som).
+- Cada Função pertence a um **Grupo**, definido pelo Admin: **Vocal** (vocal), **Músicos** (guitarra, violão, baixo, bateria, teclado) e **Som** (som).
 - **Ministro não é Função**: é um papel que o Admin dá no cadastro do Membro e, em cada Escala, uma marca por cima das Funções de quem dirige. Só quem tem o papel pode receber a marca. Quem dirige normalmente segue no vocal e pode também tocar (Marcos: vocal, violão e Ministro).
 - Vocal e Ministro são decididos antes, na Escala do mês. Músicos são decididos na semana e são quase sempre os mesmos: a **Formação** (a "Banda") aplica o grupo de uma vez e o Ministro ajusta o que mudou. Formação é nomeada, reutilizável e editável, e guarda **só Funções de instrumento**: salvar a Formação a partir de uma Equipe deixa vocal e som de fora.
 - Quando existe **um único Membro ativo com Função de Som**, ele já entra na Equipe no momento em que a Escala é criada, sem notificação: não há o que decidir, e avisar a cada mês seria ruído.

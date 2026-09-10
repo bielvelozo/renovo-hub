@@ -1,13 +1,13 @@
 import type { Escala, Funcao, Item, Membro, Ministerio, Musica, Trecho } from './tipos'
 
 export const FUNCOES: Funcao[] = [
-  { id: 'vocal', nome: 'Vocal', naipe: 'vocal', ordem: 1 },
-  { id: 'guitarra', nome: 'Guitarra', naipe: 'instrumentos', ordem: 2 },
-  { id: 'violao', nome: 'Violão', naipe: 'instrumentos', ordem: 3 },
-  { id: 'baixo', nome: 'Baixo', naipe: 'instrumentos', ordem: 4 },
-  { id: 'bateria', nome: 'Bateria', naipe: 'instrumentos', ordem: 5 },
-  { id: 'teclado', nome: 'Teclado', naipe: 'instrumentos', ordem: 6 },
-  { id: 'som', nome: 'Som', naipe: 'tecnica', ordem: 7 },
+  { id: 'vocal', nome: 'Vocal', grupo: 'vocal', ordem: 1 },
+  { id: 'guitarra', nome: 'Guitarra', grupo: 'instrumentos', ordem: 2 },
+  { id: 'violao', nome: 'Violão', grupo: 'instrumentos', ordem: 3 },
+  { id: 'baixo', nome: 'Baixo', grupo: 'instrumentos', ordem: 4 },
+  { id: 'bateria', nome: 'Bateria', grupo: 'instrumentos', ordem: 5 },
+  { id: 'teclado', nome: 'Teclado', grupo: 'instrumentos', ordem: 6 },
+  { id: 'som', nome: 'Som', grupo: 'tecnica', ordem: 7 },
 ]
 
 export const TONS = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B']

@@ -1,6 +1,6 @@
 import type { Formacao, MembroComAcesso } from '../api/tipos'
 import { formatarDia } from '../dominio'
-import type { Funcao, Membro, Naipe } from '../dominio'
+import type { Funcao, Membro, Grupo } from '../dominio'
 
 export type SecaoDoAdmin = {
   caminho: string
@@ -15,7 +15,7 @@ export const SECOES: SecaoDoAdmin[] = [
     titulo: 'Convites e acesso',
     dica: 'Gerar o link de cada Membro, ver quem entrou e ligar a lista do «esqueci».',
   },
-  { caminho: '/admin/funcoes', titulo: 'Funções', dica: 'Nome, naipe e ordem de cada Função.' },
+  { caminho: '/admin/funcoes', titulo: 'Funções', dica: 'Nome, grupo e ordem de cada Função.' },
   { caminho: '/admin/formacoes', titulo: 'Formações', dica: 'Os grupos que a Equipe aplica de uma vez.' },
   { caminho: '/admin/musicas', titulo: 'Músicas a revisar', dica: 'Arrumar título e artista do que veio da playlist.' },
   { caminho: '/admin/sequencias', titulo: 'Sequências', dica: 'Enviar o Word da letra e guardar as versões.' },
@@ -23,13 +23,13 @@ export const SECOES: SecaoDoAdmin[] = [
 
 export const LIMITE_DO_ANEXO = 1024 * 1024
 
-const NAIPES: { naipe: Naipe; nome: string }[] = [
-  { naipe: 'vocal', nome: 'Vocal' },
-  { naipe: 'instrumentos', nome: 'Músicos' },
-  { naipe: 'tecnica', nome: 'Som' },
+const GRUPOS: { grupo: Grupo; nome: string }[] = [
+  { grupo: 'vocal', nome: 'Vocal' },
+  { grupo: 'instrumentos', nome: 'Músicos' },
+  { grupo: 'tecnica', nome: 'Som' },
 ]
 
-export type GrupoDeFuncoes = { naipe: Naipe; nome: string; funcoes: Funcao[] }
+export type GrupoDeFuncoes = { grupo: Grupo; nome: string; funcoes: Funcao[] }
 
 export function resumoDeAcesso(membro: MembroComAcesso): string {
   if (membro.sessoes === 0) {
@@ -45,10 +45,10 @@ export function resumoDeAcesso(membro: MembroComAcesso): string {
   return `${aparelhos} · ${membro.push > 0 ? 'recebe notificação' : 'não recebe notificação'}`
 }
 
-export function porNaipe(funcoes: Funcao[]): GrupoDeFuncoes[] {
-  return NAIPES.map((grupo) => ({
-    ...grupo,
-    funcoes: funcoes.filter((funcao) => funcao.naipe === grupo.naipe).sort((a, b) => a.ordem - b.ordem),
+export function porGrupo(funcoes: Funcao[]): GrupoDeFuncoes[] {
+  return GRUPOS.map((cada) => ({
+    ...cada,
+    funcoes: funcoes.filter((funcao) => funcao.grupo === cada.grupo).sort((a, b) => a.ordem - b.ordem),
   }))
 }
 

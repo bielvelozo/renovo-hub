@@ -1,29 +1,29 @@
-import type { Naipe } from '../../src/dominio'
+import type { Grupo } from '../../src/dominio'
 
 export type NovaFuncao = {
   nome: string
-  naipe: Naipe
+  grupo: Grupo
   ordem: number
 }
 
 export type CamposDaFuncao = {
   nome?: string
-  naipe?: Naipe
+  grupo?: Grupo
   ordem?: number
 }
 
-export const NAIPES: Naipe[] = ['vocal', 'instrumentos', 'tecnica']
+export const GRUPOS: Grupo[] = ['vocal', 'instrumentos', 'tecnica']
 
-export function ehNaipe(valor: unknown): valor is Naipe {
-  return NAIPES.includes(valor as Naipe)
+export function ehNaipe(valor: unknown): valor is Grupo {
+  return GRUPOS.includes(valor as Grupo)
 }
 
 export async function criarFuncao(db: D1Database, nova: NovaFuncao): Promise<string> {
   const id = crypto.randomUUID()
 
   await db
-    .prepare('insert into funcoes (id, nome, naipe, ordem) values (?, ?, ?, ?)')
-    .bind(id, nova.nome, nova.naipe, nova.ordem)
+    .prepare('insert into funcoes (id, nome, grupo, ordem) values (?, ?, ?, ?)')
+    .bind(id, nova.nome, nova.grupo, nova.ordem)
     .run()
 
   return id
@@ -33,7 +33,7 @@ export async function atualizarFuncao(db: D1Database, id: string, campos: Campos
   const colunas: Record<string, string | number> = {}
 
   if (campos.nome !== undefined) colunas.nome = campos.nome
-  if (campos.naipe !== undefined) colunas.naipe = campos.naipe
+  if (campos.grupo !== undefined) colunas.grupo = campos.grupo
   if (campos.ordem !== undefined) colunas.ordem = campos.ordem
 
   const nomes = Object.keys(colunas)

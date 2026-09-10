@@ -114,7 +114,7 @@ export async function roteiroDoMes(prova: Prova, cenario: Cenario): Promise<void
   )
   prova.conferir('aplicar a Formação preserva a marca de Ministro', grupo(montada, 'Ministro').includes('Isa'))
   prova.conferir(
-    'a Equipe sai agrupada por naipe',
+    'a Equipe sai agrupada por grupo',
     ['Ministro', 'Vocal', 'Músicos', 'Som'].every((nome) => grupo(montada, nome).length > 0),
     montada.grupos.map((g: any) => `${g.nome}: ${g.itens.join(', ')}`).join(' | '),
   )
@@ -339,12 +339,12 @@ export async function roteiroDoWhatsapp(prova: Prova, cenario: Cenario): Promise
   )
 
   const texto: string = folha.texto
-  const naipes = ['Ministro:', 'Vocal:', 'Músicos:', 'Som:']
+  const grupos = ['Ministro:', 'Vocal:', 'Músicos:', 'Som:']
 
   prova.conferir(
-    'a Equipe sai agrupada por naipe',
-    naipes.every((naipe) => texto.includes(naipe)),
-    naipes.filter((naipe) => !texto.includes(naipe)).join(', ') || 'os quatro grupos',
+    'a Equipe sai agrupada por grupo',
+    grupos.every((grupo) => texto.includes(grupo)),
+    grupos.filter((grupo) => !texto.includes(grupo)).join(', ') || 'os quatro grupos',
   )
   prova.conferir(
     'o Repertório sai numerado com Tom',

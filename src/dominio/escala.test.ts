@@ -11,7 +11,7 @@ import {
   membrosMusicais,
   ministradoPorDe,
   ministros,
-  naipeDe,
+  grupoDe,
   rotuloDoHorario,
   tituloEscala,
 } from './escala'
@@ -55,9 +55,9 @@ describe('tituloEscala', () => {
   })
 })
 
-describe('naipes e Funções', () => {
+describe('grupos e Funções', () => {
   it('trata Vocal e Músicos como Função musical e Som como técnica', () => {
-    expect(naipeDe(m, 'guitarra')).toBe('instrumentos')
+    expect(grupoDe(m, 'guitarra')).toBe('instrumentos')
     expect(ehMusical(m, 'vocal')).toBe(true)
     expect(ehMusical(m, 'guitarra')).toBe(true)
     expect(ehMusical(m, 'som')).toBe(false)

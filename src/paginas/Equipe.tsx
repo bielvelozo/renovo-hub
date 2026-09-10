@@ -167,7 +167,7 @@ function Secao({
         {formacoes}
       </div>
       {secao.membros.length === 0 ? (
-        <p className="dica">Ninguém com Função deste naipe ainda.</p>
+        <p className="dica">Ninguém com Função deste grupo ainda.</p>
       ) : (
         <ul className="lista cartao">
           {secao.membros.map(({ membro, funcoes }) => {
@@ -188,7 +188,7 @@ function Secao({
                     <button
                       key={funcao.id}
                       type="button"
-                      className={`chip${funcao.naipe === 'tecnica' ? ' tecnica' : ''}`}
+                      className={`chip${funcao.grupo === 'tecnica' ? ' tecnica' : ''}`}
                       aria-pressed={entrada?.funcoes.includes(funcao.id) ?? false}
                       onClick={() => gravar(membro.id, alternarFuncao(entrada, funcao.id))}
                     >

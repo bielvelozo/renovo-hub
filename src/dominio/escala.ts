@@ -9,7 +9,7 @@ import type {
   Membro,
   Ministerio,
   Musica,
-  Naipe,
+  Grupo,
 } from './tipos'
 
 export function membroPorId(m: Ministerio, id: string): Membro {
@@ -36,26 +36,26 @@ export function funcaoPorId(m: Ministerio, id: string): Funcao {
   return achada
 }
 
-export function naipeDe(m: Ministerio, funcaoId: string): Naipe {
-  return funcaoPorId(m, funcaoId).naipe
+export function grupoDe(m: Ministerio, funcaoId: string): Grupo {
+  return funcaoPorId(m, funcaoId).grupo
 }
 
 export function ehMusical(m: Ministerio, funcaoId: string): boolean {
-  return naipeDe(m, funcaoId) !== 'tecnica'
+  return grupoDe(m, funcaoId) !== 'tecnica'
 }
 
 export function daFormacao(m: Ministerio, equipe: EntradaEquipe[]): EntradaDaFormacao[] {
   return equipe
     .map((entrada) => ({
       membroId: entrada.membroId,
-      funcoes: entrada.funcoes.filter((funcaoId) => naipeDe(m, funcaoId) === 'instrumentos'),
+      funcoes: entrada.funcoes.filter((funcaoId) => grupoDe(m, funcaoId) === 'instrumentos'),
     }))
     .filter((entrada) => entrada.funcoes.length > 0)
 }
 
 export function unicoDoSom(m: Ministerio): EntradaEquipe | null {
   const candidatos = m.membros.filter(
-    (membro) => !membro.inativo && membro.funcoes.some((funcaoId) => naipeDe(m, funcaoId) === 'tecnica'),
+    (membro) => !membro.inativo && membro.funcoes.some((funcaoId) => grupoDe(m, funcaoId) === 'tecnica'),
   )
 
   if (candidatos.length !== 1) return null
@@ -64,7 +64,7 @@ export function unicoDoSom(m: Ministerio): EntradaEquipe | null {
 
   return {
     membroId: membro.id,
-    funcoes: membro.funcoes.filter((funcaoId) => naipeDe(m, funcaoId) === 'tecnica'),
+    funcoes: membro.funcoes.filter((funcaoId) => grupoDe(m, funcaoId) === 'tecnica'),
     ministro: false,
   }
 }
@@ -104,8 +104,8 @@ export function membrosMusicais(m: Ministerio, escala: Escala): string[] {
 export function gruposEquipe(m: Ministerio, escala: Escala): GrupoEquipe[] {
   const nome = (id: string) => membroPorId(m, id).nome
   const nomeDaFuncao = (id: string) => funcaoPorId(m, id).nome.toLowerCase()
-  const ordenadas = (funcoes: string[], naipe: Naipe) =>
-    funcoes.filter((f) => naipeDe(m, f) === naipe).sort((a, b) => funcaoPorId(m, a).ordem - funcaoPorId(m, b).ordem)
+  const ordenadas = (funcoes: string[], grupo: Grupo) =>
+    funcoes.filter((f) => grupoDe(m, f) === grupo).sort((a, b) => funcaoPorId(m, a).ordem - funcaoPorId(m, b).ordem)
 
   const marcados = escala.equipe.filter((x) => x.ministro)
   const resto = escala.equipe.filter((x) => !x.ministro)
@@ -121,7 +121,7 @@ export function gruposEquipe(m: Ministerio, escala: Escala): GrupoEquipe[] {
     })
   }
 
-  const vocal = resto.filter((x) => x.funcoes.some((f) => naipeDe(m, f) === 'vocal'))
+  const vocal = resto.filter((x) => x.funcoes.some((f) => grupoDe(m, f) === 'vocal'))
   if (vocal.length) {
     grupos.push({
       nome: 'Vocal',
@@ -129,7 +129,7 @@ export function gruposEquipe(m: Ministerio, escala: Escala): GrupoEquipe[] {
     })
   }
 
-  const musicos = resto.filter((x) => x.funcoes.some((f) => naipeDe(m, f) === 'instrumentos'))
+  const musicos = resto.filter((x) => x.funcoes.some((f) => grupoDe(m, f) === 'instrumentos'))
   if (musicos.length) {
     grupos.push({
       nome: 'Músicos',
@@ -137,7 +137,7 @@ export function gruposEquipe(m: Ministerio, escala: Escala): GrupoEquipe[] {
     })
   }
 
-  const tecnica = resto.filter((x) => x.funcoes.some((f) => naipeDe(m, f) === 'tecnica'))
+  const tecnica = resto.filter((x) => x.funcoes.some((f) => grupoDe(m, f) === 'tecnica'))
   if (tecnica.length) grupos.push({ nome: 'Som', itens: tecnica.map((x) => nome(x.membroId)) })
 
   return grupos
