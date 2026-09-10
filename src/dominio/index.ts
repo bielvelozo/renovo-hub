@@ -77,7 +77,7 @@ export {
   linkDaPlaylist,
   partesDoTom,
   precisaReconferir,
-  termoDoCifraClub,
+  tituloParaBusca,
   tomDe,
   linkDeVideos,
   linkDoVideo,

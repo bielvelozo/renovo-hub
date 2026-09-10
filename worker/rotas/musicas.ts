@@ -8,7 +8,6 @@ import {
   mesesDesde,
   musicaPorId,
   ordenarPorExecucao,
-  termoDoCifraClub,
   ultimaExecucao,
   vezesTocada,
   videoIdDoLink,
@@ -106,12 +105,11 @@ musicas.get('/api/musicas', exigirMembro, async (c) => {
   return c.json({ musicas: ordenarPorExecucao(m, achadas, ordem).map((musica) => naListaDeMusicas(m, musica)) })
 })
 
-musicas.get('/api/musicas/:id/cifraclub', exigirMinistro, async (c) => {
-  const m = await carregarMinisterio(c.env.DB, { ids: [] })
-  const musica = m.musicas.find((x) => x.id === c.req.param('id'))
-  if (!musica) return c.json({ erro: MUSICA_NAO_ENCONTRADA }, 404)
+musicas.get('/api/cifraclub', exigirMinistro, async (c) => {
+  const termo = (c.req.query('termo') ?? '').trim()
+  if (!termo) return c.json({ erro: 'Escreva o nome da música.' }, 422)
 
-  return c.json({ achado: await acharNoCifraClub(termoDoCifraClub(musica)) })
+  return c.json({ achado: await acharNoCifraClub(termo, c.req.query('artista') ?? '') })
 })
 
 musicas.get('/api/musicas/:id', exigirMembro, async (c) => {

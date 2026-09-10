@@ -251,7 +251,7 @@ describe('tom pelo Cifra Club', () => {
       'cifraclub.com.br/nivea-soares/rio': { status: 200, texto: PAGINA },
     })
 
-    const resposta = await pedir('/api/musicas/rio/cifraclub', 'marcos')
+    const resposta = await pedir('/api/cifraclub?termo=rio%20nivea', 'marcos')
 
     expect(resposta.status).toBe(200)
     expect(await resposta.json()).toEqual({
@@ -263,12 +263,13 @@ describe('tom pelo Cifra Club', () => {
       },
     })
     expect(rede.chamadas[0]).toContain('solr.sscdn.co')
+    expect(rede.chamadas[0]).toContain('rio%20nivea')
   })
 
   it('devolve nada quando a busca não acha a música', async () => {
     fingirRede({ 'solr.sscdn.co': { status: 200, corpo: { response: { docs: [] } } } })
 
-    const resposta = await pedir('/api/musicas/rio/cifraclub', 'marcos')
+    const resposta = await pedir('/api/cifraclub?termo=rio', 'marcos')
 
     expect(resposta.status).toBe(200)
     expect(await resposta.json()).toEqual({ achado: null })
@@ -283,11 +284,27 @@ describe('tom pelo Cifra Club', () => {
       'cifraclub.com.br/nivea-soares/rio': { status: 200, texto: '<div>sem cartão</div>' },
     })
 
-    expect(await (await pedir('/api/musicas/rio/cifraclub', 'marcos')).json()).toEqual({ achado: null })
+    expect(await (await pedir('/api/cifraclub?termo=rio', 'marcos')).json()).toEqual({ achado: null })
   })
 
   it('Membro comum não consulta', async () => {
-    expect((await pedir('/api/musicas/rio/cifraclub', 'julia')).status).toBe(403)
+    expect((await pedir('/api/cifraclub?termo=rio', 'julia')).status).toBe(403)
+  })
+
+  it('recusa busca vazia', async () => {
+    expect((await pedir('/api/cifraclub?termo=%20', 'marcos')).status).toBe(422)
+  })
+
+  it('tenta de novo só com o título quando o canal afunda a busca', async () => {
+    const rede = fingirRede({
+      'solr.sscdn.co': { status: 200, corpo: { response: { docs: [] } } },
+    })
+
+    await pedir('/api/cifraclub?termo=Permanecerei&artista=ONE%20Sounds', 'marcos')
+
+    expect(rede.chamadas).toHaveLength(2)
+    expect(rede.chamadas[0]).toContain('Permanecerei%20ONE%20Sounds')
+    expect(rede.chamadas[1]).toContain('q=Permanecerei&')
   })
 })
 

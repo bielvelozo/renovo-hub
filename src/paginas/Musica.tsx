@@ -1,11 +1,11 @@
-import { useState } from 'react'
 import { useParams } from 'react-router'
 import { api } from '../api/cliente'
-import type { AchadoNoCifraClub, MusicaDetalhada } from '../api/tipos'
+import type { MusicaDetalhada } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
 import { Barra } from '../componentes/Barra'
 import { Capa } from '../componentes/Capa'
+import { BuscaNoCifraClub } from '../componentes/BlocoDeTom'
 import { SeletorDeTom } from '../componentes/SeletorDeTom'
 import { formatarDia } from '../dominio'
 import { textoDoUltimoTom } from '../musicas/catalogo'
@@ -100,8 +100,6 @@ function situacao(musica: MusicaDetalhada): string {
 
 function TomOriginal({ musica, trocar }: { musica: MusicaDetalhada; trocar: (nova: MusicaDetalhada) => void }) {
   const acao = usarAcao()
-  const [achado, guardarAchado] = useState<AchadoNoCifraClub | null>(null)
-  const [procurou, marcarProcurou] = useState(false)
 
   const definir = (tom: string | null) => {
     acao.executar(async () => {
@@ -110,16 +108,8 @@ function TomOriginal({ musica, trocar }: { musica: MusicaDetalhada; trocar: (nov
         corpo: { tomOriginal: tom },
       })
       trocar({ ...musica, ...nova })
-      guardarAchado(null)
     })
   }
-
-  const procurar = () =>
-    acao.executar(async () => {
-      const resposta = await api<{ achado: AchadoNoCifraClub | null }>(`/api/musicas/${musica.id}/cifraclub`)
-      guardarAchado(resposta.achado)
-      marcarProcurou(true)
-    })
 
   return (
     <div className="secao">
@@ -127,41 +117,13 @@ function TomOriginal({ musica, trocar }: { musica: MusicaDetalhada; trocar: (nov
 
       {acao.erro && <p className="aviso">{acao.erro}</p>}
 
-      <button type="button" className="botao secundario largo" disabled={acao.ocupado} onClick={procurar}>
-        Buscar no Cifra Club
-      </button>
-
-      {achado && (
-        <div className="achado">
-          <p className="titulo">
-            {achado.titulo} · {achado.artista}
-          </p>
-          <p className="dica">
-            No Cifra Club está em <strong>{achado.tom}</strong>. Confira se é a mesma música.
-          </p>
-          <div className="acoes">
-            <button type="button" className="botao pequeno" disabled={acao.ocupado} onClick={() => definir(achado.tom)}>
-              Usar {achado.tom}
-            </button>
-            <a className="botao pequeno secundario" href={achado.url} target="_blank" rel="noopener">
-              Abrir
-            </a>
-            <button type="button" className="botao pequeno secundario" onClick={() => guardarAchado(null)}>
-              Não é essa
-            </button>
-          </div>
-        </div>
-      )}
-
-      {procurou && !achado && !acao.ocupado && (
-        <p className="vazio">O Cifra Club não achou o tom desta música. Escolha à mão.</p>
-      )}
-
       <SeletorDeTom
         tom={musica.tomOriginal}
         desligado={acao.ocupado}
         escolher={(tom) => definir(musica.tomOriginal === tom ? null : tom)}
       />
+
+      <BuscaNoCifraClub musica={musica} aoUsar={definir} />
     </div>
   )
 }

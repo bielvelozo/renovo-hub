@@ -13,7 +13,7 @@ import {
   mesesDesde,
   partesDoTom,
   precisaReconferir,
-  termoDoCifraClub,
+  tituloParaBusca,
   tomDe,
   videoIdDoLink,
 } from './musica'
@@ -201,27 +201,25 @@ describe('tom maior e menor', () => {
   })
 })
 
-describe('termoDoCifraClub', () => {
-  const musica = (titulo: string, artista: string) => ({ titulo, artista })
-
+describe('tituloParaBusca', () => {
   it('joga fora o canal depois do pipe e a marca de ao vivo', () => {
-    expect(termoDoCifraClub(musica('Meia Noite (Ao Vivo) | fhop music', 'Fhop Music'))).toBe('Meia Noite Fhop Music')
+    expect(tituloParaBusca('Meia Noite (Ao Vivo) | fhop music')).toBe('Meia Noite')
   })
 
   it('corta o que vem depois do travessão e dos convidados', () => {
-    expect(
-      termoDoCifraClub(musica('Firme Fundamento (Ao Vivo) - Central MSC feat. Ana Paula Rocha', 'Central MSC')),
-    ).toBe('Firme Fundamento Central MSC')
+    expect(tituloParaBusca('Firme Fundamento (Ao Vivo) - Central MSC feat. Ana Paula Rocha')).toBe('Firme Fundamento')
   })
 
   it('corta no bolinha e tira o subtítulo entre parênteses', () => {
-    expect(termoDoCifraClub(musica('Grato Sou (I Thank God) - Ao vivo • DROPS', 'drops'))).toBe('Grato Sou drops')
+    expect(tituloParaBusca('Grato Sou (I Thank God) - Ao vivo • DROPS')).toBe('Grato Sou')
   })
 
   it('aguenta título sem nada pra cortar', () => {
-    expect(termoDoCifraClub(musica('Permanecerei', 'Eric & Evellyn Emerick'))).toBe(
-      'Permanecerei Eric & Evellyn Emerick',
-    )
+    expect(tituloParaBusca('Permanecerei')).toBe('Permanecerei')
+  })
+
+  it('devolve o título cru quando o corte esvaziaria tudo', () => {
+    expect(tituloParaBusca('(Ao Vivo)')).toBe('(Ao Vivo)')
   })
 })
 

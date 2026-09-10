@@ -137,7 +137,12 @@ function Formulario({
       } else {
         const musicaId =
           escolha.musicaId ??
-          (await api<MusicaDetalhada>('/api/musicas', { metodo: 'POST', corpo: { link: escolha.link } })).id
+          (
+            await api<MusicaDetalhada>('/api/musicas', {
+              metodo: 'POST',
+              corpo: { link: escolha.link, tomOriginal: rascunho.tomOriginal },
+            })
+          ).id
 
         await api(`/api/escalas/${escalaId}/itens`, { metodo: 'POST', corpo: corpoDoItem(rascunho, musicaId) })
       }
@@ -169,7 +174,13 @@ function Formulario({
         tom={rascunho.tom}
         sugerido={musica?.tomSugerido ?? null}
         historico={musica?.historico ?? []}
+        tomOriginal={musica?.tomOriginal ?? rascunho.tomOriginal}
+        musica={escolha.resumo}
         escolher={(tom) => mudar({ tom })}
+        aoAcharOriginal={(tom) => {
+          mudar({ tom, tomOriginal: tom })
+          if (musica) void api(`/api/musicas/${musica.id}`, { metodo: 'PATCH', corpo: { tomOriginal: tom } })
+        }}
       />
 
       <div className="secao">

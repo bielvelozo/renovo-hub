@@ -239,7 +239,13 @@ function Campos({
         tom={trecho.tom}
         sugerido={musica?.tomSugerido ?? null}
         historico={musica?.historico ?? []}
+        tomOriginal={musica?.tomOriginal ?? null}
+        musica={escolha.resumo}
         escolher={(tom) => mudar({ tom })}
+        aoAcharOriginal={(tom) => {
+          mudar({ tom })
+          if (musica) void api(`/api/musicas/${musica.id}`, { metodo: 'PATCH', corpo: { tomOriginal: tom } })
+        }}
       />
 
       <BlocoDeMinutagem

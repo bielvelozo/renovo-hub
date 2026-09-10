@@ -21,6 +21,7 @@ export type Escolha = {
 export type Rascunho = {
   escolha: Escolha
   tom: string | null
+  tomOriginal: string | null
   modo: ModoDoItem
   inicio: string
   fim: string
@@ -82,7 +83,7 @@ export function escolhaDaSugestao(sugestao: SugestaoApresentada): Escolha {
 }
 
 export function rascunhoDe(escolha: Escolha, sugerido: TomSugeridoApresentado | null): Rascunho {
-  return { escolha, tom: sugerido?.tom ?? null, modo: 'inteira', inicio: '', fim: '', observacao: '' }
+  return { escolha, tom: sugerido?.tom ?? null, tomOriginal: null, modo: 'inteira', inicio: '', fim: '', observacao: '' }
 }
 
 export function trechoDe(

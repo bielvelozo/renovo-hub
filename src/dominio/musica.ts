@@ -81,14 +81,14 @@ export function partesDoTom(tom: string): { nota: string; menor: boolean } {
   return { nota: achado[1], menor: achado[2] === 'm' }
 }
 
-export function termoDoCifraClub(musica: Pick<Musica, 'titulo' | 'artista'>): string {
-  const titulo = musica.titulo
+export function tituloParaBusca(titulo: string): string {
+  const limpo = titulo
     .split(/\||•|\s[-–—]\s/)[0]
     .replace(/\([^)]*\)|\[[^\]]*\]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()
 
-  return [titulo || musica.titulo.trim(), musica.artista.trim()].filter(Boolean).join(' ')
+  return limpo || titulo.trim()
 }
 
 const DIAS_PARA_RECONFERIR = 7

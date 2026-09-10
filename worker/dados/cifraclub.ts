@@ -5,8 +5,18 @@ export type AchadoNoCifraClub = {
   url: string
 }
 
-export async function acharNoCifraClub(termo: string): Promise<AchadoNoCifraClub | null> {
-  const achado = await primeiroDaBusca(termo)
+// O artista de uma Música importada é o canal do YouTube, que muitas vezes não é o
+// artista de verdade ("ONE Sounds" por Eric & Evellyn Emerick) e afunda a busca. Por
+// isso a segunda tentativa é só o título.
+export async function acharNoCifraClub(titulo: string, artista = ''): Promise<AchadoNoCifraClub | null> {
+  const termos = artista.trim() ? [`${titulo} ${artista.trim()}`, titulo] : [titulo]
+
+  let achado = null
+  for (const termo of termos) {
+    achado = await primeiroDaBusca(termo)
+    if (achado) break
+  }
+
   if (!achado) return null
 
   const url = `https://www.cifraclub.com.br/${achado.artista}/${achado.musica}/`
