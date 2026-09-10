@@ -1,3 +1,8 @@
+// O Tom de um Item pode ser esta palavra em vez de uma nota: "toca no tom da gravação",
+// enquanto ninguém tirou a música. Vale como Tom pra tudo — texto do WhatsApp, histórico,
+// notificação — e vira nota quando um músico descobrir qual é.
+export const TOM_ORIGINAL = 'original'
+
 export const NOTAS_BRANCAS = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
 export const NOTAS_PRETAS = ['C#', 'Eb', 'F#', 'Ab', 'Bb']
 

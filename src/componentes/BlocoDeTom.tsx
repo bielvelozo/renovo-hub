@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { api } from '../api/cliente'
 import type { AchadoNoCifraClub, ExecucaoApresentada, TomSugeridoApresentado } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
+import { TOM_ORIGINAL } from '../dominio'
 import { textoDoHistorico, textoDoTomSugerido } from '../escalas/rascunho'
 import { SeletorDeTom } from './SeletorDeTom'
 
@@ -27,25 +28,18 @@ export function BlocoDeTom({
       <h2>Tom</h2>
       <p className="dica">{textoDoTomSugerido(sugerido)}</p>
 
-      {tomOriginal ? (
-        <button
-          type="button"
-          className="chip largo"
-          aria-pressed={tom === tomOriginal}
-          onClick={() => escolher(tomOriginal)}
-        >
-          Tom original: {tomOriginal}
-        </button>
-      ) : (
-        <BuscaNoCifraClub
-          musica={musica}
-          aoUsar={aoAcharOriginal}
-          rotulo="Tom original: procurar no Cifra Club"
-          classe="chip largo"
-        />
-      )}
+      <button
+        type="button"
+        className="chip largo"
+        aria-pressed={tom === (tomOriginal ?? TOM_ORIGINAL)}
+        onClick={() => escolher(tomOriginal ?? TOM_ORIGINAL)}
+      >
+        Tom original{tomOriginal ? `: ${tomOriginal}` : ''}
+      </button>
 
       <SeletorDeTom tom={tom} sugerido={sugerido?.tom ?? null} escolher={escolher} />
+
+      <BuscaNoCifraClub musica={musica} aoUsar={aoAcharOriginal} rotulo="Descobrir o tom no Cifra Club" />
 
       {historico.length > 0 && <p className="dica">Histórico: {textoDoHistorico(historico)}</p>}
     </div>

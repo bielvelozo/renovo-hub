@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { medley, ministerioDeExemplo } from './exemplo'
 import {
   NOTAS_BRANCAS,
+  TOM_ORIGINAL,
   NOTAS_PRETAS,
   buscaNoCifraClub,
   capaAlternativa,
@@ -257,5 +258,15 @@ describe('precisaReconferir', () => {
 
   it('manda reconferir quando a data não presta', () => {
     expect(precisaReconferir('', new Date('2026-09-10T10:00:00Z'))).toBe(true)
+  })
+})
+
+describe('TOM_ORIGINAL', () => {
+  it('é uma palavra, não uma nota: o teclado não marca nada', () => {
+    expect(partesDoTom(TOM_ORIGINAL)).toEqual({ nota: '', menor: false })
+  })
+
+  it('se escreve sozinho onde o Tom é impresso', () => {
+    expect(`Tom ${TOM_ORIGINAL}`).toBe('Tom original')
   })
 })

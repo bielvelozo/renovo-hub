@@ -73,6 +73,7 @@ export {
   capaDaMusica,
   combinaBusca,
   NOTAS_BRANCAS,
+  TOM_ORIGINAL,
   NOTAS_PRETAS,
   linkDaPlaylist,
   partesDoTom,
