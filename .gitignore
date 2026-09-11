@@ -14,3 +14,5 @@ node_modules/
 .scratch/*.txt
 .scratch/*.docx
 .scratch/f*.mjs
+
+.superpowers/
