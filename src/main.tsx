@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router'
 import { App } from './App'
 import './estilo/tokens.css'
 import './estilo/base.css'
+import './estilo/componentes.css'
 
 createRoot(document.getElementById('raiz')!).render(
   <StrictMode>

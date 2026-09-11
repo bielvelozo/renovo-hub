@@ -5,5 +5,5 @@
     "types": ["node"],
     "tsBuildInfoFile": "./node_modules/.tmp/node.tsbuildinfo"
   },
-  "include": ["vite.config.ts", "vitest.config.ts", "scripts/**/*.ts", "src/dominio", "src/semente", "src/fumaca"]
+  "include": ["vite.config.ts", "vitest.config.ts", "scripts/**/*.ts", "src/dominio", "src/marca", "src/semente", "src/fumaca"]
 }

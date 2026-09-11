@@ -1,4 +1,38 @@
-# Marca: o que existe hoje
+# Marca do Renovo Music
+
+Desde 11/09/2026 o app carrega a marca do ministério de louvor, não a da igreja. As decisões (selo circular com onda sonora de cinco barras, paleta "Amanhecer", Fraunces nos títulos e Inter no corpo) estão no spec [Fundação da identidade visual](../superpowers/specs/2026-09-11-fundacao-da-identidade-design.md), seção 1.
+
+## Arquivos
+
+Em `public/`:
+
+| Arquivo | O que é | Como nasce |
+| --- | --- | --- |
+| `selo.svg` | Anéis e barras, sem texto. `currentColor` nos anéis, `var(--acento)` nas barras. É o que o componente `Marca` desenha inline. | `npm exec tsx scripts/marca.ts` |
+| `selo-completo.svg` | Selo com "RENOVO" e "MUSIC" nos arcos, já como caminhos, sem depender de fonte | idem |
+| `marca-horizontal.svg` | Selo completo à esquerda, "Renovo" e "MUSIC" à direita, altura de referência 64 | idem |
+| `icone-192.png`, `icone-512.png`, `favicon-32.png`, `apple-touch-icon.png`, `icone-mascaravel-512.png`, `abertura.png` | PNGs do PWA, selo sobre `#1F1B22`, anéis `#F3E9E1`, barras `#9FB8E6` | `npm exec tsx scripts/icones.ts` |
+
+A geometria fica em `src/marca/selo.ts`, que o componente e os dois scripts compartilham. Os SVGs e PNGs são commitados: o build não roda os scripts.
+
+## Fontes
+
+Em [fontes/](fontes/), instâncias estáticas sob a licença OFL, usadas só para gerar os caminhos dos SVGs:
+
+- `Fraunces144ptSoft-Bold.ttf`, do [repositório oficial da Fraunces](https://github.com/googlefonts/fraunces) (`fonts/static/ttf/`), com a licença em `OFL-Fraunces.txt`.
+- `Inter-Bold.ttf`, do [Inter 4.1](https://github.com/rsms/inter/releases/tag/v4.1) (`extras/ttf/`), com a licença em `OFL-Inter.txt`.
+
+Na interface, "Renovo" do componente `Marca` usa Fraunces 800 com o eixo `WONK` 1; o SVG gerado usa a instância estática Bold (700) sem `WONK`, porque instância estática não carrega eixo. Diferença aceita no spec.
+
+## Geometria que difere do texto do spec
+
+O spec diz que os pontos laterais ficam em x 14 e x 106; com os anéis em raio 55 e 47, isso cairia em cima do anel interno. Os pontos ficam em raio 38 (x 22 e x 98), na mesma faixa dos textos dos arcos, que ficam entre o anel interno e as barras (raio 36 de linha de base).
+
+---
+
+# Marca da igreja: o que existia
+
+Material da Igreja Missão Renovo, mantido como referência histórica. O app deixou de usá-lo em 11/09/2026.
 
 Inventário levantado em 04/09/2026 para o ticket [Coletar assets da marca](../../.scratch/wayfinder-v1/issues/04-assets-de-marca.md). Não é um guia de marca oficial: a Missão Renovo não tem um. É o material real disponível, com as cores medidas dos pixels.
 
