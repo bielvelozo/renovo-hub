@@ -7,6 +7,14 @@ const PONTAS = /^[\s\-–•|:,.]+|[\s\-–•|:,.]+$/g
 export type TituloLimpo = { titulo: string; artista: string }
 
 export function limparTitulo(titulo: string, canal: string): TituloLimpo {
+  const limpo = separar(titulo, canal)
+  if (limpo.titulo) return limpo
+
+  const cru = aparar(semRuido(titulo))
+  return { titulo: cru || semSufixos(canal) || aparar(titulo), artista: limpo.artista || semSufixos(canal) }
+}
+
+function separar(titulo: string, canal: string): TituloLimpo {
   const partes = semRuido(pedacoPrincipal(titulo, canal))
     .split(SEPARADORES)
     .filter((parte) => aparar(parte) !== '' && !ehSoRuido(parte))
@@ -25,7 +33,7 @@ export function limparTitulo(titulo: string, canal: string): TituloLimpo {
 // O YouTube tanto põe o canal depois do corte ("Música | Canal") quanto antes
 // ("Canal | Música"): fica o primeiro pedaço que não menciona o canal.
 function pedacoPrincipal(texto: string, canal: string): string {
-  const pedacos = texto.split(CORTES).filter((pedaco) => aparar(pedaco) !== '')
+  const pedacos = texto.split(CORTES).filter((pedaco) => aparar(pedaco) !== '' && !ehSoRuido(pedaco))
   const nomeDoCanal = normalizar(semSufixos(canal))
   const semCanal = nomeDoCanal ? pedacos.filter((pedaco) => !normalizar(pedaco).includes(nomeDoCanal)) : pedacos
 
