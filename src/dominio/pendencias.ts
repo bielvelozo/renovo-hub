@@ -1,7 +1,5 @@
-import { estadoEscala, ministros } from './escala'
+import { GRUPOS, estadoEscala, ministros } from './escala'
 import type { Escala, Grupo, Ministerio } from './tipos'
-
-export const GRUPOS: Grupo[] = ['vocal', 'instrumentos', 'tecnica']
 
 export const NOME_DO_GRUPO: Record<Grupo, string> = {
   vocal: 'Vocal',

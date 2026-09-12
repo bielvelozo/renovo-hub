@@ -679,6 +679,20 @@
   color: var(--acento-forte);
 }
 
+.cartao.pos-culto {
+  background: var(--atencao-suave);
+}
+
+.selo.destaque {
+  background: var(--texto);
+  color: var(--fundo);
+}
+
+.selo.ministro {
+  background: var(--ceia-fundo);
+  color: var(--ceia-texto);
+}
+
 /* Botao */
 
 .botao {

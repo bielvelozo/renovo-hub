@@ -536,7 +536,8 @@ nav.abas .contagem {
 }
 
 .dia b {
-  font-size: 19px;
+  font: 800 22px/1 var(--fonte-display);
+  font-variation-settings: var(--display-eixos);
   color: var(--texto);
 }
 

@@ -9,6 +9,7 @@ import {
   ministros,
   musicaPorId,
   pendenciasDaEscala,
+  pessoasDaEquipe,
   resumoDoRepertorio,
   tituloEscala,
 } from '../../src/dominio'
@@ -22,6 +23,7 @@ export function apresentarEscala(m: Ministerio, escala: Escala, semanas: number)
     estado: estadoEscala(escala, m.hoje),
     titulo: tituloEscala(escala),
     grupos: gruposEquipe(m, escala),
+    pessoas: pessoasDaEquipe(m, escala),
     resumoDoRepertorio: resumoDoRepertorio(m, escala, semanas),
   }
 }

@@ -30,8 +30,12 @@ export function textoDeRecusada(motivo: string): string {
   return motivo ? `não entrou · ${motivo}` : 'não entrou'
 }
 
+export function novasDesde(sugestoes: SugestaoApresentada[], vistasEm: string | null): SugestaoApresentada[] {
+  return sugestoes.filter((sugestao) => sugestao.estado === 'aberta' && (!vistasEm || sugestao.data > vistasEm))
+}
+
 export function contarNovas(sugestoes: SugestaoApresentada[], vistasEm: string | null): number {
-  return sugestoes.filter((sugestao) => sugestao.estado === 'aberta' && (!vistasEm || sugestao.data > vistasEm)).length
+  return novasDesde(sugestoes, vistasEm).length
 }
 
 export function textoDosApoios(apoios: MembroResumido[]): string {

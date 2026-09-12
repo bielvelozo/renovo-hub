@@ -34,6 +34,7 @@ export {
   horaEmBrasilia,
   minutosEmBrasilia,
   nomeDoDia,
+  nomeDoDiaLongo,
   segundos,
   somarDias,
   tempoRelativo,
@@ -43,7 +44,10 @@ export type { TituloLimpo } from './titulo'
 
 export { limparTitulo } from './titulo'
 
+export type { PessoaDaEquipe } from './escala'
+
 export {
+  GRUPOS,
   daFormacao,
   ehMusical,
   escalaPorId,
@@ -57,6 +61,8 @@ export {
   musicaPorId,
   musicasDoItem,
   grupoDe,
+  nomeDaEscala,
+  pessoasDaEquipe,
   rotuloDoHorario,
   tituloEscala,
   unicoDoSom,
@@ -111,7 +117,7 @@ export {
 
 export type { ChaveDePendencia, Pendencia, PendenciasDaEscala, ResumoDeGrupo } from './pendencias'
 
-export { GRUPOS, NOME_DO_GRUPO, pendenciasDaEscala, resumoPorGrupo } from './pendencias'
+export { NOME_DO_GRUPO, pendenciasDaEscala, resumoPorGrupo } from './pendencias'
 
 export type { AcaoNaSugestao, EstadoDaSugestao } from './sugestao'
 

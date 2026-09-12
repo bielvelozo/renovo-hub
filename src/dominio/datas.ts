@@ -70,6 +70,10 @@ export function nomeDoDia(data: string): string {
   return DIAS[diaDaSemana(data)]
 }
 
+export function nomeDoDiaLongo(data: string): string {
+  return DIAS_LONGOS[diaDaSemana(data)]
+}
+
 export function somarDias(data: string, dias: number): string {
   const d = comoUtc(data)
   d.setUTCDate(d.getUTCDate() + dias)

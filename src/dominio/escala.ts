@@ -12,6 +12,15 @@ import type {
   Grupo,
 } from './tipos'
 
+export const GRUPOS: Grupo[] = ['vocal', 'instrumentos', 'tecnica']
+
+export type PessoaDaEquipe = {
+  membroId: string
+  nome: string
+  funcoes: string[]
+  ministro: boolean
+}
+
 export function membroPorId(m: Ministerio, id: string): Membro {
   const achado = m.membros.find((x) => x.id === id)
   if (!achado) throw new Error('Membro desconhecido: ' + id)
@@ -78,6 +87,10 @@ export function rotuloDoHorario(horario: string): string {
   return horario.endsWith(':00') ? horario.slice(0, 2) + 'h' : horario
 }
 
+export function nomeDaEscala(escala: Pick<Escala, 'rotulo' | 'santaCeia'>): string {
+  return escala.santaCeia ? 'Santa Ceia' : escala.rotulo
+}
+
 export function tituloEscala(escala: Escala): string {
   return (escala.santaCeia ? 'Santa Ceia' : escala.rotulo) + ' ' + rotuloDoHorario(escala.horario)
 }
@@ -99,6 +112,40 @@ export function musicasDoItem(item: Item): string[] {
 
 export function membrosMusicais(m: Ministerio, escala: Escala): string[] {
   return escala.equipe.filter((x) => x.funcoes.some((f) => ehMusical(m, f))).map((x) => x.membroId)
+}
+
+export function pessoasDaEquipe(m: Ministerio, escala: Escala): PessoaDaEquipe[] {
+  return escala.equipe
+    .map((entrada) => {
+      const funcoes = funcoesEmOrdem(m, entrada.funcoes)
+
+      return {
+        pessoa: {
+          membroId: entrada.membroId,
+          nome: membroPorId(m, entrada.membroId).nome,
+          funcoes: funcoes.map((funcao) => funcao.nome),
+          ministro: entrada.ministro,
+        },
+        peso: funcoes.length ? [GRUPOS.indexOf(funcoes[0].grupo), funcoes[0].ordem] : [GRUPOS.length, 0],
+      }
+    })
+    .sort(
+      (a, b) =>
+        Number(b.pessoa.ministro) - Number(a.pessoa.ministro) ||
+        a.peso[0] - b.peso[0] ||
+        a.peso[1] - b.peso[1] ||
+        a.pessoa.nome.localeCompare(b.pessoa.nome),
+    )
+    .map(({ pessoa }) => pessoa)
+}
+
+function funcoesEmOrdem(m: Ministerio, funcoes: string[]): Funcao[] {
+  return funcoes
+    .map((id) => funcaoPorId(m, id))
+    .sort(
+      (a, b) =>
+        GRUPOS.indexOf(a.grupo) - GRUPOS.indexOf(b.grupo) || a.ordem - b.ordem || a.nome.localeCompare(b.nome),
+    )
 }
 
 export function gruposEquipe(m: Ministerio, escala: Escala): GrupoEquipe[] {

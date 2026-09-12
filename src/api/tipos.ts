@@ -7,6 +7,7 @@ import type {
   GrupoEquipe,
   Membro,
   Pendencia,
+  PessoaDaEquipe,
   Planejada,
   ResumoDeGrupo,
   ResumoDoRepertorio,
@@ -81,6 +82,7 @@ export type EscalaApresentada = {
   estado: EstadoEscala
   titulo: string
   grupos: GrupoEquipe[]
+  pessoas: PessoaDaEquipe[]
   resumoDoRepertorio: ResumoDoRepertorio
 }
 

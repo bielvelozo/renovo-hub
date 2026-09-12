@@ -12,6 +12,8 @@ import {
   ministradoPorDe,
   ministros,
   grupoDe,
+  nomeDaEscala,
+  pessoasDaEquipe,
   rotuloDoHorario,
   tituloEscala,
 } from './escala'
@@ -52,6 +54,53 @@ describe('tituloEscala', () => {
   it('mantém os minutos quando o horário não é redondo', () => {
     expect(rotuloDoHorario('19:30')).toBe('19:30')
     expect(rotuloDoHorario('19:00')).toBe('19h')
+  })
+})
+
+describe('nomeDaEscala', () => {
+  it('devolve o rótulo, ou Santa Ceia quando a Escala é marcada, sem o horário', () => {
+    expect(nomeDaEscala(emEscala('e0913'))).toBe('Culto de Domingo')
+    expect(nomeDaEscala(emEscala('e0906'))).toBe('Santa Ceia')
+  })
+})
+
+describe('pessoasDaEquipe', () => {
+  it('põe os Ministros na frente e ordena o resto por Grupo e por Função', () => {
+    expect(pessoasDaEquipe(m, emEscala('e0913'))).toEqual([
+      { membroId: 'isa', nome: 'Isa', funcoes: ['Vocal'], ministro: true },
+      { membroId: 'ana', nome: 'Ana', funcoes: ['Vocal'], ministro: false },
+      { membroId: 'gabriel', nome: 'Gabriel', funcoes: ['Guitarra'], ministro: false },
+      { membroId: 'pedro', nome: 'Pedro', funcoes: ['Baixo'], ministro: false },
+      { membroId: 'lucas', nome: 'Lucas', funcoes: ['Bateria'], ministro: false },
+      { membroId: 'davi', nome: 'Davi', funcoes: ['Som'], ministro: false },
+    ])
+  })
+
+  it('ordena as Funções de quem tem mais de uma e usa a primeira para posicionar a pessoa', () => {
+    const escala: Escala = {
+      ...emEscala('e0913'),
+      equipe: [
+        { membroId: 'davi', funcoes: ['som'], ministro: false },
+        { membroId: 'gabriel', funcoes: ['bateria', 'vocal'], ministro: false },
+      ],
+    }
+
+    expect(pessoasDaEquipe(m, escala)).toEqual([
+      { membroId: 'gabriel', nome: 'Gabriel', funcoes: ['Vocal', 'Bateria'], ministro: false },
+      { membroId: 'davi', nome: 'Davi', funcoes: ['Som'], ministro: false },
+    ])
+  })
+
+  it('aceita quem está na Equipe sem Função e deixa por último', () => {
+    const escala: Escala = {
+      ...emEscala('e0913'),
+      equipe: [
+        { membroId: 'gabriel', funcoes: [], ministro: false },
+        { membroId: 'ana', funcoes: ['vocal'], ministro: false },
+      ],
+    }
+
+    expect(pessoasDaEquipe(m, escala).map((pessoa) => pessoa.nome)).toEqual(['Ana', 'Gabriel'])
   })
 })
 

@@ -1,25 +1,33 @@
 import { useState } from 'react'
-import type { Anexo, EscalaApresentada, EscalaResumida } from '../api/tipos'
+import { Link } from 'react-router'
+import { api } from '../api/cliente'
+import type { Anexo, EscalaApresentada, EscalaResumida, InicioApresentado, PosCultoApresentado, SugestaoApresentada } from '../api/tipos'
+import { usarAcao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
 import { Cabecalho } from '../casca/Cabecalho'
+import { Icone } from '../casca/Icone'
 import { Botao, BotaoLink } from '../componentes/Botao'
 import { Cartao } from '../componentes/Cartao'
 import { Esqueleto } from '../componentes/Esqueleto'
-import { FolhaDaPlaylist, FolhaDoWhatsapp } from '../componentes/FolhasDaEscala'
+import { FolhaDaPlaylist } from '../componentes/FolhasDaEscala'
 import { LinhaDoItem } from '../componentes/LinhaDeMusica'
-import { Selos } from '../componentes/Selos'
+import { Selo } from '../componentes/Selo'
 import { Vazio } from '../componentes/Vazio'
-import type { Funcao } from '../dominio'
-import { formatarDia, musicasDoItem } from '../dominio'
-import { anexosPorMusica, minhaEntrada, proximaEscala, textoDaMinhaFuncao, textoDeQuemMinistra } from '../inicio/proxima'
-import { usarEu } from '../sessao/sessao'
 import { VistoEm } from '../componentes/VistoEm'
-
-type Aberta = 'whatsapp' | 'playlist' | null
+import { hojeEmBrasilia, musicasDoItem, nomeDaEscala, nomeDoDia, nomeDoDiaLongo } from '../dominio'
+import { nomeDoMes } from '../escalas/mes'
+import { CHAVE_DE_VISITA_DAS_SUGESTOES } from '../escalas/sugestoes'
+import { mudouDesdeAVisita, visitaNaEscala } from '../escalas/visita'
+import { chaveDoPosCultoFechado, linhaDaEscala, selosDaEquipe, textoDeSugestoesNovas, textoDoPosCulto } from '../inicio/inicio'
+import { usarEu } from '../sessao/sessao'
 
 export function Inicio() {
   const eu = usarEu()
-  const lista = usarBusca<{ escalas: EscalaResumida[] }>('/api/escalas')
+  const dirige = eu.ministro || eu.admin
+  const hoje = hojeEmBrasilia()
+  const busca = usarBusca<InicioApresentado>('/api/inicio')
+  const sugestoes = usarBusca<{ sugestoes: SugestaoApresentada[] }>('/api/sugestoes')
+  const acao = usarAcao()
 
   const cabecalho = (
     <Cabecalho
@@ -32,120 +40,245 @@ export function Inicio() {
       }
     />
   )
-  const visto = <VistoEm hora={lista.vistoEm} />
 
-  if (lista.erro) {
+  if (busca.erro) {
     return (
       <section className="pagina">
         {cabecalho}
-        <p className="aviso">{lista.erro}</p>
+        <p className="aviso">{busca.erro}</p>
       </section>
     )
   }
 
-  if (!lista.dados) {
+  if (!busca.dados) {
     return (
       <section className="pagina">
         {cabecalho}
-        {visto}
+        <VistoEm hora={busca.vistoEm} />
         <Esqueleto forma="cartao" />
+        <Esqueleto forma="linha-de-musica" quantidade={3} />
       </section>
     )
   }
 
-  const proxima = proximaEscala(lista.dados.escalas, eu.id)
+  const dados = busca.dados
+  const escala = dados.minhaProxima ?? dados.proximoCulto
+
+  function criarMes(mes: string) {
+    acao.executar(async () => {
+      await api('/api/escalas/mes', { metodo: 'POST', corpo: { mes } })
+      busca.recarregar()
+    })
+  }
 
   return (
     <section className="pagina">
       {cabecalho}
-      {visto}
+      <VistoEm hora={busca.vistoEm} />
 
-      {proxima ? (
-        <ProximaEscala id={proxima.escala.id} minha={proxima.minha} />
+      {dados.posCulto && <CartaoPosCulto key={dados.posCulto.escalaId} posCulto={dados.posCulto} hoje={hoje} />}
+
+      {escala ? (
+        <ProximaEscala escala={escala} minha={dados.minhaProxima !== null} euId={eu.id} hoje={hoje} />
       ) : (
-        <Vazio icone="calendario">Nenhuma Escala Agendada por enquanto. Quando o mês for criado, ela aparece aqui.</Vazio>
+        <Vazio
+          icone="calendario"
+          acao={
+            dirige && dados.proximoMesVazio ? (
+              <Botao disabled={acao.ocupado} onClick={() => criarMes(dados.proximoMesVazio!)}>
+                Criar as escalas de {nomeDoMes(dados.proximoMesVazio).toLowerCase()}
+              </Botao>
+            ) : undefined
+          }
+        >
+          Nenhuma escala marcada
+        </Vazio>
       )}
+
+      {acao.erro && <p className="aviso">{acao.erro}</p>}
+
+      {escala && <RepertorioDoInicio escala={escala} anexosPorMusica={dados.anexosPorMusica} hoje={hoje} />}
+
+      {dados.pendencias.length > 0 && <Pendencias escalas={dados.pendencias} />}
+
+      <LinhaDeSugestoes sugestoes={sugestoes.dados?.sugestoes ?? []} />
     </section>
   )
 }
 
-function ProximaEscala({ id, minha }: { id: string; minha: boolean }) {
-  const eu = usarEu()
-  const busca = usarBusca<EscalaApresentada>(`/api/escalas/${id}`)
-  const funcoes = usarBusca<{ funcoes: Funcao[] }>('/api/funcoes')
-  const anexos = usarBusca<{ anexos: Anexo[] }>(`/api/escalas/${id}/anexos`)
-  const [aberta, abrir] = useState<Aberta>(null)
+export function CartaoPosCulto({ posCulto, hoje }: { posCulto: PosCultoApresentado; hoje: string }) {
+  const [fechado, fechar] = useState(() => localStorage.getItem(chaveDoPosCultoFechado(posCulto.escalaId)) !== null)
 
-  const escala = busca.dados
-
-  if (busca.erro) return <p className="aviso">{busca.erro}</p>
-  if (!escala) return <Esqueleto forma="cartao" />
-
-  const entrada = minhaEntrada(escala.equipe, eu.id)
-  const ministra = textoDeQuemMinistra(escala.grupos)
-  const porMusica = anexosPorMusica(anexos.dados?.anexos ?? [])
+  if (fechado) return null
 
   return (
-    <>
+    <Cartao className="pagina pos-culto">
+      <div className="secao-topo">
+        <div className="cresce">
+          <div className="titulo">{textoDoPosCulto(posCulto, hoje)}</div>
+          <div className="dica">Tocaram todas? Algum tom mudou?</div>
+        </div>
+        <Botao
+          variante="icone"
+          icone="remover"
+          aria-label="Fechar"
+          onClick={() => {
+            localStorage.setItem(chaveDoPosCultoFechado(posCulto.escalaId), new Date().toISOString())
+            fechar(true)
+          }}
+        />
+      </div>
+      <div>
+        <BotaoLink para={`/escalas/${posCulto.escalaId}`} variante="secundario" pequeno>
+          Ajustar
+        </BotaoLink>
+      </div>
+    </Cartao>
+  )
+}
+
+function ProximaEscala({
+  escala,
+  minha,
+  euId,
+  hoje,
+}: {
+  escala: EscalaApresentada
+  minha: boolean
+  euId: string
+  hoje: string
+}) {
+  const selos = selosDaEquipe(escala.pessoas, minha ? euId : '')
+
+  return (
+    <div className="secao">
+      <h2>{minha ? 'Sua próxima escala' : 'Próximo culto'}</h2>
+
       <Cartao destaque className="pagina">
+        {!minha && <p className="dica">Você não está em nenhuma escala agendada</p>}
+
         <div className="secao-topo">
           <div className="cresce">
-            <div className="titulo">{escala.titulo}</div>
-            <div className="dica">
-              {formatarDia(escala.data)} <Selos estado={escala.estado} santaCeia={escala.santaCeia} />
-            </div>
+            <div className="titulo">{nomeDaEscala(escala)}</div>
+            <div className="dica">{linhaDaEscala(escala, hoje)}</div>
           </div>
-          <BotaoLink para={`/escalas/${id}`} variante="secundario" pequeno>
+          <BotaoLink para={`/escalas/${escala.id}`} variante="secundario" pequeno>
             Abrir
           </BotaoLink>
         </div>
 
-        <div className="grupo">
-          <span className="rotulo">Você</span>
-          <span>
-            {entrada ? textoDaMinhaFuncao(entrada, funcoes.dados?.funcoes ?? []) : 'não está nesta Escala'}
-          </span>
-        </div>
-
-        <div className="grupo">
-          <span className="rotulo">{ministra && ministra.includes(',') ? 'Ministros' : 'Ministro'}</span>
-          <span>{ministra ?? 'ainda não marcado'}</span>
-        </div>
-
-        {!minha && <p className="dica">Você não está escalado. Esta é a próxima Escala do ministério.</p>}
-      </Cartao>
-
-      <div className="secao">
-        <h2>Repertório</h2>
-
-        {escala.itens.length ? (
-          <ul className="lista cartao">
-            {escala.itens.map((item, indice) => (
-              <LinhaDoItem
-                key={item.id}
-                item={item}
-                modo="leitura"
-                numero={indice + 1}
-                anexos={musicasDoItem(item).flatMap((musicaId) => porMusica[musicaId] ?? [])}
-              />
+        {selos.length ? (
+          <span className="selos">
+            {selos.map((selo) => (
+              <Selo key={selo.membroId} variante={selo.variante}>
+                {selo.texto}
+              </Selo>
             ))}
-          </ul>
+          </span>
         ) : (
-          <p className="dica">O Ministro ainda não escolheu as músicas.</p>
+          <p className="dica">Ninguém escalado ainda</p>
+        )}
+      </Cartao>
+    </div>
+  )
+}
+
+export function RepertorioDoInicio({
+  escala,
+  anexosPorMusica,
+  hoje,
+}: {
+  escala: EscalaApresentada
+  anexosPorMusica: Record<string, Anexo[]>
+  hoje: string
+}) {
+  const [playlist, abrirPlaylist] = useState(false)
+  const visita = visitaNaEscala(escala.id)
+
+  return (
+    <div className="secao">
+      <div className="secao-topo">
+        <h2>Repertório de {nomeDoDiaLongo(escala.data)}</h2>
+        {escala.itens.length > 0 && (
+          <Botao variante="terciario" pequeno icone="play" onClick={() => abrirPlaylist(true)}>
+            Ouvir tudo
+          </Botao>
         )}
       </div>
 
-      <div className="secao pagina">
-        <Botao variante="secundario" largo onClick={() => abrir('playlist')}>
-          Playlist pra ouvir
-        </Botao>
-        <Botao variante="secundario" largo onClick={() => abrir('whatsapp')}>
-          Texto pro WhatsApp
-        </Botao>
+      {escala.itens.length ? (
+        <ul className="lista cartao">
+          {escala.itens.map((item, indice) => (
+            <LinhaDoItem
+              key={item.id}
+              item={item}
+              modo="leitura"
+              numero={indice + 1}
+              hoje={hoje}
+              anexos={musicasDoItem(item).flatMap((musicaId) => anexosPorMusica[musicaId] ?? [])}
+              selos={mudouDesdeAVisita(item.atualizadoEm, visita) ? <Selo variante="atencao">mudou</Selo> : undefined}
+            />
+          ))}
+        </ul>
+      ) : (
+        <p className="dica">O Ministro ainda não escolheu as músicas.</p>
+      )}
+
+      {playlist && <FolhaDaPlaylist escalaId={escala.id} itens={escala.itens} fechar={() => abrirPlaylist(false)} />}
+    </div>
+  )
+}
+
+function Pendencias({ escalas }: { escalas: EscalaResumida[] }) {
+  return (
+    <div className="secao">
+      <div className="secao-topo">
+        <h2>Pendências · próximas 4 semanas</h2>
+        <BotaoLink para="/mes" variante="terciario" pequeno>
+          Mês <Icone nome="seta" />
+        </BotaoLink>
       </div>
 
-      {aberta === 'whatsapp' && <FolhaDoWhatsapp escalaId={id} fechar={() => abrir(null)} />}
-      {aberta === 'playlist' && <FolhaDaPlaylist escalaId={id} itens={escala.itens} fechar={() => abrir(null)} />}
-    </>
+      <ul className="lista cartao">
+        {escalas.map((escala) => (
+          <li key={escala.id}>
+            <Link to={`/escalas/${escala.id}`} className="toque">
+              <span className="dia">
+                <b>{Number(escala.data.slice(8))}</b>
+                <span>{nomeDoDia(escala.data)}</span>
+              </span>
+              <span className="cresce">
+                <span className="titulo">{nomeDaEscala(escala)}</span>
+                <span className="selos">
+                  {escala.pendencias.map((pendencia) => (
+                    <Selo key={pendencia.chave + (pendencia.funcaoId ?? '')} variante="atencao">
+                      {pendencia.texto}
+                    </Selo>
+                  ))}
+                </span>
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+export function LinhaDeSugestoes({ sugestoes }: { sugestoes: SugestaoApresentada[] }) {
+  const texto = textoDeSugestoesNovas(sugestoes, localStorage.getItem(CHAVE_DE_VISITA_DAS_SUGESTOES))
+
+  if (!texto) return null
+
+  return (
+    <ul className="lista cartao">
+      <li>
+        <Link to="/sugestoes" className="toque">
+          <Icone nome="lampada" />
+          <span className="cresce titulo">{texto}</span>
+          <Icone nome="seta" />
+        </Link>
+      </li>
+    </ul>
   )
 }

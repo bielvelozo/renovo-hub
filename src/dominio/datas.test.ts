@@ -10,6 +10,7 @@ import {
   formatarDiaNumerico,
   hojeEmBrasilia,
   nomeDoDia,
+  nomeDoDiaLongo,
   segundos,
   tempoRelativo,
 } from './datas'
@@ -34,6 +35,11 @@ describe('diaDaSemana', () => {
   it('não depende do fuso de quem roda', () => {
     expect(nomeDoDia('2026-09-13')).toBe('dom')
     expect(nomeDoDia('2026-09-16')).toBe('qua')
+  })
+
+  it('devolve o nome do dia por extenso', () => {
+    expect(nomeDoDiaLongo('2026-09-13')).toBe('domingo')
+    expect(nomeDoDiaLongo('2026-09-16')).toBe('quarta-feira')
   })
 })
 

@@ -19,7 +19,11 @@ const MES_CORRENTE = hoje.slice(0, 7)
 const MES_SEGUINTE = seguinte(MES_CORRENTE)
 
 type Inicio = {
-  minhaProxima: { id: string; itens: { atualizadoEm: string | null; memoria: Memoria | null }[] } | null
+  minhaProxima: {
+    id: string
+    itens: { atualizadoEm: string | null; memoria: Memoria | null }[]
+    pessoas: { membroId: string; nome: string; funcoes: string[]; ministro: boolean }[]
+  } | null
   proximoCulto: { id: string } | null
   pendencias: { id: string; pendencias: { chave: string }[]; minhasFuncoes: string[] }[]
   posCulto: { escalaId: string } | null
@@ -66,6 +70,17 @@ describe('GET /api/inicio', () => {
 
     expect(inicio.minhaProxima?.id).toBe('minha')
     expect(inicio.proximoCulto).toBeNull()
+  })
+
+  it('traz a Equipe como pessoas, com o Ministro na frente', async () => {
+    await criarEscala({ id: 'minha', data: somarDias(hoje, 7) })
+    await porNaEquipe('minha', 'julia', ['guitarra'])
+    await porNaEquipe('minha', 'marcos', ['vocal'], true)
+
+    expect((await pedir('julia')).minhaProxima?.pessoas).toEqual([
+      { membroId: 'marcos', nome: 'Marcos', funcoes: ['Vocal'], ministro: true },
+      { membroId: 'julia', nome: 'Júlia', funcoes: ['Guitarra'], ministro: false },
+    ])
   })
 
   it('mostra o próximo culto pra quem não está escalado', async () => {

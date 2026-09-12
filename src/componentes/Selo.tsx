@@ -14,6 +14,8 @@ export type VarianteDoSelo =
   | 'cancelada'
   | 'legado'
   | 'tom'
+  | 'destaque'
+  | 'ministro'
 
 export function Selo({
   variante = 'neutro',

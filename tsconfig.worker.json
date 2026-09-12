@@ -21,7 +21,7 @@
     "src/escalas/rascunho.ts",
     "src/escalas/repertorio.ts",
     "src/escalas/sugestoes.ts",
-    "src/inicio/proxima.ts",
+    "src/inicio/inicio.ts",
     "src/musicas/catalogo.ts",
     "src/perfil/perfil.ts",
     "src/push/base64.ts",
