@@ -11,6 +11,7 @@ import {
   hojeEmBrasilia,
   nomeDoDia,
   nomeDoDiaLongo,
+  normalizarMinutagem,
   segundos,
   tempoRelativo,
 } from './datas'
@@ -157,5 +158,40 @@ describe('minutos em Brasília', () => {
     expect(minutosEmBrasilia(new Date('2026-09-12T01:29:00Z'))).toBe(22 * 60 + 29)
     expect(minutosEmBrasilia(new Date('2026-09-12T01:30:00Z'))).toBe(22 * 60 + 30)
     expect(minutosEmBrasilia(new Date('2026-09-12T03:00:00Z'))).toBe(0)
+  })
+})
+
+describe('normalizarMinutagem', () => {
+  it('aceita o formato pedido e completa os segundos', () => {
+    expect(normalizarMinutagem('1:05')).toBe('1:05')
+    expect(normalizarMinutagem('1:5')).toBe('1:05')
+    expect(normalizarMinutagem(' 12:30 ')).toBe('12:30')
+  })
+
+  it('aceita os separadores que o teclado numérico do celular tem', () => {
+    expect(normalizarMinutagem('1.05')).toBe('1:05')
+    expect(normalizarMinutagem('1,05')).toBe('1:05')
+    expect(normalizarMinutagem('1-05')).toBe('1:05')
+    expect(normalizarMinutagem('1 05')).toBe('1:05')
+  })
+
+  it('lê só números como minutos e segundos corridos', () => {
+    expect(normalizarMinutagem('105')).toBe('1:05')
+    expect(normalizarMinutagem('1230')).toBe('12:30')
+    expect(normalizarMinutagem('100')).toBe('1:00')
+  })
+
+  it('lê um número sozinho como minuto cheio', () => {
+    expect(normalizarMinutagem('3')).toBe('3:00')
+    expect(normalizarMinutagem('0')).toBe('0:00')
+    expect(normalizarMinutagem('12')).toBe('12:00')
+  })
+
+  it('recusa o que não é minutagem', () => {
+    expect(normalizarMinutagem('')).toBeNull()
+    expect(normalizarMinutagem('1:60')).toBeNull()
+    expect(normalizarMinutagem('199')).toBeNull()
+    expect(normalizarMinutagem('abc')).toBeNull()
+    expect(normalizarMinutagem('1:2:3')).toBeNull()
   })
 })

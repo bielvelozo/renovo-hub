@@ -148,13 +148,13 @@ describe('linhas do Mês', () => {
 
 describe('texto de criar domingos', () => {
   it('diz o mês quando a tela está vazia', () => {
-    expect(textoDeCriarDomingos(4, '2026-10', true)).toBe('Criar os 4 domingos de outubro')
-    expect(textoDeCriarDomingos(1, '2026-10', true)).toBe('Criar o domingo de outubro')
+    expect(textoDeCriarDomingos(4, true)).toBe('Criar os 4 domingos')
+    expect(textoDeCriarDomingos(1, true)).toBe('Criar o domingo')
   })
 
   it('diz o que falta quando já há Escalas', () => {
-    expect(textoDeCriarDomingos(2, '2026-10', false)).toBe('Criar os 2 domingos que faltam')
-    expect(textoDeCriarDomingos(1, '2026-10', false)).toBe('Criar o domingo que falta')
+    expect(textoDeCriarDomingos(2, false)).toBe('Criar os 2 domingos que faltam')
+    expect(textoDeCriarDomingos(1, false)).toBe('Criar o domingo que falta')
   })
 })
 

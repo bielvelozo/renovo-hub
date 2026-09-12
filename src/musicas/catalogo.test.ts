@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { MusicaNaLista, TomSugeridoApresentado } from '../api/tipos'
-import { agruparCatalogo, aplicarVer, contagemPorAba, selosDaMusica, textoDoUltimoTom } from './catalogo'
+import { agruparCatalogo, aplicarVer, contagemPorAba, textoDoUltimoTom } from './catalogo'
 
 const HOJE = '2026-09-13'
 
@@ -29,83 +29,6 @@ describe('último Tom fora da tela de adicionar', () => {
 
   it('Música sem Tom nenhum explica o vazio em vez de mandar escolher', () => {
     expect(textoDoUltimoTom(null)).toBe('Sem Tom conhecido: ninguém tocou e ninguém preencheu à mão.')
-  })
-})
-
-describe('selosDaMusica', () => {
-  const base: MusicaNaLista = {
-    id: 'meia-noite',
-    titulo: 'Meia Noite',
-    artista: 'Fhop Music',
-    videoId: 'hRJUcvsnqKs',
-    capa: '',
-    capaAlternativa: '',
-    legado: false,
-    nova: false,
-    arquivada: false,
-    revisar: false,
-    tomConhecido: null,
-    tomOriginal: null,
-    aba: 'redescobrir',
-    secao: 'nunca',
-    recente: false,
-    planejadaEm: [],
-    vezesTocada: 0,
-    vezesEm6Meses: 0,
-    temLetra: false,
-    ultimaExecucao: null,
-  }
-
-  const execucao = {
-    escalaId: 'e0816',
-    data: '2026-08-16',
-    tom: 'C',
-    parcial: false,
-    ministradoPor: 'marcos',
-    ministradoPorNome: 'Marcos',
-  }
-
-  it('mostra o Tom, a data e quem ministrou da última vez', () => {
-    expect(selosDaMusica({ ...base, ultimaExecucao: execucao }, HOJE)).toEqual([
-      { chave: 'tom', texto: 'Tom C' },
-      { chave: 'quando', texto: 'há 4 semanas · Marcos' },
-    ])
-  })
-
-  it('marca o trecho e dispensa o nome quando ninguém ministrou', () => {
-    expect(
-      selosDaMusica({
-        ...base,
-        ultimaExecucao: { ...execucao, parcial: true, ministradoPor: null, ministradoPorNome: null },
-      }, HOJE),
-    ).toEqual([
-      { chave: 'tom', texto: 'Tom C' },
-      { chave: 'quando', texto: 'há 4 semanas' },
-      { chave: 'parcial', texto: 'trecho' },
-    ])
-  })
-
-  it('diz que nunca foi tocada, com o Tom preenchido à mão quando existe', () => {
-    expect(selosDaMusica({ ...base, tomConhecido: 'G' })).toEqual([
-      { chave: 'tom', texto: 'Tom G' },
-      { chave: 'nunca', texto: 'nunca tocada no app' },
-    ])
-  })
-
-  it('cai no tom original da gravação quando não há outro', () => {
-    expect(selosDaMusica({ ...base, tomOriginal: 'E' })).toEqual([
-      { chave: 'tom', texto: 'Tom E · original' },
-      { chave: 'nunca', texto: 'nunca tocada no app' },
-    ])
-  })
-
-  it('não inventa selo de Tom quando não há Tom nenhum', () => {
-    expect(selosDaMusica(base)).toEqual([{ chave: 'nunca', texto: 'nunca tocada no app' }])
-  })
-
-  it('mantém Legado e Nova depois do histórico', () => {
-    expect(selosDaMusica({ ...base, legado: true }).at(-1)).toEqual({ chave: 'legado', texto: 'Legado' })
-    expect(selosDaMusica({ ...base, nova: true }).at(-1)).toEqual({ chave: 'nova', texto: 'Nova' })
   })
 })
 

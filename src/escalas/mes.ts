@@ -106,8 +106,9 @@ export function linhasDoMes(escalas: EscalaResumida[], mes: string, hoje: string
   return linhas
 }
 
-export function textoDeCriarDomingos(quantos: number, mes: string, vazio: boolean): string {
-  const onde = vazio ? `de ${nomeDoMes(mes).toLowerCase()}` : quantos === 1 ? 'que falta' : 'que faltam'
+export function textoDeCriarDomingos(quantos: number, vazio: boolean): string {
+  const quais = quantos === 1 ? 'o domingo' : `os ${quantos} domingos`
+  if (vazio) return `Criar ${quais}`
 
-  return quantos === 1 ? `Criar o domingo ${onde}` : `Criar os ${quantos} domingos ${onde}`
+  return `Criar ${quais} ${quantos === 1 ? 'que falta' : 'que faltam'}`
 }

@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import type { EscalaApresentada, ItemApresentado, MusicaDetalhada } from '../api/tipos'
 import { usarBusca } from '../api/usarBusca'
-import { ehMinutagem, hojeEmBrasilia } from '../dominio'
-import { corpoDaEdicao, escolhaDaMusica, rascunhoDoItem } from '../escalas/rascunho'
+import { hojeEmBrasilia, normalizarMinutagem } from '../dominio'
+import { corpoDaEdicao, escolhaDaMusica, rascunhoDoItem, trechosNormalizados } from '../escalas/rascunho'
 import type { Rascunho, TrechoPronto } from '../escalas/rascunho'
 import { capasDoItem, ministrosDaEscala, tituloDoItem } from '../escalas/repertorio'
 import { BlocoDeMinutagem } from './BlocoDeMinutagem'
@@ -117,7 +117,7 @@ function CamposDaMusica({
   const [rascunho, escrever] = useState<Rascunho>(() => rascunhoDoItem(item, escolhaDoItem(item)))
   const mudar = (mudanca: Partial<Rascunho>) => escrever((antes) => ({ ...antes, ...mudanca }))
 
-  const pronto = !!rascunho.tom && (rascunho.modo === 'inteira' || (ehMinutagem(rascunho.inicio) && ehMinutagem(rascunho.fim)))
+  const pronto = !!rascunho.tom && (rascunho.modo === 'inteira' || (normalizarMinutagem(rascunho.inicio) !== null && normalizarMinutagem(rascunho.fim) !== null))
 
   return (
     <>
@@ -164,7 +164,7 @@ function CamposDoMedley({
   const mudarTrecho = (posicao: number, mudanca: Partial<TrechoPronto>) =>
     escreverTrechos((antes) => antes.map((trecho, outro) => (outro === posicao ? { ...trecho, ...mudanca } : trecho)))
 
-  const pronto = trechos.every((trecho) => trecho.tom && ehMinutagem(trecho.inicio) && ehMinutagem(trecho.fim))
+  const pronto = trechos.every((trecho) => trecho.tom && normalizarMinutagem(trecho.inicio) !== null && normalizarMinutagem(trecho.fim) !== null)
 
   return (
     <>
@@ -190,7 +190,7 @@ function CamposDoMedley({
         largo
         disabled={ocupado || !pronto}
         onClick={() => {
-          salvar({ trechos, observacao: observacao.trim(), ministradoPor })
+          salvar({ trechos: trechosNormalizados(trechos), observacao: observacao.trim(), ministradoPor })
           aoSalvar()
         }}
       >

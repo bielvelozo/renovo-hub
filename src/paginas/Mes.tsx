@@ -97,7 +97,7 @@ export function Mes() {
               <>
                 <span className="criar-domingos">
                   <Botao disabled={acao.ocupado} onClick={criarDomingos}>
-                    {textoDeCriarDomingos(faltam.length, mes, true)}
+                    {textoDeCriarDomingos(faltam.length, true)}
                   </Botao>
                   <Botao
                     variante="icone"
@@ -139,7 +139,7 @@ export function Mes() {
 
       {dirige && escalas.length > 0 && faltam.length > 0 && (
         <Botao variante="secundario" largo disabled={acao.ocupado} onClick={criarDomingos}>
-          {textoDeCriarDomingos(faltam.length, mes, false)}
+          {textoDeCriarDomingos(faltam.length, false)}
         </Botao>
       )}
 

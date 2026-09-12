@@ -8,7 +8,7 @@ import type {
   SugestaoApresentada,
   TomSugeridoApresentado,
 } from '../api/tipos'
-import { capaAlternativa, capaDaMusica, ehMinutagem, formatarDia, hojeEmBrasilia, videoIdDoLink } from '../dominio'
+import { capaAlternativa, capaDaMusica, formatarDia, hojeEmBrasilia, normalizarMinutagem, videoIdDoLink } from '../dominio'
 import { textoDoUltimoTom } from '../musicas/catalogo'
 
 export type ModoDoItem = 'inteira' | 'trecho'
@@ -161,17 +161,29 @@ export function corpoDaEdicao(rascunho: Rascunho) {
 
   if (rascunho.modo === 'inteira') return { tipo: 'inteira', ...comum }
 
-  return { tipo: 'trecho', ...comum, inicio: rascunho.inicio, fim: rascunho.fim }
+  return { tipo: 'trecho', ...comum, inicio: minutagem(rascunho.inicio), fim: minutagem(rascunho.fim) }
 }
 
 export function rascunhoPronto(rascunho: Rascunho): boolean {
   if (!rascunho.tom) return false
   if (rascunho.modo === 'inteira') return true
-  return ehMinutagem(rascunho.inicio) && ehMinutagem(rascunho.fim)
+  return minutagemPronta(rascunho.inicio) && minutagemPronta(rascunho.fim)
+}
+
+function minutagemPronta(valor: string): boolean {
+  return normalizarMinutagem(valor) !== null
+}
+
+function minutagem(valor: string): string {
+  return normalizarMinutagem(valor) ?? valor
+}
+
+export function trechosNormalizados(trechos: TrechoPronto[]): TrechoPronto[] {
+  return trechos.map((trecho) => ({ ...trecho, inicio: minutagem(trecho.inicio), fim: minutagem(trecho.fim) }))
 }
 
 export function trechoPronto(trecho: TrechoEmMontagem): boolean {
-  return !!trecho.tom && ehMinutagem(trecho.inicio) && ehMinutagem(trecho.fim)
+  return !!trecho.tom && minutagemPronta(trecho.inicio) && minutagemPronta(trecho.fim)
 }
 
 export function medleyPronto(trechos: TrechoEmMontagem[]): boolean {
@@ -186,8 +198,8 @@ export function trechosComMusica(trechos: TrechoEmMontagem[], idPorLink: Record<
   return trechos.map((trecho) => ({
     musicaId: trecho.escolha.musicaId ?? idPorLink[trecho.escolha.link ?? ''],
     tom: trecho.tom ?? '',
-    inicio: trecho.inicio,
-    fim: trecho.fim,
+    inicio: minutagem(trecho.inicio),
+    fim: minutagem(trecho.fim),
   }))
 }
 
@@ -201,7 +213,7 @@ export function corpoDoItem(rascunho: Rascunho, musicaId: string) {
 
   if (rascunho.modo === 'inteira') return { tipo: 'inteira', ...comum }
 
-  return { tipo: 'trecho', ...comum, inicio: rascunho.inicio, fim: rascunho.fim }
+  return { tipo: 'trecho', ...comum, inicio: minutagem(rascunho.inicio), fim: minutagem(rascunho.fim) }
 }
 
 export function corpoDaPromocao(rascunho: Rascunho, escalaId: string) {
@@ -214,7 +226,7 @@ export function corpoDaPromocao(rascunho: Rascunho, escalaId: string) {
 
   if (rascunho.modo === 'inteira') return { tipo: 'inteira', ...comum }
 
-  return { tipo: 'trecho', ...comum, inicio: rascunho.inicio, fim: rascunho.fim }
+  return { tipo: 'trecho', ...comum, inicio: minutagem(rascunho.inicio), fim: minutagem(rascunho.fim) }
 }
 
 export function corpoDoMedley(trechos: TrechoPronto[], observacao: string) {

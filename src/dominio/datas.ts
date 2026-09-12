@@ -166,3 +166,19 @@ export function ehMinutagem(valor: unknown): valor is string {
   if (typeof valor !== 'string' || !/^\d{1,2}:\d{2}$/.test(valor)) return false
   return Number(valor.split(':')[1]) < 60
 }
+
+export function normalizarMinutagem(valor: string): string | null {
+  const texto = valor.trim()
+  const separado = texto.match(/^(\d{1,2})\s*[:.,\-\s]\s*(\d{1,2})$/)
+  const corrido = texto.match(/^(\d{1,2})(\d{2})$/)
+  const soMinutos = texto.match(/^(\d{1,2})$/)
+  const partes = separado ?? corrido ?? (soMinutos && [soMinutos[0], soMinutos[1], '0'])
+  if (!partes) return null
+
+  const minutos = Number(partes[1])
+  const segundos = Number(partes[2])
+  if (segundos > 59) return null
+
+  const candidato = `${minutos}:${String(segundos).padStart(2, '0')}`
+  return ehMinutagem(candidato) ? candidato : null
+}
