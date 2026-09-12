@@ -21,12 +21,17 @@ const PASSADO = '2020-08-16'
 type SugestaoJson = {
   id: string
   membro: { id: string; nome: string }
-  musica: { id: string; titulo: string; capa: string } | null
+  musica: { id: string; titulo: string; capa: string; aba: string; secao: string | null; recente: boolean; planejadaEm: unknown[]; temLetra: boolean } | null
   link: string | null
   titulo: string
   observacao: string
   data: string
   promovidaEm: string | null
+  estado: 'aberta' | 'guardada' | 'aceita' | 'recusada'
+  motivo: string
+  decididaEm: string | null
+  decididaPor: { id: string; nome: string } | null
+  escala: { id: string; data: string; titulo: string } | null
   apoios: { id: string; nome: string }[]
   apoiei: boolean
 }
@@ -73,10 +78,11 @@ describe('criar Sugestão', () => {
     const sugestao = await resposta.json<SugestaoJson>()
 
     expect(sugestao.membro).toEqual({ id: 'julia', nome: 'Júlia' })
-    expect(sugestao.musica).toMatchObject({ id: 'rio', titulo: 'Rio' })
+    expect(sugestao.musica).toMatchObject({ id: 'rio', titulo: 'Rio', aba: 'redescobrir', secao: 'nunca', recente: false, planejadaEm: [], temLetra: false })
     expect(sugestao.titulo).toBe('Rio')
     expect(sugestao.observacao).toBe('pra abrir o culto')
     expect(sugestao.promovidaEm).toBeNull()
+    expect(sugestao).toMatchObject({ estado: 'aberta', motivo: '', decididaEm: null, decididaPor: null, escala: null })
   })
 
   it('conta quem sugeriu como o primeiro apoio', async () => {
@@ -156,15 +162,30 @@ describe('listar Sugestões', () => {
     expect(sugestoes[1].data).toBe('2026-09-01T10:00:00.000Z')
   })
 
-  it('esconde as promovidas, e mostra com promovidas=1', async () => {
+  it('traz todas com o estado, inclusive as aceitas, e promovidas=1 não faz mais nada', async () => {
     await criarSugestao({ id: 's1', membroId: 'julia', musicaId: 'rio' })
-    await env.DB.prepare('update sugestoes set promovida_em = ? where id = ?').bind('2026-09-04T10:00:00.000Z', 's1').run()
+    await criarSugestao({ id: 's2', membroId: 'ana', musicaId: 'rio' })
+    await env.DB.prepare("update sugestoes set estado = 'aceita', promovida_em = ?, escala_id = 'e1' where id = ?")
+      .bind('2026-09-04T10:00:00.000Z', 's1')
+      .run()
 
-    expect(await listar()).toHaveLength(0)
+    const todas = await listar()
+    expect(todas.map((s) => [s.id, s.estado])).toEqual([
+      ['s2', 'aberta'],
+      ['s1', 'aceita'],
+    ])
+    expect(todas[1].escala).toEqual({ id: 'e1', data: FUTURO, titulo: 'Culto de Domingo 18h' })
+    expect(await listar('julia', '?promovidas=1')).toHaveLength(2)
+  })
 
-    const todas = await listar('julia', '?promovidas=1')
-    expect(todas).toHaveLength(1)
-    expect(todas[0].promovidaEm).toBe('2026-09-04T10:00:00.000Z')
+  it('lê uma Sugestão só pelo id', async () => {
+    await criarSugestao({ id: 's1', membroId: 'julia', musicaId: 'rio' })
+
+    const resposta = await pedir('/api/sugestoes/s1', 'ana')
+
+    expect(resposta.status).toBe(200)
+    expect(await resposta.json<SugestaoJson>()).toMatchObject({ id: 's1', estado: 'aberta', musica: { id: 'rio' } })
+    expect((await pedir('/api/sugestoes/nada', 'ana')).status).toBe(404)
   })
 
   it('marca apoiei pra quem pede', async () => {
@@ -227,10 +248,18 @@ describe('apagar Sugestão', () => {
     expect(await listar()).toHaveLength(0)
   })
 
-  it('o Admin apaga a de qualquer um', async () => {
+  it('o Admin apaga a de qualquer um, em qualquer estado', async () => {
+    await env.DB.prepare("update sugestoes set estado = 'guardada' where id = 's1'").run()
     const resposta = await pedir('/api/sugestoes/s1', 'gabriel', { method: 'DELETE' })
 
     expect(resposta.status).toBe(200)
+  })
+
+  it('o dono só apaga enquanto está aberta', async () => {
+    await env.DB.prepare("update sugestoes set estado = 'guardada' where id = 's1'").run()
+
+    expect((await pedir('/api/sugestoes/s1', 'julia', { method: 'DELETE' })).status).toBe(409)
+    expect(await listar()).toHaveLength(1)
   })
 
   it('outro Membro, nem Ministro, não apaga a alheia', async () => {
@@ -265,8 +294,12 @@ describe('promover Sugestão', () => {
     expect(escala.itens[0]).toMatchObject({ tipo: 'inteira', tom: 'D', descricao: 'Rio · Tom D' })
     expect(escala.itens[0].musica).toMatchObject({ id: 'rio' })
     expect(sugestao.promovidaEm).not.toBeNull()
+    expect(sugestao).toMatchObject({ estado: 'aceita', decididaPor: { id: 'marcos' }, escala: { id: 'e1', data: FUTURO } })
+    expect(sugestao.decididaEm).not.toBeNull()
 
-    expect(await listar()).toHaveLength(0)
+    const guardada = await env.DB.prepare('select estado, escala_id, decidida_por from sugestoes where id = ?').bind('s1').first()
+    expect(guardada).toEqual({ estado: 'aceita', escala_id: 'e1', decidida_por: 'marcos' })
+    expect((await listar())[0].estado).toBe('aceita')
 
     const item = await env.DB.prepare('select origem_sugestao_id, ministrado_por from itens').first<{
       origem_sugestao_id: string
@@ -327,5 +360,119 @@ describe('promover Sugestão', () => {
   it('Escala desconhecida devolve 404 e Membro comum 403', async () => {
     expect((await promover({ escalaId: 'nada', tom: 'D' })).status).toBe(404)
     expect((await promover({ escalaId: 'e1', tom: 'D' }, 'julia')).status).toBe(403)
+  })
+})
+
+describe('Sugestão repetida', () => {
+  it('recusa com 409 e devolve a Sugestão aberta pra apoiar, pela Música ou pelo vídeo', async () => {
+    await criarSugestao({ id: 's1', membroId: 'ana', musicaId: 'rio' })
+    await criarSugestao({ id: 's2', membroId: 'ana', link: 'https://youtu.be/hRJUcvsnqKs', titulo: 'Meia Noite' })
+
+    const pelaMusica = await sugerir({ musicaId: 'rio' })
+    expect(pelaMusica.status).toBe(409)
+    expect(await pelaMusica.json()).toEqual({ erro: 'Ana já sugeriu esta música.', sugestaoId: 's1' })
+
+    const peloLink = await sugerir({ link: 'https://www.youtube.com/watch?v=s1oU-6vYc4E', titulo: 'Rio ao vivo' })
+    expect(peloLink.status).toBe(409)
+
+    const peloVideo = await sugerir({ link: 'https://www.youtube.com/watch?v=hRJUcvsnqKs', titulo: 'Meia Noite' })
+    expect(await peloVideo.json()).toMatchObject({ sugestaoId: 's2' })
+  })
+
+  it('não conta como repetida quando a outra já foi decidida', async () => {
+    await criarSugestao({ id: 's1', membroId: 'ana', musicaId: 'rio' })
+    await env.DB.prepare("update sugestoes set estado = 'recusada' where id = 's1'").run()
+
+    expect((await sugerir({ musicaId: 'rio' })).status).toBe(201)
+  })
+})
+
+describe('guardar, reabrir e recusar', () => {
+  beforeEach(async () => {
+    await criarSugestao({ id: 's1', membroId: 'julia', musicaId: 'rio' })
+  })
+
+  async function decidir(acao: string, quem = 'marcos', corpo?: unknown): Promise<Response> {
+    return pedir(`/api/sugestoes/s1/${acao}`, quem, { method: 'POST', body: corpo === undefined ? undefined : JSON.stringify(corpo) })
+  }
+
+  async function pushes(): Promise<{ membro_id: string; tipo: string; corpo: string; url: string; escala_id: string | null }[]> {
+    const { results } = await env.DB.prepare('select membro_id, tipo, corpo, url, escala_id from notificacoes order by rowid').all<{
+      membro_id: string
+      tipo: string
+      corpo: string
+      url: string
+      escala_id: string | null
+    }>()
+    return results
+  }
+
+  it('guardar leva pra guardada com quem decidiu, e avisa quem sugeriu', async () => {
+    const resposta = await decidir('guardar')
+
+    expect(resposta.status).toBe(200)
+    const sugestao = await resposta.json<SugestaoJson>()
+    expect(sugestao).toMatchObject({ estado: 'guardada', decididaPor: { id: 'marcos', nome: 'Marcos' }, musica: { id: 'rio', aba: 'redescobrir' } })
+    expect(sugestao.decididaEm).not.toBeNull()
+
+    expect(await pushes()).toEqual([
+      { membro_id: 'julia', tipo: 'sugestao-guardada', corpo: 'Rio', url: '/sugestoes', escala_id: null },
+    ])
+  })
+
+  it('reabrir volta pra aberta, limpa a decisão e não avisa ninguém', async () => {
+    await decidir('guardar')
+    const resposta = await decidir('reabrir')
+
+    expect(resposta.status).toBe(200)
+    expect(await resposta.json<SugestaoJson>()).toMatchObject({ estado: 'aberta', decididaEm: null, decididaPor: null, motivo: '' })
+    expect(await pushes()).toHaveLength(1)
+  })
+
+  it('recusar com motivo guarda o motivo e o manda no push', async () => {
+    const resposta = await decidir('recusar', 'marcos', { motivo: 'Tocamos há duas semanas' })
+
+    expect(resposta.status).toBe(200)
+    expect(await resposta.json<SugestaoJson>()).toMatchObject({ estado: 'recusada', motivo: 'Tocamos há duas semanas' })
+    expect((await pushes())[0]).toMatchObject({ tipo: 'sugestao-recusada', corpo: 'Rio · Tocamos há duas semanas' })
+  })
+
+  it('recusar sem motivo funciona, e com 81 letras dá 422', async () => {
+    expect((await decidir('recusar', 'marcos', { motivo: 'x'.repeat(81) })).status).toBe(422)
+    expect((await decidir('recusar')).status).toBe(200)
+    expect((await pushes())[0].corpo).toBe('Rio')
+  })
+
+  it('transições proibidas devolvem 409', async () => {
+    expect((await decidir('reabrir')).status).toBe(409)
+    await decidir('guardar')
+    expect((await decidir('guardar')).status).toBe(409)
+    await decidir('recusar')
+    expect((await decidir('reabrir')).status).toBe(409)
+    expect((await decidir('guardar')).status).toBe(409)
+    expect((await pedir('/api/sugestoes/s1/promover', 'marcos', { method: 'POST', body: JSON.stringify({ escalaId: 'e1', tom: 'D' }) })).status).toBe(409)
+  })
+
+  it('quem decide a própria Sugestão não recebe push', async () => {
+    await criarSugestao({ id: 's2', membroId: 'marcos', musicaId: 'rio' })
+
+    await pedir('/api/sugestoes/s2/guardar', 'marcos', { method: 'POST' })
+
+    expect(await pushes()).toHaveLength(0)
+  })
+
+  it('promover avisa quem sugeriu com a Escala, sem avisar quem promoveu', async () => {
+    const resposta = await pedir('/api/sugestoes/s1/promover', 'marcos', { method: 'POST', body: JSON.stringify({ escalaId: 'e1', tom: 'D' }) })
+
+    expect(resposta.status).toBe(201)
+    const aceita = (await pushes()).find((p) => p.tipo === 'sugestao-aceita')
+    expect(aceita).toMatchObject({ membro_id: 'julia', url: '/escalas/e1', escala_id: 'e1' })
+    expect(aceita?.corpo).toContain('Rio no dia')
+    expect((await pushes()).some((p) => p.tipo === 'sugestao-aceita' && p.membro_id === 'marcos')).toBe(false)
+  })
+
+  it('Membro comum não decide', async () => {
+    expect((await decidir('guardar', 'julia')).status).toBe(403)
+    expect((await decidir('recusar', 'ana')).status).toBe(403)
   })
 })

@@ -281,7 +281,7 @@ describe('configuração da lista "esqueci"', () => {
       body: JSON.stringify({ listaEsqueci: false }),
     })
 
-    expect(await corpoDe<{ listaEsqueci: boolean }>(desligar)).toEqual({ listaEsqueci: false })
+    expect(await corpoDe<{ listaEsqueci: boolean }>(desligar)).toEqual({ listaEsqueci: false, semanasDeRepeticao: 4 })
     expect((await SELF.fetch(`${RAIZ}/api/esqueci`)).status).toBe(403)
 
     const guardado = await env.DB.prepare('select valor from configuracoes where chave = ?')
@@ -297,10 +297,31 @@ describe('configuração da lista "esqueci"', () => {
     expect((await SELF.fetch(`${RAIZ}/api/esqueci`)).status).toBe(200)
   })
 
-  it('lê o estado atual, ligada por padrão', async () => {
+  it('lê o estado atual, ligada por padrão e com 4 semanas de repetição', async () => {
     const resposta = await pedir('/api/admin/configuracoes', 'gabriel')
 
-    expect(await corpoDe<{ listaEsqueci: boolean }>(resposta)).toEqual({ listaEsqueci: true })
+    expect(await corpoDe<{ listaEsqueci: boolean }>(resposta)).toEqual({ listaEsqueci: true, semanasDeRepeticao: 4 })
+  })
+
+  it('o PATCH é parcial: muda só o alerta de repetição e a lista fica como estava', async () => {
+    const resposta = await pedir('/api/admin/configuracoes', 'gabriel', {
+      method: 'PATCH',
+      body: JSON.stringify({ semanasDeRepeticao: 6 }),
+    })
+
+    expect(resposta.status).toBe(200)
+    expect(await corpoDe(resposta)).toEqual({ listaEsqueci: true, semanasDeRepeticao: 6 })
+  })
+
+  it('recusa semanas fora de 2, 4, 6 e 8, corpo vazio e quem não é Admin', async () => {
+    const torto = await pedir('/api/admin/configuracoes', 'gabriel', { method: 'PATCH', body: JSON.stringify({ semanasDeRepeticao: 5 }) })
+    expect(torto.status).toBe(422)
+
+    const vazio = await pedir('/api/admin/configuracoes', 'gabriel', { method: 'PATCH', body: JSON.stringify({}) })
+    expect(vazio.status).toBe(422)
+
+    const ministro = await pedir('/api/admin/configuracoes', 'marcos', { method: 'PATCH', body: JSON.stringify({ semanasDeRepeticao: 6 }) })
+    expect(ministro.status).toBe(403)
   })
 })
 

@@ -1,6 +1,7 @@
 import type {
   AbaDaMusica,
   EntradaEquipe,
+  EstadoDaSugestao,
   EstadoEscala,
   Funcao,
   GrupoEquipe,
@@ -136,6 +137,7 @@ export type MusicaDetalhada = MusicaNaLista & {
   tomSugerido: TomSugeridoApresentado | null
   historico: ExecucaoApresentada[]
   cobertura: Cobertura | null
+  coberturaDoMinisterio: Cobertura
   anexos: Anexo[]
 }
 
@@ -168,18 +170,29 @@ export type MembroResumido = {
   nome: string
 }
 
+export type EscalaDaSugestao = { id: string; data: string; titulo: string }
+
 export type SugestaoApresentada = {
   id: string
   membro: MembroResumido
-  musica: MusicaResumida | null
+  musica: MusicaNaLista | null
   link: string | null
   titulo: string
   observacao: string
   data: string
   promovidaEm: string | null
+  estado: EstadoDaSugestao
+  motivo: string
+  decididaEm: string | null
+  decididaPor: MembroResumido | null
+  escala: EscalaDaSugestao | null
   apoios: MembroResumido[]
   apoiei: boolean
 }
+
+export type SugestaoRepetida = { erro: string; sugestaoId: string }
+
+export type Configuracoes = { listaEsqueci: boolean; semanasDeRepeticao: number }
 
 export type MembroDetalhado = {
   id: string
@@ -203,10 +216,14 @@ export type Convite = {
   membro: MembroResumido
 }
 
+export type ProximaEscalaDoPerfil = { id: string; data: string; titulo: string; funcoes: string[] }
+
 export type PerfilApresentado = {
   membro: MembroDetalhado
   escalasNoAno: number
   ultimaEscala: EscalaResumida | null
+  proximaEscala: ProximaEscalaDoPerfil | null
+  finsDeSemanaServidos: { servidos: number; de: number }
   finsDeSemanaSeguidos: number
   textoDeFinsDeSemana: string | null
 }

@@ -8,14 +8,16 @@ import {
   limparTitulo,
   mesesDesde,
   musicaPorId,
+  normalizarTexto,
   ordenarPorExecucao,
   ultimaExecucao,
   vezesTocada,
   videoIdDoLink,
 } from '../../src/dominio'
-import type { Ministerio, Musica, OrdemDoCatalogo } from '../../src/dominio'
+import type { Ministerio, Musica } from '../../src/dominio'
 import { exigirMembro, exigirMinistro } from '../autenticacao'
 import { lerAnexos } from '../dados/anexos'
+import { lerContextoDoCatalogo } from '../dados/catalogo'
 import { acharNoCifraClub } from '../dados/cifraclub'
 import { carregarMinisterio } from '../dados/ministerio'
 import {
@@ -90,7 +92,12 @@ musicas.post('/api/musicas', exigirMinistro, async (c) => {
 })
 
 musicas.get('/api/musicas', exigirMembro, async (c) => {
-  const m = await carregarMinisterio(c.env.DB)
+  const escalaId = c.req.query('escalaId') || undefined
+  const [m, contexto] = await Promise.all([carregarMinisterio(c.env.DB), lerContextoDoCatalogo(c.env.DB, escalaId)])
+  if (escalaId && !m.escalas.some((escala) => escala.id === escalaId)) {
+    return c.json({ erro: ESCALA_NAO_ENCONTRADA }, 404)
+  }
+
   const busca = c.req.query('busca') ?? ''
   const filtro = c.req.query('filtro')
   const meses = Number(c.req.query('meses'))
@@ -102,9 +109,15 @@ musicas.get('/api/musicas', exigirMembro, async (c) => {
     .filter((musica) => cabeNoFiltro(m, musica, filtro))
     .filter((musica) => cabeNosMeses(m, musica, meses))
 
-  const ordem: OrdemDoCatalogo = c.req.query('ordem') === 'menos-tempo' ? 'menos-tempo' : 'mais-tempo'
+  const ordem = c.req.query('ordem')
+  const ordenadas = ordem
+    ? ordenarPorExecucao(m, achadas, ordem === 'menos-tempo' ? 'menos-tempo' : 'mais-tempo')
+    : porTitulo(achadas)
 
-  return c.json({ musicas: ordenarPorExecucao(m, achadas, ordem).map((musica) => naListaDeMusicas(m, musica)) })
+  return c.json({
+    musicas: ordenadas.map((musica) => naListaDeMusicas(m, musica, contexto)),
+    semanasDeRepeticao: contexto.semanas,
+  })
 })
 
 musicas.get('/api/cifraclub', exigirMinistro, async (c) => {
@@ -115,17 +128,17 @@ musicas.get('/api/cifraclub', exigirMinistro, async (c) => {
 })
 
 musicas.get('/api/musicas/:id', exigirMembro, async (c) => {
-  const m = await carregarMinisterio(c.env.DB)
+  const escalaId = c.req.query('escalaId') || undefined
+  const [m, contexto] = await Promise.all([carregarMinisterio(c.env.DB), lerContextoDoCatalogo(c.env.DB, escalaId)])
   const musica = m.musicas.find((x) => x.id === c.req.param('id'))
   if (!musica) return c.json({ erro: MUSICA_NAO_ENCONTRADA }, 404)
 
-  const escalaId = c.req.query('escalaId')
   if (escalaId && !m.escalas.some((escala) => escala.id === escalaId)) {
-    return c.json({ erro: 'Escala não encontrada.' }, 404)
+    return c.json({ erro: ESCALA_NAO_ENCONTRADA }, 404)
   }
 
   return c.json({
-    ...apresentarMusica(m, musica),
+    ...apresentarMusica(m, musica, contexto),
     cobertura: escalaId ? cobertura(m, escalaId, musica.id) : null,
     anexos: await lerAnexos(c.env.DB, musica.id),
   })
@@ -198,6 +211,10 @@ async function guardar(c: Context<Contexto>, id: string, arquivada: boolean) {
   return c.json(await responderMusica(c.env.DB, id))
 }
 
+function porTitulo(musicas: Musica[]): Musica[] {
+  return [...musicas].sort((a, b) => normalizarTexto(a.titulo).localeCompare(normalizarTexto(b.titulo)))
+}
+
 function cabeNoFiltro(m: Ministerio, musica: Musica, filtro: string | undefined): boolean {
   if (filtro === 'nova') return !musica.legado && !ultimaExecucao(m, musica.id)
   if (filtro === 'legado') return ehLegado(m, musica)
@@ -227,13 +244,14 @@ function lerTons(corpo: Record<string, unknown>): { tomConhecido?: string | null
 }
 
 async function responderMusica(db: D1Database, id: string) {
-  const m = await carregarMinisterio(db)
-  return apresentarMusica(m, musicaPorId(m, id))
+  const [m, contexto] = await Promise.all([carregarMinisterio(db), lerContextoDoCatalogo(db)])
+  return apresentarMusica(m, musicaPorId(m, id), contexto)
 }
 
 const LINK_INVALIDO = 'Cole o link do vídeo no YouTube.'
 const VIDEO_DESCONHECIDO = 'O YouTube não reconheceu esse vídeo.'
 const TOM_INVALIDO = 'O Tom é um texto ou vazio.'
 const MUSICA_NAO_ENCONTRADA = 'Música não encontrada.'
+const ESCALA_NAO_ENCONTRADA = 'Escala não encontrada.'
 const BUSCA_SEM_CHAVE = 'A busca no YouTube ainda não está configurada. Cole o link do vídeo.'
 const BUSCA_FALHOU = 'O YouTube não respondeu a busca. Tente de novo ou cole o link.'

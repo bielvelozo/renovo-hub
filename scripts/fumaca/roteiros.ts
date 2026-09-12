@@ -312,13 +312,18 @@ export async function roteiroDaSugestao(prova: Prova, cenario: Cenario): Promise
     ligacao[0]?.origem_sugestao_id === sugestao.id,
     String(ligacao[0]?.origem_sugestao_id),
   )
-  prova.conferir('promover marca a Sugestão', !!promovida.sugestao.promovidaEm, promovida.sugestao.promovidaEm)
+  prova.conferir(
+    'promover muda o estado pra aceita e guarda a Escala em que entrou',
+    promovida.sugestao.estado === 'aceita' && promovida.sugestao.escala?.id === cenario.escalaDoMes,
+    `${promovida.sugestao.estado} · ${promovida.sugestao.escala?.titulo}`,
+  )
 
   const mural = exigir(await prova.api('/api/sugestoes', { cookie: cenario.julia }), 200, 'ler o mural')
+  const noMural = mural.sugestoes.find((s: any) => s.id === sugestao.id)
   prova.conferir(
-    'promover tira a Sugestão do mural',
-    !mural.sugestoes.some((s: any) => s.id === sugestao.id),
-    `${mural.sugestoes.length} abertas`,
+    'a Sugestão aceita continua na lista, com a Música trazendo a memória do catálogo',
+    noMural?.estado === 'aceita' && typeof noMural?.musica?.aba === 'string',
+    `${mural.sugestoes.length} na lista · ${noMural?.musica?.aba}`,
   )
 
   const denovo = await prova.api(`/api/sugestoes/${sugestao.id}/promover`, {

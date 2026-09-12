@@ -4,7 +4,17 @@ import type { Escala, Item, Ministerio } from './tipos'
 
 export const HORA_DO_LEMBRETE = 10
 
-export type TipoDeNotificacao = 'escalado' | 'musica' | 'lembrete' | 'cancelada' | 'remarcada'
+export type TipoDeNotificacao =
+  | 'escalado'
+  | 'musica'
+  | 'lembrete'
+  | 'cancelada'
+  | 'remarcada'
+  | 'sugestao-aceita'
+  | 'sugestao-guardada'
+  | 'sugestao-recusada'
+
+export const CAMINHO_DAS_SUGESTOES = '/sugestoes'
 
 export type AcaoNaMusica = 'entrou' | 'saiu' | 'mudou'
 
@@ -78,6 +88,26 @@ export function avisoDeRemarcada(escala: Escala): Aviso {
     titulo: 'Escala remarcada',
     corpo: `${nomeDaEscala(escala)} mudou para ${diaDaEscala(escala)}, ${rotuloDoHorario(escala.horario)}`,
     url: caminhoDaEscala(escala.id),
+  }
+}
+
+export function avisoDeSugestaoAceita(escala: Escala, tituloDaMusica: string): Aviso {
+  return {
+    titulo: 'Sua sugestão entrou',
+    corpo: `${tituloDaMusica} no dia ${diaDaEscala(escala)}`,
+    url: caminhoDaEscala(escala.id),
+  }
+}
+
+export function avisoDeSugestaoGuardada(tituloDaMusica: string): Aviso {
+  return { titulo: 'Sua sugestão foi guardada pra depois', corpo: tituloDaMusica, url: CAMINHO_DAS_SUGESTOES }
+}
+
+export function avisoDeSugestaoRecusada(tituloDaMusica: string, motivo: string): Aviso {
+  return {
+    titulo: 'Sua sugestão não entrou desta vez',
+    corpo: motivo ? `${tituloDaMusica} · ${motivo}` : tituloDaMusica,
+    url: CAMINHO_DAS_SUGESTOES,
   }
 }
 

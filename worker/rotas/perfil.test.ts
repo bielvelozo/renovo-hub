@@ -9,6 +9,8 @@ type PerfilJson = {
   membro: { id: string; nome: string; ministro: boolean; inativo: boolean; funcoes: { id: string; nome: string; grupo: string }[] }
   escalasNoAno: number
   ultimaEscala: { id: string; data: string; titulo: string; estado: string } | null
+  proximaEscala: { id: string; data: string; titulo: string; funcoes: string[] } | null
+  finsDeSemanaServidos: { servidos: number; de: number }
   finsDeSemanaSeguidos: number
   textoDeFinsDeSemana: string | null
 }
@@ -50,6 +52,26 @@ describe('GET /api/perfil/:id', () => {
     expect(corpo.ultimaEscala).toMatchObject({ id: 'e0', data: DOMINGOS[0], estado: 'realizada' })
     expect(corpo.finsDeSemanaSeguidos).toBe(3)
     expect(corpo.textoDeFinsDeSemana).toBe('3 fins de semana seguidos')
+    expect(corpo.finsDeSemanaServidos).toEqual({ servidos: 3, de: 3 })
+    expect(corpo.proximaEscala).toBeNull()
+  })
+
+  it('conta os fins de semana servidos entre os últimos com Escala, e aponta a próxima Escala com as Funções', async () => {
+    await criarEscala({ id: 'antes', data: somarDias(domingoPassado, -21) })
+    await porNaEquipe('antes', 'ana', ['vocal'])
+    await criarEscala({ id: 'depois', data: somarDias(hoje, 30) })
+    await criarEscala({ id: 'proxima', data: somarDias(hoje, 3) })
+    await porNaEquipe('proxima', 'gabriel', ['vocal'])
+
+    const corpo = await (await perfil('gabriel')).json<PerfilJson>()
+
+    expect(corpo.finsDeSemanaServidos).toEqual({ servidos: 3, de: 4 })
+    expect(corpo.proximaEscala).toEqual({
+      id: 'proxima',
+      data: somarDias(hoje, 3),
+      titulo: 'Culto de Domingo 18h',
+      funcoes: ['Vocal'],
+    })
   })
 
   it('conta o Membro de Função técnica igual, porque presença não é Execução', async () => {

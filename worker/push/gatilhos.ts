@@ -8,7 +8,7 @@ import {
   dataDoLembrete,
   estadoEscala,
 } from '../../src/dominio'
-import type { AcaoNaMusica, Escala, Ministerio } from '../../src/dominio'
+import type { AcaoNaMusica, Aviso, Escala, Ministerio, TipoDeNotificacao } from '../../src/dominio'
 import { enfileirar, jaTeve, pendenteDe, regravarAviso, ultimoEnvio } from '../dados/notificacoes'
 import { carregarMinisterio } from '../dados/ministerio'
 
@@ -104,6 +104,24 @@ export async function avisarRemarcada(
   agora: Date,
 ): Promise<void> {
   await avisarEquipe(db, m, antes, 'remarcada', avisoDeRemarcada(depois), agora)
+}
+
+export async function avisarAutorDaSugestao(
+  db: D1Database,
+  sugestao: { membroId: string },
+  tipo: Extract<TipoDeNotificacao, `sugestao-${string}`>,
+  aviso: Aviso,
+  escalaId: string | null,
+  decididoPor: string,
+  agora: Date,
+): Promise<void> {
+  if (sugestao.membroId === decididoPor) return
+
+  await enfileirar(
+    db,
+    { membroId: sugestao.membroId, tipo, escalaId, aviso, enviarApos: agora.toISOString() },
+    agora,
+  )
 }
 
 export async function gerarLembretes(db: D1Database, agora: Date): Promise<number> {

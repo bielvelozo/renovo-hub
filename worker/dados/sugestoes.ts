@@ -1,3 +1,5 @@
+import type { EstadoDaSugestao } from '../../src/dominio'
+
 export type NovaSugestao = {
   membroId: string
   musicaId: string | null
@@ -15,7 +17,17 @@ export type Sugestao = {
   observacao: string
   data: string
   promovidaEm: string | null
+  estado: EstadoDaSugestao
+  motivo: string
+  decididaEm: string | null
+  decididaPor: string | null
+  escalaId: string | null
   apoios: string[]
+}
+
+export type Decisao = {
+  decididaPor: string
+  motivo?: string
 }
 
 type LinhaDeSugestao = {
@@ -27,13 +39,19 @@ type LinhaDeSugestao = {
   observacao: string
   data: string
   promovida_em: string | null
+  estado: EstadoDaSugestao
+  motivo: string
+  decidida_em: string | null
+  decidida_por: string | null
+  escala_id: string | null
 }
+
+const COLUNAS =
+  'id, membro_id, musica_id, link, titulo, observacao, data, promovida_em, estado, motivo, decidida_em, decidida_por, escala_id'
 
 export async function lerSugestoes(db: D1Database): Promise<Sugestao[]> {
   const { results } = await db
-    .prepare(
-      'select id, membro_id, musica_id, link, titulo, observacao, data, promovida_em from sugestoes order by data desc, rowid desc',
-    )
+    .prepare(`select ${COLUNAS} from sugestoes order by data desc, rowid desc`)
     .all<LinhaDeSugestao>()
 
   if (!results.length) return []
@@ -53,6 +71,11 @@ export async function lerSugestoes(db: D1Database): Promise<Sugestao[]> {
     observacao: linha.observacao,
     data: linha.data,
     promovidaEm: linha.promovida_em,
+    estado: linha.estado,
+    motivo: linha.motivo,
+    decididaEm: linha.decidida_em,
+    decididaPor: linha.decidida_por,
+    escalaId: linha.escala_id,
     apoios: apoios.filter((apoio) => apoio.sugestao_id === linha.id).map((apoio) => apoio.membro_id),
   }))
 }
@@ -91,10 +114,40 @@ export async function apagarSugestao(db: D1Database, id: string): Promise<void> 
   await db.prepare('delete from sugestoes where id = ?').bind(id).run()
 }
 
-export async function marcarPromovida(db: D1Database, id: string, musicaId: string): Promise<void> {
+export async function marcarPromovida(
+  db: D1Database,
+  id: string,
+  musicaId: string,
+  escalaId: string,
+  decidida: Decisao,
+): Promise<void> {
+  const agora = new Date().toISOString()
+
   await db
-    .prepare('update sugestoes set promovida_em = ?, musica_id = ? where id = ?')
-    .bind(new Date().toISOString(), musicaId, id)
+    .prepare(
+      "update sugestoes set estado = 'aceita', promovida_em = ?, decidida_em = ?, decidida_por = ?, escala_id = ?, musica_id = ? where id = ?",
+    )
+    .bind(agora, agora, decidida.decididaPor, escalaId, musicaId, id)
+    .run()
+}
+
+export async function mudarEstado(
+  db: D1Database,
+  id: string,
+  estado: 'aberta' | 'guardada' | 'recusada',
+  decidida: Decisao,
+): Promise<void> {
+  if (estado === 'aberta') {
+    await db
+      .prepare("update sugestoes set estado = 'aberta', motivo = '', decidida_em = null, decidida_por = null where id = ?")
+      .bind(id)
+      .run()
+    return
+  }
+
+  await db
+    .prepare('update sugestoes set estado = ?, motivo = ?, decidida_em = ?, decidida_por = ? where id = ?')
+    .bind(estado, decidida.motivo ?? '', new Date().toISOString(), decidida.decididaPor, id)
     .run()
 }
 

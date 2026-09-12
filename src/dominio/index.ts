@@ -123,12 +123,16 @@ export {
 export type { AcaoNaMusica, Aviso, TipoDeNotificacao } from './notificacoes'
 
 export {
+  CAMINHO_DAS_SUGESTOES,
   HORA_DO_LEMBRETE,
   avisoDeCancelada,
   avisoDeEscalado,
   avisoDeLembrete,
   avisoDeMudanca,
   avisoDeRemarcada,
+  avisoDeSugestaoAceita,
+  avisoDeSugestaoGuardada,
+  avisoDeSugestaoRecusada,
   avisoDeVariasMudancas,
   caminhoDaEscala,
   dataDoLembrete,
