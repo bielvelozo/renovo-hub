@@ -1,6 +1,6 @@
 import type { EscalaResumida } from '../api/tipos'
 import { usarBusca } from '../api/usarBusca'
-import { formatarDia } from '../dominio'
+import { formatarDia, nomeDaEscala } from '../dominio'
 import { Esqueleto } from './Esqueleto'
 import { Folha } from './Folha'
 import { Selo } from './Selo'
@@ -50,8 +50,10 @@ export function ListaDeEscalas({
           <li key={escala.id}>
             <button type="button" className="toque" disabled={jaAqui} onClick={() => aoEscolher(escala.id)}>
               <span className="cresce">
-                <span className="titulo">{formatarDia(escala.data)}</span>
-                <span className="dica">{escala.ministros.join(', ') || 'sem ministro'}</span>
+                <span className="titulo">{nomeDaEscala(escala)}</span>
+                <span className="dica">
+                  {formatarDia(escala.data)} · {escala.ministros.join(', ') || 'sem ministro'}
+                </span>
               </span>
               {jaAqui ? (
                 <Selo variante="atencao">já está aqui</Selo>

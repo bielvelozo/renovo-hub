@@ -1,7 +1,8 @@
-import { api } from '../api/cliente'
+import { api, textoDoErro } from '../api/cliente'
 import type { MusicaDetalhada } from '../api/tipos'
 import type { PessoaDaEquipe } from '../dominio'
 import type { Rascunho } from '../escalas/rascunho'
+import { usarAvisoTalvez } from './Avisos'
 import { BlocoDeMinutagem } from './BlocoDeMinutagem'
 import { BlocoDeTom } from './BlocoDeTom'
 import { Campo } from './Campo'
@@ -22,6 +23,7 @@ export function CamposDoItem({
   como?: boolean
   observacao?: boolean
 }) {
+  const avisar = usarAvisoTalvez()
   return (
     <>
       <BlocoDeTom
@@ -33,7 +35,10 @@ export function CamposDoItem({
         escolher={(tom) => mudar({ tom })}
         aoAcharOriginal={(tom) => {
           mudar({ tom, tomOriginal: tom })
-          if (musica) void api(`/api/musicas/${musica.id}`, { metodo: 'PATCH', corpo: { tomOriginal: tom } })
+          if (musica)
+            api(`/api/musicas/${musica.id}`, { metodo: 'PATCH', corpo: { tomOriginal: tom } }).catch((problema) =>
+              avisar?.(textoDoErro(problema)),
+            )
         }}
       />
 

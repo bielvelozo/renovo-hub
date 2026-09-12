@@ -199,25 +199,31 @@ export function Sugestoes() {
     })
   }
 
-  const guardar = (sugestao: SugestaoApresentada) => {
+  const decidir = (sugestao: SugestaoApresentada, acaoNaApi: 'guardar' | 'reabrir') => {
     abrirFolhaDe(null)
     acao.executar(async () => {
-      trocar(await api<SugestaoApresentada>(`/api/sugestoes/${sugestao.id}/guardar`, { metodo: 'POST' }))
+      try {
+        trocar(await api<SugestaoApresentada>(`/api/sugestoes/${sugestao.id}/${acaoNaApi}`, { metodo: 'POST' }))
+      } catch (problema) {
+        avisar(textoDoErro(problema))
+        busca.recarregar()
+      }
     })
   }
 
-  const reabrir = (sugestao: SugestaoApresentada) => {
-    abrirFolhaDe(null)
-    acao.executar(async () => {
-      trocar(await api<SugestaoApresentada>(`/api/sugestoes/${sugestao.id}/reabrir`, { metodo: 'POST' }))
-    })
-  }
+  const guardar = (sugestao: SugestaoApresentada) => decidir(sugestao, 'guardar')
+
+  const reabrir = (sugestao: SugestaoApresentada) => decidir(sugestao, 'reabrir')
 
   const apagar = (sugestao: SugestaoApresentada) => {
     abrirFolhaDe(null)
     pendente.agendar(sugestao.id, () =>
       acao.executar(async () => {
-        await api(`/api/sugestoes/${sugestao.id}`, { metodo: 'DELETE' })
+        try {
+          await api(`/api/sugestoes/${sugestao.id}`, { metodo: 'DELETE' })
+        } catch (problema) {
+          avisar(textoDoErro(problema))
+        }
         busca.recarregar()
       }),
     )
@@ -550,11 +556,13 @@ function Envio({
         />
       </Campo>
 
+      {duplicata && <p className="aviso">{duplicata.erro}</p>}
+
       <RodapeDeAcao
         primario={
           duplicata ? (
             <Botao largo disabled={acao.ocupado} onClick={apoiarDuplicata}>
-              {duplicata.erro} · Apoiar
+              Apoiar a sugestão
             </Botao>
           ) : (
             <Botao largo disabled={acao.ocupado} onClick={enviar}>

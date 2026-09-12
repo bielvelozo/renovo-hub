@@ -1,3 +1,4 @@
+import { esquecerBuscas } from './cache'
 import { SEM_CONEXAO, mensagemDeErro } from './erros'
 
 export class ErroDaApi extends Error {
@@ -21,13 +22,18 @@ export type RespostaComMeta<T> = { dados: T; data: string | null }
 
 export async function apiComMeta<T>(caminho: string, opcoes: Opcoes = {}): Promise<RespostaComMeta<T>> {
   const temCorpo = opcoes.corpo !== undefined
+  const metodo = opcoes.metodo ?? 'GET'
 
-  return pedir<T>(caminho, {
-    method: opcoes.metodo ?? 'GET',
-    headers: temCorpo ? { 'content-type': 'application/json' } : undefined,
-    body: temCorpo ? JSON.stringify(opcoes.corpo) : undefined,
-    signal: opcoes.sinal,
-  })
+  try {
+    return await pedir<T>(caminho, {
+      method: metodo,
+      headers: temCorpo ? { 'content-type': 'application/json' } : undefined,
+      body: temCorpo ? JSON.stringify(opcoes.corpo) : undefined,
+      signal: opcoes.sinal,
+    })
+  } finally {
+    if (metodo !== 'GET') esquecerBuscas()
+  }
 }
 
 export async function api<T>(caminho: string, opcoes: Opcoes = {}): Promise<T> {
@@ -38,7 +44,11 @@ export async function enviarArquivo<T>(caminho: string, arquivo: File, campo = '
   const formulario = new FormData()
   formulario.append(campo, arquivo)
 
-  return (await pedir<T>(caminho, { method: 'POST', body: formulario })).dados
+  try {
+    return (await pedir<T>(caminho, { method: 'POST', body: formulario })).dados
+  } finally {
+    esquecerBuscas()
+  }
 }
 
 type Pedido = RequestInit & { credentials?: 'same-origin' }

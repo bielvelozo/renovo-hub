@@ -31,6 +31,7 @@ export type Rascunho = {
 }
 
 export type TrechoEmMontagem = {
+  chave?: string
   escolha: Escolha
   tom: string | null
   inicio: string

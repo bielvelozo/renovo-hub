@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { Navigate, useParams } from 'react-router'
-import { api } from '../api/cliente'
+import { api, textoDoErro } from '../api/cliente'
 import type { EscalaApresentada, Formacao } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
 import type { Acao } from '../api/usarAcao'
@@ -140,11 +140,16 @@ export function CorpoDaEquipe({
 
     acao.executar(async () => {
       const caminho = `/api/escalas/${escala.id}/equipe/${membroId}`
-      const resposta = saiDaEquipe(proximo)
-        ? await api<EscalaApresentada>(caminho, { metodo: 'DELETE' })
-        : await api<EscalaApresentada>(caminho, { metodo: 'PUT', corpo: proximo })
+      try {
+        const resposta = saiDaEquipe(proximo)
+          ? await api<EscalaApresentada>(caminho, { metodo: 'DELETE' })
+          : await api<EscalaApresentada>(caminho, { metodo: 'PUT', corpo: proximo })
 
-      definir(resposta)
+        definir(resposta)
+      } catch (problema) {
+        definir(escala)
+        avisar(textoDoErro(problema))
+      }
     })
   }
 

@@ -141,8 +141,8 @@ export function Musica() {
 
         {musica.historico.length ? (
           <div className="cartao">
-            {musica.historico.slice(0, 5).map((execucao) => (
-              <LinhaDeExecucao key={execucao.escalaId + execucao.data} execucao={execucao} hoje={hoje} />
+            {musica.historico.slice(0, 5).map((execucao, indice) => (
+              <LinhaDeExecucao key={`${execucao.escalaId}-${indice}`} execucao={execucao} hoje={hoje} />
             ))}
           </div>
         ) : (
@@ -178,8 +178,8 @@ export function Musica() {
       {folha === 'historico' && (
         <Folha titulo="Histórico" fechar={fecharFolha}>
           <div className="cartao">
-            {musica.historico.map((execucao) => (
-              <LinhaDeExecucao key={execucao.escalaId + execucao.data} execucao={execucao} hoje={hoje} />
+            {musica.historico.map((execucao, indice) => (
+              <LinhaDeExecucao key={`${execucao.escalaId}-${indice}`} execucao={execucao} hoje={hoje} />
             ))}
           </div>
         </Folha>
