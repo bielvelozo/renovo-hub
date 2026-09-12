@@ -613,8 +613,8 @@ nav.abas .contagem {
 
 .cabecalho-da-musica {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .cobertura {

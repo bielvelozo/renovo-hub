@@ -777,11 +777,17 @@
   display: flex;
   flex-wrap: nowrap;
   gap: 6px;
+  min-width: 0;
   overflow-x: auto;
   scrollbar-width: none;
+  padding-block: 2px;
+}
+
+.pagina > .chips,
+.secao > .chips,
+.painel > .chips {
   margin-inline: -16px;
   padding-inline: 16px;
-  padding-block: 2px;
   background:
     linear-gradient(to right, var(--fundo) 30%, transparent) left / 32px 100% no-repeat local,
     linear-gradient(to left, var(--fundo) 30%, transparent) right / 32px 100% no-repeat local,
@@ -847,7 +853,7 @@
   left: 3px;
   width: calc((100% - 6px) / var(--total, 2));
   border-radius: calc(var(--raio) - 3px);
-  background: var(--superficie-alta);
+  background: light-dark(var(--superficie-alta), var(--linha));
   box-shadow: var(--sombra);
   transform: translateX(calc(var(--posicao, 0) * 100%));
   transition: transform var(--tempo-folha) var(--mola-entrada);
