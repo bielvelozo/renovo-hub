@@ -1,4 +1,4 @@
-import { formatarDia, hojeEmBrasilia, horaEmBrasilia, nomeDoDia, somarDias } from './datas'
+import { formatarDia, hojeEmBrasilia, horaEmBrasilia, somarDias } from './datas'
 import { funcaoPorId, musicaPorId, rotuloDoHorario } from './escala'
 import type { Escala, Item, Ministerio } from './tipos'
 
@@ -87,7 +87,7 @@ export function dataDoLembrete(agora: Date): string | null {
 }
 
 function diaDaEscala(escala: Escala): string {
-  return nomeDoDia(escala.data) + ' ' + formatarDia(escala.data)
+  return formatarDia(escala.data)
 }
 
 function nomeDaEscala(escala: Escala): string {

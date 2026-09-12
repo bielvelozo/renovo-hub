@@ -104,7 +104,7 @@ describe('avisarMudancaDeMusica', () => {
 
     const fila = await vencidas(env.DB, AGORA)
     expect(fila.map((n) => n.membroId)).toEqual(['julia'])
-    expect(fila[0].corpo).toBe('Meia Noite (Tom G) entrou na Escala de dom 13/09')
+    expect(fila[0].corpo).toBe('Meia Noite (Tom G) entrou na Escala de dom, 13 de set de 2099')
   })
 
   it('agrupa as mudanças seguintes na mesma notificação pendente', async () => {
@@ -118,7 +118,7 @@ describe('avisarMudancaDeMusica', () => {
 
     const fila = await vencidas(env.DB, AGORA)
     expect(fila).toHaveLength(1)
-    expect(fila[0].corpo).toBe('3 mudanças na Escala de dom 13/09')
+    expect(fila[0].corpo).toBe('3 mudanças na Escala de dom, 13 de set de 2099')
     expect(fila[0].mudancas).toBe(3)
   })
 
@@ -161,7 +161,7 @@ describe('avisarCancelada e avisarRemarcada', () => {
     const fila = await vencidas(env.DB, AGORA)
     expect(fila).toHaveLength(2)
     expect(fila[0].tipo).toBe('cancelada')
-    expect(fila[0].corpo).toBe('Culto de Domingo de dom 13/09 cancelado')
+    expect(fila[0].corpo).toBe('Culto de Domingo de dom, 13 de set de 2099 cancelado')
   })
 
   it('avisa a data nova quando remarca', async () => {
@@ -171,7 +171,7 @@ describe('avisarCancelada e avisarRemarcada', () => {
 
     const fila = await vencidas(env.DB, AGORA)
     expect(fila).toHaveLength(2)
-    expect(fila[0].corpo).toBe('Culto de Domingo mudou para dom 20/09, 08h')
+    expect(fila[0].corpo).toBe('Culto de Domingo mudou para dom, 20 de set de 2099, 08h')
   })
 })
 

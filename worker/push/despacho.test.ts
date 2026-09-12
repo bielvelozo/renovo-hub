@@ -20,7 +20,7 @@ const APARELHO = {
 }
 const PRIVADA_DO_APARELHO = 'q1dXpw3UpT5VOmu_cf_v6ih07Aems3njxI-JWgLcM94'
 
-const aviso = { titulo: 'Você foi escalado', corpo: 'Você está na Escala de dom 13/09, 18h', url: '/escalas/e0913' }
+const aviso = { titulo: 'Você foi escalado', corpo: 'Você está na Escala de dom, 13 de set, 18h', url: '/escalas/e0913' }
 
 afterEach(() => vi.unstubAllGlobals())
 

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { horaEmBrasilia } from './datas'
 import {
   avisoDeCancelada,
@@ -11,6 +11,9 @@ import {
   dataDoLembrete,
   descricaoDaMudanca,
 } from './notificacoes'
+
+beforeAll(() => vi.useFakeTimers({ now: new Date('2026-09-10T15:00:00Z'), toFake: ['Date'] }))
+afterAll(() => vi.useRealTimers())
 import type { Escala, Item, Ministerio } from './tipos'
 
 const escala: Escala = {
@@ -48,19 +51,19 @@ describe('avisoDeEscalado', () => {
   it('diz a Escala, o horário e a Função como o catálogo do spec', () => {
     expect(avisoDeEscalado(m, escala, 'gabriel')).toEqual({
       titulo: 'Você foi escalado',
-      corpo: 'Você está na Escala de dom 13/09, 18h, no baixo',
+      corpo: 'Você está na Escala de dom, 13 de set, 18h, no baixo',
       url: '/escalas/e0913',
     })
   })
 
   it('junta as Funções com a preposição de cada uma', () => {
     expect(avisoDeEscalado(m, escala, 'julia').corpo).toBe(
-      'Você está na Escala de dom 13/09, 18h, na guitarra e no vocal',
+      'Você está na Escala de dom, 13 de set, 18h, na guitarra e no vocal',
     )
   })
 
   it('omite a Função de quem entrou só como Ministro', () => {
-    expect(avisoDeEscalado(m, escala, 'davi').corpo).toBe('Você está na Escala de dom 13/09, 18h')
+    expect(avisoDeEscalado(m, escala, 'davi').corpo).toBe('Você está na Escala de dom, 13 de set, 18h')
   })
 })
 
@@ -68,21 +71,21 @@ describe('avisoDeMudanca', () => {
   it('descreve uma mudança só como o catálogo do spec', () => {
     expect(avisoDeMudanca(escala, 'entrou', 'Meia Noite (Tom G)')).toEqual({
       titulo: 'Música na sua Escala',
-      corpo: 'Meia Noite (Tom G) entrou na Escala de dom 13/09',
+      corpo: 'Meia Noite (Tom G) entrou na Escala de dom, 13 de set',
       url: '/escalas/e0913',
     })
   })
 
   it('usa «saiu da» pra remoção e «mudou na» pra edição', () => {
-    expect(avisoDeMudanca(escala, 'saiu', 'Meia Noite').corpo).toBe('Meia Noite saiu da Escala de dom 13/09')
+    expect(avisoDeMudanca(escala, 'saiu', 'Meia Noite').corpo).toBe('Meia Noite saiu da Escala de dom, 13 de set')
     expect(avisoDeMudanca(escala, 'mudou', 'Meia Noite (Tom A)').corpo).toBe(
-      'Meia Noite (Tom A) mudou na Escala de dom 13/09',
+      'Meia Noite (Tom A) mudou na Escala de dom, 13 de set',
     )
   })
 
   it('agrupa várias mudanças numa contagem', () => {
-    expect(avisoDeVariasMudancas(escala, 3).corpo).toBe('3 mudanças na Escala de dom 13/09')
-    expect(avisoDeVariasMudancas(escala, 2).corpo).toBe('2 mudanças na Escala de dom 13/09')
+    expect(avisoDeVariasMudancas(escala, 3).corpo).toBe('3 mudanças na Escala de dom, 13 de set')
+    expect(avisoDeVariasMudancas(escala, 2).corpo).toBe('2 mudanças na Escala de dom, 13 de set')
   })
 })
 
@@ -105,20 +108,20 @@ describe('avisoDeCancelada e avisoDeRemarcada', () => {
   it('nomeia a Escala pelo rótulo', () => {
     expect(avisoDeCancelada(escala)).toEqual({
       titulo: 'Escala cancelada',
-      corpo: 'Culto de Domingo de dom 13/09 cancelado',
+      corpo: 'Culto de Domingo de dom, 13 de set cancelado',
       url: '/escalas/e0913',
     })
   })
 
   it('chama a Santa Ceia pelo nome dela', () => {
-    expect(avisoDeCancelada({ ...escala, santaCeia: true }).corpo).toBe('Santa Ceia de dom 13/09 cancelado')
+    expect(avisoDeCancelada({ ...escala, santaCeia: true }).corpo).toBe('Santa Ceia de dom, 13 de set cancelado')
   })
 
   it('mostra a data nova quando remarca', () => {
     const depois = { ...escala, data: '2026-09-20', horario: '08:00' }
     expect(avisoDeRemarcada(depois)).toEqual({
       titulo: 'Escala remarcada',
-      corpo: 'Culto de Domingo mudou para dom 20/09, 08h',
+      corpo: 'Culto de Domingo mudou para dom, 20 de set, 08h',
       url: '/escalas/e0913',
     })
   })

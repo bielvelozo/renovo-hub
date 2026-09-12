@@ -9,6 +9,7 @@ import { usarBusca } from '../api/usarBusca'
 import { Barra } from '../componentes/Barra'
 import { Folha } from '../componentes/Folha'
 import type { Funcao } from '../dominio'
+import { formatarDia } from '../dominio'
 import {
   alternarFuncao,
   alternarMinistro,
@@ -20,7 +21,6 @@ import {
   secoesDaEquipe,
 } from '../escalas/equipe'
 import type { EstadoNaEquipe, MembroComPush, SecaoDaEquipe } from '../escalas/equipe'
-import { rotuloDoDia } from '../escalas/mes'
 import { usarEu } from '../sessao/sessao'
 
 export function Equipe() {
@@ -73,7 +73,7 @@ export function Equipe() {
     <section className="pagina">
       <Barra
         titulo="Equipe"
-        sub={`${rotuloDoDia(atual.data)} · toque na Função pra escalar`}
+        sub={`${formatarDia(atual.data)} · toque na Função pra escalar`}
         voltarPara={`/escalas/${id}`}
         acao={
           <Link to={`/escalas/${id}`} className="botao pequeno">

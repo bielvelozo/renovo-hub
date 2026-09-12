@@ -28,12 +28,19 @@ export {
   ehMinutagem,
   fimDeSemanaDe,
   formatarDia,
+  formatarDiaLongo,
+  formatarDiaNumerico,
   hojeEmBrasilia,
   horaEmBrasilia,
   nomeDoDia,
   segundos,
   somarDias,
+  tempoRelativo,
 } from './datas'
+
+export type { TituloLimpo } from './titulo'
+
+export { limparTitulo } from './titulo'
 
 export {
   daFormacao,

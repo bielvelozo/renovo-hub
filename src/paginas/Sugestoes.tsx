@@ -8,7 +8,7 @@ import { Barra } from '../componentes/Barra'
 import { Capa } from '../componentes/Capa'
 import { EscolhaDeMusica } from '../componentes/EscolhaDeMusica'
 import { Folha } from '../componentes/Folha'
-import { rotuloDoDia } from '../escalas/mes'
+import { formatarDia } from '../dominio'
 import type { Escolha } from '../escalas/rascunho'
 import { escolhaDaSugestao } from '../escalas/rascunho'
 import { corpoDaSugestao, diaDaSugestao, podeApagar, textoDosApoios } from '../escalas/sugestoes'
@@ -149,7 +149,7 @@ export function Sugestoes() {
                   >
                     <span className="cresce">
                       <span className="titulo">{escala.titulo}</span>
-                      <span className="dica">{rotuloDoDia(escala.data)}</span>
+                      <span className="dica">{formatarDia(escala.data)}</span>
                     </span>
                     <span className="dica">
                       {escala.quantidadeNaEquipe ? `${escala.quantidadeNaEquipe} na Equipe` : 'sem Equipe'}

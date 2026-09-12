@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 import type { MusicaNaLista, TomSugeridoApresentado } from '../api/tipos'
 import { FILTROS, caminhoDoCatalogo, selosDaMusica, textoDoUltimoTom, textoDoVazio } from './catalogo'
 
+const HOJE = '2026-09-13'
+
 describe('filtros do catálogo', () => {
   it('todas na ordem de sempre não leva nada na URL', () => {
     expect(caminhoDoCatalogo('todas', 'mais-tempo')).toBe('/api/musicas')
@@ -73,8 +75,8 @@ describe('último Tom fora da tela de adicionar', () => {
   })
 
   it('não promete seleção nenhuma, porque aqui não há grade de Tons', () => {
-    expect(textoDoUltimoTom(sugerido())).toBe('Último Tom: C, tocado em 16/08 com Marcos.')
-    expect(textoDoUltimoTom(sugerido({ parcial: true }))).toBe('Último Tom: C, tocado em 16/08 com Marcos (trecho).')
+    expect(textoDoUltimoTom(sugerido(), HOJE)).toBe('Último Tom: C, tocado em dom, 16 de ago com Marcos.')
+    expect(textoDoUltimoTom(sugerido({ parcial: true }), HOJE)).toBe('Último Tom: C, tocado em dom, 16 de ago com Marcos (trecho).')
   })
 
   it('diz de onde veio o Tom quando não há Execução', () => {
@@ -116,9 +118,9 @@ describe('selosDaMusica', () => {
   }
 
   it('mostra o Tom, a data e quem ministrou da última vez', () => {
-    expect(selosDaMusica({ ...base, ultimaExecucao: execucao })).toEqual([
+    expect(selosDaMusica({ ...base, ultimaExecucao: execucao }, HOJE)).toEqual([
       { chave: 'tom', texto: 'Tom C' },
-      { chave: 'quando', texto: '16/08 · Marcos' },
+      { chave: 'quando', texto: 'dom, 16 de ago · Marcos' },
     ])
   })
 
@@ -130,7 +132,7 @@ describe('selosDaMusica', () => {
       }),
     ).toEqual([
       { chave: 'tom', texto: 'Tom C' },
-      { chave: 'quando', texto: '16/08' },
+      { chave: 'quando', texto: 'dom, 16 de ago' },
       { chave: 'parcial', texto: 'trecho' },
     ])
   })

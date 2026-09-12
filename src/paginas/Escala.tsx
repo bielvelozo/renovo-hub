@@ -14,7 +14,7 @@ import { usarOrdenacao } from '../componentes/usarOrdenacao'
 import { Folha } from '../componentes/Folha'
 import { FolhaDaPlaylist, FolhaDoWhatsapp } from '../componentes/FolhasDaEscala'
 import { Selos } from '../componentes/Selos'
-import { rotuloDoDia } from '../escalas/mes'
+import { formatarDia } from '../dominio'
 import { capasDoItem, resumoDoItem, tituloDoItem } from '../escalas/repertorio'
 import { usarEu } from '../sessao/sessao'
 
@@ -47,7 +47,7 @@ export function Escala() {
         titulo={escala.titulo}
         sub={
           <>
-            {rotuloDoDia(escala.data)} <Selos estado={escala.estado} santaCeia={escala.santaCeia} />
+            {formatarDia(escala.data)} <Selos estado={escala.estado} santaCeia={escala.santaCeia} />
           </>
         }
         voltarPara="/mes"
@@ -143,7 +143,7 @@ export function Escala() {
       </div>
 
       {aberta === 'menu' && (
-        <Folha titulo={`${escala.titulo} · ${rotuloDoDia(escala.data)}`} fechar={() => abrir(null)}>
+        <Folha titulo={`${escala.titulo} · ${formatarDia(escala.data)}`} fechar={() => abrir(null)}>
           <button type="button" className="botao secundario largo" onClick={() => abrir('editar')}>
             Editar data, horário e Santa Ceia
           </button>
@@ -168,7 +168,7 @@ export function Escala() {
       )}
 
       {aberta === 'cancelar' && (
-        <Folha titulo={`Não vai ter culto dia ${rotuloDoDia(escala.data)}?`} fechar={() => abrir(null)}>
+        <Folha titulo={`Não vai ter culto dia ${formatarDia(escala.data)}?`} fechar={() => abrir(null)}>
           <p className="dica">
             Dá pra desfazer depois.
           </p>

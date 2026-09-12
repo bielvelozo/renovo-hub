@@ -6,8 +6,7 @@ import { Capa } from '../componentes/Capa'
 import { FolhaDaPlaylist, FolhaDoWhatsapp } from '../componentes/FolhasDaEscala'
 import { Selos } from '../componentes/Selos'
 import type { Funcao } from '../dominio'
-import { musicasDoItem } from '../dominio'
-import { rotuloDoDia } from '../escalas/mes'
+import { formatarDia, musicasDoItem } from '../dominio'
 import { capasDoItem, resumoDoItem, tituloDoItem } from '../escalas/repertorio'
 import { anexosPorMusica, minhaEntrada, proximaEscala, textoDaMinhaFuncao, textoDeQuemMinistra } from '../inicio/proxima'
 import { usarEu } from '../sessao/sessao'
@@ -61,7 +60,7 @@ function ProximaEscala({ id, minha }: { id: string; minha: boolean }) {
           <div className="cresce">
             <div className="titulo">{escala.titulo}</div>
             <div className="dica">
-              {rotuloDoDia(escala.data)} <Selos estado={escala.estado} santaCeia={escala.santaCeia} />
+              {formatarDia(escala.data)} <Selos estado={escala.estado} santaCeia={escala.santaCeia} />
             </div>
           </div>
           <Link to={`/escalas/${id}`} className="botao secundario pequeno">
