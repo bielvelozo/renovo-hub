@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate, useSearchParams } from 'react-router'
 import { api, textoDoErro } from '../api/cliente'
 import { SeloDaMarca } from '../casca/Marca'
 import { Esqueleto } from '../componentes/Esqueleto'
@@ -12,6 +12,8 @@ export function Esqueci() {
   const [erro, marcarErro] = useState<string | null>(null)
   const [entrando, marcarEntrando] = useState<string | null>(null)
   const navegar = useNavigate()
+  const [parametros] = useSearchParams()
+  const conviteInvalido = parametros.get('convite') === 'invalido'
 
   useEffect(() => {
     const controle = new AbortController()
@@ -44,6 +46,7 @@ export function Esqueci() {
         <SeloDaMarca />
       </span>
       <h1>Quem é você?</h1>
+      {conviteInvalido && <p className="aviso">Esse link de convite não vale mais. Se o seu nome está aqui, é só tocar nele.</p>}
       <p className="dica">
         Toque no seu nome pra entrar neste aparelho. Se o seu nome não estiver aqui, peça um link de convite a um
         Ministro.

@@ -241,7 +241,7 @@ describe('listar e ver', () => {
     const escala = await (await pedir('/api/escalas/e1', 'julia')).json<{ grupos: unknown[] }>()
 
     expect(escala.grupos).toEqual([
-      { nome: 'Ministro', itens: ['Marcos (violão)'] },
+      { nome: 'Ministro', itens: ['Marcos (vocal, violão)'] },
       { nome: 'Vocal', itens: ['Júlia'] },
       { nome: 'Som', itens: ['Davi'] },
     ])

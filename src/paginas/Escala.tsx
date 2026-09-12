@@ -21,6 +21,7 @@ import { LinhaDoItem } from '../componentes/LinhaDeMusica'
 import { Menu } from '../componentes/Menu'
 import { RodapeDeAcao } from '../componentes/RodapeDeAcao'
 import { Selo } from '../componentes/Selo'
+import { mover } from '../componentes/ordenacao'
 import { usarOrdenacao } from '../componentes/usarOrdenacao'
 import { usarRemocaoPendente } from '../componentes/usarRemocaoPendente'
 import { VistoEm } from '../componentes/VistoEm'
@@ -152,6 +153,7 @@ export function Escala() {
         podeEditar={podeEditar}
         acao={acao}
         mudar={mudar}
+        definir={busca.definir}
         hoje={hoje}
         visita={visita}
       />
@@ -304,6 +306,7 @@ export function Repertorio({
   podeEditar,
   acao,
   mudar,
+  definir,
   hoje,
   visita,
 }: {
@@ -312,6 +315,7 @@ export function Repertorio({
   podeEditar: boolean
   acao: Acao
   mudar: Mudanca
+  definir: (escala: EscalaApresentada) => void
   hoje: string
   visita: string | null
 }) {
@@ -326,9 +330,11 @@ export function Repertorio({
   const resumo = textoDoResumoDoRepertorio(escala.resumoDoRepertorio)
   const contagem = itens.length === 1 ? ' · 1 música' : itens.length ? ' · ' + itens.length + ' músicas' : ''
 
-  const ordenacao = usarOrdenacao(itens.length, (de, para) =>
-    mudar(`/api/escalas/${escala.id}/itens/${itens[de].id}`, { metodo: 'PATCH', corpo: { ordem: para } }),
-  )
+  const ordenacao = usarOrdenacao(itens.length, (de, para) => {
+    const item = itens[de]
+    definir({ ...escala, itens: mover(itens, de, para) })
+    mudar(`/api/escalas/${escala.id}/itens/${item.id}`, { metodo: 'PATCH', corpo: { ordem: para } })
+  })
 
   function remover(item: ItemApresentado) {
     const caminho = `/api/escalas/${escala.id}/itens/${item.id}`

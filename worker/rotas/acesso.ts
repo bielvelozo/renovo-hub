@@ -31,7 +31,7 @@ acesso.post('/api/admin/convites', exigirMinistro, async (c) => {
 acesso.get('/entrar/:token', async (c) => {
   const membroId = await usarConvite(c.env.DB, c.req.param('token'))
 
-  if (!membroId) return c.html(PAGINA_DE_LINK_INVALIDO, 404)
+  if (!membroId) return c.redirect('/esqueci?convite=invalido', 302)
 
   await abrirSessao(c, membroId)
 
@@ -77,16 +77,3 @@ async function abrirSessao(c: Context<Contexto>, membroId: string): Promise<void
 
 const RECUSA_DA_LISTA = 'A lista de Membros está desligada. Peça um link de convite a um Ministro.'
 
-const PAGINA_DE_LINK_INVALIDO = `<!doctype html>
-<html lang="pt-BR">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Link inválido — Renovo Hub</title>
-  </head>
-  <body>
-    <h1>Link inválido</h1>
-    <p>Este convite não existe. Peça outro a um Ministro ou entre por <a href="/esqueci">Esqueci / troquei de celular</a>.</p>
-  </body>
-</html>
-`
