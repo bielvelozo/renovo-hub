@@ -1,36 +1,39 @@
-import { useState } from 'react'
 import type { ItemApresentado, Playlist } from '../api/tipos'
 import { usarBusca } from '../api/usarBusca'
 import { linkDeVideos } from '../dominio'
 import { videosDoRepertorio } from '../escalas/repertorio'
+import { usarAviso } from './Avisos'
+import { Botao } from './Botao'
+import { Esqueleto } from './Esqueleto'
 import { Folha } from './Folha'
+import { Vazio } from './Vazio'
 
 export function FolhaDoWhatsapp({ escalaId, fechar }: { escalaId: string; fechar: () => void }) {
   const busca = usarBusca<{ texto: string }>(`/api/escalas/${escalaId}/whatsapp`)
-  const [copiado, marcarCopiado] = useState(false)
+  const avisar = usarAviso()
 
   async function copiar() {
     if (!busca.dados) return
 
     try {
       await navigator.clipboard.writeText(busca.dados.texto)
-      marcarCopiado(true)
+      avisar('Copiado')
     } catch {
-      marcarCopiado(false)
+      // Sem permissão de área de transferência: a pessoa copia o texto à mão.
     }
   }
 
   return (
     <Folha titulo="Texto pro WhatsApp" fechar={fechar}>
       {busca.erro && <p className="aviso">{busca.erro}</p>}
-      {busca.carregando && <div className="girando" role="status" aria-label="Carregando" />}
+      {busca.carregando && <Esqueleto forma="paragrafo" />}
 
       {busca.dados && (
         <>
           <textarea className="texto-longo" readOnly rows={14} value={busca.dados.texto} />
-          <button type="button" className="botao largo" onClick={copiar}>
-            {copiado ? 'Copiado' : 'Copiar'}
-          </button>
+          <Botao largo onClick={copiar}>
+            Copiar
+          </Botao>
         </>
       )}
     </Folha>
@@ -59,7 +62,7 @@ export function FolhaDaPlaylist({
     <Folha titulo="Playlist pra ouvir" fechar={fechar}>
       {busca.erro && <p className="aviso">{busca.erro}</p>}
 
-      {!link && <p className="vazio">Esta Escala ainda não tem músicas.</p>}
+      {!link && <Vazio icone="musica">Esta Escala ainda não tem músicas.</Vazio>}
 
       {link && (
         <>

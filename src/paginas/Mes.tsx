@@ -4,8 +4,12 @@ import { api } from '../api/cliente'
 import type { EscalaApresentada, EscalaResumida } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
+import { Cabecalho } from '../casca/Cabecalho'
+import { Botao } from '../componentes/Botao'
+import { Esqueleto } from '../componentes/Esqueleto'
 import { Folha } from '../componentes/Folha'
 import { Selos } from '../componentes/Selos'
+import { Vazio } from '../componentes/Vazio'
 import { hojeEmBrasilia, nomeDoDia } from '../dominio'
 import { deslocarMes, domingosQueFaltam, mesDaData, nomeDoMes, rotuloDoMes } from '../escalas/mes'
 import { usarEu } from '../sessao/sessao'
@@ -33,31 +37,32 @@ export function Mes() {
 
   return (
     <section className="pagina">
-      <div className="mes-nav">
-        <button
-          type="button"
-          className="botao secundario icone"
-          aria-label="Mês anterior"
-          onClick={() => verMes(deslocarMes(mes, -1))}
-        >
-          ‹
-        </button>
-        <h1>{rotuloDoMes(mes)}</h1>
-        <button
-          type="button"
-          className="botao secundario icone"
-          aria-label="Próximo mês"
-          onClick={() => verMes(deslocarMes(mes, 1))}
-        >
-          ›
-        </button>
-      </div>
+      <Cabecalho
+        raiz
+        titulo={rotuloDoMes(mes)}
+        acao={
+          <>
+            <Botao
+              variante="icone"
+              icone="voltar"
+              aria-label="Mês anterior"
+              onClick={() => verMes(deslocarMes(mes, -1))}
+            />
+            <Botao
+              variante="icone"
+              icone="seta"
+              aria-label="Próximo mês"
+              onClick={() => verMes(deslocarMes(mes, 1))}
+            />
+          </>
+        }
+      />
 
       {busca.erro && <p className="aviso">{busca.erro}</p>}
       {acao.erro && <p className="aviso">{acao.erro}</p>}
-      {busca.carregando && <div className="girando" role="status" aria-label="Carregando" />}
+      {busca.carregando && <Esqueleto forma="linha-de-musica" quantidade={4} />}
 
-      {busca.dados && escalas.length === 0 && <p className="vazio">Nenhuma Escala em {nomeDoMes(mes)}.</p>}
+      {busca.dados && escalas.length === 0 && <Vazio icone="calendario">Nenhuma Escala em {nomeDoMes(mes)}.</Vazio>}
 
       {escalas.length > 0 && (
         <ul className="lista cartao">
@@ -88,16 +93,16 @@ export function Mes() {
         <div className="pagina">
           {faltam.length > 0 && (
             <>
-              <button type="button" className="botao largo" disabled={acao.ocupado} onClick={criarDomingos}>
+              <Botao largo disabled={acao.ocupado} onClick={criarDomingos}>
                 Criar {faltam.length === 1 ? 'o domingo' : `os ${faltam.length} domingos`} de {nomeDoMes(mes)}
-              </button>
+              </Botao>
               <p className="dica">O segundo domingo nasce Santa Ceia às 08h; os outros, Culto de Domingo 18h.</p>
             </>
           )}
 
-          <button type="button" className="botao secundario largo" onClick={() => abrirNova(true)}>
+          <Botao variante="secundario" largo onClick={() => abrirNova(true)}>
             Nova escala
-          </button>
+          </Botao>
         </div>
       )}
 
@@ -144,9 +149,9 @@ function FolhaDaNovaEscala({ mes, fechar }: { mes: string; fechar: () => void })
         <input type="time" value={horario} onChange={(e) => escreverHorario(e.target.value)} />
       </label>
 
-      <button type="button" className="botao largo" disabled={acao.ocupado} onClick={criar}>
+      <Botao largo disabled={acao.ocupado} onClick={criar}>
         Criar
-      </button>
+      </Botao>
     </Folha>
   )
 }

@@ -1,24 +1,31 @@
 import { useState } from 'react'
-import { Link, useParams } from 'react-router'
+import { useParams } from 'react-router'
 import { api } from '../api/cliente'
 import type { Opcoes } from '../api/cliente'
 import type { EscalaApresentada, ItemApresentado } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
 import type { Acao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
-import { Barra } from '../componentes/Barra'
+import { Cabecalho } from '../casca/Cabecalho'
 import { Alca } from '../componentes/Alca'
+import { usarAviso } from '../componentes/Avisos'
+import { Botao, BotaoLink } from '../componentes/Botao'
+import { Campo } from '../componentes/Campo'
 import { Capa } from '../componentes/Capa'
-import type { Ordenacao } from '../componentes/usarOrdenacao'
-import { usarOrdenacao } from '../componentes/usarOrdenacao'
+import { Esqueleto } from '../componentes/Esqueleto'
 import { Folha } from '../componentes/Folha'
 import { FolhaDaPlaylist, FolhaDoWhatsapp } from '../componentes/FolhasDaEscala'
+import { Menu } from '../componentes/Menu'
+import { Selo } from '../componentes/Selo'
 import { Selos } from '../componentes/Selos'
+import type { Ordenacao } from '../componentes/usarOrdenacao'
+import { usarOrdenacao } from '../componentes/usarOrdenacao'
+import { usarRemocaoPendente } from '../componentes/usarRemocaoPendente'
 import { formatarDia } from '../dominio'
 import { capasDoItem, resumoDoItem, tituloDoItem } from '../escalas/repertorio'
 import { usarEu } from '../sessao/sessao'
 
-type Aberta = 'menu' | 'editar' | 'cancelar' | 'whatsapp' | 'playlist' | null
+type Aberta = 'editar' | 'cancelar' | 'whatsapp' | 'playlist' | null
 
 type Mudanca = (caminho: string, opcoes: Opcoes) => void
 
@@ -38,27 +45,54 @@ export function Escala() {
     })
   }
 
-  if (busca.erro) return <p className="aviso">{busca.erro}</p>
-  if (!escala) return <div className="girando" role="status" aria-label="Carregando" />
-
-  return (
-    <section className="pagina">
-      <Barra
-        titulo={escala.titulo}
-        sub={
+  const cabecalho = (
+    <Cabecalho
+      titulo={escala?.titulo ?? 'Escala'}
+      sub={
+        escala && (
           <>
             {formatarDia(escala.data)} <Selos estado={escala.estado} santaCeia={escala.santaCeia} />
           </>
-        }
-        voltarPara="/mes"
-        acao={
-          dirige ? (
-            <button type="button" className="botao secundario icone" aria-label="Mais" onClick={() => abrir('menu')}>
-              ⋯
-            </button>
-          ) : null
-        }
-      />
+        )
+      }
+      voltarPara="/mes"
+      acao={
+        escala && dirige ? (
+          <Menu
+            rotulo="Mais"
+            itens={[
+              { rotulo: 'Editar data, horário e Santa Ceia', icone: 'calendario', aoEscolher: () => abrir('editar') },
+              ...(escala.estado !== 'cancelada'
+                ? [{ rotulo: 'Marcar como Cancelada', icone: 'remover' as const, perigo: true, aoEscolher: () => abrir('cancelar') }]
+                : []),
+            ]}
+          />
+        ) : undefined
+      }
+    />
+  )
+
+  if (busca.erro) {
+    return (
+      <section className="pagina">
+        {cabecalho}
+        <p className="aviso">{busca.erro}</p>
+      </section>
+    )
+  }
+
+  if (!escala) {
+    return (
+      <section className="pagina">
+        {cabecalho}
+        <Esqueleto forma="cartao" />
+      </section>
+    )
+  }
+
+  return (
+    <section className="pagina">
+      {cabecalho}
 
       {acao.erro && <p className="aviso">{acao.erro}</p>}
 
@@ -66,29 +100,27 @@ export function Escala() {
         <div className="aviso pagina">
           <p>Escala Cancelada: não gera Execução nem conta presença de ninguém.</p>
           {dirige && (
-            <button
-              type="button"
-              className="botao secundario pequeno"
+            <Botao
+              variante="secundario"
+              pequeno
               disabled={acao.ocupado}
               onClick={() => mudar(`/api/escalas/${id}/desfazer`, { metodo: 'POST' })}
             >
               Desfazer o cancelamento
-            </button>
+            </Botao>
           )}
         </div>
       )}
 
-      {escala.estado === 'realizada' && (
-        <p className="dica">Editar aqui não avisa ninguém.</p>
-      )}
+      {escala.estado === 'realizada' && <p className="dica">Editar aqui não avisa ninguém.</p>}
 
       <div className="secao">
         <div className="secao-topo">
           <h2>Equipe</h2>
           {dirige && (
-            <Link to={`/escalas/${id}/equipe`} className="botao secundario pequeno">
+            <BotaoLink para={`/escalas/${id}/equipe`} variante="secundario" pequeno>
               {escala.equipe.length ? 'Editar' : 'Montar'}
-            </Link>
+            </BotaoLink>
           )}
         </div>
 
@@ -123,37 +155,24 @@ export function Escala() {
 
         {dirige && escala.estado !== 'cancelada' && (
           <div className="chips">
-            <Link to={`/escalas/${id}/adicionar`} className="botao pequeno">
+            <BotaoLink para={`/escalas/${id}/adicionar`} pequeno>
               + Música
-            </Link>
-            <Link to={`/escalas/${id}/medley`} className="botao secundario pequeno">
+            </BotaoLink>
+            <BotaoLink para={`/escalas/${id}/medley`} variante="secundario" pequeno>
               + Medley
-            </Link>
+            </BotaoLink>
           </div>
         )}
       </div>
 
       <div className="secao pagina">
-        <button type="button" className="botao secundario largo" onClick={() => abrir('whatsapp')}>
+        <Botao variante="secundario" largo onClick={() => abrir('whatsapp')}>
           Texto pro WhatsApp
-        </button>
-        <button type="button" className="botao secundario largo" onClick={() => abrir('playlist')}>
+        </Botao>
+        <Botao variante="secundario" largo onClick={() => abrir('playlist')}>
           Playlist pra ouvir
-        </button>
+        </Botao>
       </div>
-
-      {aberta === 'menu' && (
-        <Folha titulo={`${escala.titulo} · ${formatarDia(escala.data)}`} fechar={() => abrir(null)}>
-          <button type="button" className="botao secundario largo" onClick={() => abrir('editar')}>
-            Editar data, horário e Santa Ceia
-          </button>
-          {escala.estado !== 'cancelada' && (
-            <button type="button" className="botao perigo largo" onClick={() => abrir('cancelar')}>
-              Marcar como Cancelada
-            </button>
-          )}
-        </Folha>
-      )}
 
       {aberta === 'editar' && (
         <FolhaDeEdicao
@@ -169,12 +188,10 @@ export function Escala() {
 
       {aberta === 'cancelar' && (
         <Folha titulo={`Não vai ter culto dia ${formatarDia(escala.data)}?`} fechar={() => abrir(null)}>
-          <p className="dica">
-            Dá pra desfazer depois.
-          </p>
-          <button
-            type="button"
-            className="botao perigo largo"
+          <p className="dica">Dá pra desfazer depois.</p>
+          <Botao
+            variante="perigo"
+            largo
             disabled={acao.ocupado}
             onClick={() => {
               mudar(`/api/escalas/${id}/cancelar`, { metodo: 'POST' })
@@ -182,7 +199,7 @@ export function Escala() {
             }}
           >
             Sim, cancelar
-          </button>
+          </Botao>
         </Folha>
       )}
 
@@ -205,24 +222,37 @@ function Repertorio({
   mudar: Mudanca
   escalaId: string
 }) {
+  const avisar = usarAviso()
+  const pendente = usarRemocaoPendente()
+
   const ordenacao = usarOrdenacao(itens.length, (de, para) =>
     mudar(`/api/escalas/${escalaId}/itens/${itens[de].id}`, { metodo: 'PATCH', corpo: { ordem: para } }),
   )
 
+  function remover(item: ItemApresentado) {
+    const caminho = `/api/escalas/${escalaId}/itens/${item.id}`
+    pendente.agendar(item.id, () => mudar(caminho, { metodo: 'DELETE' }))
+    avisar('Música tirada da Escala', { desfazer: () => pendente.desfazer(item.id) })
+  }
+
   return (
     <ul className="lista cartao">
-      {ordenacao.ordem.map((original, indice) => (
-        <ItemDoRepertorio
-          key={itens[original].id}
-          item={itens[original]}
-          indice={indice}
-          podeEditar={podeEditar}
-          acao={acao}
-          mudar={mudar}
-          escalaId={escalaId}
-          ordenacao={ordenacao}
-        />
-      ))}
+      {ordenacao.ordem.map((original, indice) => {
+        const item = itens[original]
+        if (pendente.pendentes.includes(item.id)) return null
+
+        return (
+          <ItemDoRepertorio
+            key={item.id}
+            item={item}
+            indice={indice}
+            podeEditar={podeEditar}
+            acao={acao}
+            ordenacao={ordenacao}
+            remover={remover}
+          />
+        )
+      })}
     </ul>
   )
 }
@@ -232,19 +262,16 @@ function ItemDoRepertorio({
   indice,
   podeEditar,
   acao,
-  mudar,
-  escalaId,
   ordenacao,
+  remover,
 }: {
   item: ItemApresentado
   indice: number
   podeEditar: boolean
   acao: Acao
-  mudar: Mudanca
-  escalaId: string
   ordenacao: Ordenacao
+  remover: (item: ItemApresentado) => void
 }) {
-  const caminho = `/api/escalas/${escalaId}/itens/${item.id}`
   const titulo = tituloDoItem(item)
 
   return (
@@ -257,22 +284,20 @@ function ItemDoRepertorio({
           {indice + 1}. {titulo}
         </div>
         <div className="dica">
-          {item.tipo === 'trecho' && <span className="selo parcial">trecho</span>} {resumoDoItem(item)}
+          {item.tipo === 'trecho' && <Selo variante="trecho">trecho</Selo>} {resumoDoItem(item)}
         </div>
         {item.observacao && <div className="observacao">{item.observacao}</div>}
       </div>
 
       {podeEditar && (
         <div className="acoes">
-          <button
-            type="button"
-            className="botao secundario icone"
+          <Botao
+            variante="icone"
+            icone="remover"
             aria-label={`Remover ${titulo}`}
             disabled={acao.ocupado}
-            onClick={() => mudar(caminho, { metodo: 'DELETE' })}
-          >
-            ×
-          </button>
+            onClick={() => remover(item)}
+          />
         </div>
       )}
     </li>
@@ -296,15 +321,13 @@ function FolhaDeEdicao({
 
   return (
     <Folha titulo="Editar Escala" fechar={fechar}>
-      <label className="campo">
-        <span className="rotulo">Data</span>
+      <Campo rotulo="Data">
         <input type="date" value={data} onChange={(e) => escreverData(e.target.value)} />
-      </label>
+      </Campo>
 
-      <label className="campo">
-        <span className="rotulo">Horário</span>
+      <Campo rotulo="Horário">
         <input type="time" value={horario} onChange={(e) => escreverHorario(e.target.value)} />
-      </label>
+      </Campo>
 
       <div className="campo">
         <span className="rotulo">Tipo</span>
@@ -315,14 +338,9 @@ function FolhaDeEdicao({
         </div>
       </div>
 
-      <button
-        type="button"
-        className="botao largo"
-        disabled={ocupado}
-        onClick={() => salvar({ data, horario, santaCeia })}
-      >
+      <Botao largo disabled={ocupado} onClick={() => salvar({ data, horario, santaCeia })}>
         Salvar
-      </button>
+      </Botao>
     </Folha>
   )
 }

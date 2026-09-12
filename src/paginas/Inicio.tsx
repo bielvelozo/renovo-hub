@@ -1,13 +1,16 @@
 import { useState } from 'react'
-import { Link } from 'react-router'
-import type { Anexo, EscalaApresentada, EscalaResumida, ItemApresentado } from '../api/tipos'
+import type { Anexo, EscalaApresentada, EscalaResumida } from '../api/tipos'
 import { usarBusca } from '../api/usarBusca'
-import { Capa } from '../componentes/Capa'
+import { Cabecalho } from '../casca/Cabecalho'
+import { Botao, BotaoLink } from '../componentes/Botao'
+import { Cartao } from '../componentes/Cartao'
+import { Esqueleto } from '../componentes/Esqueleto'
 import { FolhaDaPlaylist, FolhaDoWhatsapp } from '../componentes/FolhasDaEscala'
+import { LinhaDoItem } from '../componentes/LinhaDeMusica'
 import { Selos } from '../componentes/Selos'
+import { Vazio } from '../componentes/Vazio'
 import type { Funcao } from '../dominio'
 import { formatarDia, musicasDoItem } from '../dominio'
-import { capasDoItem, resumoDoItem, tituloDoItem } from '../escalas/repertorio'
 import { anexosPorMusica, minhaEntrada, proximaEscala, textoDaMinhaFuncao, textoDeQuemMinistra } from '../inicio/proxima'
 import { usarEu } from '../sessao/sessao'
 
@@ -17,21 +20,46 @@ export function Inicio() {
   const eu = usarEu()
   const lista = usarBusca<{ escalas: EscalaResumida[] }>('/api/escalas')
 
-  if (lista.erro) return <p className="aviso">{lista.erro}</p>
-  if (!lista.dados) return <div className="girando" role="status" aria-label="Carregando" />
+  const cabecalho = (
+    <Cabecalho
+      raiz
+      titulo={`Oi, ${eu.nome}`}
+      acao={
+        eu.admin ? (
+          <BotaoLink variante="icone" icone="engrenagem" para="/admin" aria-label="Administração" />
+        ) : undefined
+      }
+    />
+  )
+
+  if (lista.erro) {
+    return (
+      <section className="pagina">
+        {cabecalho}
+        <p className="aviso">{lista.erro}</p>
+      </section>
+    )
+  }
+
+  if (!lista.dados) {
+    return (
+      <section className="pagina">
+        {cabecalho}
+        <Esqueleto forma="cartao" />
+      </section>
+    )
+  }
 
   const proxima = proximaEscala(lista.dados.escalas, eu.id)
 
   return (
     <section className="pagina">
-      <h1>Oi, {eu.nome}</h1>
+      {cabecalho}
 
       {proxima ? (
         <ProximaEscala id={proxima.escala.id} minha={proxima.minha} />
       ) : (
-        <div className="cartao">
-          <p className="dica">Nenhuma Escala Agendada por enquanto. Quando o mês for criado, ela aparece aqui.</p>
-        </div>
+        <Vazio icone="calendario">Nenhuma Escala Agendada por enquanto. Quando o mês for criado, ela aparece aqui.</Vazio>
       )}
     </section>
   )
@@ -47,7 +75,7 @@ function ProximaEscala({ id, minha }: { id: string; minha: boolean }) {
   const escala = busca.dados
 
   if (busca.erro) return <p className="aviso">{busca.erro}</p>
-  if (!escala) return <div className="girando" role="status" aria-label="Carregando" />
+  if (!escala) return <Esqueleto forma="cartao" />
 
   const entrada = minhaEntrada(escala.equipe, eu.id)
   const ministra = textoDeQuemMinistra(escala.grupos)
@@ -55,7 +83,7 @@ function ProximaEscala({ id, minha }: { id: string; minha: boolean }) {
 
   return (
     <>
-      <div className="cartao pagina">
+      <Cartao destaque className="pagina">
         <div className="secao-topo">
           <div className="cresce">
             <div className="titulo">{escala.titulo}</div>
@@ -63,9 +91,9 @@ function ProximaEscala({ id, minha }: { id: string; minha: boolean }) {
               {formatarDia(escala.data)} <Selos estado={escala.estado} santaCeia={escala.santaCeia} />
             </div>
           </div>
-          <Link to={`/escalas/${id}`} className="botao secundario pequeno">
+          <BotaoLink para={`/escalas/${id}`} variante="secundario" pequeno>
             Abrir
-          </Link>
+          </BotaoLink>
         </div>
 
         <div className="grupo">
@@ -81,7 +109,7 @@ function ProximaEscala({ id, minha }: { id: string; minha: boolean }) {
         </div>
 
         {!minha && <p className="dica">Você não está escalado. Esta é a próxima Escala do ministério.</p>}
-      </div>
+      </Cartao>
 
       <div className="secao">
         <h2>Repertório</h2>
@@ -89,7 +117,13 @@ function ProximaEscala({ id, minha }: { id: string; minha: boolean }) {
         {escala.itens.length ? (
           <ul className="lista cartao">
             {escala.itens.map((item, indice) => (
-              <ItemDoMembro key={item.id} item={item} indice={indice} anexos={porMusica} />
+              <LinhaDoItem
+                key={item.id}
+                item={item}
+                modo="leitura"
+                numero={indice + 1}
+                anexos={musicasDoItem(item).flatMap((musicaId) => porMusica[musicaId] ?? [])}
+              />
             ))}
           </ul>
         ) : (
@@ -98,72 +132,16 @@ function ProximaEscala({ id, minha }: { id: string; minha: boolean }) {
       </div>
 
       <div className="secao pagina">
-        <button type="button" className="botao secundario largo" onClick={() => abrir('playlist')}>
+        <Botao variante="secundario" largo onClick={() => abrir('playlist')}>
           Playlist pra ouvir
-        </button>
-        <button type="button" className="botao secundario largo" onClick={() => abrir('whatsapp')}>
+        </Botao>
+        <Botao variante="secundario" largo onClick={() => abrir('whatsapp')}>
           Texto pro WhatsApp
-        </button>
+        </Botao>
       </div>
 
       {aberta === 'whatsapp' && <FolhaDoWhatsapp escalaId={id} fechar={() => abrir(null)} />}
       {aberta === 'playlist' && <FolhaDaPlaylist escalaId={id} itens={escala.itens} fechar={() => abrir(null)} />}
     </>
-  )
-}
-
-function ItemDoMembro({
-  item,
-  indice,
-  anexos,
-}: {
-  item: ItemApresentado
-  indice: number
-  anexos: Record<string, Anexo[]>
-}) {
-  const daMusica = musicasDoItem(item).flatMap((musicaId) => anexos[musicaId] ?? [])
-
-  return (
-    <li className="item-do-membro">
-      <div className="item">
-        <Capa musicas={capasDoItem(item)} />
-        <div className="cresce">
-          <div className="titulo">
-            {indice + 1}. {tituloDoItem(item)}
-          </div>
-          <div className="dica">
-            {item.tipo === 'trecho' && <span className="selo parcial">trecho</span>} {resumoDoItem(item)}
-          </div>
-        </div>
-      </div>
-
-      {item.observacao && <div className="observacao">{item.observacao}</div>}
-
-      {item.tipo === 'medley' ? (
-        <ol className="encadeado">
-          {item.trechos.map((trecho, posicao) => (
-            <li key={`${trecho.musicaId}-${posicao}`}>
-              <a href={trecho.link} target="_blank" rel="noopener">
-                {trecho.musica.titulo}
-              </a>
-              <span className="dica">
-                {' '}
-                {trecho.inicio}–{trecho.fim} · Tom {trecho.tom}
-              </span>
-            </li>
-          ))}
-        </ol>
-      ) : (
-        <a className="dica" href={item.link} target="_blank" rel="noopener">
-          Abrir no YouTube{item.tipo === 'trecho' ? ` em ${item.inicio}` : ''}
-        </a>
-      )}
-
-      {daMusica.map((anexo) => (
-        <a key={anexo.id} className="dica" href={anexo.url}>
-          Sequência: {anexo.nome} (v{anexo.versao})
-        </a>
-      ))}
-    </li>
   )
 }

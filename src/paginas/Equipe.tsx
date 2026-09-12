@@ -1,12 +1,15 @@
 import { useState } from 'react'
 import type { ReactNode } from 'react'
-import { Link, Navigate, useParams } from 'react-router'
+import { Navigate, useParams } from 'react-router'
 import { api } from '../api/cliente'
 import type { EscalaApresentada, Formacao } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
 import type { Acao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
-import { Barra } from '../componentes/Barra'
+import { Cabecalho } from '../casca/Cabecalho'
+import { usarAviso } from '../componentes/Avisos'
+import { Botao, BotaoLink } from '../componentes/Botao'
+import { Esqueleto } from '../componentes/Esqueleto'
 import { Folha } from '../componentes/Folha'
 import type { Funcao } from '../dominio'
 import { formatarDia } from '../dominio'
@@ -23,6 +26,11 @@ import {
 import type { EstadoNaEquipe, MembroComPush, SecaoDaEquipe } from '../escalas/equipe'
 import { usarEu } from '../sessao/sessao'
 
+function mensagemDoToggle(nome: string, oQue: string, jaTinha: boolean, proximo: EstadoNaEquipe): string {
+  if (saiDaEquipe(proximo)) return `${nome} saiu da Equipe`
+  return `${nome} ${jaTinha ? 'tirado' : 'escalado'} ${oQue}`
+}
+
 export function Equipe() {
   const { id = '' } = useParams()
   const eu = usarEu()
@@ -31,6 +39,7 @@ export function Equipe() {
   const papeis = usarBusca<{ funcoes: Funcao[] }>('/api/funcoes')
   const formacoes = usarBusca<{ formacoes: Formacao[] }>('/api/formacoes')
   const acao = usarAcao()
+  const avisar = usarAviso()
   const [salvando, abrirSalvar] = useState(false)
   const [escolhendo, abrirEscolha] = useState(false)
 
@@ -38,16 +47,44 @@ export function Equipe() {
   const atual = escala.dados
 
   if (!eu.ministro && !eu.admin) return <Navigate to={`/escalas/${id}`} replace />
-  if (erro) return <p className="aviso">{erro}</p>
+
+  const cabecalho = (
+    <Cabecalho
+      titulo="Equipe"
+      sub={atual ? `${formatarDia(atual.data)} · toque na Função pra escalar` : undefined}
+      voltarPara={`/escalas/${id}`}
+      acao={
+        <BotaoLink para={`/escalas/${id}`} pequeno>
+          Concluir
+        </BotaoLink>
+      }
+    />
+  )
+
+  if (erro) {
+    return (
+      <section className="pagina">
+        {cabecalho}
+        <p className="aviso">{erro}</p>
+      </section>
+    )
+  }
+
   if (!atual || !pessoas.dados || !papeis.dados || !formacoes.dados) {
-    return <div className="girando" role="status" aria-label="Carregando" />
+    return (
+      <section className="pagina">
+        {cabecalho}
+        <Esqueleto forma="linha-de-musica" quantidade={4} />
+      </section>
+    )
   }
 
   const secoes = secoesDaEquipe(pessoas.dados.membros, papeis.dados.funcoes)
   const lista = formacoes.dados.formacoes
 
-  const gravar = (membroId: string, proximo: EstadoNaEquipe) => {
+  const gravar = (membroId: string, proximo: EstadoNaEquipe, mensagem: string) => {
     escala.definir({ ...atual, equipe: comEntrada(atual.equipe, membroId, proximo) })
+    avisar(mensagem)
 
     acao.executar(async () => {
       const caminho = `/api/escalas/${id}/equipe/${membroId}`
@@ -71,16 +108,7 @@ export function Equipe() {
 
   return (
     <section className="pagina">
-      <Barra
-        titulo="Equipe"
-        sub={`${formatarDia(atual.data)} · toque na Função pra escalar`}
-        voltarPara={`/escalas/${id}`}
-        acao={
-          <Link to={`/escalas/${id}`} className="botao pequeno">
-            Concluir
-          </Link>
-        }
-      />
+      {cabecalho}
 
       {acao.erro && <p className="aviso">{acao.erro}</p>}
 
@@ -94,22 +122,21 @@ export function Equipe() {
           formacoes={
             secao.chave === 'musicos' ? (
               <div className="chips formacao">
-                <button
-                  type="button"
-                  className="botao pequeno"
+                <Botao
+                  pequeno
                   disabled={acao.ocupado || lista.length === 0}
                   onClick={() => (lista.length === 1 ? aplicar(lista[0].id) : abrirEscolha(true))}
                 >
                   {lista.length === 1 ? `Escalar a ${lista[0].nome}` : 'Escalar uma Formação'}
-                </button>
-                <button
-                  type="button"
-                  className="botao secundario pequeno"
+                </Botao>
+                <Botao
+                  variante="secundario"
+                  pequeno
                   disabled={acao.ocupado || atual.equipe.length === 0}
                   onClick={() => abrirSalvar(true)}
                 >
                   Salvar como Formação
-                </button>
+                </Botao>
                 <p className="dica">
                   Formação é um grupo de músicos guardado pra reusar: escalar traz todos de uma vez, salvar guarda os
                   que estão aqui agora.
@@ -162,7 +189,7 @@ function Secao({
   secao: SecaoDaEquipe
   equipe: EscalaApresentada['equipe']
   acao: Acao
-  gravar: (membroId: string, proximo: EstadoNaEquipe) => void
+  gravar: (membroId: string, proximo: EstadoNaEquipe, mensagem: string) => void
   formacoes: ReactNode
 }) {
   return (
@@ -177,8 +204,9 @@ function Secao({
         <ul className="lista cartao">
           {secao.membros.map(({ membro, funcoes }) => {
             const entrada = entradaDoMembro(equipe, membro.id)
-
             const escalado = Boolean(entrada?.funcoes.length || entrada?.ministro)
+            const jaEraMinistro = entrada?.ministro ?? false
+            const proximoMinistro = alternarMinistro(entrada)
 
             return (
               <li key={membro.id} className="pessoa">
@@ -189,23 +217,36 @@ function Secao({
                   )}
                 </span>
                 <span className="chips">
-                  {funcoes.map((funcao) => (
-                    <button
-                      key={funcao.id}
-                      type="button"
-                      className={`chip${funcao.grupo === 'tecnica' ? ' tecnica' : ''}`}
-                      aria-pressed={entrada?.funcoes.includes(funcao.id) ?? false}
-                      onClick={() => gravar(membro.id, alternarFuncao(entrada, funcao.id))}
-                    >
-                      {funcao.nome}
-                    </button>
-                  ))}
+                  {funcoes.map((funcao) => {
+                    const jaTinha = entrada?.funcoes.includes(funcao.id) ?? false
+                    const proximo = alternarFuncao(entrada, funcao.id)
+
+                    return (
+                      <button
+                        key={funcao.id}
+                        type="button"
+                        className={`chip${funcao.grupo === 'tecnica' ? ' tecnica' : ''}`}
+                        aria-pressed={jaTinha}
+                        onClick={() =>
+                          gravar(membro.id, proximo, mensagemDoToggle(membro.nome, `no ${funcao.nome}`, jaTinha, proximo))
+                        }
+                      >
+                        {funcao.nome}
+                      </button>
+                    )
+                  })}
                   {podeSerMinistro(membro) && (
                     <button
                       type="button"
                       className="chip ministro"
-                      aria-pressed={entrada?.ministro ?? false}
-                      onClick={() => gravar(membro.id, alternarMinistro(entrada))}
+                      aria-pressed={jaEraMinistro}
+                      onClick={() =>
+                        gravar(
+                          membro.id,
+                          proximoMinistro,
+                          mensagemDoToggle(membro.nome, 'como Ministro', jaEraMinistro, proximoMinistro),
+                        )
+                      }
                     >
                       Ministro
                     </button>
@@ -237,6 +278,7 @@ function FolhaDeSalvar({
   recarregar: () => void
   fechar: () => void
 }) {
+  const avisar = usarAviso()
   const [nome, escrever] = useState('')
 
   function atualizar(formacao: Formacao) {
@@ -248,6 +290,7 @@ function FolhaDeSalvar({
         corpo: { entradas: equipe.map(({ membroId, funcoes }) => ({ membroId, funcoes })) },
       })
       recarregar()
+      avisar(`Formação ${formacao.nome} atualizada`)
     })
   }
 
@@ -257,14 +300,13 @@ function FolhaDeSalvar({
     acao.executar(async () => {
       await api('/api/formacoes', { metodo: 'POST', corpo: { nome: nome.trim(), escalaId } })
       recarregar()
+      avisar(`Formação ${nome.trim()} criada`)
     })
   }
 
   return (
     <Folha titulo="Salvar como Formação" fechar={fechar}>
-      <p className="dica">
-        Guarda os Músicos que estão na Equipe agora.
-      </p>
+      <p className="dica">Guarda os Músicos que estão na Equipe agora.</p>
 
       {formacoes.length > 0 && (
         <ul className="lista">
@@ -284,9 +326,9 @@ function FolhaDeSalvar({
         <input value={nome} placeholder="Banda de domingo" onChange={(e) => escrever(e.target.value)} />
       </label>
 
-      <button type="button" className="botao largo" disabled={!nome.trim()} onClick={criar}>
+      <Botao largo disabled={!nome.trim()} onClick={criar}>
         Criar Formação
-      </button>
+      </Botao>
     </Folha>
   )
 }
