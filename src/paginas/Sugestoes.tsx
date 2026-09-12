@@ -224,13 +224,17 @@ export function Sugestoes() {
     avisar('Sugestão apagada', { desfazer: () => pendente.desfazer(sugestao.id) })
   }
 
+  const abrirMusica = (sugestao: SugestaoApresentada) => {
+    if (sugestao.musica) navegar(`/musicas/${sugestao.musica.id}`)
+    else if (sugestao.link) window.open(sugestao.link, '_blank', 'noopener')
+  }
+
   const tocarNaLinha = (sugestao: SugestaoApresentada) => {
-    if (dirige) {
+    if (dirige || (podeApagar(sugestao, eu) && sugestao.estado === 'aberta')) {
       abrirFolhaDe(sugestao)
       return
     }
-    if (sugestao.musica) navegar(`/musicas/${sugestao.musica.id}`)
-    else if (sugestao.link) window.open(sugestao.link, '_blank', 'noopener')
+    abrirMusica(sugestao)
   }
 
   const promover = (sugestao: SugestaoApresentada) => {
@@ -254,33 +258,22 @@ export function Sugestoes() {
         tempo="direita"
         aoEscolher={() => tocarNaLinha(sugestao)}
         observacao={sugestao.observacao || undefined}
-        selos={<Selo>{textoDeQuemSugeriu(sugestao)}</Selo>}
+        selos={
+          <>
+            <Selo>{textoDeQuemSugeriu(sugestao)}</Selo>
+            {aba === 'guardadas' && <Selo>{textoDeGuardada(sugestao.decididaEm ?? sugestao.data)}</Selo>}
+            {aba === 'aceitas' && <Selo variante="sucesso">{textoDeAceita(sugestao)}</Selo>}
+          </>
+        }
         direita={
-          aba === 'aceitas' ? (
-            <span className="dica">{textoDeAceita(sugestao)}</span>
-          ) : (
-            <>
-              {aba === 'abertas' && (
-                <BotaoDeApoio
-                  apoios={sugestao.apoios.length}
-                  apoiei={sugestao.apoiei}
-                  desligado={acaoApoio.ocupado}
-                  aoTocar={() => apoiar(sugestao)}
-                />
-              )}
-              {aba === 'guardadas' && (
-                <span className="dica">{textoDeGuardada(sugestao.decididaEm ?? sugestao.data)}</span>
-              )}
-              {aba === 'abertas' && podeApagar(sugestao, eu) && (
-                <Botao
-                  variante="icone"
-                  icone="remover"
-                  aria-label={`Apagar ${sugestao.titulo}`}
-                  onClick={() => apagar(sugestao)}
-                />
-              )}
-            </>
-          )
+          aba === 'abertas' ? (
+            <BotaoDeApoio
+              apoios={sugestao.apoios.length}
+              apoiei={sugestao.apoiei}
+              desligado={acaoApoio.ocupado}
+              aoTocar={() => apoiar(sugestao)}
+            />
+          ) : undefined
         }
       />
     )
@@ -294,8 +287,12 @@ export function Sugestoes() {
       tempo="direita"
       aoEscolher={() => tocarNaLinha(sugestao)}
       observacao={sugestao.observacao || undefined}
-      selos={<Selo>{textoDeQuemSugeriu(sugestao)}</Selo>}
-      direita={<span className="dica">{textoDeRecusada(sugestao.motivo)}</span>}
+      selos={
+        <>
+          <Selo>{textoDeQuemSugeriu(sugestao)}</Selo>
+          <Selo variante="perigo">{textoDeRecusada(sugestao.motivo)}</Selo>
+        </>
+      }
     />
   )
 
@@ -378,7 +375,16 @@ export function Sugestoes() {
                 </span>
               </a>
             </li>
-            {(folhaDe.estado === 'aberta' || folhaDe.estado === 'guardada') && (
+            {folhaDe.musica && (
+              <li>
+                <button type="button" className="toque" onClick={() => abrirMusica(folhaDe)}>
+                  <span className="cresce">
+                    <span className="titulo">Ver a música</span>
+                  </span>
+                </button>
+              </li>
+            )}
+            {dirige && (folhaDe.estado === 'aberta' || folhaDe.estado === 'guardada') && (
               <li>
                 <button type="button" className="toque" onClick={() => promover(folhaDe)}>
                   <span className="cresce">
@@ -387,7 +393,7 @@ export function Sugestoes() {
                 </button>
               </li>
             )}
-            {folhaDe.estado === 'aberta' && (
+            {dirige && folhaDe.estado === 'aberta' && (
               <li>
                 <button type="button" className="toque" disabled={acao.ocupado} onClick={() => guardar(folhaDe)}>
                   <span className="cresce">
@@ -396,7 +402,7 @@ export function Sugestoes() {
                 </button>
               </li>
             )}
-            {folhaDe.estado === 'guardada' && (
+            {dirige && folhaDe.estado === 'guardada' && (
               <li>
                 <button type="button" className="toque" disabled={acao.ocupado} onClick={() => reabrir(folhaDe)}>
                   <span className="cresce">
@@ -405,7 +411,7 @@ export function Sugestoes() {
                 </button>
               </li>
             )}
-            {(folhaDe.estado === 'aberta' || folhaDe.estado === 'guardada') && (
+            {dirige && (folhaDe.estado === 'aberta' || folhaDe.estado === 'guardada') && (
               <li>
                 <button type="button" className="toque perigo" onClick={() => recusar(folhaDe)}>
                   <span className="cresce">

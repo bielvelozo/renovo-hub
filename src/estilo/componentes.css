@@ -395,6 +395,12 @@
   display: none;
 }
 
+.linha-de-musica .selos .selo {
+  max-width: 100%;
+  white-space: normal;
+  text-align: left;
+}
+
 .linha-de-musica .direita {
   display: flex;
   align-items: center;
