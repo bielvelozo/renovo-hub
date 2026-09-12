@@ -10,6 +10,7 @@ import { combinaBusca } from '../dominio'
 import type { OrdemDoCatalogo } from '../dominio'
 import type { FiltroDoCatalogo } from '../musicas/catalogo'
 import { FILTROS, ORDENS, caminhoDoCatalogo, textoDoVazio } from '../musicas/catalogo'
+import { VistoEm } from '../componentes/VistoEm'
 
 export function Musicas() {
   const [filtro, filtrar] = useState<FiltroDoCatalogo>('todas')
@@ -22,6 +23,7 @@ export function Musicas() {
   return (
     <section className="pagina">
       <Cabecalho raiz titulo="Músicas" />
+      <VistoEm hora={catalogo.vistoEm} />
 
       <Busca valor={termo} aoMudar={escreverTermo} />
 

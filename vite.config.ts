@@ -37,6 +37,15 @@ export default defineConfig({
         navigateFallbackDenylist: [/^\/api\//, /^\/entrar\//],
         runtimeCaching: [
           {
+            urlPattern: ({ url, request }) => url.pathname.startsWith('/api/') && request.method === 'GET',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api',
+              networkTimeoutSeconds: 3,
+              expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 7 },
+            },
+          },
+          {
             urlPattern: ({ url }) => url.origin === 'https://fonts.googleapis.com',
             handler: 'StaleWhileRevalidate',
             options: { cacheName: 'fontes-css' },

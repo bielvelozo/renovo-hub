@@ -14,6 +14,7 @@ import { Vazio } from '../componentes/Vazio'
 import { hojeEmBrasilia, nomeDoDia } from '../dominio'
 import { deslocarMes, domingosQueFaltam, mesDaData, nomeDoMes, rotuloDoMes } from '../escalas/mes'
 import { usarEu } from '../sessao/sessao'
+import { VistoEm } from '../componentes/VistoEm'
 
 export function Mes() {
   const eu = usarEu()
@@ -49,6 +50,7 @@ export function Mes() {
               aria-label="Mês anterior"
               onClick={() => verMes(deslocarMes(mes, -1))}
             />
+      <VistoEm hora={busca.vistoEm} />
             <Botao
               variante="icone"
               icone="seta"

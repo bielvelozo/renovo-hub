@@ -240,6 +240,11 @@ a {
   margin-top: 4px;
 }
 
+.visto-em {
+  margin-top: -8px;
+  font-size: 13px;
+}
+
 .titulo-da-subtela {
   font: 600 17px/1.25 var(--fonte-corpo);
   font-variation-settings: normal;
@@ -508,20 +513,6 @@ nav.abas .contagem {
   background: var(--perigo-suave);
   color: var(--perigo);
   font-size: 14px;
-}
-
-.barra {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-}
-
-/* Título cru do YouTube ocupa quatro linhas na barra e empurra a tela toda pra baixo. */
-.barra h1 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
 .selos {

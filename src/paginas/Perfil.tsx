@@ -15,6 +15,7 @@ import { usarEu } from '../sessao/sessao'
 import { usarTema } from '../tema/ProvedorDeTema'
 import type { Preferencia } from '../tema/tema'
 import { PREFERENCIAS, rotuloDaPreferencia } from '../tema/tema'
+import { VistoEm } from '../componentes/VistoEm'
 
 const TEXTO_DO_TEMA: Record<Preferencia, string> = {
   automatico: 'Tema do sistema',
@@ -39,6 +40,7 @@ export function Perfil() {
   return (
     <section className="pagina">
       <Cabecalho raiz titulo={eu.nome} />
+      <VistoEm hora={busca.vistoEm} />
 
       {busca.erro && <p className="aviso">{busca.erro}</p>}
       {busca.carregando && <Esqueleto forma="cartao" />}

@@ -22,6 +22,7 @@ import { usarRemocaoPendente } from '../componentes/usarRemocaoPendente'
 import { formatarDia } from '../dominio'
 import { tituloDoItem } from '../escalas/repertorio'
 import { usarEu } from '../sessao/sessao'
+import { VistoEm } from '../componentes/VistoEm'
 
 type Aberta = 'editar' | 'cancelar' | 'whatsapp' | 'playlist' | null
 
@@ -44,30 +45,33 @@ export function Escala() {
   }
 
   const cabecalho = (
-    <Cabecalho
-      titulo={escala?.titulo ?? 'Escala'}
-      sub={
-        escala && (
-          <>
-            {formatarDia(escala.data)} <Selos estado={escala.estado} santaCeia={escala.santaCeia} />
-          </>
-        )
-      }
-      voltarPara="/mes"
-      acao={
-        escala && dirige ? (
-          <Menu
-            rotulo="Mais"
-            itens={[
-              { rotulo: 'Editar data, horário e Santa Ceia', icone: 'calendario', aoEscolher: () => abrir('editar') },
-              ...(escala.estado !== 'cancelada'
-                ? [{ rotulo: 'Marcar como Cancelada', icone: 'remover' as const, perigo: true, aoEscolher: () => abrir('cancelar') }]
-                : []),
-            ]}
-          />
-        ) : undefined
-      }
-    />
+    <>
+      <Cabecalho
+        titulo={escala?.titulo ?? 'Escala'}
+        sub={
+          escala && (
+            <>
+              {formatarDia(escala.data)} <Selos estado={escala.estado} santaCeia={escala.santaCeia} />
+            </>
+          )
+        }
+        voltarPara="/mes"
+        acao={
+          escala && dirige ? (
+            <Menu
+              rotulo="Mais"
+              itens={[
+                { rotulo: 'Editar data, horário e Santa Ceia', icone: 'calendario', aoEscolher: () => abrir('editar') },
+                ...(escala.estado !== 'cancelada'
+                  ? [{ rotulo: 'Marcar como Cancelada', icone: 'remover' as const, perigo: true, aoEscolher: () => abrir('cancelar') }]
+                  : []),
+              ]}
+            />
+          ) : undefined
+        }
+      />
+      <VistoEm hora={busca.vistoEm} />
+    </>
   )
 
   if (busca.erro) {

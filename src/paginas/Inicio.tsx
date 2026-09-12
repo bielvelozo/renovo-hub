@@ -13,6 +13,7 @@ import type { Funcao } from '../dominio'
 import { formatarDia, musicasDoItem } from '../dominio'
 import { anexosPorMusica, minhaEntrada, proximaEscala, textoDaMinhaFuncao, textoDeQuemMinistra } from '../inicio/proxima'
 import { usarEu } from '../sessao/sessao'
+import { VistoEm } from '../componentes/VistoEm'
 
 type Aberta = 'whatsapp' | 'playlist' | null
 
@@ -31,6 +32,7 @@ export function Inicio() {
       }
     />
   )
+  const visto = <VistoEm hora={lista.vistoEm} />
 
   if (lista.erro) {
     return (
@@ -45,6 +47,7 @@ export function Inicio() {
     return (
       <section className="pagina">
         {cabecalho}
+        {visto}
         <Esqueleto forma="cartao" />
       </section>
     )
@@ -55,6 +58,7 @@ export function Inicio() {
   return (
     <section className="pagina">
       {cabecalho}
+      {visto}
 
       {proxima ? (
         <ProximaEscala id={proxima.escala.id} minha={proxima.minha} />

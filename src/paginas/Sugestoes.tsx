@@ -22,6 +22,7 @@ import type { Escolha } from '../escalas/rascunho'
 import { escolhaDaSugestao } from '../escalas/rascunho'
 import { corpoDaSugestao, diaDaSugestao, podeApagar, textoDosApoios } from '../escalas/sugestoes'
 import { usarEu } from '../sessao/sessao'
+import { VistoEm } from '../componentes/VistoEm'
 
 export function Sugestoes() {
   const eu = usarEu()
@@ -65,7 +66,12 @@ export function Sugestoes() {
     )
   }
 
-  const cabecalho = <Cabecalho raiz titulo="Sugestões" />
+  const cabecalho = (
+    <>
+      <Cabecalho raiz titulo="Sugestões" />
+      <VistoEm hora={busca.vistoEm} />
+    </>
+  )
 
   if (busca.erro) {
     return (
