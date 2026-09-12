@@ -9,15 +9,15 @@ const ALTURA_DA_FAIXA = 56
 type Comum = { titulo: string; acao?: ReactNode }
 
 export type PropriedadesDoCabecalho =
-  | (Comum & { raiz: true })
+  | (Comum & { raiz: true; semTitulo?: boolean })
   | (Comum & { raiz?: false; sub?: ReactNode; voltarPara?: string; aoVoltar?: () => void })
 
 export function Cabecalho(props: PropriedadesDoCabecalho) {
-  if (props.raiz) return <CabecalhoRaiz titulo={props.titulo} acao={props.acao} />
+  if (props.raiz) return <CabecalhoRaiz titulo={props.titulo} acao={props.acao} semTitulo={props.semTitulo} />
   return <CabecalhoDeSubtela {...props} />
 }
 
-function CabecalhoRaiz({ titulo, acao }: Comum) {
+function CabecalhoRaiz({ titulo, acao, semTitulo }: Comum & { semTitulo?: boolean }) {
   const alvo = useRef<HTMLHeadingElement>(null)
   const [encolhido, encolher] = useState(false)
 
@@ -45,9 +45,11 @@ function CabecalhoRaiz({ titulo, acao }: Comum) {
           <span className="acao-do-cabecalho">{acao}</span>
         </div>
       </div>
-      <h1 ref={alvo} className="titulo-de-tela display">
-        {titulo}
-      </h1>
+      {!semTitulo && (
+        <h1 ref={alvo} className="titulo-de-tela display">
+          {titulo}
+        </h1>
+      )}
     </>
   )
 }
