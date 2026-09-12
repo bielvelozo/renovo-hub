@@ -83,7 +83,7 @@ describe('LinhaDeMusica', () => {
     expect(screen.getByText('fhop').className).toBe('dica')
   })
 
-  it('só mostra o selo de tempo quando o dado existe, e diz «nunca tocada» quando é nulo', () => {
+  it('só mostra o selo de tempo quando o dado existe, e diz «nunca tocada no app» quando é nulo', () => {
     montar(
       <>
         <LinhaDeMusica musica={resumida} modo="leitura" hoje={HOJE} />
@@ -92,8 +92,57 @@ describe('LinhaDeMusica', () => {
     )
 
     expect(screen.queryByText(/há |nunca/)).not.toBeNull()
-    expect(screen.getAllByText('nunca tocada').length).toBe(1)
+    expect(screen.getAllByText('nunca tocada no app').length).toBe(1)
     expect(screen.queryByText(/há \d/)).toBeNull()
+  })
+
+  it('com tempo à direita, o tempo sai grande na coluna da direita e o selo pequeno some', () => {
+    montar(
+      <>
+        <LinhaDeMusica musica={naLista} modo="escolha" tempo="direita" hoje={HOJE} />
+        <LinhaDeMusica musica={{ ...naLista, id: 'outra', ultimaExecucao: null }} modo="navegacao" tempo="direita" hoje={HOJE} />
+        <LinhaDeMusica
+          musica={{ ...naLista, id: 'velha', ultimaExecucao: { ...naLista.ultimaExecucao!, data: '2025-07-01' } }}
+          modo="leitura"
+          tempo="direita"
+          hoje={HOJE}
+        />
+      </>,
+    )
+
+    expect(screen.getByText('há 4 semanas').tagName).toBe('B')
+    expect(screen.getByText('há 4 semanas').closest('button')).not.toBeNull()
+    expect(screen.queryByText('nunca tocada no app')).toBeNull()
+    expect(screen.getByText('nunca').tagName).toBe('B')
+    expect(screen.getByText('no app')).not.toBeNull()
+    expect(screen.getByText('há 1 ano e 2 m.').tagName).toBe('B')
+  })
+
+  it('avisa em atenção quando é recente e quando já está planejada, no máximo duas Escalas', () => {
+    montar(
+      <LinhaDeMusica
+        musica={{
+          ...naLista,
+          recente: true,
+          ultimaExecucao: { ...naLista.ultimaExecucao!, data: '2026-09-01', ministradoPorNome: 'Isa' },
+          planejadaEm: [
+            { escalaId: 'e1', data: '2026-09-20', titulo: 'Culto', ministros: ['Marcos'] },
+            { escalaId: 'e2', data: '2026-09-27', titulo: 'Culto', ministros: [] },
+            { escalaId: 'e3', data: '2026-10-04', titulo: 'Culto', ministros: [] },
+          ],
+        }}
+        modo="leitura"
+        tempo="direita"
+        hoje={HOJE}
+      />,
+    )
+
+    expect(screen.getByText('há 12 dias · Isa').className).toBe('selo atencao')
+    expect(screen.getByText('há 12 dias').parentElement?.className).toBe('tempo atencao')
+    expect(screen.getByText('no Repertório de dom, 20 de set · Marcos').className).toBe('selo atencao')
+    expect(screen.getByText('no Repertório de dom, 27 de set')).not.toBeNull()
+    expect(screen.queryByText(/4 de out/)).toBeNull()
+    expect(screen.getByText('+1').className).toBe('selo atencao')
   })
 
   it('mostra trecho, letra e observação', () => {

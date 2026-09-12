@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate, useSearchParams } from 'react-router'
 import { api } from '../api/cliente'
 import type { EscalaResumida, SugestaoApresentada } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
@@ -9,7 +9,7 @@ import { usarAviso } from '../componentes/Avisos'
 import { Botao } from '../componentes/Botao'
 import { Campo } from '../componentes/Campo'
 import { Capa } from '../componentes/Capa'
-import { EscolhaDeMusica } from '../componentes/EscolhaDeMusica'
+import { Catalogo } from '../componentes/Catalogo'
 import { Esqueleto } from '../componentes/Esqueleto'
 import { Folha } from '../componentes/Folha'
 import { LinhaDeMusica } from '../componentes/LinhaDeMusica'
@@ -28,13 +28,14 @@ export function Sugestoes() {
   const eu = usarEu()
   const dirige = eu.ministro || eu.admin
   const navegar = useNavigate()
+  const [parametros] = useSearchParams()
   const busca = usarBusca<{ sugestoes: SugestaoApresentada[] }>('/api/sugestoes')
   const escalas = usarBusca<{ escalas: EscalaResumida[] }>(dirige ? '/api/escalas' : null)
   const acao = usarAcao()
   const avisar = usarAviso()
   const pendente = usarRemocaoPendente()
   const [promovendo, escolher] = useState<SugestaoApresentada | null>(null)
-  const [sugerindo, sugerir] = useState<Escolha | null | 'escolhendo'>(null)
+  const [sugerindo, sugerir] = useState<Escolha | null | 'escolhendo'>(parametros.has('sugerir') ? 'escolhendo' : null)
 
   const trocar = (sugestao: SugestaoApresentada) => {
     busca.definir({
@@ -44,12 +45,16 @@ export function Sugestoes() {
 
   if (sugerindo === 'escolhendo') {
     return (
-      <EscolhaDeMusica
-        titulo="Sugerir uma música"
-        sub="cole um link ou escolha do catálogo"
-        aoVoltar={() => sugerir(null)}
-        aoEscolher={(escolha) => sugerir(escolha)}
-      />
+      <section className="pagina">
+        <Catalogo
+          modo="escolha"
+          permiteYoutube
+          titulo="Sugerir uma música"
+          sub="busque, cole um link ou escolha do catálogo"
+          aoVoltar={() => sugerir(null)}
+          aoEscolher={(escolha) => sugerir(escolha)}
+        />
+      </section>
     )
   }
 

@@ -1,6 +1,6 @@
 const CORTES = /\s*(?:\||\/\/|•)\s*/
 const SEPARADORES = /\s[-–]\s/
-const RUIDO = ['ao vivo', 'live', 'clipe oficial', 'official', 'lyric', 'playback', 'video oficial', 'visualizer', 'audio']
+const RUIDO = ['ao vivo', 'live', 'oficial', 'official', 'lyric', 'playback', 'visualizer', 'audio']
 const SUFIXOS_DO_CANAL = ['music', 'oficial', 'official']
 const PONTAS = /^[\s\-–•|:,.]+|[\s\-–•|:,.]+$/g
 

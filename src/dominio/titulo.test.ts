@@ -93,6 +93,12 @@ const CASOS: { nome: string; titulo: string; canal: string; limpo: { titulo: str
     limpo: { titulo: 'Aclame Ao Senhor', artista: 'Felipe Rodrigues' },
   },
   {
+    nome: 'tira colchetes e parênteses de «oficial» sozinho, mas mantém os que nomeiam o evento',
+    titulo: 'Me ama (OVERMISSION 2025) [Oficial]',
+    canal: 'Overmission',
+    limpo: { titulo: 'Me ama (OVERMISSION 2025)', artista: 'Overmission' },
+  },
+  {
     nome: 'devolve o título inteiro quando não há nada pra limpar',
     titulo: 'Aleluia',
     canal: 'Coral',

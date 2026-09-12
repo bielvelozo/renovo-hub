@@ -3,18 +3,13 @@ import type { Context } from 'hono'
 import {
   cobertura,
   combinaBusca,
-  ehLegado,
   historicoDaMusica,
   limparTitulo,
-  mesesDesde,
   musicaPorId,
   normalizarTexto,
-  ordenarPorExecucao,
-  ultimaExecucao,
-  vezesTocada,
   videoIdDoLink,
 } from '../../src/dominio'
-import type { Ministerio, Musica } from '../../src/dominio'
+import type { Musica } from '../../src/dominio'
 import { exigirMembro, exigirMinistro } from '../autenticacao'
 import { lerAnexos } from '../dados/anexos'
 import { lerContextoDoCatalogo } from '../dados/catalogo'
@@ -99,23 +94,16 @@ musicas.get('/api/musicas', exigirMembro, async (c) => {
   }
 
   const busca = c.req.query('busca') ?? ''
-  const filtro = c.req.query('filtro')
-  const meses = Number(c.req.query('meses'))
+  const soRevisar = c.req.query('filtro') === 'revisar'
   const comArquivadas = c.req.query('arquivadas') === '1'
 
   const achadas = m.musicas
     .filter((musica) => comArquivadas || !musica.arquivada)
     .filter((musica) => combinaBusca(musica, busca))
-    .filter((musica) => cabeNoFiltro(m, musica, filtro))
-    .filter((musica) => cabeNosMeses(m, musica, meses))
-
-  const ordem = c.req.query('ordem')
-  const ordenadas = ordem
-    ? ordenarPorExecucao(m, achadas, ordem === 'menos-tempo' ? 'menos-tempo' : 'mais-tempo')
-    : porTitulo(achadas)
+    .filter((musica) => !soRevisar || musica.revisar)
 
   return c.json({
-    musicas: ordenadas.map((musica) => naListaDeMusicas(m, musica, contexto)),
+    musicas: porTitulo(achadas).map((musica) => naListaDeMusicas(m, musica, contexto)),
     semanasDeRepeticao: contexto.semanas,
   })
 })
@@ -213,20 +201,6 @@ async function guardar(c: Context<Contexto>, id: string, arquivada: boolean) {
 
 function porTitulo(musicas: Musica[]): Musica[] {
   return [...musicas].sort((a, b) => normalizarTexto(a.titulo).localeCompare(normalizarTexto(b.titulo)))
-}
-
-function cabeNoFiltro(m: Ministerio, musica: Musica, filtro: string | undefined): boolean {
-  if (filtro === 'nova') return !musica.legado && !ultimaExecucao(m, musica.id)
-  if (filtro === 'legado') return ehLegado(m, musica)
-  if (filtro === 'revisar') return musica.revisar
-  if (filtro === 'uma-vez') return vezesTocada(m, musica.id) === 1
-  return true
-}
-
-function cabeNosMeses(m: Ministerio, musica: Musica, meses: number): boolean {
-  if (!Number.isFinite(meses) || meses <= 0) return true
-  const ultima = ultimaExecucao(m, musica.id)
-  return !!ultima && mesesDesde(ultima.data, m.hoje) >= meses
 }
 
 function lerTons(corpo: Record<string, unknown>): { tomConhecido?: string | null; tomOriginal?: string | null } | null {

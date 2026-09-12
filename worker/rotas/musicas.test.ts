@@ -70,12 +70,6 @@ beforeEach(async () => {
   await porNaEquipe('e1', 'julia', ['vocal'])
 })
 
-function mesesAtras(quantidade: number): string {
-  const [ano, mes] = hojeEmBrasilia().split('-').map(Number)
-  const dia = new Date(Date.UTC(ano, mes - 1 - quantidade, 15, 12))
-  return dia.toISOString().slice(0, 10)
-}
-
 async function pedir(caminho: string, quem: string, init: RequestInit = {}): Promise<Response> {
   return SELF.fetch(`${RAIZ}${caminho}`, {
     ...init,
@@ -354,10 +348,6 @@ describe('listar Músicas', () => {
     expect(musicas[2].ultimaExecucao).toBeNull()
   })
 
-  it('ainda aceita a ordem antiga por Execução quando pedem, com as sem Execução no fim', async () => {
-    expect((await listar('?ordem=mais-tempo')).map((m) => m.id)).toEqual(['rio', 'dono', 'sublime'])
-  })
-
   it('traz o limite de repetição junto com a lista, 4 por padrão', async () => {
     const resposta = await pedir('/api/musicas', 'julia')
     const corpo = await resposta.json<{ semanasDeRepeticao: number }>()
@@ -411,17 +401,6 @@ describe('listar Músicas', () => {
     expect(musicas.find((m) => m.id === 'rio')?.legado).toBe(false)
   })
 
-  it('o filtro nova traz só as sem Execução e sem Legado', async () => {
-    await criarMusica('nova', 'Canção Nova', 'CmM1pcHohdI')
-    await env.DB.prepare('update musicas set legado = 0 where id = ?').bind('nova').run()
-
-    expect((await listar('?filtro=nova')).map((m) => m.id)).toEqual(['nova'])
-  })
-
-  it('o filtro legado traz só as importadas ainda não tocadas', async () => {
-    expect((await listar('?filtro=legado')).map((m) => m.id)).toEqual(['sublime'])
-  })
-
   it('o filtro revisar traz as que precisam de título e artista conferidos', async () => {
     await env.DB.prepare('update musicas set revisar = 1 where id = ?').bind('dono').run()
 
@@ -434,26 +413,8 @@ describe('listar Músicas', () => {
     expect(await listar('?busca=aleluia')).toEqual([])
   })
 
-  it('o filtro de meses traz só quem tem Execução mais velha que o pedido', async () => {
-    await criarEscala({ id: 'erecente', data: mesesAtras(3) })
-    await porNaEquipe('erecente', 'marcos', ['vocal'], true)
-    await criarItemInteira('irecente', 'erecente', 'sublime', 'A')
-
-    const musicas = await listar('?meses=12')
-
-    expect(musicas.map((m) => m.id)).toEqual(['dono', 'rio'])
-  })
-
-  it('inverte a ordem quando pedem faz menos tempo, com as sem Execução ainda no fim', async () => {
-    expect((await listar('?ordem=menos-tempo')).map((m) => m.id)).toEqual(['dono', 'rio', 'sublime'])
-  })
-
-  it('o filtro de tocada uma vez só traz quem tem exatamente uma Execução', async () => {
-    await criarEscala({ id: 'esegunda', data: '2020-09-13' })
-    await porNaEquipe('esegunda', 'marcos', ['vocal'], true)
-    await criarItemInteira('isegunda', 'esegunda', 'rio', 'D')
-
-    expect((await listar('?filtro=uma-vez')).map((m) => m.id)).toEqual(['dono'])
+  it('os parâmetros antigos de filtro e ordem são ignorados: a lista é uma só', async () => {
+    expect((await listar('?filtro=legado&meses=12&ordem=menos-tempo')).map((m) => m.id)).toEqual(['dono', 'rio', 'sublime'])
   })
 
   it('deixa o Membro comum ver o catálogo', async () => {
