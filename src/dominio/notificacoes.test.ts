@@ -5,6 +5,7 @@ import {
   avisoDeEscalado,
   avisoDeLembrete,
   avisoDeMudanca,
+  avisoDePosCulto,
   avisoDeRemarcada,
   avisoDeSugestaoAceita,
   avisoDeSugestaoGuardada,
@@ -42,9 +43,9 @@ const m: Ministerio = {
     { id: 'davi', nome: 'Davi', funcoes: [], ministro: true, admin: false, inativo: false },
   ],
   funcoes: [
-    { id: 'baixo', nome: 'Baixo', grupo: 'instrumentos', ordem: 1 },
-    { id: 'guitarra', nome: 'Guitarra', grupo: 'instrumentos', ordem: 2 },
-    { id: 'vocal', nome: 'Vocal', grupo: 'vocal', ordem: 3 },
+    { id: 'baixo', nome: 'Baixo', grupo: 'instrumentos', ordem: 1, minimo: 0 },
+    { id: 'guitarra', nome: 'Guitarra', grupo: 'instrumentos', ordem: 2, minimo: 0 },
+    { id: 'vocal', nome: 'Vocal', grupo: 'vocal', ordem: 3, minimo: 0 },
   ],
   musicas: [],
   escalas: [escala],
@@ -209,5 +210,21 @@ describe('avisos de Sugestão', () => {
       corpo: 'Bondade de Deus',
     })
     expect(avisoDeSugestaoRecusada('Bondade de Deus', 'já tocamos muito').corpo).toBe('Bondade de Deus · já tocamos muito')
+  })
+})
+
+describe('avisoDePosCulto', () => {
+  it('lembra o Ministro de conferir o que foi tocado, sem cobrar ação', () => {
+    expect(avisoDePosCulto(escala, 5)).toEqual({
+      titulo: 'Todas as músicas de hoje foram tocadas?',
+      corpo: 'Culto de Domingo · 5 músicas registradas. Toque para ajustar.',
+      url: '/escalas/e0913',
+    })
+  })
+
+  it('fala no singular com uma música só e usa Santa Ceia como nome', () => {
+    expect(avisoDePosCulto({ ...escala, santaCeia: true }, 1).corpo).toBe(
+      'Santa Ceia · 1 música registrada. Toque para ajustar.',
+    )
   })
 })

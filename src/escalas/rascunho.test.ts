@@ -154,6 +154,7 @@ describe('rascunho de Item', () => {
       musicaId: 'rio',
       tom: 'C',
       observacao: 'começar baixo',
+      ministradoPor: null,
     })
   })
 
@@ -172,6 +173,7 @@ describe('rascunho de Item', () => {
       inicio: '1:05',
       fim: '2:30',
       observacao: '',
+      ministradoPor: null,
     })
   })
 
@@ -183,7 +185,15 @@ describe('rascunho de Item', () => {
       tipo: 'inteira',
       tom: 'C',
       observacao: '',
+      ministradoPor: null,
     })
+  })
+
+  it('leva quem puxa o Item pro corpo', () => {
+    const rascunho = rascunhoDe(escolhaDaMusica(resumida('rio')), sugerido(), 'isa')
+
+    expect(corpoDoItem(rascunho, 'rio')).toMatchObject({ ministradoPor: 'isa' })
+    expect(corpoDaPromocao(rascunho, 'e0913')).toMatchObject({ ministradoPor: 'isa' })
   })
 })
 

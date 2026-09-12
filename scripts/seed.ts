@@ -2,13 +2,16 @@ import { spawnSync } from 'node:child_process'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { hojeEmBrasilia } from '../src/dominio'
 import { FUNCOES } from '../src/dominio/exemplo'
 import { dadosDaDemonstracao } from '../src/semente/demonstracao'
 import { membrosDoCsv, musicasDoCsv, sqlBase, sqlDemonstracao } from '../src/semente/roteiro'
 
 const raiz = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const demo = process.argv.includes('--demo')
-const agora = new Date().toISOString()
+const relogio = new Date()
+const agora = relogio.toISOString()
+const hoje = hojeEmBrasilia(relogio)
 
 const sql =
   sqlBase({
@@ -17,7 +20,7 @@ const sql =
     membros: membrosDoCsv(ler('seed/membros.csv')),
     catalogo: musicasDoCsv(ler('seed/playlist.csv')),
     formacoes: ['Banda'],
-  }) + (demo ? sqlDemonstracao({ ...dadosDaDemonstracao(), agora }) : '')
+  }) + (demo ? sqlDemonstracao({ ...dadosDaDemonstracao(hoje), agora }) : '')
 
 const arquivo = resolve(raiz, '.wrangler/tmp/semente.sql')
 mkdirSync(dirname(arquivo), { recursive: true })

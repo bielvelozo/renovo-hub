@@ -66,7 +66,7 @@ describe('listas abertas ao Membro', () => {
     const { funcoes } = await corpoDe<{ funcoes: FuncaoJson[] }>(await pedir('/api/funcoes', 'julia'))
 
     expect(funcoes.map((f) => f.id)).toEqual(['vocal', 'guitarra'])
-    expect(funcoes[0]).toEqual({ id: 'vocal', nome: 'Vocal', grupo: 'vocal', ordem: 1 })
+    expect(funcoes[0]).toEqual({ id: 'vocal', nome: 'Vocal', grupo: 'vocal', ordem: 1, minimo: 0 })
   })
 })
 

@@ -9,6 +9,7 @@ export type Funcao = {
   nome: string
   grupo: Grupo
   ordem: number
+  minimo: number
 }
 
 export type Membro = {

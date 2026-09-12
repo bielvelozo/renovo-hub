@@ -47,7 +47,7 @@ describe('GET /api/perfil/:id', () => {
     const corpo = await resposta.json<PerfilJson>()
 
     expect(corpo.membro).toMatchObject({ id: 'gabriel', nome: 'Gabriel', inativo: false })
-    expect(corpo.membro.funcoes).toEqual([{ id: 'vocal', nome: 'Vocal', grupo: 'vocal', ordem: 1 }])
+    expect(corpo.membro.funcoes).toEqual([{ id: 'vocal', nome: 'Vocal', grupo: 'vocal', ordem: 1, minimo: 0 }])
     expect(corpo.escalasNoAno).toBe(NO_ANO)
     expect(corpo.ultimaEscala).toMatchObject({ id: 'e0', data: DOMINGOS[0], estado: 'realizada' })
     expect(corpo.finsDeSemanaSeguidos).toBe(3)

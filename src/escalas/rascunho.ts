@@ -26,6 +26,7 @@ export type Rascunho = {
   inicio: string
   fim: string
   observacao: string
+  ministradoPor: string | null
 }
 
 export type TrechoEmMontagem = {
@@ -82,8 +83,21 @@ export function escolhaDaSugestao(sugestao: SugestaoApresentada): Escolha {
   }
 }
 
-export function rascunhoDe(escolha: Escolha, sugerido: TomSugeridoApresentado | null): Rascunho {
-  return { escolha, tom: sugerido?.tom ?? null, tomOriginal: null, modo: 'inteira', inicio: '', fim: '', observacao: '' }
+export function rascunhoDe(
+  escolha: Escolha,
+  sugerido: TomSugeridoApresentado | null,
+  ministradoPor: string | null = null,
+): Rascunho {
+  return {
+    escolha,
+    tom: sugerido?.tom ?? null,
+    tomOriginal: null,
+    modo: 'inteira',
+    inicio: '',
+    fim: '',
+    observacao: '',
+    ministradoPor,
+  }
 }
 
 export function trechoDe(
@@ -122,7 +136,12 @@ export function trechosComMusica(trechos: TrechoEmMontagem[], idPorLink: Record<
 }
 
 export function corpoDoItem(rascunho: Rascunho, musicaId: string) {
-  const comum = { musicaId, tom: rascunho.tom ?? '', observacao: rascunho.observacao.trim() }
+  const comum = {
+    musicaId,
+    tom: rascunho.tom ?? '',
+    observacao: rascunho.observacao.trim(),
+    ministradoPor: rascunho.ministradoPor,
+  }
 
   if (rascunho.modo === 'inteira') return { tipo: 'inteira', ...comum }
 
@@ -130,7 +149,12 @@ export function corpoDoItem(rascunho: Rascunho, musicaId: string) {
 }
 
 export function corpoDaPromocao(rascunho: Rascunho, escalaId: string) {
-  const comum = { escalaId, tom: rascunho.tom ?? '', observacao: rascunho.observacao.trim() }
+  const comum = {
+    escalaId,
+    tom: rascunho.tom ?? '',
+    observacao: rascunho.observacao.trim(),
+    ministradoPor: rascunho.ministradoPor,
+  }
 
   if (rascunho.modo === 'inteira') return { tipo: 'inteira', ...comum }
 

@@ -2,7 +2,7 @@ import { createServer } from 'node:http'
 import type { Server } from 'node:http'
 import { webcrypto } from 'node:crypto'
 import { consultar, esperar } from './ambiente'
-import { exigir, ultimoItem } from './cenario'
+import { dataDaDemonstracao, exigir, ultimoItem } from './cenario'
 import type { Cenario } from './cenario'
 import { RAIZ, buscar } from './prova'
 import type { Prova } from './prova'
@@ -136,8 +136,9 @@ export async function fluxosDeNotificacao(prova: Prova, cenario: Cenario): Promi
     )
 
     limparFila(raiz)
-    const realizada = await prova.api(`/api/escalas?mes=2026-08`, { cookie: cenario.gabriel })
-    const passada = realizada.corpo.escalas.find((e: any) => e.data === '2026-08-30')
+    const dataDaPassada = dataDaDemonstracao('2026-08-30')
+    const realizada = await prova.api(`/api/escalas?mes=${dataDaPassada.slice(0, 7)}`, { cookie: cenario.gabriel })
+    const passada = realizada.corpo.escalas.find((e: any) => e.data === dataDaPassada)
 
     exigir(
       await prova.api(`/api/escalas/${passada.id}/equipe/rafa`, {

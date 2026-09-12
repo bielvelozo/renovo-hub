@@ -22,9 +22,9 @@ export async function limparBanco(): Promise<void> {
   await env.DB.batch(results.map((tabela) => env.DB.prepare(`delete from ${tabela.name}`)))
 }
 
-export async function criarFuncao(id: string, grupo: string, ordem: number, nome = id): Promise<void> {
-  await env.DB.prepare('insert into funcoes (id, nome, grupo, ordem) values (?, ?, ?, ?)')
-    .bind(id, nome, grupo, ordem)
+export async function criarFuncao(id: string, grupo: string, ordem: number, nome = id, minimo = 0): Promise<void> {
+  await env.DB.prepare('insert into funcoes (id, nome, grupo, ordem, minimo) values (?, ?, ?, ?, ?)')
+    .bind(id, nome, grupo, ordem, minimo)
     .run()
 }
 

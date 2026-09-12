@@ -3,9 +3,7 @@ import type { ChildProcess } from 'node:child_process'
 import { existsSync, rmSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { cookieDaSessao, tokenDoConvite } from '../../src/fumaca/leitura'
-import { RAIZ, buscar } from './prova'
-
-const PORTA = 8787
+import { PORTA, RAIZ, buscar } from './prova'
 
 export type Servidor = { processo: ChildProcess; log: () => string }
 
@@ -34,23 +32,24 @@ export function limparAmbiente(raiz: string): void {
 }
 
 // O wrangler dev roda em dois processos: o node que orquestra e o workerd que serve.
-// Matar só o workerd faz o node respawná-lo, então a ordem importa.
+// Matar só o workerd faz o node respawná-lo, então a ordem importa. Tudo é filtrado pela
+// porta do smoke porque a máquina pode ter outro checkout do projeto servindo noutra.
 export function matarServidoresAntigos(): void {
   if (process.platform === 'win32') {
     const script = [
       "Get-CimInstance Win32_Process -Filter \"Name='node.exe'\"",
-      "| Where-Object { $_.CommandLine -like '*wrangler*dev*' }",
+      `| Where-Object { $_.CommandLine -like '*wrangler*dev*' -and $_.CommandLine -like '*--port ${PORTA}*' }`,
       '| ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }',
       '; Start-Sleep -Milliseconds 300',
-      "; Get-Process workerd -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue",
+      `; Get-NetTCPConnection -LocalPort ${PORTA} -State Listen -ErrorAction SilentlyContinue`,
+      '| ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }',
     ].join(' ')
 
     spawnSync('powershell', ['-NoProfile', '-Command', script], { stdio: 'ignore' })
     return
   }
 
-  spawnSync('pkill', ['-f', 'wrangler.*dev'], { stdio: 'ignore' })
-  spawnSync('pkill', ['-f', 'workerd'], { stdio: 'ignore' })
+  spawnSync('pkill', ['-f', `wrangler.*dev.*--port ${PORTA}`], { stdio: 'ignore' })
 }
 
 export function exigirBuild(raiz: string): void {

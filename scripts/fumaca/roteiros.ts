@@ -1,11 +1,12 @@
-import { segundos } from '../../src/dominio'
+import { domingosDoMes, segundos } from '../../src/dominio'
 import { consultar } from './ambiente'
-import { VIDEOS, escalaPorData, exigir, grupo, proximoSabado, ultimoItem } from './cenario'
+import { VIDEOS, dataDaDemonstracao, escalaPorData, exigir, grupo, proximoSabado, ultimoItem } from './cenario'
 import type { Cenario } from './cenario'
 import type { Prova } from './prova'
 
 const REALIZADA_COM_PEDRO = '2026-08-16'
 const REALIZADA_COM_TRECHO = '2026-08-30'
+const MODELO_DE_FORMACAO = '2026-08-23'
 
 export async function roteiroDoMes(prova: Prova, cenario: Cenario): Promise<void> {
   prova.grupo('Roteiro 1 · Montar o mês')
@@ -16,26 +17,39 @@ export async function roteiroDoMes(prova: Prova, cenario: Cenario): Promise<void
     'criar o mês',
   )
 
-  const criadas = lote.criadas
-  prova.conferir('o lote cria os domingos do mês', criadas.length >= 4, `${criadas.length} em ${cenario.mesDeTrabalho}`)
+  const [ano, mes] = cenario.mesDeTrabalho.split('-').map(Number)
+  const domingos = domingosDoMes(ano, mes)
+  const doMes = exigir(
+    await prova.api(`/api/escalas?mes=${cenario.mesDeTrabalho}`, { cookie: cenario.gabriel }),
+    200,
+    'listar as Escalas do mês',
+  )
+  const porData = new Map<string, any>(doMes.escalas.map((escala: any) => [escala.data, escala]))
+  const nosDomingos = domingos.map((data) => porData.get(data))
+
+  prova.conferir(
+    'o lote deixa uma Escala em cada domingo do mês',
+    domingos.length >= 4 && nosDomingos.every(Boolean),
+    `${lote.criadas.length} criadas em ${domingos.length} domingos de ${cenario.mesDeTrabalho}`,
+  )
   prova.conferir(
     'o segundo domingo nasce Santa Ceia às 08h',
-    criadas[1].santaCeia === true && criadas[1].horario === '08:00',
-    criadas[1].titulo,
+    nosDomingos[1].santaCeia === true && nosDomingos[1].horario === '08:00',
+    nosDomingos[1].titulo,
   )
   prova.conferir(
     'os outros nascem Culto de Domingo 18h',
-    [criadas[0], ...criadas.slice(2)].every((e: any) => !e.santaCeia && e.horario === '18:00'),
-    criadas[0]?.titulo,
+    [nosDomingos[0], ...nosDomingos.slice(2)].every((e: any) => !e.santaCeia && e.horario === '18:00'),
+    nosDomingos[0].titulo,
   )
   prova.conferir(
     'o único Membro do Som já nasce na Equipe, sem ninguém escalar',
-    criadas.every((e: any) => e.membros.includes('davi')),
-    criadas[0].membros.join(', '),
+    nosDomingos.every((e: any) => e.membros.includes('davi')),
+    nosDomingos[0].membros.join(', '),
   )
 
-  cenario.escalaDoMes = criadas[0].id
-  cenario.escalaSobrando = criadas[criadas.length - 1].id
+  cenario.escalaDoMes = nosDomingos[0].id
+  cenario.escalaSobrando = nosDomingos[nosDomingos.length - 1].id
 
   const comIsa = exigir(
     await prova.api(`/api/escalas/${cenario.escalaDoMes}/equipe/isa`, {
@@ -79,7 +93,7 @@ export async function roteiroDoMes(prova: Prova, cenario: Cenario): Promise<void
     'pôr a Júlia no vocal',
   )
 
-  const modelo = await escalaPorData(prova, cenario.gabriel, '2026-08-23')
+  const modelo = await escalaPorData(prova, cenario.gabriel, dataDaDemonstracao(MODELO_DE_FORMACAO))
   const formacao = exigir(
     await prova.api('/api/formacoes', {
       cookie: cenario.gabriel,
@@ -336,7 +350,7 @@ export async function roteiroDaSugestao(prova: Prova, cenario: Cenario): Promise
 export async function roteiroDoWhatsapp(prova: Prova, cenario: Cenario): Promise<void> {
   prova.grupo('Roteiro 6 · Gerar o texto pro WhatsApp')
 
-  const escala = await escalaPorData(prova, cenario.gabriel, REALIZADA_COM_TRECHO)
+  const escala = await escalaPorData(prova, cenario.gabriel, dataDaDemonstracao(REALIZADA_COM_TRECHO))
   const folha = exigir(
     await prova.api(`/api/escalas/${escala.id}/whatsapp`, { cookie: cenario.gabriel }),
     200,
@@ -380,7 +394,7 @@ export async function roteiroDoWhatsapp(prova: Prova, cenario: Cenario): Promise
 export async function roteiroDeCorrigir(prova: Prova, cenario: Cenario): Promise<void> {
   prova.grupo('Roteiro 7 · Corrigir o domingo passado')
 
-  const escala = await escalaPorData(prova, cenario.gabriel, REALIZADA_COM_PEDRO)
+  const escala = await escalaPorData(prova, cenario.gabriel, dataDaDemonstracao(REALIZADA_COM_PEDRO))
   const musicaId = cenario.musicas.get(VIDEOS.firme)!
 
   prova.conferir('a Escala de agosto está Realizada', escala.estado === 'realizada', escala.estado)
@@ -455,7 +469,7 @@ export async function roteiroDeCancelar(prova: Prova, cenario: Cenario): Promise
   )
   prova.conferir('desfazer devolve o estado pela data', desfeita.estado === 'agendada', desfeita.estado)
 
-  const realizada = await escalaPorData(prova, cenario.gabriel, REALIZADA_COM_TRECHO)
+  const realizada = await escalaPorData(prova, cenario.gabriel, dataDaDemonstracao(REALIZADA_COM_TRECHO))
   const musicaId = cenario.musicas.get(VIDEOS.meiaNoite)!
   const antes = exigir(await prova.api(`/api/musicas/${musicaId}`, { cookie: cenario.gabriel }), 200, 'histórico antes')
 

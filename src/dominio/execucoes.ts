@@ -1,5 +1,16 @@
-import { escalaPorId, estadoEscala, membroPorId, membrosMusicais, ministradoPorDe, musicaPorId } from './escala'
-import type { Execucao, Ministerio, Musica, TomSugerido } from './tipos'
+import { escalaPorId, estadoEscala, membroPorId, membrosMusicais, ministradoPorDe, musicaPorId, musicasDoItem } from './escala'
+import { diasEntre } from './datas'
+import { mesesDesde } from './musica'
+import type { Escala, Execucao, Ministerio, Musica, TomSugerido } from './tipos'
+
+export const MESES_PARA_ANTIGA = 6
+
+export type ResumoDoRepertorio = {
+  recentes: number
+  antigas: number
+  nuncaTocadas: number
+  total: number
+}
 
 export function execucoes(m: Ministerio): Execucao[] {
   const derivadas: Execucao[] = []
@@ -70,4 +81,21 @@ export function cobertura(m: Ministerio, escalaId: string, musicaId: string): { 
 
 export function vezesTocada(m: Ministerio, musicaId: string): number {
   return historicoDaMusica(m, musicaId).length
+}
+
+export function resumoDoRepertorio(m: Ministerio, escala: Escala, semanas: number): ResumoDoRepertorio {
+  const resumo = { recentes: 0, antigas: 0, nuncaTocadas: 0, total: 0 }
+
+  for (const item of escala.itens) {
+    for (const musicaId of musicasDoItem(item)) {
+      resumo.total += 1
+      const ultima = ultimaExecucao(m, musicaId)
+
+      if (!ultima) resumo.nuncaTocadas += 1
+      else if (diasEntre(ultima.data, m.hoje) < semanas * 7) resumo.recentes += 1
+      else if (mesesDesde(ultima.data, m.hoje) >= MESES_PARA_ANTIGA) resumo.antigas += 1
+    }
+  }
+
+  return resumo
 }

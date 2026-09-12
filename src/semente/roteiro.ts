@@ -78,7 +78,13 @@ export function sqlBase(entrada: EntradaBase): string {
 
   for (const funcao of entrada.funcoes) {
     comandos.push(
-      inserirOuIgnorar('funcoes', { id: funcao.id, nome: funcao.nome, grupo: funcao.grupo, ordem: funcao.ordem }),
+      inserirOuIgnorar('funcoes', {
+        id: funcao.id,
+        nome: funcao.nome,
+        grupo: funcao.grupo,
+        ordem: funcao.ordem,
+        minimo: funcao.minimo,
+      }),
     )
   }
 

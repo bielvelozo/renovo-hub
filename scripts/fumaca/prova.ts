@@ -1,7 +1,11 @@
 import { contarFalhas, linhaDaConferencia, relatorio } from '../../src/fumaca/relatorio'
 import type { Conferencia } from '../../src/fumaca/relatorio'
 
-export const RAIZ = 'http://127.0.0.1:8787'
+// PORTA_DO_SMOKE existe pra o smoke não brigar com um wrangler dev já de pé em 8787,
+// como acontece quando duas sessões mexem no mesmo repositório em worktrees diferentes.
+export const PORTA = Number(process.env.PORTA_DO_SMOKE ?? 8787)
+
+export const RAIZ = `http://127.0.0.1:${PORTA}`
 
 export type Resposta = { status: number; corpo: any; texto: string; cabecalhos: Headers }
 

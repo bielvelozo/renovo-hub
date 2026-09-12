@@ -1,5 +1,6 @@
 import { fimDeSemanaDe } from './datas'
 import { estadoEscala } from './escala'
+import { mesesDesde } from './musica'
 import type { Escala, Ministerio } from './tipos'
 
 export const JANELA_DE_FINS_DE_SEMANA = 6
@@ -16,6 +17,11 @@ export function escalasNoAno(m: Ministerio, membroId: string, ano = Number(m.hoj
 
 export function ultimaEscala(m: Ministerio, membroId: string): Escala | null {
   return realizadasComOMembro(m, membroId)[0] ?? null
+}
+
+export function paradaHaMeses(m: Ministerio, membroId: string): number | null {
+  const ultima = ultimaEscala(m, membroId)
+  return ultima ? mesesDesde(ultima.data, m.hoje) : null
 }
 
 export function finsDeSemanaSeguidos(m: Ministerio, membroId: string): number {

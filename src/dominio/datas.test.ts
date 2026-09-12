@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   diaDaSemana,
+  minutosEmBrasilia,
   domingoDaSantaCeia,
   domingosDoMes,
   fimDeSemanaDe,
@@ -142,5 +143,13 @@ describe('domingoDaSantaCeia', () => {
 
   it('devolve nulo quando não há segundo domingo', () => {
     expect(domingoDaSantaCeia(['2026-09-06'])).toBeNull()
+  })
+})
+
+describe('minutos em Brasília', () => {
+  it('conta os minutos desde a meia-noite no fuso de Brasília', () => {
+    expect(minutosEmBrasilia(new Date('2026-09-12T01:29:00Z'))).toBe(22 * 60 + 29)
+    expect(minutosEmBrasilia(new Date('2026-09-12T01:30:00Z'))).toBe(22 * 60 + 30)
+    expect(minutosEmBrasilia(new Date('2026-09-12T03:00:00Z'))).toBe(0)
   })
 })

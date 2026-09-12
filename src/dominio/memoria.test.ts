@@ -4,6 +4,7 @@ import { inteira, medley, ministerioDeExemplo } from './exemplo'
 import {
   abaDaMusica,
   coberturaDoMinisterio,
+  memoriaDaMusica,
   planejadaEm,
   recente,
   secaoDaMusica,
@@ -136,5 +137,37 @@ describe('coberturaDoMinisterio', () => {
 
     expect(cobertura.ja).toEqual([])
     expect(cobertura.nunca).toHaveLength(9)
+  })
+})
+
+describe('memória da Música no Item', () => {
+  it('junta recente, última Execução e onde já está planejada', () => {
+    const m = ministerioDeExemplo('2026-09-08')
+    const comMeiaNoite = {
+      ...m,
+      escalas: m.escalas.map((escala) =>
+        escala.id === 'e0920' ? { ...escala, itens: [inteira('x', 'meia-noite', 'G')] } : escala,
+      ),
+    }
+
+    const memoria = memoriaDaMusica(comMeiaNoite, 'meia-noite', 4)
+
+    expect(memoria.recente).toBe(true)
+    expect(memoria.ultimaExecucao?.data).toBe('2026-08-30')
+    expect(memoria.planejadaEm.map((p) => p.escalaId)).toEqual(['e0920'])
+  })
+
+  it('tira a Escala atual de planejadaEm e devolve nulo pra quem nunca tocou', () => {
+    const m = ministerioDeExemplo('2026-09-08')
+    const comRio = {
+      ...m,
+      escalas: m.escalas.map((escala) =>
+        escala.id === 'e0920' ? { ...escala, itens: [inteira('x', 'rio', 'D')] } : escala,
+      ),
+    }
+
+    const memoria = memoriaDaMusica(comRio, 'rio', 4, 'e0920')
+
+    expect(memoria).toEqual({ recente: false, ultimaExecucao: null, planejadaEm: [] })
   })
 })

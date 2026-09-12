@@ -13,6 +13,7 @@ export type TipoDeNotificacao =
   | 'sugestao-aceita'
   | 'sugestao-guardada'
   | 'sugestao-recusada'
+  | 'pos-culto'
 
 export const CAMINHO_DAS_SUGESTOES = '/sugestoes'
 
@@ -110,6 +111,16 @@ export function avisoDeSugestaoRecusada(tituloDaMusica: string, motivo: string):
     url: CAMINHO_DAS_SUGESTOES,
   }
 }
+
+export function avisoDePosCulto(escala: Escala, musicas: number): Aviso {
+  return {
+    titulo: 'Todas as músicas de hoje foram tocadas?',
+    corpo: `${nomeDaEscala(escala)} · ${musicas} ${musicas === 1 ? 'música registrada' : 'músicas registradas'}. Toque para ajustar.`,
+    url: caminhoDaEscala(escala.id),
+  }
+}
+
+export const MINUTOS_DO_POS_CULTO = 22 * 60 + 30
 
 export function dataDoLembrete(agora: Date): string | null {
   if (horaEmBrasilia(agora) < HORA_DO_LEMBRETE) return null

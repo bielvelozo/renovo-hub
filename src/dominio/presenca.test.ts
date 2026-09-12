@@ -4,6 +4,7 @@ import {
   escalasNoAno,
   finsDeSemanaSeguidos,
   finsDeSemanaServidos,
+  paradaHaMeses,
   presencaDoMembro,
   proximaEscalaDoMembro,
   ultimaEscala,
@@ -139,5 +140,18 @@ describe('presencaDoMembro', () => {
       ultimaEscala: '2026-09-06',
       finsDeSemanaSeguidos: 4,
     })
+  })
+})
+
+describe('parada há meses', () => {
+  it('conta os meses desde a última Escala Realizada', () => {
+    expect(paradaHaMeses(ministerioDeExemplo('2026-09-08'), 'pedro')).toBe(0)
+    expect(paradaHaMeses(ministerioDeExemplo('2027-02-20'), 'pedro')).toBe(5)
+  })
+
+  it('devolve nulo pra quem nunca esteve numa Escala Realizada', () => {
+    const m = ministerioDeExemplo('2026-09-08')
+
+    expect(paradaHaMeses({ ...m, escalas: [] }, 'pedro')).toBeNull()
   })
 })

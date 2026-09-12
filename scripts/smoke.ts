@@ -15,7 +15,7 @@ import { hojeDoAmbiente, mesSeguinte, musicasPorVideo } from './fumaca/cenario'
 import type { Cenario } from './fumaca/cenario'
 import { fluxosDoMembro } from './fumaca/membro'
 import { fluxosDeNotificacao } from './fumaca/notificacoes'
-import { buscar, criarProva } from './fumaca/prova'
+import { RAIZ, buscar, criarProva } from './fumaca/prova'
 import type { Prova } from './fumaca/prova'
 import {
   roteiroDaAvulsa,
@@ -70,12 +70,12 @@ async function preparar(prova: Prova): Promise<Cenario> {
   migrarESemear(raiz)
 
   servidor = await subirServidor(raiz)
-  prova.conferir('o Worker sobe e responde em /api/saude', true, 'http://127.0.0.1:8787')
+  prova.conferir('o Worker sobe e responde em /api/saude', true, RAIZ)
 
   const gabriel = await sessaoPorConvite(raiz, 'Gabriel')
   prova.conferir('o convite do primeiro Admin abre sessão', gabriel.startsWith('sessao='))
 
-  const invalido = await buscar('http://127.0.0.1:8787/entrar/nao-existe', { redirect: 'manual' })
+  const invalido = await buscar(`${RAIZ}/entrar/nao-existe`, { redirect: 'manual' })
   prova.conferir('convite inválido devolve 404 em PT-BR', invalido.status === 404, String(invalido.status))
 
   const isa = await sessaoPorEsqueci('isa')

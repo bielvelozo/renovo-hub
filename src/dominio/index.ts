@@ -22,6 +22,7 @@ export type {
 
 export {
   diaDaSemana,
+  diasEntre,
   domingoDaSantaCeia,
   domingosDoMes,
   ehMinutagem,
@@ -31,6 +32,7 @@ export {
   formatarDiaNumerico,
   hojeEmBrasilia,
   horaEmBrasilia,
+  minutosEmBrasilia,
   nomeDoDia,
   segundos,
   somarDias,
@@ -60,11 +62,15 @@ export {
   unicoDoSom,
 } from './escala'
 
+export type { ResumoDoRepertorio } from './execucoes'
+
 export {
+  MESES_PARA_ANTIGA,
   cobertura,
   ehLegado,
   execucoes,
   historicoDaMusica,
+  resumoDoRepertorio,
   ultimaExecucao,
   ultimoTom,
   vezesTocada,
@@ -75,22 +81,28 @@ export {
   escalasNoAno,
   finsDeSemanaSeguidos,
   finsDeSemanaServidos,
+  paradaHaMeses,
   presencaDoMembro,
   proximaEscalaDoMembro,
   ultimaEscala,
 } from './presenca'
 
-export type { AbaDaMusica, Planejada, SecaoDaMusica } from './memoria'
+export type { AbaDaMusica, MemoriaDaMusica, Planejada, SecaoDaMusica } from './memoria'
 
 export {
   MESES_PARA_REDESCOBRIR,
   abaDaMusica,
   coberturaDoMinisterio,
+  memoriaDaMusica,
   planejadaEm,
   recente,
   secaoDaMusica,
   vezesTocadaDesde,
 } from './memoria'
+
+export type { ChaveDePendencia, Pendencia, PendenciasDaEscala, ResumoDeGrupo } from './pendencias'
+
+export { GRUPOS, NOME_DO_GRUPO, pendenciasDaEscala, resumoPorGrupo } from './pendencias'
 
 export type { AcaoNaSugestao, EstadoDaSugestao } from './sugestao'
 
@@ -123,10 +135,12 @@ export type { AcaoNaMusica, Aviso, TipoDeNotificacao } from './notificacoes'
 export {
   CAMINHO_DAS_SUGESTOES,
   HORA_DO_LEMBRETE,
+  MINUTOS_DO_POS_CULTO,
   avisoDeCancelada,
   avisoDeEscalado,
   avisoDeLembrete,
   avisoDeMudanca,
+  avisoDePosCulto,
   avisoDeRemarcada,
   avisoDeSugestaoAceita,
   avisoDeSugestaoGuardada,

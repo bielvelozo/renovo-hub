@@ -30,6 +30,13 @@ const formatadorDeHora = new Intl.DateTimeFormat('en-GB', {
   hour12: false,
 })
 
+const formatadorDeMinutos = new Intl.DateTimeFormat('en-GB', {
+  timeZone: FUSO,
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false,
+})
+
 export function hojeEmBrasilia(agora: Date = new Date()): string {
   return formatador.format(agora)
 }
@@ -38,12 +45,21 @@ export function horaEmBrasilia(agora: Date = new Date()): number {
   return Number(formatadorDeHora.format(agora))
 }
 
+export function minutosEmBrasilia(agora: Date = new Date()): number {
+  const [hora, minuto] = formatadorDeMinutos.format(agora).split(':').map(Number)
+  return hora * 60 + minuto
+}
+
 function comoUtc(data: string): Date {
   return new Date(data + 'T12:00:00Z')
 }
 
 function iso(d: Date): string {
   return d.toISOString().slice(0, 10)
+}
+
+export function diasEntre(de: string, ate: string): number {
+  return Math.round((comoUtc(ate).getTime() - comoUtc(de).getTime()) / DIA_EM_MS)
 }
 
 export function diaDaSemana(data: string): number {
@@ -98,7 +114,7 @@ export function formatarDiaLongo(data: string, hoje = hojeEmBrasilia()): string 
 }
 
 export function tempoRelativo(data: string, hoje: string): string {
-  const dias = Math.round((comoUtc(hoje).getTime() - comoUtc(data).getTime()) / DIA_EM_MS)
+  const dias = diasEntre(data, hoje)
   if (dias <= 0) return 'hoje'
   if (dias === 1) return 'ontem'
   if (dias < 14) return `há ${dias} dias`

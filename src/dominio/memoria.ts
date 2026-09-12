@@ -1,7 +1,8 @@
+import { diasEntre } from './datas'
 import { ehMusical, estadoEscala, membroPorId, ministros, musicasDoItem, tituloEscala } from './escala'
 import { historicoDaMusica, ultimaExecucao } from './execucoes'
 import { mesesDesde } from './musica'
-import type { Ministerio, Musica } from './tipos'
+import type { Execucao, Ministerio, Musica } from './tipos'
 
 export const MESES_PARA_REDESCOBRIR = 3
 
@@ -9,14 +10,18 @@ export type AbaDaMusica = 'redescobrir' | 'recentes'
 
 export type SecaoDaMusica = 'nunca' | 'paradas' | null
 
+export type MemoriaDaMusica = {
+  recente: boolean
+  ultimaExecucao: Execucao | null
+  planejadaEm: Planejada[]
+}
+
 export type Planejada = {
   escalaId: string
   data: string
   titulo: string
   ministros: string[]
 }
-
-const DIA_EM_MS = 24 * 60 * 60 * 1000
 
 export function recente(m: Ministerio, musicaId: string, semanas: number): boolean {
   const ultima = ultimaExecucao(m, musicaId)
@@ -68,6 +73,15 @@ export function coberturaDoMinisterio(m: Ministerio, musicaId: string): { ja: st
   return { ja, nunca }
 }
 
-function diasEntre(de: string, ate: string): number {
-  return Math.round((Date.parse(ate + 'T12:00:00Z') - Date.parse(de + 'T12:00:00Z')) / DIA_EM_MS)
+export function memoriaDaMusica(
+  m: Ministerio,
+  musicaId: string,
+  semanas: number,
+  escalaAtualId?: string,
+): MemoriaDaMusica {
+  return {
+    recente: recente(m, musicaId, semanas),
+    ultimaExecucao: ultimaExecucao(m, musicaId),
+    planejadaEm: planejadaEm(m, musicaId, escalaAtualId),
+  }
 }
