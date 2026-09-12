@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 import type { Anexo, ItemApresentado, MusicaNaLista, MusicaResumida, TrechoApresentado } from '../api/tipos'
 import { hojeEmBrasilia, limparTitulo, tempoRelativo } from '../dominio'
+import { Icone } from '../casca/Icone'
 import { Capa } from './Capa'
 import { Selo } from './Selo'
 
@@ -52,7 +53,12 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
         )}
         {!ehMedley && props.musica.legado && <Selo variante="legado">Legado</Selo>}
         {!ehMedley && props.musica.nova && <Selo>nova</Selo>}
-        {anexos.length > 0 && <Selo icone="documento">letra</Selo>}
+        {anexos.map((anexo) => (
+          <a key={anexo.id} className="selo neutro" href={anexo.url}>
+            <Icone nome="documento" />
+            letra{anexos.length > 1 ? ` v${anexo.versao}` : ''}
+          </a>
+        ))}
         {selos}
       </span>
     </>
