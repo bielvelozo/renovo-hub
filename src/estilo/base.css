@@ -633,11 +633,33 @@ nav.abas .contagem {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 4px;
+  padding: 10px 4px;
 }
 
 .pessoa {
   flex-wrap: wrap;
+  row-gap: 6px;
+}
+
+.pessoa .grupo {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 8px;
+  row-gap: 2px;
+}
+
+.pessoa .chips {
+  flex: none;
+  flex-basis: 100%;
+  flex-wrap: wrap;
+  overflow: visible;
+  padding: 0 0 0 46px;
+}
+
+.pessoa .chip {
+  min-height: 32px;
+  padding: 0 12px;
 }
 
 .pessoa .selos {
