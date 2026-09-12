@@ -18,6 +18,23 @@ describe('Cabecalho', () => {
     expect(screen.getByRole('button', { name: 'engrenagem' })).not.toBeNull()
   })
 
+  it('no modo raiz troca o título por um rico e põe a navegação ao lado', () => {
+    const { container } = render(
+      <MemoryRouter>
+        <Cabecalho
+          raiz
+          titulo="Setembro 2026"
+          tituloRico={<button type="button">Setembro</button>}
+          navegacao={<button type="button">Próximo mês</button>}
+        />
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Setembro')
+    expect(container.querySelector('.faixa.raiz .titulo-encolhido')?.textContent).toBe('Setembro 2026')
+    expect(container.querySelector('.linha-do-titulo .navegacao-do-titulo')?.textContent).toBe('Próximo mês')
+  })
+
   it('na subtela volta pelo link ou pela ação', () => {
     const aoVoltar = vi.fn()
     render(

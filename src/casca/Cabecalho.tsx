@@ -9,15 +9,30 @@ const ALTURA_DA_FAIXA = 56
 type Comum = { titulo: string; acao?: ReactNode }
 
 export type PropriedadesDoCabecalho =
-  | (Comum & { raiz: true; semTitulo?: boolean })
+  | (Comum & { raiz: true; semTitulo?: boolean; tituloRico?: ReactNode; navegacao?: ReactNode })
   | (Comum & { raiz?: false; sub?: ReactNode; voltarPara?: string; aoVoltar?: () => void })
 
 export function Cabecalho(props: PropriedadesDoCabecalho) {
-  if (props.raiz) return <CabecalhoRaiz titulo={props.titulo} acao={props.acao} semTitulo={props.semTitulo} />
+  if (props.raiz)
+    return (
+      <CabecalhoRaiz
+        titulo={props.titulo}
+        acao={props.acao}
+        semTitulo={props.semTitulo}
+        tituloRico={props.tituloRico}
+        navegacao={props.navegacao}
+      />
+    )
   return <CabecalhoDeSubtela {...props} />
 }
 
-function CabecalhoRaiz({ titulo, acao, semTitulo }: Comum & { semTitulo?: boolean }) {
+function CabecalhoRaiz({
+  titulo,
+  acao,
+  semTitulo,
+  tituloRico,
+  navegacao,
+}: Comum & { semTitulo?: boolean; tituloRico?: ReactNode; navegacao?: ReactNode }) {
   const alvo = useRef<HTMLHeadingElement>(null)
   const [encolhido, encolher] = useState(false)
 
@@ -46,9 +61,12 @@ function CabecalhoRaiz({ titulo, acao, semTitulo }: Comum & { semTitulo?: boolea
         </div>
       </div>
       {!semTitulo && (
-        <h1 ref={alvo} className="titulo-de-tela display">
-          {titulo}
-        </h1>
+        <div className="linha-do-titulo">
+          <h1 ref={alvo} className="titulo-de-tela display">
+            {tituloRico ?? titulo}
+          </h1>
+          {navegacao && <span className="navegacao-do-titulo">{navegacao}</span>}
+        </div>
       )}
     </>
   )

@@ -5,22 +5,36 @@ import type { EscalaApresentada, EscalaResumida } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
 import { Cabecalho } from '../casca/Cabecalho'
+import { Icone } from '../casca/Icone'
 import { Botao } from '../componentes/Botao'
 import { Campo } from '../componentes/Campo'
 import { Esqueleto } from '../componentes/Esqueleto'
 import { Folha } from '../componentes/Folha'
-import { Selos } from '../componentes/Selos'
+import { Selo } from '../componentes/Selo'
+import { SeletorDeMes } from '../componentes/SeletorDeMes'
 import { Vazio } from '../componentes/Vazio'
-import { hojeEmBrasilia, nomeDoDia } from '../dominio'
-import { deslocarMes, domingosQueFaltam, mesDaData, nomeDoMes, rotuloDoMes } from '../escalas/mes'
-import { usarEu } from '../sessao/sessao'
 import { VistoEm } from '../componentes/VistoEm'
+import { hojeEmBrasilia, nomeDaEscala, nomeDoDia } from '../dominio'
+import {
+  deslocarMes,
+  dicaDaEscala,
+  domingosQueFaltam,
+  linhasDoMes,
+  mesDaData,
+  nomeDoMes,
+  rotuloDoMes,
+  selosDaEscala,
+  textoDeCriarDomingos,
+} from '../escalas/mes'
+import { usarEu } from '../sessao/sessao'
 
 export function Mes() {
   const eu = usarEu()
   const dirige = eu.ministro || eu.admin
-  const [mes, verMes] = useState(() => mesDaData(hojeEmBrasilia()))
-  const [nova, abrirNova] = useState(false)
+  const hoje = hojeEmBrasilia()
+  const [mes, verMes] = useState(() => mesDaData(hoje))
+  const [folha, abrirFolha] = useState<'nova' | 'seletor' | null>(null)
+  const [explicando, explicar] = useState(false)
   const busca = usarBusca<{ escalas: EscalaResumida[] }>(`/api/escalas?mes=${mes}`)
   const acao = usarAcao()
 
@@ -42,7 +56,14 @@ export function Mes() {
       <Cabecalho
         raiz
         titulo={rotuloDoMes(mes)}
-        acao={
+        tituloRico={
+          <button type="button" className="titulo-do-mes" onClick={() => abrirFolha('seletor')}>
+            {nomeDoMes(mes)}
+            <span className="dica">{mes.slice(0, 4)}</span>
+            <Icone nome="seta" />
+          </button>
+        }
+        navegacao={
           <>
             <Botao
               variante="icone"
@@ -50,67 +71,109 @@ export function Mes() {
               aria-label="Mês anterior"
               onClick={() => verMes(deslocarMes(mes, -1))}
             />
-      <VistoEm hora={busca.vistoEm} />
-            <Botao
-              variante="icone"
-              icone="seta"
-              aria-label="Próximo mês"
-              onClick={() => verMes(deslocarMes(mes, 1))}
-            />
+            <Botao variante="icone" icone="seta" aria-label="Próximo mês" onClick={() => verMes(deslocarMes(mes, 1))} />
           </>
         }
+        acao={
+          dirige ? (
+            <Botao variante="secundario" pequeno icone="mais" onClick={() => abrirFolha('nova')}>
+              Nova escala
+            </Botao>
+          ) : undefined
+        }
       />
+
+      <VistoEm hora={busca.vistoEm} />
 
       {busca.erro && <p className="aviso">{busca.erro}</p>}
       {acao.erro && <p className="aviso">{acao.erro}</p>}
       {busca.carregando && <Esqueleto forma="linha-de-musica" quantidade={4} />}
 
-      {busca.dados && escalas.length === 0 && <Vazio icone="calendario">Nenhuma Escala em {nomeDoMes(mes)}.</Vazio>}
+      {busca.dados && escalas.length === 0 && (
+        <Vazio
+          icone="calendario"
+          acao={
+            dirige && faltam.length > 0 ? (
+              <>
+                <span className="criar-domingos">
+                  <Botao disabled={acao.ocupado} onClick={criarDomingos}>
+                    {textoDeCriarDomingos(faltam.length, mes, true)}
+                  </Botao>
+                  <Botao
+                    variante="icone"
+                    aria-label="Como os domingos nascem"
+                    aria-expanded={explicando}
+                    onClick={() => explicar(!explicando)}
+                  >
+                    ?
+                  </Botao>
+                </span>
+                {explicando && (
+                  <p className="dica">O segundo domingo nasce Santa Ceia às 8h; os outros, Culto de Domingo às 18h.</p>
+                )}
+              </>
+            ) : undefined
+          }
+        >
+          Nenhuma escala em {nomeDoMes(mes).toLowerCase()}
+        </Vazio>
+      )}
 
       {escalas.length > 0 && (
-        <ul className="lista cartao">
-          {escalas.map((escala) => (
-            <li key={escala.id}>
-              <Link to={`/escalas/${escala.id}`} className="toque">
-                <span className="dia">
-                  <b>{escala.data.slice(8)}</b>
-                  <span>{nomeDoDia(escala.data)}</span>
+        <ul className="lista cartao mes">
+          {linhasDoMes(escalas, mes, hoje).map((linha) =>
+            linha.tipo === 'nada' ? (
+              <li key="nada-hoje" className="nada-hoje">
+                <span className="dia hoje">
+                  <b>{Number(linha.data.slice(8))}</b>
+                  <span>{nomeDoDia(linha.data)}</span>
                 </span>
-                <span className="cresce">
-                  <span className="titulo">{escala.titulo}</span>
-                  <span className="dica">
-                    {escala.quantidadeNaEquipe ? `${escala.quantidadeNaEquipe} na Equipe` : 'sem Equipe'}
-                    {' · '}
-                    {escala.quantidadeDeItens ? `${escala.quantidadeDeItens} no Repertório` : 'sem músicas'}
-                    {escala.ministros.length > 0 && ` · ${escala.ministros.join(', ')}`}
-                  </span>
-                </span>
-                <Selos estado={escala.estado} santaCeia={escala.santaCeia} />
-              </Link>
-            </li>
-          ))}
+                <span className="dica">nada hoje</span>
+              </li>
+            ) : (
+              <LinhaDoMes key={linha.escala.id} escala={linha.escala} ehHoje={linha.hoje} dirige={dirige} />
+            ),
+          )}
         </ul>
       )}
 
-      {dirige && busca.dados && (
-        <div className="pagina">
-          {faltam.length > 0 && (
-            <>
-              <Botao largo disabled={acao.ocupado} onClick={criarDomingos}>
-                Criar {faltam.length === 1 ? 'o domingo' : `os ${faltam.length} domingos`} de {nomeDoMes(mes)}
-              </Botao>
-              <p className="dica">O segundo domingo nasce Santa Ceia às 08h; os outros, Culto de Domingo 18h.</p>
-            </>
-          )}
-
-          <Botao variante="secundario" largo onClick={() => abrirNova(true)}>
-            Nova escala
-          </Botao>
-        </div>
+      {dirige && escalas.length > 0 && faltam.length > 0 && (
+        <Botao variante="secundario" largo disabled={acao.ocupado} onClick={criarDomingos}>
+          {textoDeCriarDomingos(faltam.length, mes, false)}
+        </Botao>
       )}
 
-      {nova && <FolhaDaNovaEscala mes={mes} fechar={() => abrirNova(false)} />}
+      {folha === 'nova' && <FolhaDaNovaEscala mes={mes} fechar={() => abrirFolha(null)} />}
+      {folha === 'seletor' && <SeletorDeMes mes={mes} hoje={hoje} fechar={() => abrirFolha(null)} aoEscolher={verMes} />}
     </section>
+  )
+}
+
+function LinhaDoMes({ escala, ehHoje, dirige }: { escala: EscalaResumida; ehHoje: boolean; dirige: boolean }) {
+  const selos = selosDaEscala(escala, dirige)
+
+  return (
+    <li className={escala.estado === 'realizada' ? 'realizada' : undefined}>
+      <Link to={`/escalas/${escala.id}`} className="toque">
+        <span className={ehHoje ? 'dia hoje' : 'dia'}>
+          <b>{Number(escala.data.slice(8))}</b>
+          <span>{ehHoje ? 'hoje' : nomeDoDia(escala.data)}</span>
+        </span>
+        <span className="cresce">
+          <span className="titulo">{nomeDaEscala(escala)}</span>
+          <span className="dica">{dicaDaEscala(escala)}</span>
+          {selos.length > 0 && (
+            <span className="selos">
+              {selos.map((selo) => (
+                <Selo key={selo.chave} variante={selo.variante}>
+                  {selo.texto}
+                </Selo>
+              ))}
+            </span>
+          )}
+        </span>
+      </Link>
+    </li>
   )
 }
 

@@ -240,6 +240,19 @@ a {
   margin-top: 4px;
 }
 
+.linha-do-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.navegacao-do-titulo {
+  display: flex;
+  flex: none;
+  gap: 2px;
+}
+
 .visto-em {
   margin-top: -8px;
   font-size: 13px;
@@ -539,6 +552,56 @@ nav.abas .contagem {
   font: 800 22px/1 var(--fonte-display);
   font-variation-settings: var(--display-eixos);
   color: var(--texto);
+}
+
+.dia.hoje,
+.dia.hoje b {
+  color: var(--acento);
+}
+
+.titulo-do-mes {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.titulo-do-mes .dica {
+  font: 600 15px/1 var(--fonte-corpo);
+}
+
+.titulo-do-mes .icone {
+  width: 20px;
+  height: 20px;
+  align-self: center;
+  color: var(--texto-2);
+  transform: rotate(90deg);
+}
+
+.lista.mes li.realizada {
+  opacity: 0.55;
+}
+
+.lista.mes .selos {
+  margin-top: 4px;
+}
+
+.nada-hoje {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 4px;
+}
+
+.criar-domingos {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .grupo {

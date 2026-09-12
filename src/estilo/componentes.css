@@ -1017,6 +1017,43 @@ textarea.texto-longo {
   max-width: 28em;
 }
 
+/* SeletorDeMes */
+
+.ano-do-seletor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.ano-do-seletor .titulo {
+  font: 800 20px/1 var(--fonte-display);
+  font-variation-settings: var(--display-eixos);
+  font-variant-numeric: tabular-nums;
+}
+
+.grade-de-meses {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.grade-de-meses button {
+  min-height: var(--toque);
+  padding: 0 4px;
+  border: 0;
+  border-radius: var(--raio);
+  background: var(--acento-suave);
+  color: var(--texto);
+  font: 600 14px/1.2 var(--fonte-corpo);
+  cursor: pointer;
+}
+
+.grade-de-meses button[aria-pressed='true'] {
+  background: var(--acento);
+  color: var(--sobre-acento);
+}
+
 /* Icone */
 
 .icone {
