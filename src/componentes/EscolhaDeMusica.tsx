@@ -10,6 +10,7 @@ import type { Escolha } from '../escalas/rascunho'
 import { escolhaDaMusica, escolhaDaSugestao, escolhaDoLink } from '../escalas/rascunho'
 import type { FiltroDoCatalogo } from '../musicas/catalogo'
 import { FILTROS, ORDENS, caminhoDoCatalogo, textoDoVazio } from '../musicas/catalogo'
+import { Botao } from './Botao'
 import { Busca } from './Busca'
 import { Esqueleto } from './Esqueleto'
 import { LinhaDeMusica } from './LinhaDeMusica'
@@ -131,9 +132,9 @@ export function EscolhaDeMusica({
                   if (evento.key === 'Enter' && link.trim()) procurar()
                 }}
               />
-              <button type="button" className="botao" disabled={acao.ocupado || !link.trim()} onClick={procurar}>
+              <Botao disabled={acao.ocupado || !link.trim()} onClick={procurar}>
                 Buscar
-              </button>
+              </Botao>
             </div>
 
             {achados?.length === 0 && <Vazio icone="youtube">Nenhum vídeo com esse nome.</Vazio>}

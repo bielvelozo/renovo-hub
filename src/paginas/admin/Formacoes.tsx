@@ -5,8 +5,12 @@ import { api } from '../../api/cliente'
 import type { Formacao } from '../../api/tipos'
 import { usarAcao } from '../../api/usarAcao'
 import { usarBusca } from '../../api/usarBusca'
-import { Barra } from '../../componentes/Barra'
+import { Cabecalho } from '../../casca/Cabecalho'
+import { Icone } from '../../casca/Icone'
+import { Botao } from '../../componentes/Botao'
+import { Campo } from '../../componentes/Campo'
 import { Folha } from '../../componentes/Folha'
+import { Vazio } from '../../componentes/Vazio'
 import type { Funcao, Membro } from '../../dominio'
 
 export function Formacoes() {
@@ -32,14 +36,14 @@ export function Formacoes() {
 
   return (
     <section className="pagina">
-      <Barra
+      <Cabecalho
         titulo="Formações"
         sub="Grupos que a Equipe aplica de uma vez"
         voltarPara="/admin"
         acao={
-          <button type="button" className="botao pequeno" onClick={() => abrirCriacao(true)}>
+          <Botao pequeno onClick={() => abrirCriacao(true)}>
             Nova
-          </button>
+          </Botao>
         }
       />
 
@@ -55,14 +59,14 @@ export function Formacoes() {
                   <span className="titulo">{formacao.nome}</span>
                   <span className="dica">{resumoDaFormacao(formacao, membros, funcoes)}</span>
                 </span>
-                <span aria-hidden="true">›</span>
+                <Icone nome="seta" />
               </Link>
             </li>
           ))}
         </ul>
       )}
 
-      {formacoes.dados && lista.length === 0 && <p className="vazio">Nenhuma Formação ainda.</p>}
+      {formacoes.dados && lista.length === 0 && <Vazio icone="pessoa">Nenhuma Formação ainda.</Vazio>}
 
       {criando && <FolhaDeCriar fechar={() => abrirCriacao(false)} criar={criar} />}
     </section>
@@ -74,14 +78,13 @@ function FolhaDeCriar({ fechar, criar }: { fechar: () => void; criar: (nome: str
 
   return (
     <Folha titulo="Nova Formação" fechar={fechar}>
-      <label className="campo">
-        <span className="rotulo">Nome</span>
+      <Campo rotulo="Nome">
         <input value={nome} placeholder="Banda" onChange={(evento) => escrever(evento.target.value)} />
-      </label>
+      </Campo>
       <p className="dica">Ela nasce vazia; monte quem entra na tela seguinte.</p>
-      <button type="button" className="botao largo" disabled={!nome.trim()} onClick={() => criar(nome.trim())}>
+      <Botao largo disabled={!nome.trim()} onClick={() => criar(nome.trim())}>
         Criar Formação
-      </button>
+      </Botao>
     </Folha>
   )
 }

@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { api, textoDoErro } from '../api/cliente'
-import { Marca } from '../casca/Marca'
+import { SeloDaMarca } from '../casca/Marca'
+import { Esqueleto } from '../componentes/Esqueleto'
+import { Vazio } from '../componentes/Vazio'
 
 type Resumo = { id: string; nome: string }
 
@@ -38,7 +40,9 @@ export function Esqueci() {
 
   return (
     <section className="pagina centrada">
-      <Marca />
+      <span className="selo-centrado">
+        <SeloDaMarca />
+      </span>
       <h1>Quem é você?</h1>
       <p className="dica">
         Toque no seu nome pra entrar neste aparelho. Se o seu nome não estiver aqui, peça um link de convite a um
@@ -47,9 +51,9 @@ export function Esqueci() {
 
       {erro && <p className="aviso">{erro}</p>}
 
-      {!membros && !erro && <div className="girando" role="status" aria-label="Carregando" />}
+      {!membros && !erro && <Esqueleto forma="linha-de-musica" quantidade={3} />}
 
-      {membros && membros.length === 0 && <p className="vazio">Nenhum Membro cadastrado ainda.</p>}
+      {membros && membros.length === 0 && <Vazio icone="pessoa">Nenhum Membro cadastrado ainda.</Vazio>}
 
       {membros && membros.length > 0 && (
         <ul className="lista cartao">

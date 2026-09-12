@@ -3,10 +3,16 @@ import { ordensDepoisDeMover, porGrupo, proximaOrdem } from '../../admin/admin'
 import { api } from '../../api/cliente'
 import { usarAcao } from '../../api/usarAcao'
 import { usarBusca } from '../../api/usarBusca'
-import { Barra } from '../../componentes/Barra'
+import { Cabecalho } from '../../casca/Cabecalho'
+import { Icone } from '../../casca/Icone'
 import { Alca } from '../../componentes/Alca'
+import { Botao } from '../../componentes/Botao'
+import { Campo } from '../../componentes/Campo'
+import { Esqueleto } from '../../componentes/Esqueleto'
 import { Folha } from '../../componentes/Folha'
+import { Segmento } from '../../componentes/Segmento'
 import { usarOrdenacao } from '../../componentes/usarOrdenacao'
+import { Vazio } from '../../componentes/Vazio'
 import type { Funcao, Grupo } from '../../dominio'
 
 const GRUPOS: { valor: Grupo; rotulo: string }[] = [
@@ -32,20 +38,20 @@ export function Funcoes() {
 
   return (
     <section className="pagina">
-      <Barra
+      <Cabecalho
         titulo="Funções"
         sub="O que cada Membro faz numa Equipe"
         voltarPara="/admin"
         acao={
-          <button type="button" className="botao pequeno" onClick={() => editar({ funcao: null })}>
+          <Botao pequeno onClick={() => editar({ funcao: null })}>
             Nova
-          </button>
+          </Botao>
         }
       />
 
       {papeis.erro && <p className="aviso">{papeis.erro}</p>}
       {acao.erro && <p className="aviso">{acao.erro}</p>}
-      {papeis.carregando && <div className="girando" role="status" aria-label="Carregando" />}
+      {papeis.carregando && <Esqueleto forma="linha-de-musica" quantidade={4} />}
 
       <p className="dica">Arraste pela alça pra mudar a ordem em que a Função aparece nas listas.</p>
 
@@ -54,7 +60,7 @@ export function Funcoes() {
           <h2>{grupo.nome}</h2>
 
           {grupo.funcoes.length === 0 ? (
-            <p className="vazio">Nenhuma Função neste grupo.</p>
+            <Vazio icone="lista">Nenhuma Função neste grupo.</Vazio>
           ) : (
             <ListaDeFuncoes
               funcoes={grupo.funcoes}
@@ -112,30 +118,18 @@ function FolhaDaFuncao({
 
   return (
     <Folha titulo={funcao ? funcao.nome : 'Nova Função'} fechar={fechar}>
-      <label className="campo">
-        <span className="rotulo">Nome</span>
+      <Campo rotulo="Nome">
         <input value={nome} placeholder="Teclado" onChange={(evento) => escrever(evento.target.value)} />
-      </label>
+      </Campo>
 
       <div className="campo">
         <span className="rotulo">Grupo</span>
-        <div className="segmento" role="group" aria-label="Grupo">
-          {GRUPOS.map((opcao) => (
-            <button
-              key={opcao.valor}
-              type="button"
-              aria-pressed={opcao.valor === grupo}
-              onClick={() => escolher(opcao.valor)}
-            >
-              {opcao.rotulo}
-            </button>
-          ))}
-        </div>
+        <Segmento rotulo="Grupo" opcoes={GRUPOS} valor={grupo} aoMudar={escolher} />
       </div>
 
-      <button type="button" className="botao largo" disabled={!valida} onClick={salvar}>
+      <Botao largo disabled={!valida} onClick={salvar}>
         {funcao ? 'Salvar' : 'Criar Função'}
-      </button>
+      </Botao>
 
       {funcao &&
         (confirmando ? (
@@ -143,14 +137,14 @@ function FolhaDaFuncao({
             <p className="aviso">
               Apagar tira {funcao.nome} de todo mundo. Função já usada em alguma Equipe não apaga: edite o nome.
             </p>
-            <button type="button" className="botao perigo largo" onClick={apagar}>
+            <Botao variante="perigo" largo onClick={apagar}>
               Confirmar
-            </button>
+            </Botao>
           </>
         ) : (
-          <button type="button" className="botao perigo largo" onClick={() => confirmar(true)}>
+          <Botao variante="perigo" largo onClick={() => confirmar(true)}>
             Apagar Função
-          </button>
+          </Botao>
         ))}
     </Folha>
   )
@@ -180,7 +174,7 @@ function ListaDeFuncoes({
             <span className="cresce">
               <span className="titulo">{funcoes[original].nome}</span>
             </span>
-            <span aria-hidden="true">›</span>
+            <Icone nome="seta" />
           </button>
         </li>
       ))}

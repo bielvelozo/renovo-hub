@@ -5,7 +5,13 @@ import { api } from '../../api/cliente'
 import type { Formacao } from '../../api/tipos'
 import { usarAcao } from '../../api/usarAcao'
 import { usarBusca } from '../../api/usarBusca'
-import { Barra } from '../../componentes/Barra'
+import { Cabecalho } from '../../casca/Cabecalho'
+import { usarAviso } from '../../componentes/Avisos'
+import { Botao } from '../../componentes/Botao'
+import { Campo } from '../../componentes/Campo'
+import { Esqueleto } from '../../componentes/Esqueleto'
+import { RodapeDeAcao } from '../../componentes/RodapeDeAcao'
+import { Vazio } from '../../componentes/Vazio'
 import type { Funcao, Membro } from '../../dominio'
 import { musicosDaFormacao } from '../../escalas/equipe'
 
@@ -14,6 +20,7 @@ type Entrada = { membroId: string; funcoes: string[] }
 export function EditarFormacao() {
   const { id = '' } = useParams()
   const navegar = useNavigate()
+  const avisar = usarAviso()
   const formacoes = usarBusca<{ formacoes: Formacao[] }>('/api/formacoes')
   const pessoas = usarBusca<{ membros: Membro[] }>('/api/membros')
   const papeis = usarBusca<{ funcoes: Funcao[] }>('/api/funcoes')
@@ -24,11 +31,34 @@ export function EditarFormacao() {
   const erro = formacoes.erro ?? pessoas.erro ?? papeis.erro
   const formacao = formacoes.dados?.formacoes.find((x) => x.id === id)
 
-  if (erro) return <p className="aviso">{erro}</p>
-  if (!formacoes.dados || !pessoas.dados || !papeis.dados) {
-    return <div className="girando" role="status" aria-label="Carregando" />
+  const cabecalho = <Cabecalho titulo={formacao?.nome ?? 'Formação'} voltarPara="/admin/formacoes" />
+
+  if (erro) {
+    return (
+      <section className="pagina">
+        {cabecalho}
+        <p className="aviso">{erro}</p>
+      </section>
+    )
   }
-  if (!formacao) return <p className="aviso">Formação não encontrada.</p>
+
+  if (!formacoes.dados || !pessoas.dados || !papeis.dados) {
+    return (
+      <section className="pagina">
+        {cabecalho}
+        <Esqueleto forma="paragrafo" />
+      </section>
+    )
+  }
+
+  if (!formacao) {
+    return (
+      <section className="pagina">
+        {cabecalho}
+        <p className="aviso">Formação não encontrada.</p>
+      </section>
+    )
+  }
 
   const atual = rascunho ?? { nome: formacao.nome, entradas: formacao.entradas }
 
@@ -46,6 +76,7 @@ export function EditarFormacao() {
         metodo: 'PATCH',
         corpo: { nome: atual.nome.trim(), entradas: atual.entradas },
       })
+      avisar('Formação salva')
       navegar('/admin/formacoes')
     })
   }
@@ -62,30 +93,23 @@ export function EditarFormacao() {
 
   return (
     <section className="pagina">
-      <Barra
+      <Cabecalho
         titulo={formacao.nome}
         sub={`${quantos} ${quantos === 1 ? 'Membro' : 'Membros'} · toque na Função pra incluir`}
         voltarPara="/admin/formacoes"
-        acao={
-          <button type="button" className="botao pequeno" disabled={acao.ocupado || !atual.nome.trim()} onClick={salvar}>
-            Salvar
-          </button>
-        }
       />
 
       {acao.erro && <p className="aviso">{acao.erro}</p>}
 
-      <label className="campo">
-        <span className="rotulo">Nome</span>
+      <Campo rotulo="Nome">
         <input value={atual.nome} onChange={(evento) => mudar({ ...atual, nome: evento.target.value })} />
-      </label>
-
+      </Campo>
 
       <div className="secao">
         <h2>Músicos</h2>
 
         {musicos.length === 0 ? (
-          <p className="vazio">Ninguém com Função de instrumento.</p>
+          <Vazio icone="pessoa">Ninguém com Função de instrumento.</Vazio>
         ) : (
           <ul className="lista cartao">
             {musicos.map(({ membro, funcoes }) => {
@@ -117,15 +141,23 @@ export function EditarFormacao() {
       {confirmando ? (
         <>
           <p className="aviso">Apagar a Formação não mexe em nenhuma Escala já montada com ela.</p>
-          <button type="button" className="botao perigo largo" disabled={acao.ocupado} onClick={apagar}>
+          <Botao variante="perigo" largo disabled={acao.ocupado} onClick={apagar}>
             Confirmar
-          </button>
+          </Botao>
         </>
       ) : (
-        <button type="button" className="botao perigo largo" onClick={() => confirmar(true)}>
+        <Botao variante="perigo" largo onClick={() => confirmar(true)}>
           Apagar Formação
-        </button>
+        </Botao>
       )}
+
+      <RodapeDeAcao
+        primario={
+          <Botao largo disabled={acao.ocupado || !atual.nome.trim()} onClick={salvar}>
+            Salvar Formação
+          </Botao>
+        }
+      />
     </section>
   )
 }
