@@ -1,25 +1,36 @@
 import { useEffect, useState } from 'react'
-import { Link, Navigate, Outlet, useLocation } from 'react-router'
+import { Navigate, Outlet, useLocation } from 'react-router'
 import { api } from '../api/cliente'
+import { ProvedorDeAvisos } from '../componentes/Avisos'
+import { Botao } from '../componentes/Botao'
+import { Esqueleto } from '../componentes/Esqueleto'
 import { ProvedorDoEu, usarSessao } from '../sessao/sessao'
 import type { Eu } from '../sessao/sessao'
 import { Abas } from './Abas'
-import { Marca } from './Marca'
+import { SeloDaMarca } from './Marca'
 
 export function Casca() {
   const sessao = usarSessao()
 
-  if (sessao.situacao === 'carregando') return <div className="girando" role="status" aria-label="Carregando" />
+  if (sessao.situacao === 'carregando') {
+    return (
+      <div className="pagina centrada" role="status" aria-label="Carregando">
+        <Esqueleto forma="cartao" />
+      </div>
+    )
+  }
   if (sessao.situacao === 'fora') return <Navigate to="/esqueci" replace />
 
   if (sessao.situacao === 'erro') {
     return (
       <section className="pagina centrada">
-        <h1>Renovo Hub</h1>
+        <span className="selo-centrado">
+          <SeloDaMarca />
+        </span>
         <p className="aviso">{sessao.mensagem}</p>
-        <button type="button" className="botao largo" onClick={sessao.recarregar}>
+        <Botao largo onClick={sessao.recarregar}>
           Tentar de novo
-        </button>
+        </Botao>
       </section>
     )
   }
@@ -32,23 +43,14 @@ function Dentro({ eu }: { eu: Eu }) {
 
   return (
     <ProvedorDoEu eu={eu}>
-      <div className="casca">
-        <header className="cabecalho">
-          <Link to="/" aria-label="Início">
-            <Marca />
-          </Link>
-          <span className="cresce" />
-          {eu.admin && (
-            <Link to="/admin" className="botao secundario pequeno">
-              Admin
-            </Link>
-          )}
-        </header>
-        <main className="conteudo">
-          <Outlet />
-        </main>
-        <Abas eu={eu} sugestoes={sugestoes} />
-      </div>
+      <ProvedorDeAvisos>
+        <div className="casca">
+          <main className="conteudo">
+            <Outlet />
+          </main>
+          <Abas eu={eu} sugestoes={sugestoes} />
+        </div>
+      </ProvedorDeAvisos>
     </ProvedorDoEu>
   )
 }

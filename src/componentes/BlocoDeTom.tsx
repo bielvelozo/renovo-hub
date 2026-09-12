@@ -4,7 +4,9 @@ import type { AchadoNoCifraClub, ExecucaoApresentada, TomSugeridoApresentado } f
 import { usarAcao } from '../api/usarAcao'
 import { TOM_ORIGINAL } from '../dominio'
 import { textoDoHistorico, textoDoTomSugerido } from '../escalas/rascunho'
+import { Botao, classesDoBotao } from './Botao'
 import { SeletorDeTom } from './SeletorDeTom'
+import { Vazio } from './Vazio'
 
 export function BlocoDeTom({
   tom,
@@ -37,7 +39,7 @@ export function BlocoDeTom({
         Tom original{tomOriginal ? `: ${tomOriginal}` : ''}
       </button>
 
-      <SeletorDeTom tom={tom} sugerido={sugerido?.tom ?? null} escolher={escolher} />
+      <SeletorDeTom tom={tom} sugerido={sugerido?.tom ?? null} original={tomOriginal} escolher={escolher} />
 
       <BuscaNoCifraClub musica={musica} aoUsar={aoAcharOriginal} rotulo="Descobrir o tom no Cifra Club" />
 
@@ -50,7 +52,7 @@ export function BuscaNoCifraClub({
   musica,
   aoUsar,
   rotulo = 'Buscar no Cifra Club',
-  classe = 'botao secundario largo',
+  classe = 'secundario largo',
 }: {
   musica: { titulo: string; artista: string }
   aoUsar: (tom: string) => void
@@ -73,9 +75,9 @@ export function BuscaNoCifraClub({
     <>
       {acao.erro && <p className="aviso">{acao.erro}</p>}
 
-      <button type="button" className={classe} disabled={acao.ocupado} onClick={procurar}>
-        {acao.ocupado ? 'Procurando…' : rotulo}
-      </button>
+      <Botao className={classe} carregando={acao.ocupado} onClick={procurar}>
+        {rotulo}
+      </Botao>
 
       {achado && (
         <div className="achado">
@@ -86,9 +88,8 @@ export function BuscaNoCifraClub({
             No Cifra Club está em <strong>{achado.tom}</strong>. Confira se é a mesma música.
           </p>
           <div className="acoes">
-            <button
-              type="button"
-              className="botao pequeno"
+            <Botao
+              pequeno
               disabled={acao.ocupado}
               onClick={() => {
                 aoUsar(achado.tom)
@@ -96,19 +97,19 @@ export function BuscaNoCifraClub({
               }}
             >
               Usar {achado.tom}
-            </button>
-            <a className="botao pequeno secundario" href={achado.url} target="_blank" rel="noopener">
+            </Botao>
+            <a className={classesDoBotao({ variante: 'secundario', pequeno: true })} href={achado.url} target="_blank" rel="noopener">
               Abrir
             </a>
-            <button type="button" className="botao pequeno secundario" onClick={() => guardar(null)}>
+            <Botao variante="secundario" pequeno onClick={() => guardar(null)}>
               Não é essa
-            </button>
+            </Botao>
           </div>
         </div>
       )}
 
       {procurou && !achado && !acao.ocupado && (
-        <p className="vazio">O Cifra Club não achou o tom desta música. Escolha à mão.</p>
+        <Vazio icone="cifra">O Cifra Club não achou o tom desta música. Escolha à mão no teclado.</Vazio>
       )}
     </>
   )

@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { Esqueleto } from '../componentes/Esqueleto'
 
 // O Worker é o dono de /entrar/* (run_worker_first no wrangler.toml): ele abre a sessão e manda
 // pra /instalar. Esta página só existe pro caso de o roteador do front pegar a rota antes,
@@ -8,5 +9,5 @@ export function Entrar() {
     window.location.replace(window.location.pathname)
   }, [])
 
-  return <div className="girando" role="status" aria-label="Entrando" />
+  return <Esqueleto forma="paragrafo" />
 }

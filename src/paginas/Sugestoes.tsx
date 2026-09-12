@@ -4,15 +4,25 @@ import { api } from '../api/cliente'
 import type { EscalaResumida, SugestaoApresentada } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
-import { Barra } from '../componentes/Barra'
+import { Cabecalho } from '../casca/Cabecalho'
+import { usarAviso } from '../componentes/Avisos'
+import { Botao } from '../componentes/Botao'
+import { Campo } from '../componentes/Campo'
 import { Capa } from '../componentes/Capa'
 import { EscolhaDeMusica } from '../componentes/EscolhaDeMusica'
+import { Esqueleto } from '../componentes/Esqueleto'
 import { Folha } from '../componentes/Folha'
-import { rotuloDoDia } from '../escalas/mes'
+import { LinhaDeMusica } from '../componentes/LinhaDeMusica'
+import { RodapeDeAcao } from '../componentes/RodapeDeAcao'
+import { Selo } from '../componentes/Selo'
+import { usarRemocaoPendente } from '../componentes/usarRemocaoPendente'
+import { Vazio } from '../componentes/Vazio'
+import { formatarDia } from '../dominio'
 import type { Escolha } from '../escalas/rascunho'
 import { escolhaDaSugestao } from '../escalas/rascunho'
 import { corpoDaSugestao, diaDaSugestao, podeApagar, textoDosApoios } from '../escalas/sugestoes'
 import { usarEu } from '../sessao/sessao'
+import { VistoEm } from '../componentes/VistoEm'
 
 export function Sugestoes() {
   const eu = usarEu()
@@ -21,6 +31,8 @@ export function Sugestoes() {
   const busca = usarBusca<{ sugestoes: SugestaoApresentada[] }>('/api/sugestoes')
   const escalas = usarBusca<{ escalas: EscalaResumida[] }>(dirige ? '/api/escalas' : null)
   const acao = usarAcao()
+  const avisar = usarAviso()
+  const pendente = usarRemocaoPendente()
   const [promovendo, escolher] = useState<SugestaoApresentada | null>(null)
   const [sugerindo, sugerir] = useState<Escolha | null | 'escolhendo'>(null)
 
@@ -54,90 +66,119 @@ export function Sugestoes() {
     )
   }
 
-  if (busca.erro) return <p className="aviso">{busca.erro}</p>
-  if (!busca.dados) return <div className="girando" role="status" aria-label="Carregando" />
+  const cabecalho = (
+    <>
+      <Cabecalho raiz titulo="Sugestões" />
+      <VistoEm hora={busca.vistoEm} />
+    </>
+  )
+
+  if (busca.erro) {
+    return (
+      <section className="pagina">
+        {cabecalho}
+        <p className="aviso">{busca.erro}</p>
+      </section>
+    )
+  }
+
+  if (!busca.dados) {
+    return (
+      <section className="pagina">
+        {cabecalho}
+        <Esqueleto forma="linha-de-musica" quantidade={4} />
+      </section>
+    )
+  }
 
   const lista = busca.dados.sugestoes
   const agendadas = (escalas.dados?.escalas ?? []).filter((escala) => escala.estado === 'agendada')
 
+  function apagar(sugestao: SugestaoApresentada) {
+    pendente.agendar(sugestao.id, () =>
+      acao.executar(async () => {
+        await api(`/api/sugestoes/${sugestao.id}`, { metodo: 'DELETE' })
+        busca.recarregar()
+      }),
+    )
+    avisar('Sugestão apagada', { desfazer: () => pendente.desfazer(sugestao.id) })
+  }
+
   return (
     <section className="pagina">
-      <h1>Sugestões</h1>
+      {cabecalho}
 
-      <button type="button" className="botao largo" onClick={() => sugerir('escolhendo')}>
+      <Botao largo onClick={() => sugerir('escolhendo')}>
         + Sugerir uma música
-      </button>
+      </Botao>
 
       {acao.erro && <p className="aviso">{acao.erro}</p>}
 
       {lista.length === 0 ? (
-        <p className="vazio">Nenhuma Sugestão aberta.</p>
+        <Vazio icone="lampada">Nenhuma Sugestão aberta.</Vazio>
       ) : (
         <ul className="lista cartao">
-          {lista.map((sugestao) => (
-            <li key={sugestao.id} className="item">
-              <Capa musicas={[escolhaDaSugestao(sugestao).resumo]} />
+          {lista.map((sugestao) => {
+            if (pendente.pendentes.includes(sugestao.id)) return null
 
-              <div className="cresce">
-                <div className="titulo">{sugestao.titulo}</div>
-                <div className="dica">
-                  {sugestao.membro.nome}, {diaDaSugestao(sugestao.data)}
-                </div>
-                {sugestao.observacao && <div className="observacao">{sugestao.observacao}</div>}
-                <div className="dica">{textoDosApoios(sugestao.apoios)}</div>
-              </div>
+            return (
+              <LinhaDeMusica
+                key={sugestao.id}
+                musica={escolhaDaSugestao(sugestao).resumo}
+                modo="leitura"
+                observacao={sugestao.observacao || undefined}
+                selos={
+                  <Selo>
+                    {sugestao.membro.nome}, {diaDaSugestao(sugestao.data)} · {textoDosApoios(sugestao.apoios)}
+                  </Selo>
+                }
+                direita={
+                  <>
+                    <Botao
+                      variante={sugestao.apoiei ? 'primario' : 'secundario'}
+                      pequeno
+                      aria-pressed={sugestao.apoiei}
+                      disabled={acao.ocupado}
+                      onClick={() =>
+                        acao.executar(async () => {
+                          trocar(
+                            await api<SugestaoApresentada>(`/api/sugestoes/${sugestao.id}/apoiar`, {
+                              metodo: sugestao.apoiei ? 'DELETE' : 'POST',
+                            }),
+                          )
+                        })
+                      }
+                    >
+                      {sugestao.apoiei ? 'Apoiado' : 'Apoiar'}
+                    </Botao>
 
-              <div className="acoes">
-                <button
-                  type="button"
-                  className={'botao pequeno' + (sugestao.apoiei ? '' : ' secundario')}
-                  aria-pressed={sugestao.apoiei}
-                  disabled={acao.ocupado}
-                  onClick={() =>
-                    acao.executar(async () => {
-                      trocar(
-                        await api<SugestaoApresentada>(`/api/sugestoes/${sugestao.id}/apoiar`, {
-                          metodo: sugestao.apoiei ? 'DELETE' : 'POST',
-                        }),
-                      )
-                    })
-                  }
-                >
-                  {sugestao.apoiei ? 'Apoiado' : 'Apoiar'}
-                </button>
+                    {dirige && (
+                      <Botao pequeno onClick={() => escolher(sugestao)}>
+                        Promover
+                      </Botao>
+                    )}
 
-                {dirige && (
-                  <button type="button" className="botao pequeno" onClick={() => escolher(sugestao)}>
-                    Promover
-                  </button>
-                )}
-
-                {podeApagar(sugestao, eu) && (
-                  <button
-                    type="button"
-                    className="botao secundario icone"
-                    aria-label={`Apagar ${sugestao.titulo}`}
-                    disabled={acao.ocupado}
-                    onClick={() =>
-                      acao.executar(async () => {
-                        await api(`/api/sugestoes/${sugestao.id}`, { metodo: 'DELETE' })
-                        busca.recarregar()
-                      })
-                    }
-                  >
-                    ×
-                  </button>
-                )}
-              </div>
-            </li>
-          ))}
+                    {podeApagar(sugestao, eu) && (
+                      <Botao
+                        variante="icone"
+                        icone="remover"
+                        aria-label={`Apagar ${sugestao.titulo}`}
+                        disabled={acao.ocupado}
+                        onClick={() => apagar(sugestao)}
+                      />
+                    )}
+                  </>
+                }
+              />
+            )
+          })}
         </ul>
       )}
 
       {promovendo && (
         <Folha titulo="Pra qual Escala?" fechar={() => escolher(null)}>
           {agendadas.length === 0 ? (
-            <p className="dica">Nenhuma Escala Agendada. Crie o mês antes de promover.</p>
+            <Vazio icone="calendario">Nenhuma Escala Agendada. Crie o mês antes de promover.</Vazio>
           ) : (
             <ul className="lista">
               {agendadas.map((escala) => (
@@ -149,7 +190,7 @@ export function Sugestoes() {
                   >
                     <span className="cresce">
                       <span className="titulo">{escala.titulo}</span>
-                      <span className="dica">{rotuloDoDia(escala.data)}</span>
+                      <span className="dica">{formatarDia(escala.data)}</span>
                     </span>
                     <span className="dica">
                       {escala.quantidadeNaEquipe ? `${escala.quantidadeNaEquipe} na Equipe` : 'sem Equipe'}
@@ -186,7 +227,7 @@ function Envio({
 
   return (
     <section className="pagina">
-      <Barra titulo={escolha.resumo.titulo} sub={escolha.resumo.artista} aoVoltar={aoVoltar} />
+      <Cabecalho titulo={escolha.resumo.titulo} sub={escolha.resumo.artista} aoVoltar={aoVoltar} />
 
       {acao.erro && <p className="aviso">{acao.erro}</p>}
 
@@ -194,19 +235,21 @@ function Envio({
         <Capa musicas={[escolha.resumo]} grande />
       </div>
 
-      <label className="campo">
-        <span className="rotulo">Por que essa música?</span>
+      <Campo rotulo="Por que essa música?">
         <input
           placeholder="opcional: cabe no fim, combina com a Santa Ceia…"
           value={observacao}
           onChange={(evento) => escrever(evento.target.value)}
         />
-      </label>
+      </Campo>
 
-
-      <button type="button" className="botao largo" disabled={acao.ocupado} onClick={enviar}>
-        Enviar Sugestão
-      </button>
+      <RodapeDeAcao
+        primario={
+          <Botao largo disabled={acao.ocupado} onClick={enviar}>
+            Enviar Sugestão
+          </Botao>
+        }
+      />
     </section>
   )
 }

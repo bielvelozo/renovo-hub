@@ -20,6 +20,8 @@ import {
   trechosComMusica,
 } from './rascunho'
 
+const HOJE = '2026-09-13'
+
 const resumida = (id: string): MusicaResumida => ({
   id,
   titulo: 'Rio',
@@ -221,9 +223,9 @@ describe('medley', () => {
 describe('textos', () => {
   it('o Tom sugerido diz de onde veio', () => {
     expect(textoDoTomSugerido(null)).toBe('Sem tom de partida: escolha.')
-    expect(textoDoTomSugerido(sugerido())).toBe('Último Tom: C, tocado em 16/08 com Marcos. Já selecionado.')
-    expect(textoDoTomSugerido(sugerido({ parcial: true }))).toBe(
-      'Último Tom: C, tocado em 16/08 com Marcos (trecho). Já selecionado.',
+    expect(textoDoTomSugerido(sugerido(), HOJE)).toBe('Último Tom: C, tocado em dom, 16 de ago com Marcos. Já selecionado.')
+    expect(textoDoTomSugerido(sugerido({ parcial: true }), HOJE)).toBe(
+      'Último Tom: C, tocado em dom, 16 de ago com Marcos (trecho). Já selecionado.',
     )
     expect(textoDoTomSugerido(sugerido({ origem: 'conhecido', tom: 'G' }))).toBe(
       'Último tom conhecido: G, preenchido à mão. Já selecionado.',
@@ -234,8 +236,8 @@ describe('textos', () => {
   })
 
   it('o histórico sai em uma linha', () => {
-    expect(textoDoHistorico([execucao(), execucao({ data: '2026-08-30', tom: 'D', parcial: true })])).toBe(
-      'C em 16/08 (Marcos) · D em 30/08 (Marcos), trecho',
+    expect(textoDoHistorico([execucao(), execucao({ data: '2026-08-30', tom: 'D', parcial: true })], HOJE)).toBe(
+      'C em dom, 16 de ago (Marcos) · D em dom, 30 de ago (Marcos), trecho',
     )
   })
 
@@ -247,9 +249,9 @@ describe('textos', () => {
   })
 
   it('a linha do catálogo mostra a última Execução, e o selo diz Legado ou Nova', () => {
-    expect(descricaoNaLista(naLista({ ultimaExecucao: execucao() }))).toBe('Renovo · última 16/08')
-    expect(descricaoNaLista(naLista({ ultimaExecucao: execucao({ parcial: true }) }))).toBe(
-      'Renovo · última 16/08 (trecho)',
+    expect(descricaoNaLista(naLista({ ultimaExecucao: execucao() }), HOJE)).toBe('Renovo · última dom, 16 de ago')
+    expect(descricaoNaLista(naLista({ ultimaExecucao: execucao({ parcial: true }) }), HOJE)).toBe(
+      'Renovo · última dom, 16 de ago (trecho)',
     )
     expect(descricaoNaLista(naLista({ legado: true }))).toBe('Renovo')
 

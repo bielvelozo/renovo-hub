@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { deslocarMes, domingosQueFaltam, mesDaData, nomeDoMes, rotuloDoDia, rotuloDoMes } from './mes'
+import { deslocarMes, domingosQueFaltam, mesDaData, nomeDoMes, rotuloDoMes } from './mes'
 
 describe('mes', () => {
   it('tira o mês da data', () => {
@@ -38,8 +38,4 @@ describe('mes', () => {
     expect(domingosQueFaltam('2026-09', todos)).toEqual([])
   })
 
-  it('escreve o dia com o nome da semana', () => {
-    expect(rotuloDoDia('2026-09-13')).toBe('13/09 (dom)')
-    expect(rotuloDoDia('2026-09-19')).toBe('19/09 (sáb)')
-  })
 })

@@ -252,7 +252,7 @@ function servicoFalsoDePush(recebidos: Recebido[]): Promise<Server> {
   return new Promise((pronto) => servidor.listen(PORTA_DO_SERVICO, '127.0.0.1', () => pronto(servidor)))
 }
 
-type Aparelho = { publica: Bytes; privada: CryptoKey; segredo: Bytes; p256dh: string; auth: string }
+type Aparelho = { publica: Bytes; privada: webcrypto.CryptoKey; segredo: Bytes; p256dh: string; auth: string }
 
 async function gerarAparelho(): Promise<Aparelho> {
   const par = await webcrypto.subtle.generateKey({ name: 'ECDH', namedCurve: 'P-256' }, true, ['deriveBits'])

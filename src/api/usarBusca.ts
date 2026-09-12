@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
-import { api, textoDoErro } from './cliente'
+import { apiComMeta, textoDoErro } from './cliente'
+import { horaVista } from './visto'
 
 export type Busca<T> = {
   dados: T | null
   erro: string | null
   carregando: boolean
+  vistoEm: string | null
   recarregar: () => void
   definir: (dados: T) => void
 }
@@ -12,6 +14,7 @@ export type Busca<T> = {
 export function usarBusca<T>(caminho: string | null): Busca<T> {
   const [dados, definir] = useState<T | null>(null)
   const [erro, guardarErro] = useState<string | null>(null)
+  const [vistoEm, marcarVisto] = useState<string | null>(null)
   const [versao, avancar] = useState(0)
 
   useEffect(() => {
@@ -19,9 +22,10 @@ export function usarBusca<T>(caminho: string | null): Busca<T> {
 
     const controle = new AbortController()
 
-    api<T>(caminho, { sinal: controle.signal })
-      .then((recebido) => {
-        definir(recebido)
+    apiComMeta<T>(caminho, { sinal: controle.signal })
+      .then(({ dados: recebidos, data }) => {
+        definir(recebidos)
+        marcarVisto(horaVista(data, new Date()))
         guardarErro(null)
       })
       .catch((problema: unknown) => {
@@ -33,5 +37,5 @@ export function usarBusca<T>(caminho: string | null): Busca<T> {
 
   const recarregar = useCallback(() => avancar((n) => n + 1), [])
 
-  return { dados, erro, carregando: caminho !== null && !dados && !erro, recarregar, definir }
+  return { dados, erro, carregando: caminho !== null && !dados && !erro, vistoEm, recarregar, definir }
 }

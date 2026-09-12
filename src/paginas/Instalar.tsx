@@ -1,7 +1,10 @@
 import { useState } from 'react'
-import { Link } from 'react-router'
-import { Marca } from '../casca/Marca'
+import { SeloDaMarca } from '../casca/Marca'
+import { ProvedorDeAvisos } from '../componentes/Avisos'
+import { BotaoLink } from '../componentes/Botao'
 import { Notificacoes } from '../componentes/Notificacoes'
+import { RodapeDeAcao } from '../componentes/RodapeDeAcao'
+import { Segmento } from '../componentes/Segmento'
 import { IconeDoPasso } from '../instalacao/IconeDoPasso'
 import { PLATAFORMAS, passosDeInstalacao, plataformaDoAgente } from '../instalacao/plataforma'
 import type { Plataforma } from '../instalacao/plataforma'
@@ -16,53 +19,49 @@ export function Instalar() {
   const instalado = jaInstalado()
 
   return (
-    <section className="pagina centrada">
-      <Marca />
+    <ProvedorDeAvisos>
+      <section className="pagina centrada sem-abas">
+        <span className="selo-centrado">
+          <SeloDaMarca />
+        </span>
 
-      <h1>{sessao.situacao === 'dentro' ? `Oi, ${sessao.eu.nome}` : 'Bem-vindo ao Renovo Hub'}</h1>
-      <p className="dica">
-        O Renovo Hub é o app das Escalas do Renovo Music. Deixe ele na tela inicial do seu celular: é assim que ele abre
-        rápido e pode avisar você quando entrar numa Escala.
-      </p>
+        <h1>{sessao.situacao === 'dentro' ? `Oi, ${sessao.eu.nome}` : 'Bem-vindo ao Renovo Hub'}</h1>
+        <p className="dica">
+          O Renovo Hub é o app das Escalas do Renovo Music. Deixe ele na tela inicial do seu celular: é assim que ele
+          abre rápido e pode avisar você quando entrar numa Escala.
+        </p>
 
-      {instalado ? (
-        <div className="cartao">
-          <h2>Pronto, já está instalado</h2>
-          <p className="dica">Você está usando o Renovo Hub pelo ícone da tela inicial. É daqui que ele notifica você.</p>
-        </div>
-      ) : (
-        <div className="cartao pagina">
-          <div className="segmento" role="group" aria-label="Onde você está">
-            {PLATAFORMAS.map((opcao) => (
-              <button
-                key={opcao}
-                type="button"
-                aria-pressed={opcao === plataforma}
-                onClick={() => escolher(opcao)}
-              >
-                {passosDeInstalacao(opcao).aba}
-              </button>
-            ))}
+        {instalado ? (
+          <div className="cartao">
+            <h2>Pronto, já está instalado</h2>
+            <p className="dica">Você está usando o Renovo Hub pelo ícone da tela inicial. É daqui que ele notifica você.</p>
           </div>
+        ) : (
+          <div className="cartao pagina">
+            <Segmento
+              rotulo="Onde você está"
+              opcoes={PLATAFORMAS.map((opcao) => ({ valor: opcao, rotulo: passosDeInstalacao(opcao).aba }))}
+              valor={plataforma}
+              aoMudar={escolher}
+            />
 
-          <h2>{instrucao.titulo}</h2>
-          <ol className="passos">
-            {instrucao.passos.map((passo) => (
-              <li key={passo.texto}>
-                {passo.texto}
-                {passo.icone && <IconeDoPasso nome={passo.icone} />}
-              </li>
-            ))}
-          </ol>
-        </div>
-      )}
+            <h2>{instrucao.titulo}</h2>
+            <ol className="passos">
+              {instrucao.passos.map((passo) => (
+                <li key={passo.texto}>
+                  {passo.texto}
+                  {passo.icone && <IconeDoPasso nome={passo.icone} />}
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
 
-      <Notificacoes silenciado={sessao.situacao === 'dentro' && sessao.eu.silenciado} />
+        <Notificacoes silenciado={sessao.situacao === 'dentro' && sessao.eu.silenciado} />
 
-      <Link to="/" className="botao largo">
-        Pronto
-      </Link>
-    </section>
+        <RodapeDeAcao primario={<BotaoLink para="/" largo>Pronto</BotaoLink>} />
+      </section>
+    </ProvedorDeAvisos>
   )
 }
 

@@ -25,7 +25,7 @@ describe('números do Perfil', () => {
   })
 
   it('escreve a última Escala com título e dia', () => {
-    expect(textoDaUltimaEscala(ULTIMA)).toBe('Culto de Domingo 18h · 30/08 (dom)')
+    expect(textoDaUltimaEscala(ULTIMA, '2026-09-13')).toBe('Culto de Domingo 18h · dom, 30 de ago')
   })
 
   it('quem nunca serviu não tem última Escala', () => {

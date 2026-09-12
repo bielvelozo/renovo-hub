@@ -1,4 +1,4 @@
-import { formatarDia } from './datas'
+import { formatarDiaNumerico } from './datas'
 import { escalaPorId, gruposEquipe, musicaPorId, tituloEscala } from './escala'
 import { linkDaPlaylist, linkDoVideo } from './musica'
 import type { Item, Ministerio } from './tipos'
@@ -18,7 +18,7 @@ export function descricaoDoItem(m: Ministerio, item: Item): string {
 
 export function textoParaWhatsApp(m: Ministerio, escalaId: string): string {
   const escala = escalaPorId(m, escalaId)
-  const linhas = ['*' + tituloEscala(escala) + ' · ' + formatarDia(escala.data) + '*']
+  const linhas = ['*' + tituloEscala(escala) + ' · ' + formatarDiaNumerico(escala.data) + '*']
 
   for (const grupo of gruposEquipe(m, escala)) linhas.push(grupo.nome + ': ' + grupo.itens.join(', '))
   if (!escala.equipe.length) linhas.push('(sem Equipe ainda)')

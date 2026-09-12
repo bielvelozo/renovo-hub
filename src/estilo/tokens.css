@@ -3,46 +3,84 @@
 :root {
   color-scheme: light dark;
 
-  --fundo: light-dark(#f5f0e8, #282828);
-  --superficie: light-dark(#ffffff, #2f2f2f);
-  --superficie-alta: light-dark(#fbf8f3, #383838);
-  --linha: light-dark(#e4ded4, #3f3f3d);
-  --texto: light-dark(#282020, #e0d8d0);
-  --texto-2: light-dark(#6b6560, #a8a29e);
+  --fundo: light-dark(#efeaec, #1f1b22);
+  --superficie: light-dark(#fbf9fa, #2a2530);
+  --superficie-alta: light-dark(#ffffff, #342e3a);
+  --linha: light-dark(#dad3d8, #443c4a);
+  --texto: light-dark(#2a2430, #f3e9e1);
+  --texto-2: light-dark(#6f6672, #b4a8a8);
 
-  --acento: light-dark(#a34418, #ff5c30);
-  --acento-forte: light-dark(#8a3812, #ff7a55);
-  --acento-suave: light-dark(#f7e6dc, #3d2419);
-  --sobre-acento: light-dark(#fff6ee, #231007);
+  --acento: light-dark(#46508f, #9fb8e6);
+  --acento-forte: light-dark(#363f78, #b8cbf0);
+  --acento-suave: light-dark(#e0e3f3, #2e3550);
+  --sobre-acento: light-dark(#ffffff, #1a1620);
+  --realce: light-dark(#d8683f, #f0906a);
 
-  --verde-marca: #689c38;
-  --sucesso: light-dark(#4a7226, #7cb44a);
+  --atencao: light-dark(#b5502d, #f0906a);
+  --atencao-suave: light-dark(#f8e3da, #4a2e28);
+  --perigo: light-dark(#a8323e, #f08a93);
+  --perigo-suave: light-dark(#f9e0e3, #4a262b);
+  --sucesso: light-dark(#3e7a4f, #9ccfa8);
+  --sucesso-suave: light-dark(#dfefe3, #24392b);
 
-  --agendada-fundo: light-dark(#dbeafe, #1e3356);
-  --agendada-texto: light-dark(#1e40af, #bcd4ff);
-  --realizada-fundo: light-dark(#e3f0d8, #20361c);
-  --realizada-texto: light-dark(#3f6321, #a8d688);
-  --cancelada-fundo: light-dark(#fee2e2, #4a2020);
-  --cancelada-texto: light-dark(#991b1b, #ffb4a8);
-  --ceia-fundo: light-dark(#ede9fe, #332a4d);
-  --ceia-texto: light-dark(#5b21b6, #cfc0f5);
-  --legado-fundo: light-dark(#eae4db, #3a3a38);
-  --legado-texto: light-dark(#57534e, #c0b8b0);
-  --parcial-fundo: light-dark(#fef3c7, #43331a);
-  --parcial-texto: light-dark(#92400e, #f0c675);
+  --realizada-fundo: light-dark(#e6e1e4, #34303a);
+  --realizada-texto: light-dark(#6f6672, #b4a8a8);
+  --cancelada-fundo: light-dark(#f9e0e3, #4a262b);
+  --cancelada-texto: light-dark(#a8323e, #f08a93);
+  --ceia-fundo: light-dark(#e9e0f3, #3a2e4d);
+  --ceia-texto: light-dark(#5b3f8a, #cfc0f5);
+  --parcial-fundo: light-dark(#f8ebd6, #45361c);
+  --parcial-texto: light-dark(#8a5a14, #f0c675);
+  --legado-fundo: light-dark(#e6e1e4, #34303a);
+  --legado-texto: light-dark(#6f6672, #b4a8a8);
 
-  --fonte-corpo: 'Kodchasan', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --fonte-rotulo: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --fonte-display: 'Fraunces', Georgia, serif;
+  --fonte-corpo: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --display-eixos: 'SOFT' 100, 'WONK' 1;
 
-  --raio: 10px;
-  --raio-g: 16px;
+  --raio: 12px;
+  --raio-g: 20px;
   --raio-total: 999px;
-  --sombra: 0 1px 2px light-dark(rgb(40 32 32 / 8%), rgb(0 0 0 / 30%));
-  --sombra-alta: 0 -1px 12px light-dark(rgb(40 32 32 / 10%), rgb(0 0 0 / 35%));
 
+  --sombra: 0 2px 10px light-dark(rgb(42 36 48 / 8%), rgb(0 0 0 / 30%)), 0 0 0 1px var(--linha);
+  --sombra-alta: 0 -8px 30px light-dark(rgb(42 36 48 / 14%), rgb(0 0 0 / 45%));
+
+  --mola-entrada: linear(
+    0,
+    0.006,
+    0.025 2.8%,
+    0.101 6.1%,
+    0.539 18.9%,
+    0.721 25.3%,
+    0.849 31.5%,
+    0.937 38.1%,
+    0.968 41.8%,
+    0.991 45.7%,
+    1.006 50.1%,
+    1.012 54.6%,
+    1.011 62.6%,
+    1.006 72.1%,
+    1
+  );
+  --mola-saida: cubic-bezier(0.4, 0, 1, 1);
+  --mola-toque: linear(0, 0.4 20%, 0.9 45%, 1.02 65%, 1);
+  --tempo-folha: 400ms;
+  --tempo-aviso: 160ms;
+  --tempo-toque: 120ms;
+  --tempo-fade: 120ms;
+
+  --espaco-1: 4px;
+  --espaco-2: 8px;
+  --espaco-3: 12px;
+  --espaco-4: 16px;
+  --espaco-6: 24px;
+  --espaco-8: 32px;
   --toque: 44px;
   --seguro-baixo: env(safe-area-inset-bottom, 0px);
   --seguro-alto: env(safe-area-inset-top, 0px);
+
+  --grao: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncA type='table' tableValues='0 0.04'/></feComponentTransfer></filter><rect width='100%25' height='100%25' filter='url(%23g)'/></svg>");
+  --grao-escuro: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncA type='table' tableValues='0 0.06'/></feComponentTransfer></filter><rect width='100%25' height='100%25' filter='url(%23g)'/></svg>");
 }
 
 :root[data-tema='claro'] {
@@ -51,4 +89,23 @@
 
 :root[data-tema='escuro'] {
   color-scheme: dark;
+  --grao: var(--grao-escuro);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema='claro']) {
+    --grao: var(--grao-escuro);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --mola-entrada: ease-out;
+    --mola-saida: ease-out;
+    --mola-toque: ease-out;
+    --tempo-folha: 80ms;
+    --tempo-aviso: 80ms;
+    --tempo-toque: 80ms;
+    --tempo-fade: 80ms;
+  }
 }

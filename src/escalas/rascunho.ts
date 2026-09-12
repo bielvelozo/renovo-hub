@@ -7,7 +7,7 @@ import type {
   SugestaoApresentada,
   TomSugeridoApresentado,
 } from '../api/tipos'
-import { capaAlternativa, capaDaMusica, ehMinutagem, formatarDia, videoIdDoLink } from '../dominio'
+import { capaAlternativa, capaDaMusica, ehMinutagem, formatarDia, hojeEmBrasilia, videoIdDoLink } from '../dominio'
 import { textoDoUltimoTom } from '../musicas/catalogo'
 
 export type ModoDoItem = 'inteira' | 'trecho'
@@ -141,17 +141,17 @@ export function corpoDoMedley(trechos: TrechoPronto[], observacao: string) {
   return { tipo: 'medley', trechos, observacao: observacao.trim() }
 }
 
-export function textoDoTomSugerido(sugerido: TomSugeridoApresentado | null): string {
+export function textoDoTomSugerido(sugerido: TomSugeridoApresentado | null, hoje = hojeEmBrasilia()): string {
   if (!sugerido) return 'Sem tom de partida: escolha.'
 
-  return textoDoUltimoTom(sugerido) + ' Já selecionado.'
+  return textoDoUltimoTom(sugerido, hoje) + ' Já selecionado.'
 }
 
-export function textoDoHistorico(historico: ExecucaoApresentada[]): string {
+export function textoDoHistorico(historico: ExecucaoApresentada[], hoje = hojeEmBrasilia()): string {
   return historico
     .map((execucao) => {
       const quem = execucao.ministradoPorNome ? ` (${execucao.ministradoPorNome})` : ''
-      return `${execucao.tom} em ${formatarDia(execucao.data)}${quem}${execucao.parcial ? ', trecho' : ''}`
+      return `${execucao.tom} em ${formatarDia(execucao.data, hoje)}${quem}${execucao.parcial ? ', trecho' : ''}`
     })
     .join(' · ')
 }
@@ -166,12 +166,12 @@ export function textoDaCobertura(cobertura: Cobertura | null): string {
   return ja + (cobertura.nunca.length ? ` · ${cobertura.nunca.join(', ')} nunca` : '') + '.'
 }
 
-export function descricaoNaLista(musica: MusicaNaLista): string {
+export function descricaoNaLista(musica: MusicaNaLista, hoje = hojeEmBrasilia()): string {
   if (!musica.ultimaExecucao) return musica.artista
 
   const parcial = musica.ultimaExecucao.parcial ? ' (trecho)' : ''
 
-  return `${musica.artista} · última ${formatarDia(musica.ultimaExecucao.data)}${parcial}`
+  return `${musica.artista} · última ${formatarDia(musica.ultimaExecucao.data, hoje)}${parcial}`
 }
 
 export function seloDaMusica(musica: MusicaNaLista): 'legado' | 'nova' | null {

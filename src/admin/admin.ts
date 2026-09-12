@@ -1,6 +1,6 @@
 import type { Formacao, MembroComAcesso } from '../api/tipos'
 import { mover } from '../componentes/ordenacao'
-import { formatarDia } from '../dominio'
+import { formatarDia, hojeEmBrasilia } from '../dominio'
 import type { Funcao, Grupo, Membro } from '../dominio'
 
 export type SecaoDoAdmin = {
@@ -97,8 +97,8 @@ export function tamanhoLegivel(bytes: number): string {
   return `${(bytes / LIMITE_DO_ANEXO).toFixed(1).replace('.', ',')} MB`
 }
 
-export function dataDoEnvio(criadoEm: string): string {
-  return formatarDia(criadoEm.slice(0, 10))
+export function dataDoEnvio(criadoEm: string, hoje = hojeEmBrasilia()): string {
+  return formatarDia(criadoEm.slice(0, 10), hoje)
 }
 
 export function textoDaListaEsqueci(ligada: boolean): string {

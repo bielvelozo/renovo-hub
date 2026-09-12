@@ -171,7 +171,7 @@ describe('tamanhoLegivel', () => {
 
 describe('dataDoEnvio', () => {
   it('mostra o dia do anexo a partir do instante inteiro que o banco guarda', () => {
-    expect(dataDoEnvio('2026-09-05T04:12:00.000Z')).toBe('05/09')
+    expect(dataDoEnvio('2026-09-05T04:12:00.000Z', '2026-09-13')).toBe('sáb, 5 de set')
   })
 })
 

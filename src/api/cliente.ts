@@ -16,7 +16,9 @@ export type Opcoes = {
   sinal?: AbortSignal
 }
 
-export async function api<T>(caminho: string, opcoes: Opcoes = {}): Promise<T> {
+export type RespostaComMeta<T> = { dados: T; data: string | null }
+
+export async function apiComMeta<T>(caminho: string, opcoes: Opcoes = {}): Promise<RespostaComMeta<T>> {
   const temCorpo = opcoes.corpo !== undefined
 
   return pedir<T>(caminho, {
@@ -27,16 +29,20 @@ export async function api<T>(caminho: string, opcoes: Opcoes = {}): Promise<T> {
   })
 }
 
+export async function api<T>(caminho: string, opcoes: Opcoes = {}): Promise<T> {
+  return (await apiComMeta<T>(caminho, opcoes)).dados
+}
+
 export async function enviarArquivo<T>(caminho: string, arquivo: File, campo = 'arquivo'): Promise<T> {
   const formulario = new FormData()
   formulario.append(campo, arquivo)
 
-  return pedir<T>(caminho, { method: 'POST', body: formulario })
+  return (await pedir<T>(caminho, { method: 'POST', body: formulario })).dados
 }
 
 type Pedido = RequestInit & { credentials?: 'same-origin' }
 
-async function pedir<T>(caminho: string, opcoes: Pedido): Promise<T> {
+async function pedir<T>(caminho: string, opcoes: Pedido): Promise<RespostaComMeta<T>> {
   const pedido: Pedido = { credentials: 'same-origin', ...opcoes }
   let resposta: Response
 
@@ -51,7 +57,7 @@ async function pedir<T>(caminho: string, opcoes: Pedido): Promise<T> {
 
   if (!resposta.ok) throw new ErroDaApi(resposta.status, mensagemDeErro(resposta.status, corpo))
 
-  return corpo as T
+  return { dados: corpo as T, data: resposta.headers.get('date') }
 }
 
 export function textoDoErro(erro: unknown): string {

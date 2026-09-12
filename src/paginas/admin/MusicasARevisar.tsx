@@ -3,9 +3,14 @@ import { api } from '../../api/cliente'
 import type { MusicaNaLista } from '../../api/tipos'
 import { usarAcao } from '../../api/usarAcao'
 import { usarBusca } from '../../api/usarBusca'
-import { Barra } from '../../componentes/Barra'
+import { Cabecalho } from '../../casca/Cabecalho'
+import { Botao } from '../../componentes/Botao'
+import { Campo } from '../../componentes/Campo'
 import { Capa } from '../../componentes/Capa'
+import { Esqueleto } from '../../componentes/Esqueleto'
 import { Folha } from '../../componentes/Folha'
+import { LinhaDeMusica } from '../../componentes/LinhaDeMusica'
+import { Vazio } from '../../componentes/Vazio'
 import { buscaNoCifraClub, linkDoVideo } from '../../dominio'
 
 export function MusicasARevisar() {
@@ -26,15 +31,11 @@ export function MusicasARevisar() {
 
   return (
     <section className="pagina">
-      <Barra
-        titulo="Músicas a revisar"
-        sub={`${musicas.length} esperando revisão`}
-        voltarPara="/admin"
-      />
+      <Cabecalho titulo="Músicas a revisar" sub={`${musicas.length} esperando revisão`} voltarPara="/admin" />
 
       {catalogo.erro && <p className="aviso">{catalogo.erro}</p>}
       {acao.erro && <p className="aviso">{acao.erro}</p>}
-      {catalogo.carregando && <div className="girando" role="status" aria-label="Carregando" />}
+      {catalogo.carregando && <Esqueleto forma="linha-de-musica" quantidade={4} />}
 
       <p className="dica">
         Vieram da playlist do YouTube com o título e o canal do vídeo. Arrume o nome da Música e o artista de verdade;
@@ -42,22 +43,13 @@ export function MusicasARevisar() {
       </p>
 
       {catalogo.dados && musicas.length === 0 && (
-        <p className="vazio">Nenhuma Música esperando revisão. O catálogo está em dia.</p>
+        <Vazio icone="musica">Nenhuma Música esperando revisão. O catálogo está em dia.</Vazio>
       )}
 
       {musicas.length > 0 && (
         <ul className="lista cartao">
           {musicas.map((musica) => (
-            <li key={musica.id}>
-              <button type="button" className="toque" onClick={() => escolher(musica)}>
-                <Capa musicas={[musica]} />
-                <span className="cresce">
-                  <span className="titulo">{musica.titulo}</span>
-                  <span className="dica">{musica.artista || 'sem artista'}</span>
-                </span>
-                <span aria-hidden="true">›</span>
-              </button>
-            </li>
+            <LinhaDeMusica key={musica.id} musica={musica} modo="escolha" aoEscolher={() => escolher(musica)} />
           ))}
         </ul>
       )}
@@ -91,15 +83,13 @@ function FolhaDaRevisao({
     <Folha titulo="Revisar Música" fechar={fechar}>
       <Capa musicas={[musica]} grande />
 
-      <label className="campo">
-        <span className="rotulo">Título</span>
+      <Campo rotulo="Título">
         <input value={titulo} onChange={(evento) => escreverTitulo(evento.target.value)} />
-      </label>
+      </Campo>
 
-      <label className="campo">
-        <span className="rotulo">Artista</span>
+      <Campo rotulo="Artista">
         <input value={artista} onChange={(evento) => escreverArtista(evento.target.value)} />
-      </label>
+      </Campo>
 
       <a className="dica" href={linkDoVideo(musica)} target="_blank" rel="noopener">
         Abrir o vídeo no YouTube
@@ -108,12 +98,12 @@ function FolhaDaRevisao({
         Conferir no Cifra Club
       </a>
 
-      <button type="button" className="botao largo" disabled={!titulo.trim()} onClick={() => salvar(false)}>
+      <Botao largo disabled={!titulo.trim()} onClick={() => salvar(false)}>
         Salvar e marcar revisada
-      </button>
-      <button type="button" className="botao secundario largo" disabled={!titulo.trim()} onClick={() => salvar(true)}>
+      </Botao>
+      <Botao variante="secundario" largo disabled={!titulo.trim()} onClick={() => salvar(true)}>
         Salvar e deixar na lista
-      </button>
+      </Botao>
     </Folha>
   )
 }

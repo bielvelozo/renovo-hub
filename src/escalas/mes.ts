@@ -1,4 +1,4 @@
-import { domingosDoMes, formatarDia, nomeDoDia } from '../dominio'
+import { domingosDoMes } from '../dominio'
 
 const MESES = [
   'Janeiro',
@@ -41,8 +41,4 @@ export function rotuloDoMes(mes: string): string {
 export function domingosQueFaltam(mes: string, datas: string[]): string[] {
   const [ano, numero] = partes(mes)
   return domingosDoMes(ano, numero).filter((domingo) => !datas.includes(domingo))
-}
-
-export function rotuloDoDia(data: string): string {
-  return formatarDia(data) + ' (' + nomeDoDia(data) + ')'
 }

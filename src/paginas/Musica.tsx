@@ -3,11 +3,15 @@ import { api } from '../api/cliente'
 import type { MusicaDetalhada } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
-import { Barra } from '../componentes/Barra'
-import { Capa } from '../componentes/Capa'
+import { Cabecalho } from '../casca/Cabecalho'
 import { BuscaNoCifraClub } from '../componentes/BlocoDeTom'
+import { Capa } from '../componentes/Capa'
+import { Esqueleto } from '../componentes/Esqueleto'
 import { SeletorDeTom } from '../componentes/SeletorDeTom'
-import { formatarDia } from '../dominio'
+import { Selo } from '../componentes/Selo'
+import { Vazio } from '../componentes/Vazio'
+import { formatarDia, limparTitulo } from '../dominio'
+import type { TituloLimpo } from '../dominio'
 import { textoDoUltimoTom } from '../musicas/catalogo'
 import { usarEu } from '../sessao/sessao'
 
@@ -17,16 +21,34 @@ export function Musica() {
   const busca = usarBusca<MusicaDetalhada>(`/api/musicas/${id}`)
   const musica = busca.dados
   const dirige = eu.ministro || eu.admin
+  const nome = musica ? nomeExibido(musica) : null
 
-  if (busca.erro) return <p className="aviso">{busca.erro}</p>
-  if (!musica) return <div className="girando" role="status" aria-label="Carregando" />
+  const cabecalho = <Cabecalho titulo={nome?.titulo ?? 'Música'} sub={nome?.artista} voltarPara="/musicas" />
+
+  if (busca.erro) {
+    return (
+      <section className="pagina">
+        {cabecalho}
+        <p className="aviso">{busca.erro}</p>
+      </section>
+    )
+  }
+
+  if (!musica) {
+    return (
+      <section className="pagina">
+        {cabecalho}
+        <Esqueleto forma="paragrafo" />
+      </section>
+    )
+  }
 
   return (
     <section className="pagina">
-      <Barra titulo={musica.titulo} sub={musica.artista} voltarPara="/musicas" />
+      {cabecalho}
 
       <div className="cabecalho-da-musica">
-        <Capa musicas={[musica]} grande />
+        <Capa musicas={[musica]} tamanho="grande" tocavel={musica.link} transicao={`capa-${musica.id}`} />
         <p className="dica">{situacao(musica)}</p>
       </div>
 
@@ -41,7 +63,7 @@ export function Musica() {
               <div key={execucao.escalaId + execucao.data} className="linha-de-execucao">
                 <span>
                   Tom {execucao.tom}
-                  {execucao.parcial && <span className="selo parcial">trecho</span>}
+                  {execucao.parcial && <Selo variante="trecho">trecho</Selo>}
                 </span>
                 <span className="dica">
                   {formatarDia(execucao.data)}
@@ -51,7 +73,7 @@ export function Musica() {
             ))}
           </div>
         ) : (
-          <p className="dica">Nenhuma Execução ainda.</p>
+          <Vazio icone="musica">Nenhuma Execução ainda.</Vazio>
         )}
       </div>
 
@@ -74,7 +96,7 @@ export function Musica() {
             ))}
           </ul>
         ) : (
-          <p className="dica">Nenhuma Sequência anexada.</p>
+          <Vazio icone="documento">Nenhuma Sequência anexada.</Vazio>
         )}
       </div>
 
@@ -88,6 +110,11 @@ export function Musica() {
       </div>
     </section>
   )
+}
+
+function nomeExibido(musica: MusicaDetalhada): TituloLimpo {
+  if (musica.revisar) return limparTitulo(musica.titulo, musica.artista)
+  return { titulo: musica.titulo, artista: musica.artista }
 }
 
 function situacao(musica: MusicaDetalhada): string {
@@ -119,6 +146,7 @@ function TomOriginal({ musica, trocar }: { musica: MusicaDetalhada; trocar: (nov
 
       <SeletorDeTom
         tom={musica.tomOriginal}
+        original={musica.tomOriginal}
         desligado={acao.ocupado}
         escolher={(tom) => definir(musica.tomOriginal === tom ? null : tom)}
       />

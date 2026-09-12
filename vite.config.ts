@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon-32.png', 'apple-touch-icon.png', 'marca-escuro.png', 'marca-claro.png'],
+      includeAssets: ['favicon-32.png', 'apple-touch-icon.png', 'abertura.png'],
       manifest: {
         id: '/',
         name: 'Renovo Hub',
@@ -19,8 +19,8 @@ export default defineConfig({
         orientation: 'portrait',
         start_url: '/',
         scope: '/',
-        background_color: '#282828',
-        theme_color: '#282828',
+        background_color: '#1F1B22',
+        theme_color: '#1F1B22',
         icons: [
           { src: '/icone-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
           { src: '/icone-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
@@ -36,6 +36,15 @@ export default defineConfig({
         // /api/* e /entrar/* são do Worker; servir o index em cima deles quebraria o convite.
         navigateFallbackDenylist: [/^\/api\//, /^\/entrar\//],
         runtimeCaching: [
+          {
+            urlPattern: ({ url, request }) => url.pathname.startsWith('/api/') && request.method === 'GET',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api',
+              networkTimeoutSeconds: 3,
+              expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 7 },
+            },
+          },
           {
             urlPattern: ({ url }) => url.origin === 'https://fonts.googleapis.com',
             handler: 'StaleWhileRevalidate',

@@ -4,11 +4,19 @@ import { api } from '../api/cliente'
 import type { MusicaDetalhada } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
-import { Barra } from '../componentes/Barra'
+import { Cabecalho } from '../casca/Cabecalho'
+import { usarAviso } from '../componentes/Avisos'
 import { BlocoDeMinutagem } from '../componentes/BlocoDeMinutagem'
 import { BlocoDeTom } from '../componentes/BlocoDeTom'
+import { Botao } from '../componentes/Botao'
+import { Campo } from '../componentes/Campo'
 import { Capa } from '../componentes/Capa'
 import { EscolhaDeMusica } from '../componentes/EscolhaDeMusica'
+import { Esqueleto } from '../componentes/Esqueleto'
+import { LinhaDeMusica } from '../componentes/LinhaDeMusica'
+import { RodapeDeAcao } from '../componentes/RodapeDeAcao'
+import { usarRemocaoPendente } from '../componentes/usarRemocaoPendente'
+import { Vazio } from '../componentes/Vazio'
 import type { Escolha, TrechoEmMontagem } from '../escalas/rascunho'
 import {
   corpoDoMedley,
@@ -30,6 +38,8 @@ export function Medley() {
   const eu = usarEu()
   const navegar = useNavigate()
   const acao = usarAcao()
+  const avisar = usarAviso()
+  const pendente = usarRemocaoPendente()
   const [trechos, guardarTrechos] = useState<TrechoEmMontagem[]>([])
   const [observacao, escreverObservacao] = useState('')
   const [passo, irPara] = useState<Passo>('montar')
@@ -52,6 +62,13 @@ export function Medley() {
 
       navegar(`/escalas/${id}`)
     })
+  }
+
+  function removerTrecho(indice: number) {
+    const id = String(indice)
+
+    pendente.agendar(id, () => guardarTrechos((atuais) => atuais.filter((_, outro) => outro !== indice)))
+    avisar('Trecho tirado do Medley', { desfazer: () => pendente.desfazer(id) })
   }
 
   if (passo === 'escolher') {
@@ -87,85 +104,66 @@ export function Medley() {
 
   return (
     <section className="pagina">
-      <Barra
-        titulo="Montar Medley"
-        sub="dois ou mais Trechos emendados"
-        voltarPara={`/escalas/${id}`}
-        acao={
-          <button
-            type="button"
-            className="botao pequeno"
-            disabled={acao.ocupado || !medleyPronto(trechos)}
-            onClick={confirmar}
-          >
-            Adicionar
-          </button>
-        }
-      />
+      <Cabecalho titulo="Montar Medley" sub="dois ou mais Trechos emendados" voltarPara={`/escalas/${id}`} />
 
       {acao.erro && <p className="aviso">{acao.erro}</p>}
 
       {trechos.length === 0 ? (
-        <p className="dica">
-          Nenhum Trecho ainda.
-        </p>
+        <Vazio icone="musica">Nenhum Trecho ainda.</Vazio>
       ) : (
         <>
           <div className="cabecalho-da-musica">
             <Capa musicas={trechos.slice(0, MAXIMO_DE_CAPAS).map((trecho) => trecho.escolha.resumo)} grande />
-            </div>
+          </div>
 
           <ul className="lista cartao">
-            {trechos.map((trecho, indice) => (
-              <li key={indice} className="item">
-                <Capa musicas={[trecho.escolha.resumo]} />
-                <div className="cresce">
-                  <div className="titulo">
-                    {indice + 1}. {trecho.escolha.resumo.titulo}
-                  </div>
-                  <div className="dica">
-                    {trecho.inicio}–{trecho.fim} · Tom {trecho.tom}
-                  </div>
-                </div>
-                <div className="acoes">
-                  <button
-                    type="button"
-                    className="botao secundario icone"
-                    aria-label={`Remover ${trecho.escolha.resumo.titulo}`}
-                    onClick={() => guardarTrechos(trechos.filter((_, outro) => outro !== indice))}
-                  >
-                    ×
-                  </button>
-                </div>
-              </li>
-            ))}
+            {trechos.map((trecho, indice) => {
+              if (pendente.pendentes.includes(String(indice))) return null
+
+              return (
+                <LinhaDeMusica
+                  key={indice}
+                  musica={trecho.escolha.resumo}
+                  modo="leitura"
+                  numero={indice + 1}
+                  tom={trecho.tom}
+                  trecho={{ inicio: trecho.inicio, fim: trecho.fim }}
+                  direita={
+                    <Botao
+                      variante="icone"
+                      icone="remover"
+                      aria-label={`Remover ${trecho.escolha.resumo.titulo}`}
+                      onClick={() => removerTrecho(indice)}
+                    />
+                  }
+                />
+              )
+            })}
           </ul>
         </>
       )}
 
-      <button type="button" className="botao secundario largo" onClick={() => irPara('escolher')}>
+      <Botao variante="secundario" largo onClick={() => irPara('escolher')}>
         + Trecho
-      </button>
+      </Botao>
 
-      <label className="campo">
-        <span className="rotulo">Observação pro grupo</span>
+      <Campo rotulo="Observação pro grupo">
         <input
           placeholder="opcional: emendar direto, sem parar"
           value={observacao}
           onChange={(evento) => escreverObservacao(evento.target.value)}
         />
-      </label>
-
-      <button
-        type="button"
-        className="botao largo"
-        disabled={acao.ocupado || !medleyPronto(trechos)}
-        onClick={confirmar}
-      >
-        Adicionar Medley ao Repertório
-      </button>
+      </Campo>
 
       {trechos.length === 1 && <p className="dica">Falta pelo menos mais um Trecho.</p>}
+
+      <RodapeDeAcao
+        primario={
+          <Botao largo disabled={acao.ocupado || !medleyPronto(trechos)} onClick={confirmar}>
+            Adicionar Medley ao Repertório
+          </Botao>
+        }
+      />
     </section>
   )
 }
@@ -190,7 +188,7 @@ function NovoTrecho({
   )
 
   if (detalhe.erro) return <p className="aviso">{detalhe.erro}</p>
-  if (detalhe.carregando) return <div className="girando" role="status" aria-label="Carregando" />
+  if (detalhe.carregando) return <Esqueleto forma="paragrafo" />
 
   return (
     <Campos
@@ -226,7 +224,7 @@ function Campos({
 
   return (
     <section className="pagina">
-      <Barra titulo={escolha.resumo.titulo} sub={`Trecho ${ordem} do Medley`} aoVoltar={aoVoltar} />
+      <Cabecalho titulo={escolha.resumo.titulo} sub={`Trecho ${ordem} do Medley`} aoVoltar={aoVoltar} />
 
       <div className="cabecalho-da-musica">
         <Capa musicas={[escolha.resumo]} grande />
@@ -254,14 +252,13 @@ function Campos({
         escrever={(campo, valor) => mudar({ [campo]: valor })}
       />
 
-      <button
-        type="button"
-        className="botao largo"
-        disabled={!trechoPronto(trecho)}
-        onClick={() => aoConfirmar(trecho)}
-      >
-        OK, próximo
-      </button>
+      <RodapeDeAcao
+        primario={
+          <Botao largo disabled={!trechoPronto(trecho)} onClick={() => aoConfirmar(trecho)}>
+            OK, próximo
+          </Botao>
+        }
+      />
     </section>
   )
 }

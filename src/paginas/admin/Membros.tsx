@@ -4,8 +4,13 @@ import { api } from '../../api/cliente'
 import type { MembroComAcesso } from '../../api/tipos'
 import { usarAcao } from '../../api/usarAcao'
 import { usarBusca } from '../../api/usarBusca'
-import { Barra } from '../../componentes/Barra'
+import { Cabecalho } from '../../casca/Cabecalho'
+import { Icone } from '../../casca/Icone'
+import { Botao } from '../../componentes/Botao'
+import { Campo } from '../../componentes/Campo'
+import { Esqueleto } from '../../componentes/Esqueleto'
 import { Folha } from '../../componentes/Folha'
+import { Vazio } from '../../componentes/Vazio'
 import type { Funcao, Membro } from '../../dominio'
 import { usarEu } from '../../sessao/sessao'
 
@@ -23,21 +28,21 @@ export function Membros() {
 
   return (
     <section className="pagina">
-      <Barra
+      <Cabecalho
         titulo="Membros"
         sub={`${lista.length} ${lista.length === 1 ? 'cadastrado' : 'cadastrados'}`}
         voltarPara="/admin"
         acao={
-          <button type="button" className="botao pequeno" onClick={() => editar({ membro: null })}>
+          <Botao pequeno onClick={() => editar({ membro: null })}>
             Novo
-          </button>
+          </Botao>
         }
       />
 
       {erro && <p className="aviso">{erro}</p>}
       {acao.erro && <p className="aviso">{acao.erro}</p>}
       {recado && <p className="dica">{recado}</p>}
-      {(membros.carregando || papeis.carregando) && <div className="girando" role="status" aria-label="Carregando" />}
+      {(membros.carregando || papeis.carregando) && <Esqueleto forma="linha-de-musica" quantidade={4} />}
 
       {lista.length > 0 && (
         <ul className="lista cartao">
@@ -52,14 +57,14 @@ export function Membros() {
                   <span className="dica">{papeisEFuncoes(membro, papeis.dados?.funcoes ?? [])}</span>
                   <span className="dica">{resumoDeAcesso(membro)}</span>
                 </span>
-                <span aria-hidden="true">›</span>
+                <Icone nome="seta" />
               </button>
             </li>
           ))}
         </ul>
       )}
 
-      {membros.dados && lista.length === 0 && <p className="vazio">Nenhum Membro cadastrado ainda.</p>}
+      {membros.dados && lista.length === 0 && <Vazio icone="pessoa">Nenhum Membro cadastrado ainda.</Vazio>}
 
       {edicao && papeis.dados && (
         <FolhaDoMembro
@@ -124,10 +129,9 @@ function FolhaDoMembro({
 
   return (
     <Folha titulo={membro ? membro.nome : 'Novo Membro'} fechar={fechar}>
-      <label className="campo">
-        <span className="rotulo">Nome</span>
+      <Campo rotulo="Nome">
         <input value={nome} placeholder="Como o grupo chama" onChange={(evento) => escrever(evento.target.value)} />
-      </label>
+      </Campo>
 
       <div className="campo">
         <span className="rotulo">Funções</span>
@@ -167,14 +171,14 @@ function FolhaDoMembro({
         </span>
       </div>
 
-      <button type="button" className="botao largo" disabled={!nome.trim()} onClick={salvar}>
+      <Botao largo disabled={!nome.trim()} onClick={salvar}>
         {membro ? 'Salvar' : 'Cadastrar'}
-      </button>
+      </Botao>
 
       {membro?.inativo && (
-        <button type="button" className="botao secundario largo" onClick={reativar}>
+        <Botao variante="secundario" largo onClick={reativar}>
           Trazer de volta
-        </button>
+        </Botao>
       )}
 
       {membro && !souEu && !membro.inativo && (
@@ -182,14 +186,14 @@ function FolhaDoMembro({
           {confirmando ? (
             <>
               <p className="aviso">{avisoDeRemocao(membro)}</p>
-              <button type="button" className="botao perigo largo" onClick={remover}>
+              <Botao variante="perigo" largo onClick={remover}>
                 Confirmar a remoção
-              </button>
+              </Botao>
             </>
           ) : (
-            <button type="button" className="botao perigo largo" onClick={() => confirmar(true)}>
+            <Botao variante="perigo" largo onClick={() => confirmar(true)}>
               Remover do ministério
-            </button>
+            </Botao>
           )}
         </>
       )}

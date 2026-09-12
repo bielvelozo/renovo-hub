@@ -1,6 +1,6 @@
 import type { MusicaNaLista, TomSugeridoApresentado } from '../api/tipos'
 import type { OrdemDoCatalogo } from '../dominio'
-import { formatarDia } from '../dominio'
+import { formatarDia, hojeEmBrasilia, tempoRelativo } from '../dominio'
 
 export type FiltroDoCatalogo = 'todas' | 'nova' | 'legado' | 'uma-vez' | 'meses-3' | 'meses-6' | 'meses-12'
 
@@ -45,13 +45,13 @@ function mesesDoFiltro(filtro: FiltroDoCatalogo): string {
   return filtro.replace('meses-', '')
 }
 
-export function textoDoUltimoTom(sugerido: TomSugeridoApresentado | null): string {
+export function textoDoUltimoTom(sugerido: TomSugeridoApresentado | null, hoje = hojeEmBrasilia()): string {
   if (!sugerido) return 'Sem Tom conhecido: ninguém tocou e ninguém preencheu à mão.'
 
   if (sugerido.origem === 'execucao') {
     const quem = sugerido.ministradoPorNome ? ' com ' + sugerido.ministradoPorNome : ''
     const parcial = sugerido.parcial ? ' (trecho)' : ''
-    return `Último Tom: ${sugerido.tom}, tocado em ${formatarDia(sugerido.data ?? '')}${quem}${parcial}.`
+    return `Último Tom: ${sugerido.tom}, tocado em ${formatarDia(sugerido.data ?? '', hoje)}${quem}${parcial}.`
   }
 
   if (sugerido.origem === 'conhecido') return `Último tom conhecido: ${sugerido.tom}, preenchido à mão.`
@@ -59,9 +59,11 @@ export function textoDoUltimoTom(sugerido: TomSugeridoApresentado | null): strin
   return `Tom original da gravação: ${sugerido.tom}.`
 }
 
-export type SeloDaMusica = { chave: string; texto: string }
+export type ChaveDoSelo = 'tom' | 'quando' | 'parcial' | 'nunca' | 'legado' | 'nova'
 
-export function selosDaMusica(musica: MusicaNaLista): SeloDaMusica[] {
+export type SeloDaMusica = { chave: ChaveDoSelo; texto: string }
+
+export function selosDaMusica(musica: MusicaNaLista, hoje = hojeEmBrasilia()): SeloDaMusica[] {
   const selos: SeloDaMusica[] = []
   const ultima = musica.ultimaExecucao
 
@@ -69,7 +71,7 @@ export function selosDaMusica(musica: MusicaNaLista): SeloDaMusica[] {
     selos.push({ chave: 'tom', texto: `Tom ${ultima.tom}` })
     selos.push({
       chave: 'quando',
-      texto: formatarDia(ultima.data) + (ultima.ministradoPorNome ? ` · ${ultima.ministradoPorNome}` : ''),
+      texto: tempoRelativo(ultima.data, hoje) + (ultima.ministradoPorNome ? ` · ${ultima.ministradoPorNome}` : ''),
     })
     if (ultima.parcial) selos.push({ chave: 'parcial', texto: 'trecho' })
   } else {

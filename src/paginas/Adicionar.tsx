@@ -4,11 +4,16 @@ import { api } from '../api/cliente'
 import type { MusicaDetalhada, SugestaoApresentada } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
-import { Barra } from '../componentes/Barra'
+import { Cabecalho } from '../casca/Cabecalho'
 import { BlocoDeMinutagem } from '../componentes/BlocoDeMinutagem'
 import { BlocoDeTom } from '../componentes/BlocoDeTom'
+import { Botao } from '../componentes/Botao'
+import { Campo } from '../componentes/Campo'
 import { Capa } from '../componentes/Capa'
 import { EscolhaDeMusica } from '../componentes/EscolhaDeMusica'
+import { Esqueleto } from '../componentes/Esqueleto'
+import { RodapeDeAcao } from '../componentes/RodapeDeAcao'
+import { Segmento } from '../componentes/Segmento'
 import { buscaNoCifraClub } from '../dominio'
 import type { Escolha, Rascunho } from '../escalas/rascunho'
 import {
@@ -35,7 +40,7 @@ export function Adicionar() {
 
   if (sugestaoId) {
     if (sugestoes.erro) return <p className="aviso">{sugestoes.erro}</p>
-    if (!sugestoes.dados) return <div className="girando" role="status" aria-label="Carregando" />
+    if (!sugestoes.dados) return <Esqueleto forma="paragrafo" />
 
     const sugestao = sugestoes.dados.sugestoes.find((cada) => cada.id === sugestaoId)
     if (!sugestao) return <p className="aviso">Sugestão não encontrada.</p>
@@ -92,7 +97,7 @@ function Detalhes({
   )
 
   if (detalhe.erro) return <p className="aviso">{detalhe.erro}</p>
-  if (detalhe.carregando) return <div className="girando" role="status" aria-label="Carregando" />
+  if (detalhe.carregando) return <Esqueleto forma="paragrafo" />
 
   return (
     <Formulario
@@ -155,7 +160,7 @@ function Formulario({
 
   return (
     <section className="pagina">
-      <Barra titulo={escolha.resumo.titulo} sub={escolha.resumo.artista} aoVoltar={aoVoltar} />
+      <Cabecalho titulo={escolha.resumo.titulo} sub={escolha.resumo.artista} aoVoltar={aoVoltar} />
 
       {acao.erro && <p className="aviso">{acao.erro}</p>}
 
@@ -185,18 +190,15 @@ function Formulario({
 
       <div className="secao">
         <h2>Como</h2>
-        <div className="segmento">
-          <button
-            type="button"
-            aria-pressed={rascunho.modo === 'inteira'}
-            onClick={() => mudar({ modo: 'inteira' })}
-          >
-            Inteira
-          </button>
-          <button type="button" aria-pressed={rascunho.modo === 'trecho'} onClick={() => mudar({ modo: 'trecho' })}>
-            Trecho
-          </button>
-        </div>
+        <Segmento
+          rotulo="Como"
+          opcoes={[
+            { valor: 'inteira', rotulo: 'Inteira' },
+            { valor: 'trecho', rotulo: 'Trecho' },
+          ]}
+          valor={rascunho.modo}
+          aoMudar={(modo) => mudar({ modo })}
+        />
       </div>
 
       {rascunho.modo === 'trecho' && (
@@ -207,27 +209,25 @@ function Formulario({
         />
       )}
 
-      <label className="campo">
-        <span className="rotulo">Observação pro grupo</span>
+      <Campo rotulo="Observação pro grupo">
         <input
           placeholder="opcional: começar mais baixo, solo na transição…"
           value={rascunho.observacao}
           onChange={(evento) => mudar({ observacao: evento.target.value })}
         />
-      </label>
+      </Campo>
 
       <a className="dica" href={musica?.cifraClub ?? buscaNoCifraClub(escolha.resumo)} target="_blank" rel="noopener">
         Conferir no Cifra Club
       </a>
 
-      <button
-        type="button"
-        className="botao largo"
-        disabled={acao.ocupado || !rascunhoPronto(rascunho)}
-        onClick={confirmar}
-      >
-        {rotulo}
-      </button>
+      <RodapeDeAcao
+        primario={
+          <Botao largo disabled={acao.ocupado || !rascunhoPronto(rascunho)} onClick={confirmar}>
+            {rotulo}
+          </Botao>
+        }
+      />
     </section>
   )
 }

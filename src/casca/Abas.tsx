@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { NavLink } from 'react-router'
 import type { Eu } from '../sessao/sessao'
 import { Icone } from './Icone'
@@ -7,27 +8,32 @@ type Aba = {
   para: string
   rotulo: string
   icone: NomeDoIcone
-  soMinistro?: boolean
 }
 
 const ABAS: Aba[] = [
-  { para: '/', rotulo: 'Início', icone: 'inicio' },
-  { para: '/mes', rotulo: 'Mês', icone: 'mes', soMinistro: true },
-  { para: '/musicas', rotulo: 'Músicas', icone: 'musicas' },
-  { para: '/sugestoes', rotulo: 'Sugestões', icone: 'sugestoes' },
-  { para: '/perfil', rotulo: 'Perfil', icone: 'perfil' },
+  { para: '/', rotulo: 'Início', icone: 'casa' },
+  { para: '/mes', rotulo: 'Mês', icone: 'calendario' },
+  { para: '/musicas', rotulo: 'Músicas', icone: 'musica' },
+  { para: '/sugestoes', rotulo: 'Sugestões', icone: 'lampada' },
+  { para: '/perfil', rotulo: 'Perfil', icone: 'pessoa' },
 ]
 
 export function Abas({ eu, sugestoes }: { eu: Eu; sugestoes: number }) {
   const dirige = eu.ministro || eu.admin
+  const [saltando, saltar] = useState<string | null>(null)
 
   return (
     <nav className="abas" aria-label="Seções do app">
-      {ABAS.filter((aba) => dirige || !aba.soMinistro).map((aba) => (
-        <NavLink key={aba.para} to={aba.para} end={aba.para === '/'}>
-          <Icone nome={aba.icone} />
+      {ABAS.map((aba) => (
+        <NavLink key={aba.para} to={aba.para} end={aba.para === '/'} onClick={() => saltar(aba.para)}>
+          <span
+            className={`icone-da-aba${saltando === aba.para ? ' saltando' : ''}`}
+            onAnimationEnd={() => saltar(null)}
+          >
+            <Icone nome={aba.icone} />
+          </span>
           <span>{aba.rotulo}</span>
-          {aba.icone === 'sugestoes' && sugestoes > 0 && (
+          {aba.icone === 'lampada' && dirige && sugestoes > 0 && (
             <span className="contagem" aria-label={`${sugestoes} sem promover`}>
               {sugestoes > 99 ? '99+' : sugestoes}
             </span>

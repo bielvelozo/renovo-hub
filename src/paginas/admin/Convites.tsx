@@ -4,8 +4,11 @@ import { api } from '../../api/cliente'
 import type { Convite, MembroComAcesso } from '../../api/tipos'
 import { usarAcao } from '../../api/usarAcao'
 import { usarBusca } from '../../api/usarBusca'
-import { Barra } from '../../componentes/Barra'
+import { Cabecalho } from '../../casca/Cabecalho'
+import { usarAviso } from '../../componentes/Avisos'
+import { Botao } from '../../componentes/Botao'
 import { Folha } from '../../componentes/Folha'
+import { Segmento } from '../../componentes/Segmento'
 
 export function Convites() {
   const membros = usarBusca<{ membros: MembroComAcesso[] }>('/api/admin/membros')
@@ -36,7 +39,7 @@ export function Convites() {
 
   return (
     <section className="pagina">
-      <Barra titulo="Convites e acesso" sub="Um link por Membro, sem validade" voltarPara="/admin" />
+      <Cabecalho titulo="Convites e acesso" sub="Um link por Membro, sem validade" voltarPara="/admin" />
 
       {erro && <p className="aviso">{erro}</p>}
       {acao.erro && <p className="aviso">{acao.erro}</p>}
@@ -54,9 +57,9 @@ export function Convites() {
                 <span className="titulo">{membro.nome}</span>
                 <span className="dica">{resumoDeAcesso(membro)}</span>
               </span>
-              <button type="button" className="botao pequeno" disabled={acao.ocupado} onClick={() => gerar(membro.id)}>
+              <Botao pequeno disabled={acao.ocupado} onClick={() => gerar(membro.id)}>
                 Gerar link
-              </button>
+              </Botao>
             </li>
           ))}
         </ul>
@@ -65,14 +68,15 @@ export function Convites() {
       {configuracoes.dados && (
         <div className="secao">
           <h2>Lista do «esqueci»</h2>
-          <div className="segmento" role="group" aria-label="Lista do esqueci">
-            <button type="button" aria-pressed={configuracoes.dados.listaEsqueci} onClick={() => definirLista(true)}>
-              Ligada
-            </button>
-            <button type="button" aria-pressed={!configuracoes.dados.listaEsqueci} onClick={() => definirLista(false)}>
-              Desligada
-            </button>
-          </div>
+          <Segmento
+            rotulo="Lista do esqueci"
+            opcoes={[
+              { valor: 'ligada', rotulo: 'Ligada' },
+              { valor: 'desligada', rotulo: 'Desligada' },
+            ]}
+            valor={configuracoes.dados.listaEsqueci ? 'ligada' : 'desligada'}
+            aoMudar={(valor) => definirLista(valor === 'ligada')}
+          />
           <p className="dica">{textoDaListaEsqueci(configuracoes.dados.listaEsqueci)}</p>
         </div>
       )}
@@ -83,24 +87,24 @@ export function Convites() {
 }
 
 function FolhaDoLink({ convite, fechar }: { convite: Convite; fechar: () => void }) {
-  const [copiado, marcar] = useState(false)
+  const avisar = usarAviso()
   const endereco = `${window.location.origin}${convite.link}`
 
   async function copiar() {
     try {
       await navigator.clipboard.writeText(endereco)
-      marcar(true)
+      avisar('Copiado')
     } catch {
-      marcar(false)
+      // Sem permissão de área de transferência: a pessoa copia o texto à mão.
     }
   }
 
   return (
     <Folha titulo={`Link de ${convite.membro.nome}`} fechar={fechar}>
       <textarea className="texto-longo" readOnly rows={3} value={endereco} />
-      <button type="button" className="botao largo" onClick={copiar}>
-        {copiado ? 'Copiado' : 'Copiar'}
-      </button>
+      <Botao largo onClick={copiar}>
+        Copiar
+      </Botao>
       <p className="dica">
         O link não expira e serve pra quantos aparelhos precisar. Se a pessoa trocar de celular, gere outro ou deixe a
         lista do «esqueci» ligada.
