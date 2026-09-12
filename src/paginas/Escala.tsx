@@ -11,18 +11,16 @@ import { Alca } from '../componentes/Alca'
 import { usarAviso } from '../componentes/Avisos'
 import { Botao, BotaoLink } from '../componentes/Botao'
 import { Campo } from '../componentes/Campo'
-import { Capa } from '../componentes/Capa'
 import { Esqueleto } from '../componentes/Esqueleto'
 import { Folha } from '../componentes/Folha'
 import { FolhaDaPlaylist, FolhaDoWhatsapp } from '../componentes/FolhasDaEscala'
+import { LinhaDoItem } from '../componentes/LinhaDeMusica'
 import { Menu } from '../componentes/Menu'
-import { Selo } from '../componentes/Selo'
 import { Selos } from '../componentes/Selos'
-import type { Ordenacao } from '../componentes/usarOrdenacao'
 import { usarOrdenacao } from '../componentes/usarOrdenacao'
 import { usarRemocaoPendente } from '../componentes/usarRemocaoPendente'
 import { formatarDia } from '../dominio'
-import { capasDoItem, resumoDoItem, tituloDoItem } from '../escalas/repertorio'
+import { tituloDoItem } from '../escalas/repertorio'
 import { usarEu } from '../sessao/sessao'
 
 type Aberta = 'editar' | 'cancelar' | 'whatsapp' | 'playlist' | null
@@ -241,66 +239,34 @@ function Repertorio({
         const item = itens[original]
         if (pendente.pendentes.includes(item.id)) return null
 
+        const titulo = tituloDoItem(item)
+
         return (
-          <ItemDoRepertorio
+          <LinhaDoItem
             key={item.id}
             item={item}
-            indice={indice}
-            podeEditar={podeEditar}
-            acao={acao}
-            ordenacao={ordenacao}
-            remover={remover}
+            modo="leitura"
+            numero={indice + 1}
+            ref={ordenacao.linha(indice)}
+            arrastando={ordenacao.arrastando === indice}
+            direita={
+              podeEditar ? (
+                <>
+                  <Alca rotulo={titulo} {...ordenacao.alca(indice)} />
+                  <Botao
+                    variante="icone"
+                    icone="remover"
+                    aria-label={`Remover ${titulo}`}
+                    disabled={acao.ocupado}
+                    onClick={() => remover(item)}
+                  />
+                </>
+              ) : undefined
+            }
           />
         )
       })}
     </ul>
-  )
-}
-
-function ItemDoRepertorio({
-  item,
-  indice,
-  podeEditar,
-  acao,
-  ordenacao,
-  remover,
-}: {
-  item: ItemApresentado
-  indice: number
-  podeEditar: boolean
-  acao: Acao
-  ordenacao: Ordenacao
-  remover: (item: ItemApresentado) => void
-}) {
-  const titulo = tituloDoItem(item)
-
-  return (
-    <li className={`item${ordenacao.arrastando === indice ? ' arrastando' : ''}`} ref={ordenacao.linha(indice)}>
-      {podeEditar && <Alca rotulo={titulo} {...ordenacao.alca(indice)} />}
-      <Capa musicas={capasDoItem(item)} />
-
-      <div className="cresce">
-        <div className="titulo">
-          {indice + 1}. {titulo}
-        </div>
-        <div className="dica">
-          {item.tipo === 'trecho' && <Selo variante="trecho">trecho</Selo>} {resumoDoItem(item)}
-        </div>
-        {item.observacao && <div className="observacao">{item.observacao}</div>}
-      </div>
-
-      {podeEditar && (
-        <div className="acoes">
-          <Botao
-            variante="icone"
-            icone="remover"
-            aria-label={`Remover ${titulo}`}
-            disabled={acao.ocupado}
-            onClick={() => remover(item)}
-          />
-        </div>
-      )}
-    </li>
   )
 }
 

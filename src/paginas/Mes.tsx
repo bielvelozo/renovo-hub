@@ -6,6 +6,7 @@ import { usarAcao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
 import { Cabecalho } from '../casca/Cabecalho'
 import { Botao } from '../componentes/Botao'
+import { Campo } from '../componentes/Campo'
 import { Esqueleto } from '../componentes/Esqueleto'
 import { Folha } from '../componentes/Folha'
 import { Selos } from '../componentes/Selos'
@@ -134,20 +135,17 @@ function FolhaDaNovaEscala({ mes, fechar }: { mes: string; fechar: () => void })
 
       {acao.erro && <p className="aviso">{acao.erro}</p>}
 
-      <label className="campo">
-        <span className="rotulo">Nome</span>
+      <Campo rotulo="Nome">
         <input value={rotulo} placeholder="Conferência" onChange={(e) => escreverRotulo(e.target.value)} />
-      </label>
+      </Campo>
 
-      <label className="campo">
-        <span className="rotulo">Data</span>
+      <Campo rotulo="Data">
         <input type="date" value={data} onChange={(e) => escreverData(e.target.value)} />
-      </label>
+      </Campo>
 
-      <label className="campo">
-        <span className="rotulo">Horário</span>
+      <Campo rotulo="Horário">
         <input type="time" value={horario} onChange={(e) => escreverHorario(e.target.value)} />
-      </label>
+      </Campo>
 
       <Botao largo disabled={acao.ocupado} onClick={criar}>
         Criar
