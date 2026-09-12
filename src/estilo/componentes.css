@@ -336,6 +336,11 @@
   padding: 12px 4px;
 }
 
+.linha-de-musica.arrastando {
+  background: var(--superficie-alta);
+  box-shadow: var(--sombra);
+}
+
 .linha-de-musica .miolo,
 .linha-de-musica .toque-da-linha {
   display: flex;

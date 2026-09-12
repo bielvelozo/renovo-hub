@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { ReactNode, Ref } from 'react'
 import { Link } from 'react-router'
 import type { Anexo, ItemApresentado, MusicaNaLista, MusicaResumida, TrechoApresentado } from '../api/tipos'
 import { hojeEmBrasilia, limparTitulo, tempoRelativo } from '../dominio'
@@ -21,13 +21,15 @@ type Comum = {
   aoEscolher?: () => void
   anexos?: Anexo[]
   hoje?: string
+  ref?: Ref<HTMLLIElement>
+  arrastando?: boolean
 }
 
 export type PropriedadesDaLinha = Comum &
   ({ musica: MusicaDaLinha; tom?: string | null; trecho?: Minutagem; link?: string; trechos?: undefined } | { trechos: TrechoApresentado[]; musica?: undefined })
 
 export function LinhaDeMusica(props: PropriedadesDaLinha) {
-  const { modo, numero, observacao, selos, direita, aoEscolher, anexos = [], hoje = hojeEmBrasilia() } = props
+  const { modo, numero, observacao, selos, direita, aoEscolher, anexos = [], hoje = hojeEmBrasilia(), ref, arrastando } = props
   const ehMedley = props.trechos !== undefined
   const nome = ehMedley ? { titulo: 'Medley', artista: '' } : nomeLimpo(props.musica)
   const capas = ehMedley ? props.trechos.map((trecho) => trecho.musica) : [props.musica]
@@ -65,7 +67,7 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
   )
 
   return (
-    <li className={`linha-de-musica ${modo}${ehMedley ? ' medley' : ''}`}>
+    <li ref={ref} className={`linha-de-musica ${modo}${ehMedley ? ' medley' : ''}${arrastando ? ' arrastando' : ''}`}>
       {modo === 'escolha' ? (
         <button type="button" className="toque-da-linha" onClick={aoEscolher}>
           <Capa musicas={capas} />
