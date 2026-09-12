@@ -5,6 +5,7 @@ import {
   combinaBusca,
   ehLegado,
   historicoDaMusica,
+  limparTitulo,
   mesesDesde,
   musicaPorId,
   ordenarPorExecucao,
@@ -76,12 +77,13 @@ musicas.post('/api/musicas', exigirMinistro, async (c) => {
   const tons = lerTons(corpo)
   if (tons === null) return c.json({ erro: TOM_INVALIDO }, 422)
 
+  const artista = (typeof corpo.artista === 'string' ? corpo.artista.trim() : '') || (dados?.canal ?? '')
   const id = await criarMusica(c.env.DB, {
-    titulo,
-    artista: (typeof corpo.artista === 'string' ? corpo.artista.trim() : '') || (dados?.canal ?? ''),
+    ...limparTitulo(titulo, artista),
     videoId,
     tomConhecido: tons.tomConhecido ?? null,
     tomOriginal: tons.tomOriginal ?? null,
+    revisar: true,
   })
 
   return c.json(await responderMusica(c.env.DB, id), 201)

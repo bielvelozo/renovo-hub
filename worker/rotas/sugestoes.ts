@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import type { Context } from 'hono'
-import { descricaoDaMudanca, estadoEscala, ministradoPorDe, videoIdDoLink } from '../../src/dominio'
+import { descricaoDaMudanca, estadoEscala, limparTitulo, ministradoPorDe, videoIdDoLink } from '../../src/dominio'
 import type { Membro, Ministerio } from '../../src/dominio'
 import { exigirMembro, exigirMinistro } from '../autenticacao'
 import { criarItem } from '../dados/itens'
@@ -187,11 +187,11 @@ async function garantirMusica(db: D1Database, sugestao: Sugestao): Promise<strin
   if (!titulo) return null
 
   return criarMusica(db, {
-    titulo,
-    artista: dados?.canal ?? '',
+    ...limparTitulo(titulo, dados?.canal ?? ''),
     videoId,
     tomConhecido: null,
     tomOriginal: null,
+    revisar: true,
   })
 }
 

@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import type { MusicaNaLista, TomSugeridoApresentado } from '../api/tipos'
-import { FILTROS, caminhoDoCatalogo, selosDaMusica, textoDoUltimoTom, textoDoVazio } from './catalogo'
+import {
+  FILTROS,
+  agruparCatalogo,
+  caminhoDoCatalogo,
+  contagemPorAba,
+  selosDaMusica,
+  textoDoUltimoTom,
+  textoDoVazio,
+} from './catalogo'
 
 const HOJE = '2026-09-13'
 
@@ -105,6 +113,13 @@ describe('selosDaMusica', () => {
     revisar: false,
     tomConhecido: null,
     tomOriginal: null,
+    aba: 'redescobrir',
+    secao: 'nunca',
+    recente: false,
+    planejadaEm: [],
+    vezesTocada: 0,
+    vezesEm6Meses: 0,
+    temLetra: false,
     ultimaExecucao: null,
   }
 
@@ -158,5 +173,100 @@ describe('selosDaMusica', () => {
   it('mantém Legado e Nova depois do histórico', () => {
     expect(selosDaMusica({ ...base, legado: true }).at(-1)).toEqual({ chave: 'legado', texto: 'Legado' })
     expect(selosDaMusica({ ...base, nova: true }).at(-1)).toEqual({ chave: 'nova', texto: 'Nova' })
+  })
+})
+
+describe('agruparCatalogo', () => {
+  const musica = (id: string, titulo: string, extra: Partial<MusicaNaLista> = {}): MusicaNaLista => ({
+    id,
+    titulo,
+    artista: 'Renovo',
+    videoId: 'v-' + id,
+    capa: '',
+    capaAlternativa: '',
+    legado: false,
+    nova: false,
+    arquivada: false,
+    revisar: false,
+    tomConhecido: null,
+    tomOriginal: null,
+    aba: 'redescobrir',
+    secao: 'nunca',
+    recente: false,
+    planejadaEm: [],
+    vezesTocada: 0,
+    vezesEm6Meses: 0,
+    temLetra: false,
+    ultimaExecucao: null,
+    ...extra,
+  })
+
+  const tocada = (data: string) => ({
+    escalaId: 'e' + data,
+    data,
+    tom: 'C',
+    parcial: false,
+    ministradoPor: null,
+    ministradoPorNome: null,
+  })
+
+  const catalogo = [
+    musica('zebra', 'Zebra'),
+    musica('agua', 'Água Viva'),
+    musica('acorda', 'Acorda'),
+    musica('firme', 'Firme', { aba: 'redescobrir', secao: 'paradas', ultimaExecucao: tocada('2025-01-10'), vezesTocada: 1 }),
+    musica('rio', 'Rio', { aba: 'redescobrir', secao: 'paradas', ultimaExecucao: tocada('2024-06-01'), vezesTocada: 1 }),
+    musica('meia', 'Meia Noite', { aba: 'recentes', secao: null, recente: true, ultimaExecucao: tocada('2026-09-06') }),
+    musica('grato', 'Grato Sou', { aba: 'recentes', secao: null, recente: true, ultimaExecucao: tocada('2026-08-30') }),
+    musica('sublime', 'Sublime', { aba: 'recentes', secao: null, recente: false, ultimaExecucao: tocada('2026-07-05') }),
+    musica('dez', '10 Mil Razões', { aba: 'recentes', secao: null, recente: false, ultimaExecucao: tocada('2026-08-01') }),
+  ]
+
+  const ids = (secao: { musicas: MusicaNaLista[] }) => secao.musicas.map((m) => m.id)
+
+  it('conta as músicas de cada aba, e Todas soma as duas', () => {
+    expect(contagemPorAba(catalogo)).toEqual({ redescobrir: 5, recentes: 4, todas: 9 })
+  })
+
+  it('Redescobrir abre com as nunca tocadas por título e depois as paradas da mais antiga pra mais nova', () => {
+    const secoes = agruparCatalogo(catalogo, 'redescobrir', 4)
+
+    expect(secoes.map((s) => [s.chave, s.titulo])).toEqual([
+      ['nunca', 'Nunca tocada no app'],
+      ['paradas', 'Paradas há 3 meses ou mais'],
+    ])
+    expect(ids(secoes[0])).toEqual(['acorda', 'agua', 'zebra'])
+    expect(ids(secoes[1])).toEqual(['rio', 'firme'])
+    expect(secoes.every((s) => !s.atencao)).toBe(true)
+  })
+
+  it('Recentes põe as das últimas semanas em atenção, da mais nova pra mais antiga, e o resto depois', () => {
+    const secoes = agruparCatalogo(catalogo, 'recentes', 6)
+
+    expect(secoes.map((s) => [s.titulo, s.atencao])).toEqual([
+      ['Últimas 6 semanas', true],
+      ['Últimos 3 meses', false],
+    ])
+    expect(ids(secoes[0])).toEqual(['meia', 'grato'])
+    expect(ids(secoes[1])).toEqual(['dez', 'sublime'])
+  })
+
+  it('Recentes sem música recente não mostra a seção de atenção', () => {
+    const semRecentes = catalogo.map((m) => ({ ...m, recente: false }))
+
+    expect(agruparCatalogo(semRecentes, 'recentes', 4).map((s) => s.chave)).toEqual(['tres-meses'])
+  })
+
+  it('Todas sai em ordem alfabética sem acento, com uma seção por letra e # pra número', () => {
+    const secoes = agruparCatalogo(catalogo, 'todas', 4)
+
+    expect(secoes.map((s) => s.titulo)).toEqual(['#', 'A', 'F', 'G', 'M', 'R', 'S', 'Z'])
+    expect(ids(secoes[1])).toEqual(['acorda', 'agua'])
+    expect(secoes.reduce((n, s) => n + s.musicas.length, 0)).toBe(9)
+  })
+
+  it('seções vazias não aparecem', () => {
+    expect(agruparCatalogo([], 'redescobrir', 4)).toEqual([])
+    expect(agruparCatalogo([musica('zebra', 'Zebra')], 'redescobrir', 4).map((s) => s.chave)).toEqual(['nunca'])
   })
 })

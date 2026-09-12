@@ -23,6 +23,13 @@ const naLista: MusicaNaLista = {
   revisar: true,
   tomConhecido: null,
   tomOriginal: null,
+  aba: 'redescobrir',
+  secao: 'nunca',
+  recente: false,
+  planejadaEm: [],
+  vezesTocada: 0,
+  vezesEm6Meses: 0,
+  temLetra: false,
   ultimaExecucao: {
     escalaId: 'e0816',
     data: '2026-08-16',

@@ -286,20 +286,19 @@ describe('promover Sugestão', () => {
 
   it('cria a Música do catálogo quando a Sugestão veio só de link', async () => {
     const rede = fingirRede({
-      'youtube.com/oembed': { status: 200, corpo: { title: 'Meia Noite', author_name: 'Fhop Music' } },
+      'youtube.com/oembed': { status: 200, corpo: { title: 'Meia Noite (Ao Vivo)', author_name: 'fhop music' } },
     })
-    await criarSugestao({ id: 's2', membroId: 'ana', link: 'https://youtu.be/hRJUcvsnqKs', titulo: 'Meia Noite' })
+    await criarSugestao({ id: 's2', membroId: 'ana', link: 'https://youtu.be/hRJUcvsnqKs', titulo: 'Meia Noite (Ao Vivo)' })
 
     const resposta = await promover({ escalaId: 'e1', tom: 'A' }, 'marcos', 's2')
 
     expect(resposta.status).toBe(201)
     expect(rede.chamadas).toHaveLength(1)
 
-    const musica = await env.DB.prepare('select id, titulo, legado from musicas where video_id = ?')
+    const musica = await env.DB.prepare('select id, titulo, artista, legado, revisar from musicas where video_id = ?')
       .bind('hRJUcvsnqKs')
-      .first<{ id: string; titulo: string; legado: number }>()
-    expect(musica?.titulo).toBe('Meia Noite')
-    expect(musica?.legado).toBe(0)
+      .first<{ id: string; titulo: string; artista: string; legado: number; revisar: number }>()
+    expect(musica).toMatchObject({ titulo: 'Meia Noite', artista: 'fhop', legado: 0, revisar: 1 })
 
     const { sugestao } = await resposta.json<Promovida>()
     expect(sugestao.musica?.id).toBe(musica?.id)

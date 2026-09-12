@@ -144,8 +144,10 @@ describe('resolver link', () => {
 })
 
 describe('criar Música', () => {
-  it('cadastra pelo link, com título e canal do oEmbed, sem Legado e sem revisar', async () => {
-    fingirRede({ [MEIA_NOITE]: { status: 200, corpo: { title: 'Meia Noite', author_name: 'Fhop Music' } } })
+  it('cadastra pelo link com o título já limpo, sem Legado e marcada pra revisar', async () => {
+    fingirRede({
+      [MEIA_NOITE]: { status: 200, corpo: { title: 'Meia Noite (Ao Vivo) | fhop music', author_name: 'fhop music' } },
+    })
 
     const resposta = await pedir('/api/musicas', 'marcos', {
       method: 'POST',
@@ -155,12 +157,17 @@ describe('criar Música', () => {
     expect(resposta.status).toBe(201)
     expect(await resposta.json()).toMatchObject({
       titulo: 'Meia Noite',
-      artista: 'Fhop Music',
+      artista: 'fhop',
       videoId: MEIA_NOITE,
       legado: false,
       nova: true,
-      revisar: false,
+      revisar: true,
     })
+
+    const guardada = await env.DB.prepare('select titulo, artista, revisar from musicas where video_id = ?')
+      .bind(MEIA_NOITE)
+      .first<{ titulo: string; artista: string; revisar: number }>()
+    expect(guardada).toEqual({ titulo: 'Meia Noite', artista: 'fhop', revisar: 1 })
   })
 
   it('o título informado ganha do que veio do oEmbed', async () => {

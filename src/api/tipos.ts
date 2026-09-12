@@ -1,4 +1,14 @@
-import type { EntradaEquipe, EstadoEscala, Funcao, GrupoEquipe, Membro, TomSugerido } from '../dominio'
+import type {
+  AbaDaMusica,
+  EntradaEquipe,
+  EstadoEscala,
+  Funcao,
+  GrupoEquipe,
+  Membro,
+  Planejada,
+  SecaoDaMusica,
+  TomSugerido,
+} from '../dominio'
 
 export type MusicaResumida = {
   id: string
@@ -96,6 +106,13 @@ export type MusicaNaLista = MusicaResumida & {
   tomConhecido: string | null
   tomOriginal: string | null
   ultimaExecucao: ExecucaoApresentada | null
+  aba: AbaDaMusica
+  secao: SecaoDaMusica
+  recente: boolean
+  planejadaEm: Planejada[]
+  vezesTocada: number
+  vezesEm6Meses: number
+  temLetra: boolean
 }
 
 export type TomSugeridoApresentado = TomSugerido & { ministradoPorNome: string | null }

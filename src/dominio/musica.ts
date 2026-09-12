@@ -55,9 +55,9 @@ export function buscaNoCifraClub(musica: Pick<Musica, 'titulo'>): string {
 }
 
 export function combinaBusca(musica: Musica, termo: string): boolean {
-  const busca = normalizar(termo)
+  const busca = normalizarTexto(termo)
   if (!busca) return true
-  return normalizar(musica.titulo + ' ' + musica.artista).includes(busca)
+  return normalizarTexto(musica.titulo + ' ' + musica.artista).includes(busca)
 }
 
 export function mesesDesde(data: string, hoje: string): number {
@@ -67,7 +67,7 @@ export function mesesDesde(data: string, hoje: string): number {
   return Math.max(0, meses)
 }
 
-function normalizar(texto: string): string {
+export function normalizarTexto(texto: string): string {
   return texto
     .normalize('NFD')
     .replace(/\p{Diacritic}/gu, '')
@@ -105,8 +105,8 @@ export function pedacosDoTitulo(titulo: string): string[] {
 // A busca do Cifra Club é frouxa: procurar pelo nome do artista devolve qualquer
 // música dele. Só vale o achado cujo nome esteja mesmo no título que veio do YouTube.
 export function achadoCombina(nomeAchado: string, tituloOriginal: string): boolean {
-  const alvo = normalizar(tituloOriginal)
-  const palavras = normalizar(nomeAchado.replace(/\([^)]*\)/g, ' '))
+  const alvo = normalizarTexto(tituloOriginal)
+  const palavras = normalizarTexto(nomeAchado.replace(/\([^)]*\)/g, ' '))
     .split(' ')
     .filter((palavra) => palavra.length > 2)
 

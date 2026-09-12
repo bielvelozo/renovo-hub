@@ -39,6 +39,13 @@ const naLista = (extra: Partial<MusicaNaLista> = {}): MusicaNaLista => ({
   revisar: false,
   tomConhecido: null,
   tomOriginal: null,
+  aba: 'redescobrir',
+  secao: 'nunca',
+  recente: false,
+  planejadaEm: [],
+  vezesTocada: 0,
+  vezesEm6Meses: 0,
+  temLetra: false,
   ultimaExecucao: null,
   ...extra,
 })
