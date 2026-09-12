@@ -68,6 +68,10 @@ export function ProvedorDeAvisos({ children }: { children: ReactNode }) {
   )
 }
 
+export function usarAvisoTalvez(): Avisar | null {
+  return useContext(ContextoDeAvisos)
+}
+
 export function usarAviso(): Avisar {
   const avisar = useContext(ContextoDeAvisos)
   if (!avisar) throw new Error('usarAviso precisa do ProvedorDeAvisos por cima.')

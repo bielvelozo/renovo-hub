@@ -42,7 +42,7 @@ export function Adicionar() {
   if (!eu.ministro && !eu.admin) return <Navigate to={`/escalas/${id}`} replace />
 
   if (sugestaoId) {
-    if (sugestao.erro) return <p className="aviso">{sugestao.erro}</p>
+    if (sugestao.erro) return <Problema texto={sugestao.erro} aoVoltar={() => navegar('/sugestoes')} />
     if (!sugestao.dados) return <Esqueleto forma="paragrafo" />
 
     return (
@@ -57,7 +57,7 @@ export function Adicionar() {
   }
 
   if (musicaId) {
-    if (musica.erro) return <p className="aviso">{musica.erro}</p>
+    if (musica.erro) return <Problema texto={musica.erro} aoVoltar={() => navegar(`/escalas/${id}`)} />
     if (!musica.dados) return <Esqueleto forma="paragrafo" />
 
     return (
@@ -131,8 +131,8 @@ function Detalhes({
     !jaBuscada && escolha.musicaId ? `/api/musicas/${escolha.musicaId}?escalaId=${escalaId}` : null,
   )
 
-  if (detalhe.erro) return <p className="aviso">{detalhe.erro}</p>
-  if (escala.erro) return <p className="aviso">{escala.erro}</p>
+  if (detalhe.erro) return <Problema texto={detalhe.erro} aoVoltar={aoVoltar} />
+  if (escala.erro) return <Problema texto={escala.erro} aoVoltar={aoVoltar} />
   if (detalhe.carregando || !escala.dados) return <Esqueleto forma="paragrafo" />
 
   return (
@@ -236,6 +236,15 @@ function Formulario({
           </Botao>
         }
       />
+    </section>
+  )
+}
+
+function Problema({ texto, aoVoltar }: { texto: string; aoVoltar: () => void }) {
+  return (
+    <section className="pagina">
+      <Cabecalho titulo="Adicionar música" aoVoltar={aoVoltar} />
+      <p className="aviso">{texto}</p>
     </section>
   )
 }

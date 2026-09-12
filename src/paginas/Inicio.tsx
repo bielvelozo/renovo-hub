@@ -19,7 +19,7 @@ import { nomeDoMes } from '../escalas/mes'
 import { CHAVE_DE_VISITA_DAS_SUGESTOES } from '../escalas/sugestoes'
 import { mudouDesdeAVisita, visitaNaEscala } from '../escalas/visita'
 import { chaveDoPosCultoFechado, linhaDaEscala, selosDaEquipe, textoDeSugestoesNovas, textoDoPosCulto } from '../inicio/inicio'
-import { usarEu } from '../sessao/sessao'
+import { usarEu, usarEuTalvez } from '../sessao/sessao'
 
 export function Inicio() {
   const eu = usarEu()
@@ -192,6 +192,8 @@ export function RepertorioDoInicio({
   anexosPorMusica: Record<string, Anexo[]>
   hoje: string
 }) {
+  const eu = usarEuTalvez()
+  const dirige = Boolean(eu?.ministro || eu?.admin)
   const [playlist, abrirPlaylist] = useState(false)
   const visita = visitaNaEscala(escala.id)
 
@@ -220,6 +222,11 @@ export function RepertorioDoInicio({
             />
           ))}
         </ul>
+      ) : dirige ? (
+        <p className="dica">
+          Você ainda não escolheu as músicas.{' '}
+          <Link to={`/escalas/${escala.id}/adicionar`}>Adicionar música</Link>
+        </p>
       ) : (
         <p className="dica">O Ministro ainda não escolheu as músicas.</p>
       )}

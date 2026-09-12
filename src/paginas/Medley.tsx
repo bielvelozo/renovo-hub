@@ -67,9 +67,9 @@ export function Medley() {
   }
 
   function removerTrecho(indice: number) {
-    const id = String(indice)
+    const id = chaveDoTrecho(trechos[indice], indice)
 
-    pendente.agendar(id, () => guardarTrechos((atuais) => atuais.filter((_, outro) => outro !== indice)))
+    pendente.agendar(id, () => guardarTrechos((atuais) => atuais.filter((cada, outro) => chaveDoTrecho(cada, outro) !== id)))
     avisar('Trecho tirado do Medley', { desfazer: () => pendente.desfazer(id) })
   }
 
@@ -101,7 +101,7 @@ export function Medley() {
         primeiro={trechos.length === 0}
         aoVoltar={() => irPara('escolher')}
         aoConfirmar={(trecho) => {
-          guardarTrechos([...trechos, trecho])
+          guardarTrechos([...trechos, { ...trecho, chave: crypto.randomUUID() }])
           escolher(null)
           irPara('montar')
         }}
@@ -125,11 +125,11 @@ export function Medley() {
 
           <ul className="lista cartao">
             {trechos.map((trecho, indice) => {
-              if (pendente.pendentes.includes(String(indice))) return null
+              if (pendente.pendentes.includes(chaveDoTrecho(trecho, indice))) return null
 
               return (
                 <LinhaDeMusica
-                  key={indice}
+                  key={chaveDoTrecho(trecho, indice)}
                   musica={trecho.escolha.resumo}
                   modo="leitura"
                   numero={indice + 1}
@@ -254,4 +254,8 @@ function Campos({
       />
     </section>
   )
+}
+
+function chaveDoTrecho(trecho: TrechoEmMontagem, indice: number): string {
+  return trecho.chave ?? String(indice)
 }

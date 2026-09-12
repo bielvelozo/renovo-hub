@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
-import { api } from '../api/cliente'
+import { api, textoDoErro } from '../api/cliente'
 import type { Opcoes } from '../api/cliente'
 import type { EscalaApresentada, ItemApresentado } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
@@ -64,7 +64,13 @@ export function Escala() {
 
   const mudar: Mudanca = (caminho, opcoes, aviso) => {
     acao.executar(async () => {
-      busca.definir(await api<EscalaApresentada>(caminho, opcoes))
+      try {
+        busca.definir(await api<EscalaApresentada>(caminho, opcoes))
+      } catch (problema) {
+        avisar(textoDoErro(problema))
+        busca.recarregar()
+        return
+      }
       if (aviso) avisar(aviso)
     })
   }
