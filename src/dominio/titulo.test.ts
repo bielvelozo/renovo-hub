@@ -99,6 +99,12 @@ const CASOS: { nome: string; titulo: string; canal: string; limpo: { titulo: str
     limpo: { titulo: 'Me ama (OVERMISSION 2025)', artista: 'Overmission' },
   },
   {
+    nome: 'um pedaço que é só ruído não vira título, mesmo quando é o único sem o canal',
+    titulo: 'MARAVILHADO - NÍVEA SOARES | AO VIVO',
+    canal: 'Nívea Soares',
+    limpo: { titulo: 'MARAVILHADO', artista: 'NÍVEA SOARES' },
+  },
+  {
     nome: 'devolve o título inteiro quando não há nada pra limpar',
     titulo: 'Aleluia',
     canal: 'Coral',
@@ -112,6 +118,13 @@ describe('limparTitulo', () => {
       expect(limparTitulo(caso.titulo, caso.canal)).toEqual(caso.limpo)
     })
   }
+
+  it('nunca devolve título vazio: cai no título cru sem ruído, e por último no canal', () => {
+    expect(limparTitulo('(Ao Vivo) | Nívea Soares', 'Nívea Soares')).toEqual({ titulo: 'Nívea Soares', artista: 'Nívea Soares' })
+    expect(limparTitulo('Nívea Soares - (Ao Vivo)', 'Nívea Soares')).toEqual({ titulo: 'Nívea Soares', artista: 'Nívea Soares' })
+    expect(limparTitulo('(Ao Vivo)', 'Canal')).toEqual({ titulo: 'Canal', artista: 'Canal' })
+    for (const caso of CASOS) expect(limparTitulo(caso.titulo, caso.canal).titulo).not.toBe('')
+  })
 
   it('aplicar sobre o próprio resultado não muda nada', () => {
     for (const caso of CASOS) {
