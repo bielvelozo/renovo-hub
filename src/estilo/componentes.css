@@ -325,6 +325,162 @@
   cursor: default;
 }
 
+/* LinhaDeMusica */
+
+.linha-de-musica {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 12px 4px;
+}
+
+.linha-de-musica .miolo,
+.linha-de-musica .toque-da-linha {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.linha-de-musica .miolo {
+  flex-direction: column;
+  gap: 2px;
+}
+
+.linha-de-musica .toque-da-linha {
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.linha-de-musica .toque-da-linha .miolo {
+  flex: 1;
+  min-width: 0;
+}
+
+.linha-de-musica.navegacao .miolo:hover,
+.linha-de-musica .toque-da-linha:hover {
+  color: var(--acento-forte);
+}
+
+.linha-de-musica .titulo {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.linha-de-musica .selos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.linha-de-musica .selos:empty {
+  display: none;
+}
+
+.linha-de-musica .direita {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+
+.linha-de-musica .observacao {
+  flex-basis: 100%;
+  margin-top: 4px;
+  padding-left: 8px;
+  border-left: 2px solid var(--atencao);
+  color: var(--texto-2);
+  font-size: 14px;
+}
+
+.trechos-do-medley {
+  flex-basis: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 0 0 0 12px;
+  list-style: none;
+  border-left: 2px solid var(--linha);
+}
+
+.trechos-do-medley li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.trechos-do-medley .capa {
+  width: 56px;
+  height: 32px;
+}
+
+.trechos-do-medley .titulo {
+  font-size: 15px;
+  -webkit-line-clamp: 1;
+}
+
+/* Busca */
+
+.busca {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.busca > .icone {
+  position: absolute;
+  left: 12px;
+  color: var(--texto-2);
+  pointer-events: none;
+}
+
+.busca input {
+  padding-left: 42px;
+  padding-right: 42px;
+  height: var(--toque);
+  border-radius: var(--raio);
+}
+
+.busca input::-webkit-search-cancel-button,
+.busca input::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.busca .limpar {
+  position: absolute;
+  right: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--texto-2);
+  cursor: pointer;
+}
+
+.busca .limpar:hover {
+  color: var(--texto);
+}
+
 /* Capa */
 
 .capa {
