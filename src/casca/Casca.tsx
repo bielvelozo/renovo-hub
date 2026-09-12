@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router'
+import type { SugestaoApresentada } from '../api/tipos'
 import { api } from '../api/cliente'
 import { ProvedorDeAvisos } from '../componentes/Avisos'
 import { Botao } from '../componentes/Botao'
 import { Esqueleto } from '../componentes/Esqueleto'
+import { CHAVE_DE_VISITA_DAS_SUGESTOES, contarNovas } from '../escalas/sugestoes'
 import { ProvedorDoEu, usarSessao } from '../sessao/sessao'
 import type { Eu } from '../sessao/sessao'
 import { Abas } from './Abas'
@@ -48,7 +50,7 @@ function Dentro({ eu }: { eu: Eu }) {
           <main className="conteudo">
             <Outlet />
           </main>
-          <Abas eu={eu} sugestoes={sugestoes} />
+          <Abas sugestoes={sugestoes} />
         </div>
       </ProvedorDeAvisos>
     </ProvedorDoEu>
@@ -62,8 +64,8 @@ function usarContagemDeSugestoes(): number {
   useEffect(() => {
     const controle = new AbortController()
 
-    api<{ sugestoes: unknown[] }>('/api/sugestoes', { sinal: controle.signal })
-      .then(({ sugestoes }) => guardar(sugestoes.length))
+    api<{ sugestoes: SugestaoApresentada[] }>('/api/sugestoes', { sinal: controle.signal })
+      .then(({ sugestoes }) => guardar(contarNovas(sugestoes, localStorage.getItem(CHAVE_DE_VISITA_DAS_SUGESTOES))))
       .catch(() => guardar(0))
 
     return () => controle.abort()

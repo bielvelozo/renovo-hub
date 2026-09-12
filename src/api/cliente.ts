@@ -4,6 +4,7 @@ export class ErroDaApi extends Error {
   constructor(
     readonly status: number,
     mensagem: string,
+    readonly corpo: unknown = null,
   ) {
     super(mensagem)
     this.name = 'ErroDaApi'
@@ -55,7 +56,7 @@ async function pedir<T>(caminho: string, opcoes: Pedido): Promise<RespostaComMet
 
   const corpo = await corpoDaResposta(resposta)
 
-  if (!resposta.ok) throw new ErroDaApi(resposta.status, mensagemDeErro(resposta.status, corpo))
+  if (!resposta.ok) throw new ErroDaApi(resposta.status, mensagemDeErro(resposta.status, corpo), corpo)
 
   return { dados: corpo as T, data: resposta.headers.get('date') }
 }

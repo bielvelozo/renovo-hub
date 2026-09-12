@@ -1318,3 +1318,46 @@ textarea.texto-longo {
 .folha .lista .toque {
   justify-content: space-between;
 }
+
+/* BotaoDeApoio */
+
+.botao-de-apoio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  flex: none;
+  min-width: 32px;
+  min-height: var(--toque);
+  padding: 4px;
+  border: 0;
+  background: none;
+  color: var(--texto-2);
+  font: 700 12px/1 var(--fonte-corpo);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.botao-de-apoio .icone {
+  width: 20px;
+  height: 20px;
+}
+
+.botao-de-apoio.apoiado {
+  color: var(--realce);
+}
+
+.botao-de-apoio.apoiado .icone {
+  fill: currentColor;
+}
+
+.botao-de-apoio:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Sugestoes */
+
+.lista .toque.perigo {
+  color: var(--perigo);
+}

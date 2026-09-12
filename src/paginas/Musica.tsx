@@ -10,7 +10,7 @@ import { Botao, classesDoBotao } from '../componentes/Botao'
 import { Campo } from '../componentes/Campo'
 import { Capa } from '../componentes/Capa'
 import { Esqueleto } from '../componentes/Esqueleto'
-import { FaixaDeAlerta } from '../componentes/FaixaDeAlerta'
+import { FaixaDeAlerta, frasesDeAlerta } from '../componentes/FaixaDeAlerta'
 import { Folha } from '../componentes/Folha'
 import { FolhaDeEscolhaDeEscala } from '../componentes/FolhaDeEscolhaDeEscala'
 import { Menu } from '../componentes/Menu'
@@ -383,24 +383,6 @@ function textoDeVezes(musica: MusicaDetalhada): string {
   if (musica.vezesEm6Meses > 0) return `tocada ${musica.vezesEm6Meses}× em 6 meses`
   if (musica.vezesTocada > 0) return `tocada ${musica.vezesTocada}×`
   return 'nunca tocada no app'
-}
-
-function frasesDeAlerta(musica: MusicaDetalhada, hoje: string): string[] {
-  const frases: string[] = []
-  const ultima = musica.ultimaExecucao
-
-  if (musica.recente && ultima) {
-    const quem = ultima.ministradoPorNome ? `, com ${ultima.ministradoPorNome}` : ''
-    frases.push(`Tocada ${tempoRelativo(ultima.data, hoje)}${quem}.`)
-  }
-
-  for (const planejada of musica.planejadaEm) {
-    if (frases.length >= 2) break
-    const quem = planejada.ministros.length ? ` (${planejada.ministros.join(', ')})` : ''
-    frases.push(`Já está no Repertório de ${formatarDia(planejada.data, hoje)}${quem}.`)
-  }
-
-  return frases
 }
 
 function formatarTamanho(bytes: number): string {

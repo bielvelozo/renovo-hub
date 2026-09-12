@@ -1,9 +1,37 @@
 import type { MembroResumido, SugestaoApresentada } from '../api/tipos'
-import { formatarDia, hojeEmBrasilia } from '../dominio'
+import { formatarDia, hojeEmBrasilia, tempoRelativo } from '../dominio'
 import type { Escolha } from './rascunho'
+
+export const CHAVE_DE_VISITA_DAS_SUGESTOES = 'renovo:sugestoes-vistas-em'
 
 export function diaDaSugestao(carimbo: string, hoje = hojeEmBrasilia()): string {
   return formatarDia(hojeEmBrasilia(new Date(carimbo)), hoje)
+}
+
+export function tempoDaSugestao(carimbo: string, hoje = hojeEmBrasilia()): string {
+  return tempoRelativo(hojeEmBrasilia(new Date(carimbo)), hoje)
+}
+
+export function textoDeQuemSugeriu(sugestao: SugestaoApresentada, hoje = hojeEmBrasilia()): string {
+  return `${sugestao.membro.nome} sugeriu · ${tempoDaSugestao(sugestao.data, hoje)}`
+}
+
+export function textoDeGuardada(decididaEm: string, hoje = hojeEmBrasilia()): string {
+  return `guardada ${tempoDaSugestao(decididaEm, hoje)}`
+}
+
+export function textoDeAceita(sugestao: SugestaoApresentada, hoje = hojeEmBrasilia()): string {
+  const quem = sugestao.decididaPor?.nome
+  if (!sugestao.escala) return quem ? `entrou · ${quem}` : 'entrou numa escala'
+  return `entrou em ${formatarDia(sugestao.escala.data, hoje)}${quem ? ` · ${quem}` : ''}`
+}
+
+export function textoDeRecusada(motivo: string): string {
+  return motivo ? `não entrou · ${motivo}` : 'não entrou'
+}
+
+export function contarNovas(sugestoes: SugestaoApresentada[], vistasEm: string | null): number {
+  return sugestoes.filter((sugestao) => sugestao.estado === 'aberta' && (!vistasEm || sugestao.data > vistasEm)).length
 }
 
 export function textoDosApoios(apoios: MembroResumido[]): string {
