@@ -1,29 +1,69 @@
-import { useParams } from 'react-router'
+import { useState } from 'react'
+import { useNavigate, useParams } from 'react-router'
 import { api } from '../api/cliente'
-import type { MusicaDetalhada } from '../api/tipos'
+import type { Anexo, ExecucaoApresentada, MusicaDetalhada } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
 import { Cabecalho } from '../casca/Cabecalho'
 import { BuscaNoCifraClub } from '../componentes/BlocoDeTom'
+import { Botao, classesDoBotao } from '../componentes/Botao'
+import { Campo } from '../componentes/Campo'
 import { Capa } from '../componentes/Capa'
 import { Esqueleto } from '../componentes/Esqueleto'
+import { FaixaDeAlerta } from '../componentes/FaixaDeAlerta'
+import { Folha } from '../componentes/Folha'
+import { FolhaDeEscolhaDeEscala } from '../componentes/FolhaDeEscolhaDeEscala'
+import { Menu } from '../componentes/Menu'
+import type { ItemDoMenu } from '../componentes/Menu'
+import { RodapeDeAcao } from '../componentes/RodapeDeAcao'
 import { SeletorDeTom } from '../componentes/SeletorDeTom'
 import { Selo } from '../componentes/Selo'
 import { Vazio } from '../componentes/Vazio'
-import { formatarDia, limparTitulo } from '../dominio'
+import { formatarDia, hojeEmBrasilia, limparTitulo, tempoRelativo } from '../dominio'
 import type { TituloLimpo } from '../dominio'
-import { textoDoUltimoTom } from '../musicas/catalogo'
 import { usarEu } from '../sessao/sessao'
+
+type FolhaAberta = 'editar' | 'tom' | 'arquivar' | 'apagar' | 'versoes' | 'historico' | 'escala' | null
 
 export function Musica() {
   const { id = '' } = useParams()
+  const navegar = useNavigate()
   const eu = usarEu()
   const busca = usarBusca<MusicaDetalhada>(`/api/musicas/${id}`)
   const musica = busca.dados
   const dirige = eu.ministro || eu.admin
   const nome = musica ? nomeExibido(musica) : null
+  const hoje = hojeEmBrasilia()
+  const [folha, abrirFolha] = useState<FolhaAberta>(null)
+  const fecharFolha = () => abrirFolha(null)
 
-  const cabecalho = <Cabecalho titulo={nome?.titulo ?? 'Música'} sub={nome?.artista} voltarPara="/musicas" />
+  const itensDoMenu: ItemDoMenu[] = musica
+    ? [
+        ...(dirige
+          ? [
+              { rotulo: 'Editar título e artista', aoEscolher: () => abrirFolha('editar') },
+              { rotulo: 'Tom original', aoEscolher: () => abrirFolha('tom') },
+            ]
+          : []),
+        ...(musica.anexos.length > 1
+          ? [{ rotulo: 'Versões da letra', icone: 'documento' as const, aoEscolher: () => abrirFolha('versoes') }]
+          : []),
+        ...(eu.admin
+          ? musica.vezesTocada > 0
+            ? [{ rotulo: 'Arquivar', aoEscolher: () => abrirFolha('arquivar') }]
+            : [{ rotulo: 'Apagar', icone: 'remover' as const, perigo: true, aoEscolher: () => abrirFolha('apagar') }]
+          : []),
+      ]
+    : []
+
+  const cabecalho = (
+    <Cabecalho
+      titulo={nome?.titulo ?? 'Música'}
+      sub={nome?.artista}
+      voltarPara="/musicas"
+      acao={itensDoMenu.length > 0 && <Menu itens={itensDoMenu} />}
+    />
+  )
 
   if (busca.erro) {
     return (
@@ -34,7 +74,7 @@ export function Musica() {
     )
   }
 
-  if (!musica) {
+  if (!musica || !nome) {
     return (
       <section className="pagina">
         {cabecalho}
@@ -43,105 +83,204 @@ export function Musica() {
     )
   }
 
+  const atualizar = (nova: MusicaDetalhada) => {
+    busca.definir(nova)
+    fecharFolha()
+  }
+
+  const ultimoAnexo = musica.anexos[0]
+
   return (
     <section className="pagina">
       {cabecalho}
 
       <div className="cabecalho-da-musica">
         <Capa musicas={[musica]} tamanho="grande" tocavel={musica.link} transicao={`capa-${musica.id}`} />
-        <p className="dica">{situacao(musica)}</p>
+        <div>
+          <p className="titulo-da-musica">{nome.titulo}</p>
+          {nome.artista && <p className="dica">{nome.artista}</p>}
+        </div>
       </div>
 
-      <p className="cobertura">{textoDoUltimoTom(musica.tomSugerido)}</p>
+      <div className="selos">
+        {musica.tomSugerido && (
+          <Selo variante="tom">
+            Tom {musica.tomSugerido.tom}
+            {musica.tomSugerido.origem === 'original' ? ' · original' : ''}
+          </Selo>
+        )}
+        <Selo>{textoDeVezes(musica)}</Selo>
+        {musica.ultimaExecucao?.parcial && <Selo variante="trecho">trecho</Selo>}
+      </div>
+
+      <FaixaDeAlerta frases={frasesDeAlerta(musica, hoje)} />
+
+      <div className="acoes-da-musica">
+        <a className={classesDoBotao({ variante: 'secundario' })} href={musica.link} target="_blank" rel="noopener">
+          Ouvir
+        </a>
+        <a className={classesDoBotao({ variante: 'secundario' })} href={musica.cifraClub} target="_blank" rel="noopener">
+          Cifra Club
+        </a>
+        {ultimoAnexo && (
+          <a className={classesDoBotao({ variante: 'secundario' })} href={ultimoAnexo.url}>
+            Letra
+          </a>
+        )}
+      </div>
 
       <div className="secao">
-        <h2>Histórico</h2>
+        <div className="secao-topo">
+          <h2>Histórico</h2>
+          {musica.historico.length > 5 && (
+            <button type="button" className="link-de-secao" onClick={() => abrirFolha('historico')}>
+              Ver todas as {musica.historico.length}
+            </button>
+          )}
+        </div>
 
         {musica.historico.length ? (
           <div className="cartao">
-            {musica.historico.map((execucao) => (
-              <div key={execucao.escalaId + execucao.data} className="linha-de-execucao">
-                <span>
-                  Tom {execucao.tom}
-                  {execucao.parcial && <Selo variante="trecho">trecho</Selo>}
-                </span>
-                <span className="dica">
-                  {formatarDia(execucao.data)}
-                  {execucao.ministradoPorNome ? ` · ${execucao.ministradoPorNome}` : ''}
-                </span>
-              </div>
+            {musica.historico.slice(0, 5).map((execucao) => (
+              <LinhaDeExecucao key={execucao.escalaId + execucao.data} execucao={execucao} hoje={hoje} />
             ))}
           </div>
         ) : (
-          <Vazio icone="musica">Nenhuma Execução ainda.</Vazio>
+          <Vazio icone="musica">Ainda não tocada no app.</Vazio>
         )}
       </div>
 
-      {dirige && <TomOriginal musica={musica} trocar={busca.definir} />}
-
-      <div className="secao">
-        <h2>Sequência</h2>
-
-        {musica.anexos.length ? (
-          <ul className="lista cartao">
-            {musica.anexos.map((anexo) => (
-              <li key={anexo.id}>
-                <a className="toque" href={anexo.url}>
-                  <span className="cresce">
-                    <span className="titulo">{anexo.nome}</span>
-                    <span className="dica">versão {anexo.versao}</span>
-                  </span>
-                </a>
-              </li>
+      {musica.vezesTocada > 0 && (
+        <div className="secao">
+          <h2>Quem já tocou</h2>
+          <div className="selos">
+            {musica.coberturaDoMinisterio.ja.map((pessoa) => (
+              <Selo key={pessoa}>{pessoa}</Selo>
             ))}
-          </ul>
-        ) : (
-          <Vazio icone="documento">Nenhuma Sequência anexada.</Vazio>
-        )}
-      </div>
+            {musica.coberturaDoMinisterio.nunca.map((pessoa) => (
+              <Selo key={pessoa} variante="atencao">
+                {pessoa} nunca
+              </Selo>
+            ))}
+          </div>
+        </div>
+      )}
 
-      <div className="secao pagina">
-        <a className="botao secundario largo" href={musica.link} target="_blank" rel="noopener">
-          Abrir no YouTube
-        </a>
-        <a className="botao secundario largo" href={musica.cifraClub} target="_blank" rel="noopener">
-          Conferir no Cifra Club
-        </a>
-      </div>
+      {folha === 'editar' && <FolhaDeEdicao musica={musica} fechar={fecharFolha} aoSalvar={atualizar} />}
+      {folha === 'tom' && <FolhaDeTom musica={musica} fechar={fecharFolha} aoSalvar={atualizar} />}
+      {folha === 'arquivar' && (
+        <FolhaDeArquivar musica={musica} fechar={fecharFolha} aoConcluir={() => navegar('/musicas')} />
+      )}
+      {folha === 'apagar' && (
+        <FolhaDeApagar musica={musica} fechar={fecharFolha} aoConcluir={() => navegar('/musicas')} />
+      )}
+      {folha === 'versoes' && <FolhaDeVersoes anexos={musica.anexos} fechar={fecharFolha} />}
+      {folha === 'historico' && (
+        <Folha titulo="Histórico" fechar={fecharFolha}>
+          <div className="cartao">
+            {musica.historico.map((execucao) => (
+              <LinhaDeExecucao key={execucao.escalaId + execucao.data} execucao={execucao} hoje={hoje} />
+            ))}
+          </div>
+        </Folha>
+      )}
+
+      <FolhaDeEscolhaDeEscala
+        aberta={folha === 'escala'}
+        fechar={fecharFolha}
+        jaEsta={musica.planejadaEm.map((planejada) => planejada.escalaId)}
+        aoEscolher={(escalaId) => navegar(`/escalas/${escalaId}/adicionar?musica=${musica.id}`)}
+      />
+
+      {dirige && (
+        <RodapeDeAcao
+          primario={
+            <Botao largo onClick={() => abrirFolha('escala')}>
+              Adicionar a uma escala
+            </Botao>
+          }
+        />
+      )}
     </section>
   )
 }
 
-function nomeExibido(musica: MusicaDetalhada): TituloLimpo {
-  if (musica.revisar) return limparTitulo(musica.titulo, musica.artista)
-  return { titulo: musica.titulo, artista: musica.artista }
+function LinhaDeExecucao({ execucao, hoje }: { execucao: ExecucaoApresentada; hoje: string }) {
+  return (
+    <div className="linha-de-execucao">
+      <span className="dica">{tempoRelativo(execucao.data, hoje)}</span>
+      <Selo variante="tom">Tom {execucao.tom}</Selo>
+      <span className="cresce dica">
+        {execucao.ministradoPorNome ?? 'sem ministro'}
+        {execucao.parcial ? ' · trecho' : ''}
+      </span>
+      <span className="dica">{formatarDia(execucao.data, hoje)}</span>
+    </div>
+  )
 }
 
-function situacao(musica: MusicaDetalhada): string {
-  if (musica.arquivada) return 'Arquivada: fica no histórico, fora de adicionar Item.'
-  if (musica.legado) return 'Legado: veio da playlist, sem histórico no app.'
-  if (musica.nova) return 'Nova: está no catálogo e ainda não foi tocada.'
-
-  return 'Já tocada no app.'
-}
-
-function TomOriginal({ musica, trocar }: { musica: MusicaDetalhada; trocar: (nova: MusicaDetalhada) => void }) {
+function FolhaDeEdicao({
+  musica,
+  fechar,
+  aoSalvar,
+}: {
+  musica: MusicaDetalhada
+  fechar: () => void
+  aoSalvar: (nova: MusicaDetalhada) => void
+}) {
   const acao = usarAcao()
+  const nome = nomeExibido(musica)
+  const [titulo, escreverTitulo] = useState(nome.titulo)
+  const [artista, escreverArtista] = useState(nome.artista)
 
-  const definir = (tom: string | null) => {
+  const salvar = () =>
     acao.executar(async () => {
-      const nova = await api<MusicaDetalhada>(`/api/musicas/${musica.id}`, {
-        metodo: 'PATCH',
-        corpo: { tomOriginal: tom },
-      })
-      trocar({ ...musica, ...nova })
+      aoSalvar(
+        await api<MusicaDetalhada>(`/api/musicas/${musica.id}`, {
+          metodo: 'PATCH',
+          corpo: { titulo, artista, revisar: false },
+        }),
+      )
     })
-  }
 
   return (
-    <div className="secao">
-      <h2>Tom original</h2>
+    <Folha titulo="Editar título e artista" fechar={fechar}>
+      {acao.erro && <p className="aviso">{acao.erro}</p>}
 
+      <Campo rotulo="Título">
+        <input value={titulo} onChange={(evento) => escreverTitulo(evento.target.value)} />
+      </Campo>
+      <Campo rotulo="Artista">
+        <input value={artista} onChange={(evento) => escreverArtista(evento.target.value)} />
+      </Campo>
+
+      <Botao largo disabled={acao.ocupado || !titulo.trim()} onClick={salvar}>
+        Salvar
+      </Botao>
+    </Folha>
+  )
+}
+
+function FolhaDeTom({
+  musica,
+  fechar,
+  aoSalvar,
+}: {
+  musica: MusicaDetalhada
+  fechar: () => void
+  aoSalvar: (nova: MusicaDetalhada) => void
+}) {
+  const acao = usarAcao()
+
+  const definir = (tom: string | null) =>
+    acao.executar(async () => {
+      aoSalvar(
+        await api<MusicaDetalhada>(`/api/musicas/${musica.id}`, { metodo: 'PATCH', corpo: { tomOriginal: tom } }),
+      )
+    })
+
+  return (
+    <Folha titulo="Tom original" fechar={fechar}>
       {acao.erro && <p className="aviso">{acao.erro}</p>}
 
       <SeletorDeTom
@@ -152,6 +291,121 @@ function TomOriginal({ musica, trocar }: { musica: MusicaDetalhada; trocar: (nov
       />
 
       <BuscaNoCifraClub musica={musica} aoUsar={definir} />
-    </div>
+    </Folha>
   )
+}
+
+function FolhaDeArquivar({
+  musica,
+  fechar,
+  aoConcluir,
+}: {
+  musica: MusicaDetalhada
+  fechar: () => void
+  aoConcluir: () => void
+}) {
+  const acao = usarAcao()
+  const nome = nomeExibido(musica)
+
+  const confirmar = () =>
+    acao.executar(async () => {
+      await api(`/api/musicas/${musica.id}/arquivar`, { metodo: 'POST' })
+      aoConcluir()
+    })
+
+  return (
+    <Folha titulo="Arquivar música?" fechar={fechar}>
+      {acao.erro && <p className="aviso">{acao.erro}</p>}
+      <p className="dica">{nome.titulo} sai do catálogo ativo e fica só no histórico.</p>
+      <Botao largo variante="perigo" disabled={acao.ocupado} onClick={confirmar}>
+        Arquivar
+      </Botao>
+    </Folha>
+  )
+}
+
+function FolhaDeApagar({
+  musica,
+  fechar,
+  aoConcluir,
+}: {
+  musica: MusicaDetalhada
+  fechar: () => void
+  aoConcluir: () => void
+}) {
+  const acao = usarAcao()
+  const nome = nomeExibido(musica)
+
+  const confirmar = () =>
+    acao.executar(async () => {
+      await api(`/api/musicas/${musica.id}`, { metodo: 'DELETE' })
+      aoConcluir()
+    })
+
+  return (
+    <Folha titulo="Apagar música?" fechar={fechar}>
+      {acao.erro && <p className="aviso">{acao.erro}</p>}
+      <p className="dica">{nome.titulo} some do catálogo. Essa ação não pode ser desfeita.</p>
+      <Botao largo variante="perigo" disabled={acao.ocupado} onClick={confirmar}>
+        Apagar
+      </Botao>
+    </Folha>
+  )
+}
+
+function FolhaDeVersoes({ anexos, fechar }: { anexos: Anexo[]; fechar: () => void }) {
+  return (
+    <Folha titulo="Versões da letra" fechar={fechar}>
+      <ul className="lista">
+        {anexos.map((anexo) => (
+          <li key={anexo.id}>
+            <a className="toque" href={anexo.url}>
+              <span className="cresce">
+                <span className="titulo">{anexo.nome}</span>
+                <span className="dica">
+                  versão {anexo.versao} · {formatarDia(anexo.criadoEm.slice(0, 10))} · {formatarTamanho(anexo.tamanho)}
+                </span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </Folha>
+  )
+}
+
+function nomeExibido(musica: MusicaDetalhada): TituloLimpo {
+  if (musica.revisar) return limparTitulo(musica.titulo, musica.artista)
+  return { titulo: musica.titulo, artista: musica.artista }
+}
+
+function textoDeVezes(musica: MusicaDetalhada): string {
+  if (musica.vezesEm6Meses > 0) return `tocada ${musica.vezesEm6Meses}× em 6 meses`
+  if (musica.vezesTocada > 0) return `tocada ${musica.vezesTocada}×`
+  return 'nunca tocada no app'
+}
+
+function frasesDeAlerta(musica: MusicaDetalhada, hoje: string): string[] {
+  const frases: string[] = []
+  const ultima = musica.ultimaExecucao
+
+  if (musica.recente && ultima) {
+    const quem = ultima.ministradoPorNome ? `, com ${ultima.ministradoPorNome}` : ''
+    frases.push(`Tocada ${tempoRelativo(ultima.data, hoje)}${quem}.`)
+  }
+
+  for (const planejada of musica.planejadaEm) {
+    if (frases.length >= 2) break
+    const quem = planejada.ministros.length ? ` (${planejada.ministros.join(', ')})` : ''
+    frases.push(`Já está no Repertório de ${formatarDia(planejada.data, hoje)}${quem}.`)
+  }
+
+  return frases
+}
+
+function formatarTamanho(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`
+  const kb = bytes / 1024
+  if (kb < 1024) return `${Math.round(kb)} KB`
+  return `${(kb / 1024).toFixed(1)} MB`
 }

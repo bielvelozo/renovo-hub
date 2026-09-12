@@ -1251,3 +1251,70 @@ textarea.texto-longo {
     right: 12px;
   }
 }
+
+/* FaixaDeAlerta */
+
+.faixa-de-alerta {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: var(--raio);
+  background: var(--atencao-suave);
+  color: var(--atencao);
+}
+
+.faixa-de-alerta .icone {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+}
+
+.faixa-de-alerta p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.faixa-de-alerta p + p {
+  margin-top: 2px;
+}
+
+/* Música */
+
+.titulo-da-musica {
+  font: 700 19px/1.25 var(--fonte-corpo);
+}
+
+.acoes-da-musica {
+  display: flex;
+  gap: 8px;
+}
+
+.acoes-da-musica > a {
+  flex: 1;
+}
+
+.link-de-secao {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--acento);
+  font: 600 13px var(--fonte-corpo);
+  cursor: pointer;
+}
+
+.linha-de-execucao {
+  align-items: center;
+}
+
+.linha-de-execucao + .linha-de-execucao {
+  border-top: 1px solid var(--linha);
+}
+
+/* FolhaDeEscolhaDeEscala */
+
+.folha .lista .toque {
+  justify-content: space-between;
+}
