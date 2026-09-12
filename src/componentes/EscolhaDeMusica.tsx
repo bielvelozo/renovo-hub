@@ -197,7 +197,6 @@ export function EscolhaDeMusica({
                     key={musica.id}
                     musica={musica}
                     modo="escolha"
-                    tom={musica.tomConhecido ?? musica.tomOriginal ?? undefined}
                     aoEscolher={() => aoEscolher(escolhaDaMusica(musica))}
                   />
                 ))}

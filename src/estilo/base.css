@@ -165,7 +165,7 @@ a {
 
 /* A faixa cobre o padding de `.conteudo` com margem negativa, pra nada aparecer
    rolando ao lado dela; o miolo continua alinhado aos 720 px. */
-.conteudo > .faixa {
+.conteudo .faixa {
   position: sticky;
   top: -16px;
   z-index: 3;
@@ -237,8 +237,7 @@ a {
 }
 
 .titulo-de-tela {
-  margin-top: 8px;
-  margin-bottom: 16px;
+  margin-top: 4px;
 }
 
 .titulo-da-subtela {
@@ -253,10 +252,6 @@ a {
 
 .faixa.subtela .dica {
   font-size: 13px;
-}
-
-.faixa + * {
-  margin-top: 16px;
 }
 
 nav.abas {

@@ -69,7 +69,6 @@ export function Musicas() {
               key={musica.id}
               musica={musica}
               modo="navegacao"
-              tom={musica.tomConhecido ?? musica.tomOriginal ?? undefined}
             />
           ))}
         </ul>

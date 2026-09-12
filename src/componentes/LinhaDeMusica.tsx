@@ -8,7 +8,7 @@ import { Selo } from './Selo'
 
 export type ModoDaLinha = 'leitura' | 'navegacao' | 'escolha'
 
-export type MusicaDaLinha = MusicaResumida & Partial<Pick<MusicaNaLista, 'ultimaExecucao' | 'legado' | 'nova' | 'revisar'>>
+export type MusicaDaLinha = MusicaResumida & Partial<Pick<MusicaNaLista, 'ultimaExecucao' | 'legado' | 'nova' | 'revisar' | 'tomConhecido' | 'tomOriginal'>>
 
 export type Minutagem = { inicio: string; fim: string }
 
@@ -23,18 +23,20 @@ type Comum = {
   hoje?: string
   ref?: Ref<HTMLLIElement>
   arrastando?: boolean
+  desligado?: boolean
 }
 
 export type PropriedadesDaLinha = Comum &
   ({ musica: MusicaDaLinha; tom?: string | null; trecho?: Minutagem; link?: string; trechos?: undefined } | { trechos: TrechoApresentado[]; musica?: undefined })
 
 export function LinhaDeMusica(props: PropriedadesDaLinha) {
-  const { modo, numero, observacao, selos, direita, aoEscolher, anexos = [], hoje = hojeEmBrasilia(), ref, arrastando } = props
+  const { modo, numero, observacao, selos, direita, aoEscolher, anexos = [], hoje = hojeEmBrasilia(), ref, arrastando, desligado } = props
   const ehMedley = props.trechos !== undefined
   const nome = ehMedley ? { titulo: 'Medley', artista: '' } : nomeLimpo(props.musica)
   const capas = ehMedley ? props.trechos.map((trecho) => trecho.musica) : [props.musica]
   const link = ehMedley ? undefined : props.link
   const transicao = !ehMedley && modo === 'navegacao' ? `capa-${props.musica.id}` : undefined
+  const tom = ehMedley ? null : (props.tom ?? props.musica.ultimaExecucao?.tom ?? props.musica.tomConhecido ?? props.musica.tomOriginal)
 
   const miolo = (
     <>
@@ -44,7 +46,7 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
       </span>
       {nome.artista && <span className="dica">{nome.artista}</span>}
       <span className="selos">
-        {!ehMedley && props.tom && <Selo variante="tom">Tom {props.tom}</Selo>}
+        {tom && <Selo variante="tom">Tom {tom}</Selo>}
         {!ehMedley && props.musica.ultimaExecucao !== undefined && (
           <Selo>{props.musica.ultimaExecucao ? tempoRelativo(props.musica.ultimaExecucao.data, hoje) : 'nunca tocada'}</Selo>
         )}
@@ -69,7 +71,7 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
   return (
     <li ref={ref} className={`linha-de-musica ${modo}${ehMedley ? ' medley' : ''}${arrastando ? ' arrastando' : ''}`}>
       {modo === 'escolha' ? (
-        <button type="button" className="toque-da-linha" onClick={aoEscolher}>
+        <button type="button" className="toque-da-linha" disabled={desligado} onClick={aoEscolher}>
           <Capa musicas={capas} />
           <span className="miolo">{miolo}</span>
         </button>
