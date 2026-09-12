@@ -20,11 +20,40 @@ export async function fluxosDoMembro(prova: Prova, cenario: Cenario): Promise<vo
   const minha = doMes.escalas.find((escala: any) => escala.membros.includes('julia'))
   prova.conferir('o Membro acha a própria próxima Escala na lista', !!minha, minha?.titulo)
 
+  const semJulia = doMes.escalas.find((escala: any) => !escala.membros.includes('julia'))
+  prova.conferir(
+    'a lista do mês diz a Função da pessoa em cada Escala',
+    minha.minhasFuncoes.includes('Vocal') && semJulia.minhasFuncoes.length === 0,
+    `${minha.titulo}: ${minha.minhasFuncoes.join(', ')} · ${semJulia.titulo}: sem Função`,
+  )
+
+  const inicio = exigir(await prova.api('/api/inicio', { cookie: cenario.julia }), 200, 'abrir o Início')
+  prova.conferir(
+    'o Início do Membro abre numa requisição só, já pela própria escala',
+    inicio.minhaProxima?.id === minha.id && inicio.minhaProxima.pessoas.length > 0,
+    `${inicio.minhaProxima?.titulo} · ${inicio.minhaProxima?.pessoas.length} na Equipe`,
+  )
+  prova.conferir(
+    'quem não dirige não vê pendências, cartão pós-culto nem criar mês',
+    inicio.pendencias.length === 0 && inicio.posCulto === null && inicio.proximoMesVazio === null,
+    `${inicio.pendencias.length} pendências`,
+  )
+  prova.conferir(
+    'o Repertório do Início já vem com a memória de cada Música e o resumo',
+    inicio.minhaProxima.itens.every((item: any) => item.tipo === 'medley' || item.memoria) &&
+      inicio.minhaProxima.resumoDoRepertorio.total > 0,
+    JSON.stringify(inicio.minhaProxima.resumoDoRepertorio),
+  )
+
   const escala = exigir(await prova.api(`/api/escalas/${minha.id}`, { cookie: cenario.julia }), 200, 'abrir a Escala')
   const naEquipe = escala.equipe.find((entrada: any) => entrada.membroId === 'julia')
 
   prova.conferir('a tela do Membro sabe a Função dele na Escala', !!naEquipe?.funcoes.length, naEquipe?.funcoes.join(', '))
-  prova.conferir('o Ministro da Escala aparece', escala.grupos[0].nome === 'Ministro', escala.grupos[0].itens.join(', '))
+  prova.conferir(
+    'quem dirige a Escala abre a Equipe',
+    escala.grupos[0].nome.startsWith('Ministro'),
+    `${escala.grupos[0].nome}: ${escala.grupos[0].itens.join(', ')}`,
+  )
   prova.conferir(
     'os Itens vêm com capa, Tom e link',
     escala.itens.every((item: any) => item.tipo === 'medley' || (item.musica?.capa && item.link)),

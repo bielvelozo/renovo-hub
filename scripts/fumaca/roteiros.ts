@@ -1,6 +1,16 @@
 import { domingosDoMes, segundos } from '../../src/dominio'
 import { consultar } from './ambiente'
-import { VIDEOS, dataDaDemonstracao, escalaPorData, exigir, grupo, proximoSabado, ultimoItem } from './cenario'
+import {
+  VIDEOS,
+  dataDaDemonstracao,
+  escalaPorData,
+  escalaPorRotulo,
+  exigir,
+  grupo,
+  itemPorId,
+  proximoSabado,
+  ultimoItem,
+} from './cenario'
 import type { Cenario } from './cenario'
 import type { Prova } from './prova'
 
@@ -534,4 +544,260 @@ export async function roteiroDaAvulsa(prova: Prova, cenario: Cenario): Promise<v
     'marcar Santa Ceia à mão',
   )
   prova.conferir('a marca de Santa Ceia troca o título', santaCeia.titulo.startsWith('Santa Ceia'), santaCeia.titulo)
+}
+
+export async function roteiroDaFolhaDoItem(prova: Prova, cenario: Cenario): Promise<void> {
+  prova.grupo('Roteiro 11 · Editar o Item pela folha')
+
+  const comMarcos = exigir(
+    await prova.api(`/api/escalas/${cenario.escalaDoMes}/equipe/marcos`, {
+      metodo: 'PUT',
+      cookie: cenario.gabriel,
+      corpo: { funcoes: ['vocal'], ministro: true },
+    }),
+    200,
+    'pôr o Marcos como segundo Ministro',
+  )
+  prova.conferir(
+    'uma Escala aceita dois Ministros dividindo a escolha, e o grupo vai pro plural',
+    grupo(comMarcos, 'Ministros').length === 2,
+    grupo(comMarcos, 'Ministros').join(', '),
+  )
+
+  const inteira = comMarcos.itens.find((item: any) => item.tipo === 'inteira')
+  const caminho = `/api/escalas/${cenario.escalaDoMes}/itens/${inteira.id}`
+
+  prova.conferir('o Item guarda desde sempre a marca de quando mudou', !!inteira.atualizadoEm, String(inteira.atualizadoEm))
+
+  const comTom = exigir(
+    await prova.api(caminho, { metodo: 'PATCH', cookie: cenario.gabriel, corpo: { tom: 'E' } }),
+    200,
+    'trocar o Tom pela folha',
+  )
+  const comTomAtual = itemPorId(comTom, inteira.id)
+  prova.conferir(
+    'trocar o Tom pela folha marca o Item como mudado',
+    comTomAtual.tom === 'E' && comTomAtual.atualizadoEm > inteira.atualizadoEm,
+    `Tom ${comTomAtual.tom} · ${comTomAtual.atualizadoEm}`,
+  )
+
+  const semMinutagem = await prova.api(caminho, { metodo: 'PATCH', cookie: cenario.gabriel, corpo: { tipo: 'trecho' } })
+  prova.conferir('virar Trecho sem minutagem devolve 422', semMinutagem.status === 422, semMinutagem.corpo?.erro)
+
+  const virouTrecho = exigir(
+    await prova.api(caminho, {
+      metodo: 'PATCH',
+      cookie: cenario.gabriel,
+      corpo: { tipo: 'trecho', inicio: '1:12', fim: '3:20' },
+    }),
+    200,
+    'virar Trecho pela folha',
+  )
+  const trechoAtual = itemPorId(virouTrecho, inteira.id)
+  prova.conferir(
+    'a Música inteira vira Trecho com minutagem e link na hora certa',
+    trechoAtual.tipo === 'trecho' && trechoAtual.inicio === '1:12' && trechoAtual.link.endsWith(`?t=${segundos('1:12')}`),
+    trechoAtual.descricao,
+  )
+
+  const voltouInteira = exigir(
+    await prova.api(caminho, { metodo: 'PATCH', cookie: cenario.gabriel, corpo: { tipo: 'inteira' } }),
+    200,
+    'voltar a Música inteira',
+  )
+  const inteiraDeNovo = itemPorId(voltouInteira, inteira.id)
+  prova.conferir(
+    'voltar pra Música inteira apaga a minutagem',
+    inteiraDeNovo.tipo === 'inteira' && !inteiraDeNovo.inicio && !inteiraDeNovo.fim,
+    inteiraDeNovo.descricao,
+  )
+
+  const naoEhMinistro = await prova.api(caminho, {
+    metodo: 'PATCH',
+    cookie: cenario.gabriel,
+    corpo: { ministradoPor: 'ana' },
+  })
+  prova.conferir('quem puxa só pode ser Ministro daquela Escala', naoEhMinistro.status === 422, naoEhMinistro.corpo?.erro)
+
+  const comQuemPuxa = exigir(
+    await prova.api(caminho, { metodo: 'PATCH', cookie: cenario.gabriel, corpo: { ministradoPor: 'marcos' } }),
+    200,
+    'escolher quem puxa',
+  )
+  const puxado = itemPorId(comQuemPuxa, inteira.id)
+  prova.conferir(
+    'com dois Ministros a folha escolhe quem puxa o Item',
+    puxado.ministradoPor === 'marcos' && puxado.ministradoPorNome === 'Marcos',
+    String(puxado.ministradoPorNome),
+  )
+
+  const reordenado = exigir(
+    await prova.api(caminho, { metodo: 'PATCH', cookie: cenario.gabriel, corpo: { ordem: 0 } }),
+    200,
+    'reordenar o Item',
+  )
+  const primeiro = reordenado.itens[0]
+  prova.conferir(
+    'reordenar muda a posição sem marcar o Item como mudado',
+    primeiro.id === inteira.id && primeiro.atualizadoEm === puxado.atualizadoEm,
+    `${primeiro.descricao} · ${primeiro.atualizadoEm}`,
+  )
+
+  const medley = reordenado.itens.find((item: any) => item.tipo === 'medley')
+  const caminhoDoMedley = `/api/escalas/${cenario.escalaDoMes}/itens/${medley.id}`
+  const outrasMusicas = await prova.api(caminhoDoMedley, {
+    metodo: 'PATCH',
+    cookie: cenario.gabriel,
+    corpo: {
+      trechos: [
+        { musicaId: cenario.musicas.get(VIDEOS.firme), tom: 'C', inicio: '0:00', fim: '1:40' },
+        { musicaId: cenario.musicas.get(VIDEOS.grato), tom: 'Bb', inicio: '1:20', fim: '3:00' },
+      ],
+    },
+  })
+  prova.conferir(
+    'trocar as músicas do Medley pela folha devolve 422',
+    outrasMusicas.status === 422,
+    outrasMusicas.corpo?.erro,
+  )
+
+  const afinado = exigir(
+    await prova.api(caminhoDoMedley, {
+      metodo: 'PATCH',
+      cookie: cenario.gabriel,
+      corpo: {
+        trechos: [
+          { musicaId: cenario.musicas.get(VIDEOS.rio), tom: 'E', inicio: '0:00', fim: '2:00' },
+          { musicaId: cenario.musicas.get(VIDEOS.grato), tom: 'Bb', inicio: '1:20', fim: '3:00' },
+        ],
+      },
+    }),
+    200,
+    'afinar os Trechos do Medley',
+  )
+  const medleyAtual = itemPorId(afinado, medley.id)
+  prova.conferir(
+    'a folha do Medley muda Tom e minutagem de cada Trecho',
+    medleyAtual.trechos[0].tom === 'E' && medleyAtual.trechos[0].fim === '2:00',
+    medleyAtual.descricao,
+  )
+  prova.conferir(
+    'cada Trecho do Medley traz a memória da própria Música',
+    medleyAtual.trechos.every((trecho: any) => trecho.memoria && 'recente' in trecho.memoria),
+    medleyAtual.trechos.map((t: any) => `${t.musica.titulo}: ${t.memoria?.recente ? 'recente' : 'sem repetição'}`).join(' | '),
+  )
+}
+
+export async function roteiroDasPendencias(prova: Prova, cenario: Cenario): Promise<void> {
+  prova.grupo('Roteiro 12 · Mínimo por Função, pendências e Início de quem dirige')
+
+  const funcoes = exigir(await prova.api('/api/funcoes', { cookie: cenario.isa }), 200, 'listar as Funções')
+  const porId = new Map<string, any>(funcoes.funcoes.map((funcao: any) => [funcao.id, funcao]))
+
+  prova.conferir(
+    'as Funções dizem o mínimo que cada Escala precisa ter',
+    porId.get('vocal').minimo === 2 && porId.get('bateria').minimo === 1 && porId.get('teclado').minimo === 0,
+    funcoes.funcoes.map((f: any) => `${f.nome} ${f.minimo}`).join(' · '),
+  )
+
+  const pronta = await escalaPorRotulo(prova, cenario.isa, 'Culto desta semana')
+  prova.conferir(
+    'a Escala com Equipe completa e Repertório aparece pronta',
+    pronta.pronta === true && pronta.pendencias.length === 0,
+    pronta.porGrupo.map((g: any) => g.texto).join(' · '),
+  )
+
+  const semMinistro = await escalaPorRotulo(prova, cenario.isa, 'Culto sem ministro')
+  prova.conferir(
+    'Escala sem ninguém dirigindo fica pendente',
+    semMinistro.pendencias.some((p: any) => p.chave === 'sem-ministro'),
+    semMinistro.pendencias.map((p: any) => p.texto).join(', '),
+  )
+
+  const semBateria = await escalaPorRotulo(prova, cenario.isa, 'Culto sem baterista')
+  prova.conferir(
+    'a falta de uma Função sai com o nome dela e a contagem',
+    semBateria.pendencias.some((p: any) => p.chave === 'falta-funcao' && p.texto === 'falta 1 bateria'),
+    semBateria.pendencias.map((p: any) => p.texto).join(', '),
+  )
+  prova.conferir(
+    'o resumo por grupo diz quantos são e quem falta',
+    semBateria.porGrupo.find((g: any) => g.grupo === 'instrumentos')?.faltam.includes('bateria'),
+    semBateria.porGrupo.map((g: any) => g.texto).join(' · '),
+  )
+
+  const semMusicas = await escalaPorRotulo(prova, cenario.isa, 'Culto sem músicas')
+  prova.conferir(
+    'Escala sem Repertório fica pendente',
+    semMusicas.pendencias.some((p: any) => p.chave === 'sem-musicas'),
+    semMusicas.pendencias.map((p: any) => p.texto).join(', '),
+  )
+
+  const foraDaFaixa = await prova.api('/api/admin/funcoes/teclado', {
+    metodo: 'PATCH',
+    cookie: cenario.gabriel,
+    corpo: { minimo: 5 },
+  })
+  prova.conferir('mínimo fora de 0 a 4 devolve 422', foraDaFaixa.status === 422, foraDaFaixa.corpo?.erro)
+
+  exigir(
+    await prova.api('/api/admin/funcoes/teclado', { metodo: 'PATCH', cookie: cenario.gabriel, corpo: { minimo: 2 } }),
+    200,
+    'passar a cobrar dois teclados',
+  )
+  const cobrando = await escalaPorRotulo(prova, cenario.isa, 'Culto desta semana')
+  prova.conferir(
+    'subir o mínimo de uma Função no Admin faz a Escala pronta virar pendente',
+    cobrando.pronta === false && cobrando.pendencias.some((p: any) => p.texto === 'faltam 2 teclados'),
+    cobrando.pendencias.map((p: any) => p.texto).join(', '),
+  )
+
+  exigir(
+    await prova.api('/api/admin/funcoes/teclado', { metodo: 'PATCH', cookie: cenario.gabriel, corpo: { minimo: 0 } }),
+    200,
+    'voltar a não cobrar teclado',
+  )
+  const semCobrar = await escalaPorRotulo(prova, cenario.isa, 'Culto desta semana')
+  prova.conferir(
+    'mínimo zero não cobra a Função de ninguém',
+    semCobrar.pronta === true,
+    semCobrar.porGrupo.map((g: any) => g.texto).join(' · '),
+  )
+
+  const inicio = exigir(await prova.api('/api/inicio', { cookie: cenario.isa }), 200, 'abrir o Início de quem dirige')
+
+  prova.conferir(
+    'o cartão pós-culto aparece no dia seguinte ao culto, com as músicas registradas',
+    String(inicio.posCulto?.titulo).startsWith('Culto de ontem') && inicio.posCulto.itens === 5,
+    `${inicio.posCulto?.titulo} · ${inicio.posCulto?.itens} músicas`,
+  )
+
+  const rotulosPendentes: string[] = inicio.pendencias.map((escala: any) => escala.rotulo)
+  prova.conferir(
+    'o Início junta as pendências das próximas semanas numa resposta só',
+    ['Culto sem ministro', 'Culto sem baterista', 'Culto sem músicas'].every((rotulo) =>
+      rotulosPendentes.includes(rotulo),
+    ),
+    rotulosPendentes.join(', '),
+  )
+  prova.conferir(
+    'a Escala pronta fica fora das pendências',
+    !rotulosPendentes.includes('Culto desta semana'),
+    `${inicio.pendencias.length} pendentes`,
+  )
+  prova.conferir(
+    'o Início abre pela própria escala, com Equipe e Repertório já montados',
+    !!inicio.minhaProxima &&
+      inicio.minhaProxima.equipe.some((entrada: any) => entrada.membroId === 'isa') &&
+      inicio.minhaProxima.pessoas.length > 0,
+    `${inicio.minhaProxima?.titulo} · ${inicio.minhaProxima?.pessoas.length} na Equipe`,
+  )
+  prova.conferir(
+    'o Início traz o limite de repetição e os anexos sem outra requisição',
+    Number.isInteger(inicio.semanasDeRepeticao) && !!inicio.anexosPorMusica,
+    `${inicio.semanasDeRepeticao} semanas`,
+  )
+
+  const semSessao = await prova.api('/api/inicio')
+  prova.conferir('o Início sem sessão devolve 401', semSessao.status === 401, semSessao.corpo?.erro)
 }

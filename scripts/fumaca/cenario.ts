@@ -33,6 +33,12 @@ export function mesSeguinte(hoje: string): string {
   return mes === 12 ? `${ano + 1}-01` : `${ano}-${String(mes + 1).padStart(2, '0')}`
 }
 
+export function mesAnterior(hoje: string): string {
+  const [ano, mes] = hoje.split('-').map(Number)
+
+  return mes === 1 ? `${ano - 1}-12` : `${ano}-${String(mes - 1).padStart(2, '0')}`
+}
+
 export function proximoSabado(hoje: string): string {
   let data = somarDias(hoje, 1)
 
@@ -57,6 +63,19 @@ export async function musicasPorVideo(prova: Prova, cookie: string): Promise<Map
   return new Map<string, string>(
     (resposta.corpo?.musicas ?? []).map((musica: { videoId: string; id: string }) => [musica.videoId, musica.id]),
   )
+}
+
+export async function escalaPorRotulo(prova: Prova, cookie: string, rotulo: string): Promise<any> {
+  const hoje = hojeDoAmbiente()
+
+  for (const mes of [mesAnterior(hoje), hoje.slice(0, 7), mesSeguinte(hoje)]) {
+    const resposta = await prova.api(`/api/escalas?mes=${mes}`, { cookie })
+    const achada = (resposta.corpo?.escalas ?? []).find((escala: { rotulo: string }) => escala.rotulo === rotulo)
+
+    if (achada) return achada
+  }
+
+  throw new Error(`Não achei a Escala «${rotulo}». O seed --demo rodou?`)
 }
 
 export async function escalaPorData(prova: Prova, cookie: string, data: string): Promise<any> {

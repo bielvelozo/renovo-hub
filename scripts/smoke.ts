@@ -19,7 +19,9 @@ import { RAIZ, buscar, criarProva } from './fumaca/prova'
 import type { Prova } from './fumaca/prova'
 import {
   roteiroDaAvulsa,
+  roteiroDaFolhaDoItem,
   roteiroDaSugestao,
+  roteiroDasPendencias,
   roteiroDeCancelar,
   roteiroDeCorrigir,
   roteiroDoLink,
@@ -48,6 +50,8 @@ try {
   await roteiroDeCorrigir(prova, cenario)
   await roteiroDeCancelar(prova, cenario)
   await roteiroDaAvulsa(prova, cenario)
+  await roteiroDaFolhaDoItem(prova, cenario)
+  await roteiroDasPendencias(prova, cenario)
 
   await fluxosDoMembro(prova, cenario)
   await fluxosDoAdmin(prova, cenario)
