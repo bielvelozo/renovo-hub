@@ -1,67 +1,61 @@
+import { useEffect, useRef } from 'react'
 import { estaLigado, podeAtivar, textoDaSituacao } from '../push/push'
 import { usarPush } from '../push/usarPush'
+import { usarAviso } from './Avisos'
+import { Botao } from './Botao'
+import { Cartao } from './Cartao'
+import { Segmento } from './Segmento'
 
 export function Notificacoes({ silenciado, secundario = false }: { silenciado: boolean; secundario?: boolean }) {
   const push = usarPush(silenciado)
+  const avisar = usarAviso()
   const ligado = estaLigado(push.situacao)
-  const classe = `botao${secundario ? ' secundario' : ''} largo`
+  const variante = secundario ? 'secundario' : 'primario'
+  const anterior = useRef(push.situacao)
+
+  useEffect(() => {
+    if (!estaLigado(anterior.current) && estaLigado(push.situacao)) avisar('Notificações ativadas')
+    anterior.current = push.situacao
+  }, [push.situacao, avisar])
 
   return (
-    <div className="cartao pagina">
+    <Cartao className="pagina">
       <h2>Notificações</h2>
 
       {!ligado && (
-        <button
-          type="button"
-          className={classe}
-          disabled={!podeAtivar(push.situacao) || push.acao.ocupado}
-          onClick={push.ativar}
-        >
+        <Botao variante={variante} largo disabled={!podeAtivar(push.situacao) || push.acao.ocupado} onClick={push.ativar}>
           Ativar notificações
-        </button>
+        </Botao>
       )}
 
       <p className="dica">{textoDaSituacao(push.situacao)}</p>
 
       {ligado && (
         <>
-          <button type="button" className={classe} disabled={push.acao.ocupado} onClick={push.testar}>
+          <Botao variante={variante} largo disabled={push.acao.ocupado} onClick={push.testar}>
             Enviar push de teste
-          </button>
+          </Botao>
 
-          <div className="segmento" role="group" aria-label="Silenciar">
-            <button
-              type="button"
-              aria-pressed={push.situacao !== 'silenciado'}
-              disabled={push.acao.ocupado}
-              onClick={() => push.definirSilencio(false)}
-            >
-              Receber
-            </button>
-            <button
-              type="button"
-              aria-pressed={push.situacao === 'silenciado'}
-              disabled={push.acao.ocupado}
-              onClick={() => push.definirSilencio(true)}
-            >
-              Silenciar tudo
-            </button>
-          </div>
+          <Segmento
+            rotulo="Silenciar"
+            opcoes={[
+              { valor: 'receber', rotulo: 'Receber' },
+              { valor: 'silenciar', rotulo: 'Silenciar tudo' },
+            ]}
+            valor={push.situacao === 'silenciado' ? 'silenciar' : 'receber'}
+            aoMudar={(valor) => push.definirSilencio(valor === 'silenciar')}
+            desligado={push.acao.ocupado}
+          />
           <p className="dica">Silenciar mantém a inscrição deste aparelho: é só religar quando quiser voltar.</p>
 
-          <button
-            type="button"
-            className="botao secundario largo"
-            disabled={push.acao.ocupado}
-            onClick={push.desligar}
-          >
+          <Botao variante="secundario" largo disabled={push.acao.ocupado} onClick={push.desligar}>
             Não receber neste aparelho
-          </button>
+          </Botao>
         </>
       )}
 
       {push.recado && <p className="dica">{push.recado}</p>}
       {push.acao.erro && <p className="aviso">{push.acao.erro}</p>}
-    </div>
+    </Cartao>
   )
 }

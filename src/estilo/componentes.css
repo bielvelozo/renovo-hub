@@ -872,6 +872,15 @@
   cursor: not-allowed;
 }
 
+.segmento .conta {
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: var(--raio-total);
+  background: var(--acento);
+  color: var(--sobre-acento);
+  font: 700 11px/1.5 var(--fonte-corpo);
+}
+
 /* Campo */
 
 .campo {

@@ -1,9 +1,11 @@
 import { useState } from 'react'
-import { Link } from 'react-router'
 import type { MusicaNaLista } from '../api/tipos'
 import { usarBusca } from '../api/usarBusca'
-import { Capa } from '../componentes/Capa'
-import { SelosDaMusica } from '../componentes/SelosDaMusica'
+import { Cabecalho } from '../casca/Cabecalho'
+import { Busca } from '../componentes/Busca'
+import { Esqueleto } from '../componentes/Esqueleto'
+import { LinhaDeMusica } from '../componentes/LinhaDeMusica'
+import { Vazio } from '../componentes/Vazio'
 import { combinaBusca } from '../dominio'
 import type { OrdemDoCatalogo } from '../dominio'
 import type { FiltroDoCatalogo } from '../musicas/catalogo'
@@ -19,17 +21,9 @@ export function Musicas() {
 
   return (
     <section className="pagina">
-      <h1>Músicas</h1>
+      <Cabecalho raiz titulo="Músicas" />
 
-      <label className="campo">
-        <span className="rotulo">Buscar</span>
-        <input
-          type="search"
-          placeholder="parte do título ou do artista"
-          value={termo}
-          onChange={(evento) => escreverTermo(evento.target.value)}
-        />
-      </label>
+      <Busca valor={termo} aoMudar={escreverTermo} />
 
       <div className="chips" role="group" aria-label="Ordem">
         {ORDENS.map((opcao) => (
@@ -60,23 +54,23 @@ export function Musicas() {
       </div>
 
       {catalogo.erro && <p className="aviso">{catalogo.erro}</p>}
-      {catalogo.carregando && <div className="girando" role="status" aria-label="Carregando" />}
+      {catalogo.carregando && <Esqueleto forma="linha-de-musica" quantidade={5} />}
 
-      {catalogo.dados && achadas.length === 0 && <p className="vazio">{textoDoVazio(filtro, termo)}</p>}
+      {catalogo.dados && achadas.length === 0 && (
+        <Vazio icone="musica">
+          {termo.trim() ? 'Nenhuma música com esse nome. Cole um link ou busque no YouTube.' : textoDoVazio(filtro, termo)}
+        </Vazio>
+      )}
 
       {achadas.length > 0 && (
         <ul className="lista cartao">
           {achadas.map((musica) => (
-            <li key={musica.id}>
-              <Link to={`/musicas/${musica.id}`} className="toque">
-                <Capa musicas={[musica]} />
-                <span className="cresce">
-                  <span className="titulo">{musica.titulo}</span>
-                  <span className="dica">{musica.artista}</span>
-                  <SelosDaMusica musica={musica} />
-                </span>
-              </Link>
-            </li>
+            <LinhaDeMusica
+              key={musica.id}
+              musica={musica}
+              modo="navegacao"
+              tom={musica.tomConhecido ?? musica.tomOriginal ?? undefined}
+            />
           ))}
         </ul>
       )}

@@ -3,15 +3,19 @@ import { api } from '../api/cliente'
 import type { AchadoNoYoutube, MusicaNaLista, Resolucao, SugestaoApresentada } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
+import { Cabecalho } from '../casca/Cabecalho'
 import { combinaBusca, videoIdDoLink } from '../dominio'
 import type { OrdemDoCatalogo } from '../dominio'
 import type { Escolha } from '../escalas/rascunho'
 import { escolhaDaMusica, escolhaDaSugestao, escolhaDoLink } from '../escalas/rascunho'
 import type { FiltroDoCatalogo } from '../musicas/catalogo'
 import { FILTROS, ORDENS, caminhoDoCatalogo, textoDoVazio } from '../musicas/catalogo'
-import { Barra } from './Barra'
-import { Capa } from './Capa'
-import { SelosDaMusica } from './SelosDaMusica'
+import { Busca } from './Busca'
+import { Esqueleto } from './Esqueleto'
+import { LinhaDeMusica } from './LinhaDeMusica'
+import { Selo } from './Selo'
+import { Segmento } from './Segmento'
+import { Vazio } from './Vazio'
 
 export function EscolhaDeMusica({
   titulo,
@@ -63,48 +67,50 @@ export function EscolhaDeMusica({
 
   return (
     <section className="pagina">
-      <Barra titulo={titulo} sub={sub} aoVoltar={aoVoltar} />
+      <Cabecalho titulo={titulo} sub={sub} aoVoltar={aoVoltar} />
 
       {acao.erro && <p className="aviso">{acao.erro}</p>}
 
       {aoEscolherSugestao && (
-        <div className="abas" role="group" aria-label="De onde escolher">
-          <button type="button" className="chip" aria-pressed={aba === 'catalogo'} onClick={() => trocarAba('catalogo')}>
-            Catálogo
-          </button>
-          <button
-            type="button"
-            className="chip"
-            aria-pressed={aba === 'sugestoes'}
-            onClick={() => trocarAba('sugestoes')}
-          >
-            Sugestões {abertas.length > 0 && <span className="conta">{abertas.length}</span>}
-          </button>
-        </div>
+        <Segmento
+          rotulo="De onde escolher"
+          opcoes={[
+            { valor: 'catalogo', rotulo: 'Catálogo' },
+            {
+              valor: 'sugestoes',
+              rotulo: (
+                <>
+                  Sugestões {abertas.length > 0 && <span className="conta">{abertas.length}</span>}
+                </>
+              ),
+            },
+          ]}
+          valor={aba}
+          aoMudar={trocarAba}
+        />
       )}
 
       {aba === 'sugestoes' && aoEscolherSugestao ? (
         <div className="secao">
           {sugestoes.erro && <p className="aviso">{sugestoes.erro}</p>}
-          {sugestoes.carregando && <div className="girando" role="status" aria-label="Carregando" />}
-          {sugestoes.dados && abertas.length === 0 && <p className="vazio">Nenhuma Sugestão aberta.</p>}
+          {sugestoes.carregando && <Esqueleto forma="linha-de-musica" quantidade={3} />}
+          {sugestoes.dados && abertas.length === 0 && <Vazio icone="lampada">Nenhuma Sugestão aberta.</Vazio>}
 
           {abertas.length > 0 && (
             <ul className="lista cartao">
               {abertas.map((sugestao) => (
-                <li key={sugestao.id}>
-                  <button type="button" className="toque" onClick={() => aoEscolherSugestao(sugestao)}>
-                    <Capa musicas={[escolhaDaSugestao(sugestao).resumo]} />
-                    <span className="cresce">
-                      <span className="titulo">{sugestao.titulo}</span>
-                      <span className="dica">
-                        {sugestao.membro.nome} · {sugestao.apoios.length} apoio
-                        {sugestao.apoios.length === 1 ? '' : 's'}
-                      </span>
-                      {sugestao.observacao && <span className="observacao">{sugestao.observacao}</span>}
-                    </span>
-                  </button>
-                </li>
+                <LinhaDeMusica
+                  key={sugestao.id}
+                  musica={escolhaDaSugestao(sugestao).resumo}
+                  modo="escolha"
+                  aoEscolher={() => aoEscolherSugestao(sugestao)}
+                  observacao={sugestao.observacao || undefined}
+                  selos={
+                    <Selo>
+                      {sugestao.membro.nome} · {sugestao.apoios.length} apoio{sugestao.apoios.length === 1 ? '' : 's'}
+                    </Selo>
+                  }
+                />
               ))}
             </ul>
           )}
@@ -130,25 +136,17 @@ export function EscolhaDeMusica({
               </button>
             </div>
 
-            {achados?.length === 0 && <p className="vazio">Nenhum vídeo com esse nome.</p>}
+            {achados?.length === 0 && <Vazio icone="youtube">Nenhum vídeo com esse nome.</Vazio>}
 
             {achados && achados.length > 0 && (
               <ul className="lista cartao">
                 {achados.map((achado) => (
-                  <li key={achado.videoId}>
-                    <button
-                      type="button"
-                      className="toque"
-                      disabled={acao.ocupado}
-                      onClick={() => escolherVideo(`https://youtu.be/${achado.videoId}`)}
-                    >
-                      <Capa musicas={[{ ...achado, id: achado.videoId, titulo: achado.titulo, artista: achado.canal }]} />
-                      <span className="cresce">
-                        <span className="titulo">{achado.titulo}</span>
-                        <span className="dica">{achado.canal}</span>
-                      </span>
-                    </button>
-                  </li>
+                  <LinhaDeMusica
+                    key={achado.videoId}
+                    musica={{ ...achado, id: achado.videoId, titulo: achado.titulo, artista: achado.canal }}
+                    modo="escolha"
+                    aoEscolher={() => escolherVideo(`https://youtu.be/${achado.videoId}`)}
+                  />
                 ))}
               </ul>
             )}
@@ -157,15 +155,7 @@ export function EscolhaDeMusica({
           <div className="secao">
             <h2>Catálogo</h2>
 
-            <label className="campo">
-              <span className="rotulo">Buscar no catálogo</span>
-              <input
-                type="search"
-                placeholder="parte do título ou do artista"
-                value={termo}
-                onChange={(evento) => escreverTermo(evento.target.value)}
-              />
-            </label>
+            <Busca valor={termo} aoMudar={escreverTermo} rotulo="Buscar no catálogo" />
 
             <div className="chips" role="group" aria-label="Ordem">
               {ORDENS.map((opcao) => (
@@ -196,23 +186,20 @@ export function EscolhaDeMusica({
             </div>
 
             {catalogo.erro && <p className="aviso">{catalogo.erro}</p>}
-            {catalogo.carregando && <div className="girando" role="status" aria-label="Carregando" />}
+            {catalogo.carregando && <Esqueleto forma="linha-de-musica" quantidade={5} />}
 
-            {catalogo.dados && achadas.length === 0 && <p className="vazio">{textoDoVazio(filtro, termo)}</p>}
+            {catalogo.dados && achadas.length === 0 && <Vazio icone="musica">{textoDoVazio(filtro, termo)}</Vazio>}
 
             {achadas.length > 0 && (
               <ul className="lista cartao">
                 {achadas.map((musica) => (
-                  <li key={musica.id}>
-                    <button type="button" className="toque" onClick={() => aoEscolher(escolhaDaMusica(musica))}>
-                      <Capa musicas={[musica]} />
-                      <span className="cresce">
-                        <span className="titulo">{musica.titulo}</span>
-                        <span className="dica">{musica.artista}</span>
-                        <SelosDaMusica musica={musica} />
-                      </span>
-                    </button>
-                  </li>
+                  <LinhaDeMusica
+                    key={musica.id}
+                    musica={musica}
+                    modo="escolha"
+                    tom={musica.tomConhecido ?? musica.tomOriginal ?? undefined}
+                    aoEscolher={() => aoEscolher(escolhaDaMusica(musica))}
+                  />
                 ))}
               </ul>
             )}
