@@ -8,13 +8,22 @@ import {
   comEntrada,
   entradaDoMembro,
   funcoesDoMembro,
+  memoriaDoMembro,
+  mensagemDaFuncao,
+  mensagemDoMinistro,
   naoRecebeNotificacao,
+  ordenarPorEscalados,
   podeSerMinistro,
+  resumoDaEquipe,
   saiDaEquipe,
   secoesDaEquipe,
+  semNotificacao,
+  textoDeSemNotificacao,
 } from './equipe'
+import type { MembroComPush } from './equipe'
 
-const m = ministerioDeExemplo()
+const HOJE = '2026-09-08'
+const m = ministerioDeExemplo(HOJE)
 const secoes = () => secoesDaEquipe(m.membros, FUNCOES)
 const secao = (chave: string) => secoes().find((s) => s.chave === chave)!
 const nomes = (chave: string) => secao(chave).membros.map((linha) => linha.membro.nome)
@@ -150,5 +159,145 @@ describe('musicosDaFormacao', () => {
     const marcos = lista.find((linha) => linha.membro.id === 'marcos')
 
     expect(marcos?.funcoes.map((funcao) => funcao.id)).toEqual(['violao'])
+  })
+})
+
+describe('quem não recebe notificação', () => {
+  const equipe = [
+    { membroId: 'ana', funcoes: ['vocal'], ministro: false },
+    { membroId: 'isa', funcoes: [], ministro: true },
+    { membroId: 'pedro', funcoes: ['baixo'], ministro: false },
+  ]
+
+  const comAparelhos = (mudos: Record<string, Partial<MembroComPush>>) =>
+    m.membros.map((membro) => ({ ...membro, push: 1, ...mudos[membro.id] }))
+
+  it('conta o silenciado igual a quem não tem aparelho', () => {
+    expect(naoRecebeNotificacao({ ...m.membros[0], push: 2, silenciado: true }, true)).toBe(true)
+  })
+
+  it('lista só os escalados que não vão receber', () => {
+    const membros = comAparelhos({ ana: { push: 0 }, isa: { silenciado: true }, lucas: { push: 0 } })
+
+    expect(semNotificacao(membros, equipe)).toEqual(['Isa', 'Ana'])
+  })
+
+  it('escreve a dica com as pessoas e nada quando todo mundo recebe', () => {
+    expect(textoDeSemNotificacao(['Ana', 'Isa', 'Gabriel'])).toBe('3 pessoas sem notificação: Ana, Isa, Gabriel')
+    expect(textoDeSemNotificacao(['Ana'])).toBe('1 pessoa sem notificação: Ana')
+    expect(textoDeSemNotificacao([])).toBeNull()
+  })
+})
+
+describe('memória da pessoa', () => {
+  const comPresenca = (presenca: MembroComPush['presenca']) => ({ ...m.membros[0], presenca })
+
+  it('diz quando foi a última vez', () => {
+    const memoria = memoriaDoMembro(comPresenca({ ultimaVez: '2026-08-16', seguidos: 1, paradaHaMeses: 0 }), HOJE)
+
+    expect(memoria.texto).toBe('última há 3 semanas')
+    expect(memoria.alerta).toBeNull()
+  })
+
+  it('avisa quem nunca esteve numa Escala', () => {
+    const memoria = memoriaDoMembro(comPresenca({ ultimaVez: null, seguidos: 0, paradaHaMeses: null }), HOJE)
+
+    expect(memoria.texto).toBe('nenhuma escala ainda')
+  })
+
+  it('alerta quem está há quatro fins de semana seguidos', () => {
+    const memoria = memoriaDoMembro(comPresenca({ ultimaVez: '2026-09-06', seguidos: 4, paradaHaMeses: 0 }), HOJE)
+
+    expect(memoria.alerta).toBe('4 seguidos')
+  })
+
+  it('alerta quem parou há dois meses ou mais', () => {
+    const memoria = memoriaDoMembro(comPresenca({ ultimaVez: '2026-06-07', seguidos: 0, paradaHaMeses: 3 }), HOJE)
+
+    expect(memoria.alerta).toBe('3 meses sem escala')
+  })
+
+  it('deixa passar quem parou há um mês só', () => {
+    const memoria = memoriaDoMembro(comPresenca({ ultimaVez: '2026-08-09', seguidos: 0, paradaHaMeses: 1 }), HOJE)
+
+    expect(memoria.alerta).toBeNull()
+  })
+})
+
+describe('ordem das pessoas na seção', () => {
+  it('põe os escalados em cima e o resto em ordem alfabética', () => {
+    const linhas = secao('musicos').membros
+    const equipe = [{ membroId: 'pedro', funcoes: ['baixo'], ministro: false }]
+    const ordenadas = ordenarPorEscalados(linhas, equipe)
+
+    expect(ordenadas[0].membro.id).toBe('pedro')
+    expect(ordenadas.slice(1).map((linha) => linha.membro.nome)).toEqual(
+      [...ordenadas.slice(1)].map((linha) => linha.membro.nome).sort((a, b) => a.localeCompare(b)),
+    )
+  })
+})
+
+describe('resumo da Equipe', () => {
+  const selos = (equipe: { membroId: string; funcoes: string[]; ministro: boolean }[]) =>
+    resumoDaEquipe(FUNCOES, equipe, m.membros)
+
+  it('põe o que falta em atenção e o que está completo em sucesso', () => {
+    const resumo = selos([
+      { membroId: 'isa', funcoes: ['vocal'], ministro: true },
+      { membroId: 'ana', funcoes: ['vocal'], ministro: false },
+      { membroId: 'gabriel', funcoes: ['guitarra'], ministro: false },
+    ])
+
+    expect(resumo[0]).toEqual({ chave: 'vocal', texto: 'vocal 2 de 2', variante: 'sucesso' })
+    expect(resumo[1].variante).toBe('atencao')
+    expect(resumo[1].texto).toContain('músicos 1 de 3')
+  })
+
+  it('fecha com quem dirige', () => {
+    const resumo = selos([{ membroId: 'isa', funcoes: ['vocal'], ministro: true }])
+
+    expect(resumo[resumo.length - 1]).toEqual({ chave: 'ministro', texto: 'ministro: Isa', variante: 'ministro' })
+  })
+
+  it('junta os nomes quando mais de um dirige', () => {
+    const resumo = selos([
+      { membroId: 'isa', funcoes: [], ministro: true },
+      { membroId: 'marcos', funcoes: [], ministro: true },
+    ])
+
+    expect(resumo[resumo.length - 1].texto).toBe('ministros: Isa e Marcos')
+  })
+
+  it('cobra o Ministro quando ninguém tem a marca', () => {
+    const resumo = selos([{ membroId: 'ana', funcoes: ['vocal'], ministro: false }])
+
+    expect(resumo[resumo.length - 1]).toEqual({ chave: 'ministro', texto: 'sem ministro', variante: 'atencao' })
+  })
+
+  it('deixa o Grupo sem mínimo em neutro', () => {
+    const semMinimo = FUNCOES.map((funcao) => ({ ...funcao, minimo: 0 }))
+
+    expect(resumoDaEquipe(semMinimo, [], m.membros)[0]).toEqual({
+      chave: 'vocal',
+      texto: 'vocal 0',
+      variante: 'neutro',
+    })
+  })
+})
+
+describe('avisos de cada toque', () => {
+  it('fala da Função que entrou e da que saiu', () => {
+    expect(mensagemDaFuncao('Ana', 'Vocal', false, { funcoes: ['vocal'], ministro: false })).toBe('Vocal: Ana entrou')
+    expect(mensagemDaFuncao('Ana', 'Vocal', true, { funcoes: ['violao'], ministro: false })).toBe('Vocal: Ana saiu')
+  })
+
+  it('diz que a pessoa saiu da equipe quando não sobra nada', () => {
+    expect(mensagemDaFuncao('Ana', 'Vocal', true, { funcoes: [], ministro: false })).toBe('Ana saiu da equipe')
+    expect(mensagemDoMinistro('Isa', true, { funcoes: [], ministro: false })).toBe('Isa saiu da equipe')
+  })
+
+  it('fala de quem dirige sem inventar gênero', () => {
+    expect(mensagemDoMinistro('Isa', false, { funcoes: ['vocal'], ministro: true })).toBe('Isa dirige esta escala')
+    expect(mensagemDoMinistro('Isa', true, { funcoes: ['vocal'], ministro: false })).toBe('Isa não dirige mais')
   })
 })

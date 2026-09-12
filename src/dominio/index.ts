@@ -117,7 +117,7 @@ export {
 
 export type { ChaveDePendencia, Pendencia, PendenciasDaEscala, ResumoDeGrupo } from './pendencias'
 
-export { NOME_DO_GRUPO, pendenciasDaEscala, resumoPorGrupo } from './pendencias'
+export { NOME_DO_GRUPO, pendenciasDaEscala, resumoDosGrupos, resumoPorGrupo } from './pendencias'
 
 export type { AcaoNaSugestao, EstadoDaSugestao } from './sugestao'
 

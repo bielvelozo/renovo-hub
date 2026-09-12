@@ -11,6 +11,7 @@ import { Campo } from '../../componentes/Campo'
 import { Esqueleto } from '../../componentes/Esqueleto'
 import { Folha } from '../../componentes/Folha'
 import { Segmento } from '../../componentes/Segmento'
+import { Selo } from '../../componentes/Selo'
 import { usarOrdenacao } from '../../componentes/usarOrdenacao'
 import { Vazio } from '../../componentes/Vazio'
 import type { Funcao, Grupo } from '../../dominio'
@@ -20,6 +21,8 @@ const GRUPOS: { valor: Grupo; rotulo: string }[] = [
   { valor: 'instrumentos', rotulo: 'Músicos' },
   { valor: 'tecnica', rotulo: 'Som' },
 ]
+
+const MINIMOS = ['0', '1', '2', '3', '4'].map((valor) => ({ valor, rotulo: valor }))
 
 export function Funcoes() {
   const papeis = usarBusca<{ funcoes: Funcao[] }>('/api/funcoes')
@@ -102,13 +105,14 @@ function FolhaDaFuncao({
 }) {
   const [nome, escrever] = useState(funcao?.nome ?? '')
   const [grupo, escolher] = useState<Grupo>(funcao?.grupo ?? 'instrumentos')
+  const [minimo, exigir] = useState(String(funcao?.minimo ?? 0))
   const [confirmando, confirmar] = useState(false)
 
   const valida = nome.trim().length > 0
 
   const salvar = () =>
     gravar(async () => {
-      const corpo = { nome: nome.trim(), grupo, ordem: funcao?.ordem ?? ordemNova }
+      const corpo = { nome: nome.trim(), grupo, ordem: funcao?.ordem ?? ordemNova, minimo: Number(minimo) }
 
       if (funcao) await api(`/api/admin/funcoes/${funcao.id}`, { metodo: 'PATCH', corpo })
       else await api('/api/admin/funcoes', { metodo: 'POST', corpo })
@@ -125,6 +129,12 @@ function FolhaDaFuncao({
       <div className="campo">
         <span className="rotulo">Grupo</span>
         <Segmento rotulo="Grupo" opcoes={GRUPOS} valor={grupo} aoMudar={escolher} />
+      </div>
+
+      <div className="campo">
+        <span className="rotulo">Mínimo por escala</span>
+        <Segmento rotulo="Mínimo por escala" opcoes={MINIMOS} valor={minimo} aoMudar={exigir} />
+        <span className="dica">0 não cobra</span>
       </div>
 
       <Botao largo disabled={!valida} onClick={salvar}>
@@ -174,6 +184,7 @@ function ListaDeFuncoes({
             <span className="cresce">
               <span className="titulo">{funcoes[original].nome}</span>
             </span>
+            {funcoes[original].minimo > 0 && <Selo>mín. {funcoes[original].minimo}</Selo>}
             <Icone nome="seta" />
           </button>
         </li>

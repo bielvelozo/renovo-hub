@@ -450,13 +450,31 @@ nav.abas .contagem {
   box-shadow: var(--sombra);
 }
 
-.chips.formacao {
-  flex-direction: column;
-  align-items: stretch;
+.acao-da-formacao {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.resumo-da-equipe {
+  margin: -4px 0 4px;
+}
+
+.sem-notificacao {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.pessoa .memoria {
+  display: flex;
+  align-items: center;
   gap: 6px;
 }
 
-.chips.formacao .dica {
+.pessoa .aviso-do-sino {
+  flex-basis: 100%;
   margin: 0;
 }
 

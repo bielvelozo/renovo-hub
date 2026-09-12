@@ -1,5 +1,5 @@
 import { GRUPOS, estadoEscala, ministros } from './escala'
-import type { Escala, Grupo, Ministerio } from './tipos'
+import type { EntradaEquipe, Escala, Funcao, Grupo, Ministerio } from './tipos'
 
 export const NOME_DO_GRUPO: Record<Grupo, string> = {
   vocal: 'Vocal',
@@ -38,10 +38,10 @@ export function pendenciasDaEscala(m: Ministerio, escala: Escala): PendenciasDaE
 
   if (!ministros(escala).length) pendencias.push({ chave: 'sem-ministro', texto: 'sem ministro' })
 
-  for (const funcao of funcoesOrdenadas(m)) {
+  for (const funcao of ordenadas(m.funcoes)) {
     if (funcao.minimo <= 0) continue
 
-    const faltam = funcao.minimo - escaladosNaFuncao(escala, funcao.id)
+    const faltam = funcao.minimo - escaladosNaFuncao(escala.equipe, funcao.id)
     if (faltam <= 0) continue
 
     const nome = funcao.nome.toLowerCase()
@@ -58,14 +58,18 @@ export function pendenciasDaEscala(m: Ministerio, escala: Escala): PendenciasDaE
 }
 
 export function resumoPorGrupo(m: Ministerio, escala: Escala): ResumoDeGrupo[] {
+  return resumoDosGrupos(m.funcoes, escala.equipe)
+}
+
+export function resumoDosGrupos(todas: Funcao[], equipe: EntradaEquipe[]): ResumoDeGrupo[] {
   return GRUPOS.map((grupo) => {
-    const funcoes = funcoesOrdenadas(m).filter((funcao) => funcao.grupo === grupo)
-    const escalados = escala.equipe.filter((entrada) =>
+    const funcoes = ordenadas(todas).filter((funcao) => funcao.grupo === grupo)
+    const escalados = equipe.filter((entrada) =>
       entrada.funcoes.some((funcaoId) => funcoes.some((funcao) => funcao.id === funcaoId)),
     ).length
     const minimo = funcoes.reduce((soma, funcao) => soma + funcao.minimo, 0)
     const faltam = funcoes
-      .filter((funcao) => funcao.minimo > 0 && escaladosNaFuncao(escala, funcao.id) < funcao.minimo)
+      .filter((funcao) => funcao.minimo > 0 && escaladosNaFuncao(equipe, funcao.id) < funcao.minimo)
       .map((funcao) => funcao.nome.toLowerCase())
 
     return { grupo, escalados, minimo, faltam, texto: textoDoGrupo(grupo, escalados, minimo, faltam) }
@@ -81,12 +85,12 @@ function textoDoGrupo(grupo: Grupo, escalados: number, minimo: number, faltam: s
   return `${nome} ${escalados} de ${minimo}${falta}`
 }
 
-function escaladosNaFuncao(escala: Escala, funcaoId: string): number {
-  return escala.equipe.filter((entrada) => entrada.funcoes.includes(funcaoId)).length
+function escaladosNaFuncao(equipe: EntradaEquipe[], funcaoId: string): number {
+  return equipe.filter((entrada) => entrada.funcoes.includes(funcaoId)).length
 }
 
-function funcoesOrdenadas(m: Ministerio) {
-  return [...m.funcoes].sort((a, b) => a.ordem - b.ordem || a.nome.localeCompare(b.nome))
+function ordenadas(funcoes: Funcao[]): Funcao[] {
+  return [...funcoes].sort((a, b) => a.ordem - b.ordem || a.nome.localeCompare(b.nome))
 }
 
 // O plural só serve pros nomes de Função que o Admin cadastra, sempre uma palavra:

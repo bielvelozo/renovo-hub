@@ -7,29 +7,42 @@ import { usarAcao } from '../api/usarAcao'
 import type { Acao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
 import { Cabecalho } from '../casca/Cabecalho'
+import { Icone } from '../casca/Icone'
 import { usarAviso } from '../componentes/Avisos'
 import { Botao, BotaoLink } from '../componentes/Botao'
+import { Busca } from '../componentes/Busca'
 import { Esqueleto } from '../componentes/Esqueleto'
 import { Folha } from '../componentes/Folha'
+import { Menu } from '../componentes/Menu'
+import { Selo } from '../componentes/Selo'
 import type { Funcao } from '../dominio'
-import { formatarDia } from '../dominio'
+import { formatarDia, hojeEmBrasilia, normalizarTexto } from '../dominio'
 import {
+  PESSOAS_PARA_BUSCA,
   alternarFuncao,
   alternarMinistro,
   comEntrada,
   entradaDoMembro,
+  memoriaDoMembro,
+  mensagemDaFuncao,
+  mensagemDoMinistro,
   naoRecebeNotificacao,
+  ordenarPorEscalados,
   podeSerMinistro,
+  resumoDaEquipe,
   saiDaEquipe,
   secoesDaEquipe,
+  semNotificacao,
+  textoDeSemNotificacao,
 } from '../escalas/equipe'
 import type { EstadoNaEquipe, MembroComPush, SecaoDaEquipe } from '../escalas/equipe'
+import { inicialDoNome } from '../perfil/perfil'
 import { usarEu } from '../sessao/sessao'
 
-function mensagemDoToggle(nome: string, oQue: string, jaTinha: boolean, proximo: EstadoNaEquipe): string {
-  if (saiDaEquipe(proximo)) return `${nome} saiu da Equipe`
-  return `${nome} ${jaTinha ? 'tirado' : 'escalado'} ${oQue}`
-}
+const EXPLICACAO_DA_FORMACAO =
+  'Formação é um grupo de músicos guardado pra reusar: escalar traz todos de uma vez, salvar guarda os que estão aqui agora.'
+
+const AVISO_DO_SINO = 'não vai receber aviso pelo app; combine pelo WhatsApp'
 
 export function Equipe() {
   const { id = '' } = useParams()
@@ -39,9 +52,6 @@ export function Equipe() {
   const papeis = usarBusca<{ funcoes: Funcao[] }>('/api/funcoes')
   const formacoes = usarBusca<{ formacoes: Formacao[] }>('/api/formacoes')
   const acao = usarAcao()
-  const avisar = usarAviso()
-  const [salvando, abrirSalvar] = useState(false)
-  const [escolhendo, abrirEscolha] = useState(false)
 
   const erro = escala.erro ?? pessoas.erro ?? papeis.erro ?? formacoes.erro
   const atual = escala.dados
@@ -51,11 +61,11 @@ export function Equipe() {
   const cabecalho = (
     <Cabecalho
       titulo="Equipe"
-      sub={atual ? `${formatarDia(atual.data)} · toque na Função pra escalar` : undefined}
+      sub={atual ? formatarDia(atual.data) : undefined}
       voltarPara={`/escalas/${id}`}
       acao={
         <BotaoLink para={`/escalas/${id}`} pequeno>
-          Concluir
+          Pronto
         </BotaoLink>
       }
     />
@@ -79,103 +89,175 @@ export function Equipe() {
     )
   }
 
-  const secoes = secoesDaEquipe(pessoas.dados.membros, papeis.dados.funcoes)
-  const lista = formacoes.dados.formacoes
-
-  const gravar = (membroId: string, proximo: EstadoNaEquipe, mensagem: string) => {
-    escala.definir({ ...atual, equipe: comEntrada(atual.equipe, membroId, proximo) })
-    avisar(mensagem)
-
-    acao.executar(async () => {
-      const caminho = `/api/escalas/${id}/equipe/${membroId}`
-      const resposta = saiDaEquipe(proximo)
-        ? await api<EscalaApresentada>(caminho, { metodo: 'DELETE' })
-        : await api<EscalaApresentada>(caminho, { metodo: 'PUT', corpo: proximo })
-
-      escala.definir(resposta)
-    })
-  }
-
-  const aplicar = (formacaoId: string) => {
-    abrirEscolha(false)
-
-    acao.executar(async () => {
-      escala.definir(
-        await api<EscalaApresentada>(`/api/escalas/${id}/formacao`, { metodo: 'POST', corpo: { formacaoId } }),
-      )
-    })
-  }
-
   return (
     <section className="pagina">
       {cabecalho}
 
+      <CorpoDaEquipe
+        escala={atual}
+        definir={escala.definir}
+        membros={pessoas.dados.membros}
+        funcoes={papeis.dados.funcoes}
+        formacoes={formacoes.dados.formacoes}
+        acao={acao}
+        recarregarFormacoes={formacoes.recarregar}
+      />
+    </section>
+  )
+}
+
+export function CorpoDaEquipe({
+  escala,
+  definir,
+  membros,
+  funcoes,
+  formacoes,
+  acao,
+  recarregarFormacoes,
+  hoje = hojeEmBrasilia(),
+}: {
+  escala: EscalaApresentada
+  definir: (escala: EscalaApresentada) => void
+  membros: MembroComPush[]
+  funcoes: Funcao[]
+  formacoes: Formacao[]
+  acao: Acao
+  recarregarFormacoes: () => void
+  hoje?: string
+}) {
+  const avisar = usarAviso()
+  const [salvando, abrirSalvar] = useState(false)
+  const [explicando, explicar] = useState(false)
+
+  const secoes = secoesDaEquipe(membros, funcoes)
+  const resumo = resumoDaEquipe(funcoes, escala.equipe, membros)
+  const mudos = semNotificacao(membros, escala.equipe)
+  const lembrete = textoDeSemNotificacao(mudos)
+
+  const gravar = (membroId: string, proximo: EstadoNaEquipe, mensagem: string) => {
+    definir({ ...escala, equipe: comEntrada(escala.equipe, membroId, proximo) })
+    avisar(mensagem)
+
+    acao.executar(async () => {
+      const caminho = `/api/escalas/${escala.id}/equipe/${membroId}`
+      const resposta = saiDaEquipe(proximo)
+        ? await api<EscalaApresentada>(caminho, { metodo: 'DELETE' })
+        : await api<EscalaApresentada>(caminho, { metodo: 'PUT', corpo: proximo })
+
+      definir(resposta)
+    })
+  }
+
+  const aplicar = (formacao: Formacao) =>
+    acao.executar(async () => {
+      definir(
+        await api<EscalaApresentada>(`/api/escalas/${escala.id}/formacao`, {
+          metodo: 'POST',
+          corpo: { formacaoId: formacao.id },
+        }),
+      )
+      avisar(`${formacao.nome} escalada: ${formacao.entradas.length} pessoas`)
+    })
+
+  const copiarNomes = async () => {
+    try {
+      await navigator.clipboard.writeText(mudos.join(', '))
+      avisar('Copiado')
+    } catch {
+      // Sem permissão de área de transferência: o Ministro copia os nomes à mão.
+    }
+  }
+
+  return (
+    <>
       {acao.erro && <p className="aviso">{acao.erro}</p>}
+
+      <div className="selos resumo-da-equipe">
+        {resumo.map((selo) => (
+          <Selo key={selo.chave} variante={selo.variante}>
+            {selo.texto}
+          </Selo>
+        ))}
+      </div>
+
+      {lembrete && (
+        <p className="dica sem-notificacao">
+          <span className="cresce">{lembrete}</span>
+          <Botao variante="terciario" pequeno onClick={copiarNomes}>
+            Copiar nomes
+          </Botao>
+        </p>
+      )}
 
       {secoes.map((secao) => (
         <Secao
           key={secao.chave}
           secao={secao}
-          equipe={atual.equipe}
+          equipe={escala.equipe}
           acao={acao}
           gravar={gravar}
-          formacoes={
+          hoje={hoje}
+          titulo={
             secao.chave === 'musicos' ? (
-              <div className="chips formacao">
+              <span className="acao-da-formacao">
+                {formacoes.length === 0 ? null : formacoes.length === 1 ? (
+                  <Botao variante="secundario" pequeno disabled={acao.ocupado} onClick={() => aplicar(formacoes[0])}>
+                    Escalar a {formacoes[0].nome}
+                  </Botao>
+                ) : (
+                  <Menu
+                    rotulo="Escalar uma Formação"
+                    itens={formacoes.map((formacao) => ({
+                      rotulo: formacao.nome,
+                      aoEscolher: () => aplicar(formacao),
+                    }))}
+                    gatilho={
+                      <Botao variante="secundario" pequeno disabled={acao.ocupado}>
+                        Escalar <Icone nome="seta" />
+                      </Botao>
+                    }
+                  />
+                )}
                 <Botao
-                  pequeno
-                  disabled={acao.ocupado || lista.length === 0}
-                  onClick={() => (lista.length === 1 ? aplicar(lista[0].id) : abrirEscolha(true))}
+                  variante="icone"
+                  aria-label="O que é uma Formação"
+                  aria-expanded={explicando}
+                  onClick={() => explicar(!explicando)}
                 >
-                  {lista.length === 1 ? `Escalar a ${lista[0].nome}` : 'Escalar uma Formação'}
+                  ?
                 </Botao>
+              </span>
+            ) : null
+          }
+          rodape={
+            secao.chave === 'musicos' ? (
+              <>
+                {explicando && <p className="dica">{EXPLICACAO_DA_FORMACAO}</p>}
                 <Botao
-                  variante="secundario"
+                  variante="terciario"
                   pequeno
-                  disabled={acao.ocupado || atual.equipe.length === 0}
+                  disabled={acao.ocupado || escala.equipe.length === 0}
                   onClick={() => abrirSalvar(true)}
                 >
-                  Salvar como Formação
+                  Salvar como formação
                 </Botao>
-                <p className="dica">
-                  Formação é um grupo de músicos guardado pra reusar: escalar traz todos de uma vez, salvar guarda os
-                  que estão aqui agora.
-                </p>
-              </div>
+              </>
             ) : null
           }
         />
       ))}
 
-      {escolhendo && (
-        <Folha titulo="Escalar uma Formação" fechar={() => abrirEscolha(false)}>
-          <p className="dica">Põe todo mundo da Formação na Equipe de uma vez. Quem já está continua.</p>
-          <ul className="lista">
-            {lista.map((formacao) => (
-              <li key={formacao.id}>
-                <button type="button" className="toque" onClick={() => aplicar(formacao.id)}>
-                  <span className="cresce">{formacao.nome}</span>
-                  <span className="dica">
-                    {formacao.entradas.length} {formacao.entradas.length === 1 ? 'Membro' : 'Membros'}
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </Folha>
-      )}
-
       {salvando && (
         <FolhaDeSalvar
-          escalaId={id}
-          equipe={atual.equipe}
-          formacoes={lista}
+          escalaId={escala.id}
+          equipe={escala.equipe}
+          formacoes={formacoes}
           acao={acao}
-          recarregar={formacoes.recarregar}
+          recarregar={recarregarFormacoes}
           fechar={() => abrirSalvar(false)}
         />
       )}
-    </section>
+    </>
   )
 }
 
@@ -184,82 +266,131 @@ function Secao({
   equipe,
   acao,
   gravar,
-  formacoes,
+  hoje,
+  titulo,
+  rodape,
 }: {
   secao: SecaoDaEquipe
   equipe: EscalaApresentada['equipe']
   acao: Acao
   gravar: (membroId: string, proximo: EstadoNaEquipe, mensagem: string) => void
-  formacoes: ReactNode
+  hoje: string
+  titulo: ReactNode
+  rodape: ReactNode
 }) {
+  const [termo, buscar] = useState('')
+
+  const ordenadas = ordenarPorEscalados(secao.membros, equipe)
+  const busca = normalizarTexto(termo)
+  const linhas = busca ? ordenadas.filter((linha) => normalizarTexto(linha.membro.nome).includes(busca)) : ordenadas
+
   return (
     <div className="secao">
       <div className="secao-topo">
         <h2>{secao.nome}</h2>
-        {formacoes}
+        {titulo}
       </div>
+
+      {secao.membros.length > PESSOAS_PARA_BUSCA && (
+        <Busca valor={termo} aoMudar={buscar} rotulo={`Buscar em ${secao.nome}`} placeholder="nome da pessoa" />
+      )}
+
       {secao.membros.length === 0 ? (
         <p className="dica">Ninguém com Função deste grupo ainda.</p>
       ) : (
         <ul className="lista cartao">
-          {secao.membros.map(({ membro, funcoes }) => {
-            const entrada = entradaDoMembro(equipe, membro.id)
-            const escalado = Boolean(entrada?.funcoes.length || entrada?.ministro)
-            const jaEraMinistro = entrada?.ministro ?? false
-            const proximoMinistro = alternarMinistro(entrada)
-
-            return (
-              <li key={membro.id} className="pessoa">
-                <span className="titulo cresce">
-                  {membro.nome}
-                  {naoRecebeNotificacao(membro, escalado) && (
-                    <small className="dica"> · não recebe notificação</small>
-                  )}
-                </span>
-                <span className="chips">
-                  {funcoes.map((funcao) => {
-                    const jaTinha = entrada?.funcoes.includes(funcao.id) ?? false
-                    const proximo = alternarFuncao(entrada, funcao.id)
-
-                    return (
-                      <button
-                        key={funcao.id}
-                        type="button"
-                        className={`chip${funcao.grupo === 'tecnica' ? ' tecnica' : ''}`}
-                        aria-pressed={jaTinha}
-                        onClick={() =>
-                          gravar(membro.id, proximo, mensagemDoToggle(membro.nome, `no ${funcao.nome}`, jaTinha, proximo))
-                        }
-                      >
-                        {funcao.nome}
-                      </button>
-                    )
-                  })}
-                  {podeSerMinistro(membro) && (
-                    <button
-                      type="button"
-                      className="chip ministro"
-                      aria-pressed={jaEraMinistro}
-                      onClick={() =>
-                        gravar(
-                          membro.id,
-                          proximoMinistro,
-                          mensagemDoToggle(membro.nome, 'como Ministro', jaEraMinistro, proximoMinistro),
-                        )
-                      }
-                    >
-                      Ministro
-                    </button>
-                  )}
-                </span>
-              </li>
-            )
-          })}
+          {linhas.map(({ membro, funcoes }) => (
+            <Pessoa key={membro.id} membro={membro} funcoes={funcoes} equipe={equipe} gravar={gravar} hoje={hoje} />
+          ))}
         </ul>
       )}
 
+      {rodape}
+
       {acao.ocupado && <span className="dica">salvando…</span>}
     </div>
+  )
+}
+
+function Pessoa({
+  membro,
+  funcoes,
+  equipe,
+  gravar,
+  hoje,
+}: {
+  membro: MembroComPush
+  funcoes: Funcao[]
+  equipe: EscalaApresentada['equipe']
+  gravar: (membroId: string, proximo: EstadoNaEquipe, mensagem: string) => void
+  hoje: string
+}) {
+  const [avisando, avisarDoSino] = useState(false)
+
+  const entrada = entradaDoMembro(equipe, membro.id)
+  const escalado = Boolean(entrada?.funcoes.length || entrada?.ministro)
+  const jaEraMinistro = entrada?.ministro ?? false
+  const proximoMinistro = alternarMinistro(entrada)
+  const memoria = memoriaDoMembro(membro, hoje)
+
+  return (
+    <li className="pessoa">
+      <span className="inicial pequena" aria-hidden="true">
+        {inicialDoNome(membro.nome)}
+      </span>
+
+      <span className="cresce grupo">
+        <span className="titulo">{membro.nome}</span>
+        <span className="memoria">
+          <span className="dica">{memoria.texto}</span>
+          {memoria.alerta && <Selo variante="atencao">{memoria.alerta}</Selo>}
+        </span>
+      </span>
+
+      {naoRecebeNotificacao(membro, escalado) && (
+        <Botao
+          variante="icone"
+          icone="sino-cortado"
+          aria-label={`${membro.nome} ${AVISO_DO_SINO}`}
+          aria-expanded={avisando}
+          onClick={() => avisarDoSino(!avisando)}
+        />
+      )}
+
+      <span className="chips">
+        {funcoes.map((funcao) => {
+          const jaTinha = entrada?.funcoes.includes(funcao.id) ?? false
+          const proximo = alternarFuncao(entrada, funcao.id)
+
+          return (
+            <button
+              key={funcao.id}
+              type="button"
+              className={`chip${funcao.grupo === 'tecnica' ? ' tecnica' : ''}`}
+              aria-pressed={jaTinha}
+              onClick={() => gravar(membro.id, proximo, mensagemDaFuncao(membro.nome, funcao.nome, jaTinha, proximo))}
+            >
+              {funcao.nome}
+            </button>
+          )
+        })}
+
+        {podeSerMinistro(membro) && (
+          <button
+            type="button"
+            className="chip ministro"
+            aria-pressed={jaEraMinistro}
+            onClick={() =>
+              gravar(membro.id, proximoMinistro, mensagemDoMinistro(membro.nome, jaEraMinistro, proximoMinistro))
+            }
+          >
+            Ministro
+          </button>
+        )}
+      </span>
+
+      {avisando && <p className="dica aviso-do-sino">{AVISO_DO_SINO}</p>}
+    </li>
   )
 }
 
@@ -305,7 +436,7 @@ function FolhaDeSalvar({
   }
 
   return (
-    <Folha titulo="Salvar como Formação" fechar={fechar}>
+    <Folha titulo="Salvar como formação" fechar={fechar}>
       <p className="dica">Guarda os Músicos que estão na Equipe agora.</p>
 
       {formacoes.length > 0 && (

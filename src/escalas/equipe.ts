@@ -1,8 +1,23 @@
+import { resumoDosGrupos, tempoRelativo } from '../dominio'
 import type { EntradaEquipe, Funcao, Membro, Grupo } from '../dominio'
 
 export type ChaveDaSecao = 'vocal' | 'musicos' | 'som'
 
-export type MembroComPush = Membro & { push?: number }
+export type PresencaDoMembro = { ultimaVez: string | null; seguidos: number; paradaHaMeses: number | null }
+
+export type MembroComPush = Membro & { push?: number; silenciado?: boolean; presenca?: PresencaDoMembro }
+
+export type SeloDoResumo = {
+  chave: string
+  texto: string
+  variante: 'sucesso' | 'atencao' | 'neutro' | 'ministro'
+}
+
+export type MemoriaDoMembro = { texto: string; alerta: string | null }
+
+export const SEGUIDOS_PARA_ALERTA = 4
+export const MESES_PARADOS_PARA_ALERTA = 2
+export const PESSOAS_PARA_BUSCA = 10
 
 export type MembroDaSecao = {
   membro: MembroComPush
@@ -36,7 +51,79 @@ export function podeSerMinistro(membro: Membro): boolean {
 }
 
 export function naoRecebeNotificacao(membro: MembroComPush, escalado: boolean): boolean {
-  return escalado && membro.push === 0
+  return escalado && (membro.push === 0 || membro.silenciado === true)
+}
+
+export function semNotificacao(membros: MembroComPush[], equipe: EntradaEquipe[]): string[] {
+  return membros
+    .filter((membro) => naoRecebeNotificacao(membro, Boolean(entradaDoMembro(equipe, membro.id))))
+    .map((membro) => membro.nome)
+}
+
+export function textoDeSemNotificacao(nomes: string[]): string | null {
+  if (!nomes.length) return null
+
+  const quantas = nomes.length === 1 ? '1 pessoa' : `${nomes.length} pessoas`
+
+  return `${quantas} sem notificação: ${nomes.join(', ')}`
+}
+
+export function memoriaDoMembro(membro: MembroComPush, hoje: string): MemoriaDoMembro {
+  const presenca = membro.presenca
+
+  return {
+    texto: presenca?.ultimaVez ? `última ${tempoRelativo(presenca.ultimaVez, hoje)}` : 'nenhuma escala ainda',
+    alerta: alertaDaPresenca(presenca),
+  }
+}
+
+export function ordenarPorEscalados(linhas: MembroDaSecao[], equipe: EntradaEquipe[]): MembroDaSecao[] {
+  const escalado = (linha: MembroDaSecao) => Number(Boolean(entradaDoMembro(equipe, linha.membro.id)))
+
+  return [...linhas].sort(
+    (a, b) => escalado(b) - escalado(a) || a.membro.nome.localeCompare(b.membro.nome),
+  )
+}
+
+export function resumoDaEquipe(funcoes: Funcao[], equipe: EntradaEquipe[], membros: Membro[]): SeloDoResumo[] {
+  const grupos: SeloDoResumo[] = resumoDosGrupos(funcoes, equipe).map((grupo) => ({
+    chave: grupo.grupo,
+    texto: grupo.texto,
+    variante: grupo.faltam.length ? 'atencao' : grupo.minimo ? 'sucesso' : 'neutro',
+  }))
+
+  const nomes = equipe
+    .filter((entrada) => entrada.ministro)
+    .map((entrada) => membros.find((membro) => membro.id === entrada.membroId)?.nome)
+    .filter((nome): nome is string => Boolean(nome))
+
+  return [
+    ...grupos,
+    nomes.length
+      ? {
+          chave: 'ministro',
+          texto: `${nomes.length === 1 ? 'ministro' : 'ministros'}: ${juntarNomes(nomes)}`,
+          variante: 'ministro' as const,
+        }
+      : { chave: 'ministro', texto: 'sem ministro', variante: 'atencao' as const },
+  ]
+}
+
+export function mensagemDaFuncao(
+  nome: string,
+  funcao: string,
+  jaTinha: boolean,
+  proximo: EstadoNaEquipe,
+): string {
+  if (saiDaEquipe(proximo)) return `${nome} saiu da equipe`
+
+  return `${funcao}: ${nome} ${jaTinha ? 'saiu' : 'entrou'}`
+}
+
+export function mensagemDoMinistro(nome: string, jaEra: boolean, proximo: EstadoNaEquipe): string {
+  if (saiDaEquipe(proximo)) return `${nome} saiu da equipe`
+
+  return jaEra ? `${nome} não dirige mais` : `${nome} dirige esta escala`
 }
 
 export function secoesDaEquipe(membros: MembroComPush[], funcoes: Funcao[]): SecaoDaEquipe[] {
@@ -94,4 +181,18 @@ function grupoQueManda(funcoes: Funcao[]): Grupo {
   if (funcoes.some((funcao) => funcao.grupo === 'vocal')) return 'vocal'
   if (funcoes.some((funcao) => funcao.grupo === 'instrumentos')) return 'instrumentos'
   return 'tecnica'
+}
+
+function alertaDaPresenca(presenca: PresencaDoMembro | undefined): string | null {
+  if (!presenca) return null
+  if (presenca.seguidos >= SEGUIDOS_PARA_ALERTA) return `${presenca.seguidos} seguidos`
+  if ((presenca.paradaHaMeses ?? 0) >= MESES_PARADOS_PARA_ALERTA) return `${presenca.paradaHaMeses} meses sem escala`
+
+  return null
+}
+
+function juntarNomes(nomes: string[]): string {
+  if (nomes.length === 1) return nomes[0]
+
+  return `${nomes.slice(0, -1).join(', ')} e ${nomes[nomes.length - 1]}`
 }

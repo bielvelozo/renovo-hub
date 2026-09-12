@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { ministerioDeExemplo } from './exemplo'
-import { pendenciasDaEscala, resumoPorGrupo } from './pendencias'
+import { pendenciasDaEscala, resumoDosGrupos, resumoPorGrupo } from './pendencias'
 import type { Escala, Ministerio } from './tipos'
 
 const HOJE = '2026-09-08'
@@ -119,5 +119,21 @@ describe('resumo por Grupo', () => {
     const resultado = pendenciasDaEscala(m, escala)
 
     expect(resultado.porGrupo.map((linha) => linha.texto)).toEqual(['vocal 2 de 2', 'músicos 3 de 3', 'som 1 de 1'])
+  })
+})
+
+describe('resumo dos Grupos a partir de Funções e Equipe', () => {
+  it('dá o mesmo resultado que a versão de Ministério', () => {
+    const { m, escala } = comEscala(COMPLETA.filter((entrada) => entrada.membroId !== 'lucas'))
+
+    expect(resumoDosGrupos(m.funcoes, escala.equipe)).toEqual(resumoPorGrupo(m, escala))
+  })
+
+  it('acompanha a Equipe que a tela tem na mão, sem Escala nenhuma', () => {
+    const m = ministerioDeExemplo(HOJE)
+
+    expect(resumoDosGrupos(m.funcoes, [{ membroId: 'ana', funcoes: ['vocal'], ministro: false }])[0].texto).toBe(
+      'vocal 1 de 2 · falta vocal',
+    )
   })
 })
