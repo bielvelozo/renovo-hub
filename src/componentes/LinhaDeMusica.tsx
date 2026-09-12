@@ -124,6 +124,10 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
     </span>
   )
 
+  // A alça e o que vem em `direita` ficam fora do botão: arrastar a linha pra
+  // reordenar não pode abrir a folha do Item.
+  const tocavelNaLeitura = modo === 'leitura' && !!aoEscolher
+
   return (
     <li ref={ref} className={`linha-de-musica ${modo}${ehMedley ? ' medley' : ''}${arrastando ? ' arrastando' : ''}`}>
       {modo === 'escolha' ? (
@@ -139,10 +143,15 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
             <Link to={`/musicas/${props.musica.id}`} className="miolo">
               {miolo}
             </Link>
+          ) : tocavelNaLeitura ? (
+            <button type="button" className="toque-da-linha" disabled={desligado} onClick={aoEscolher}>
+              <span className="miolo">{miolo}</span>
+              {coluna}
+            </button>
           ) : (
             <span className="miolo">{miolo}</span>
           )}
-          {coluna}
+          {!tocavelNaLeitura && coluna}
         </>
       )}
       {direita && <span className="direita">{direita}</span>}
@@ -152,18 +161,32 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
           {props.trechos.map((trecho, posicao) => (
             <li key={`${trecho.musicaId}-${posicao}`}>
               <Capa musicas={[trecho.musica]} tocavel={trecho.link} />
-              <span className="cresce">
-                <span className="titulo">{nomeLimpo(trecho.musica).titulo}</span>
-                <span className="dica">
-                  {trecho.inicio}–{trecho.fim}
+              {modo === 'navegacao' ? (
+                <Link to={`/musicas/${trecho.musicaId}`} className="cresce">
+                  <TituloDoTrecho trecho={trecho} />
+                </Link>
+              ) : (
+                <span className="cresce">
+                  <TituloDoTrecho trecho={trecho} />
                 </span>
-              </span>
+              )}
               <Selo variante="tom">Tom {trecho.tom}</Selo>
             </li>
           ))}
         </ol>
       )}
     </li>
+  )
+}
+
+function TituloDoTrecho({ trecho }: { trecho: TrechoApresentado }) {
+  return (
+    <>
+      <span className="titulo">{nomeLimpo(trecho.musica).titulo}</span>
+      <span className="dica">
+        {trecho.inicio}–{trecho.fim}
+      </span>
+    </>
   )
 }
 

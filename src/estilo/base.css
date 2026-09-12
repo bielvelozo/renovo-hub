@@ -538,6 +538,10 @@ nav.abas .contagem {
   margin-top: 6px;
 }
 
+.faixa-de-estado {
+  margin: -4px 0 4px;
+}
+
 .dia {
   display: flex;
   flex-direction: column;
@@ -620,6 +624,10 @@ nav.abas .contagem {
 
 .pessoa {
   flex-wrap: wrap;
+}
+
+.pessoa .selos {
+  margin-left: auto;
 }
 
 .item .titulo {

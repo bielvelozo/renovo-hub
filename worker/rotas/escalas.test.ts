@@ -271,6 +271,22 @@ describe('listar e ver', () => {
     expect(escala.resumoDoRepertorio).toEqual({ recentes: 0, antigas: 1, nuncaTocadas: 1, total: 2 })
   })
 
+  it('a Escala traz as pendências pra faixa de estado e os anexos de letra', async () => {
+    await criarMusica('rio', 'Rio', 's1oU-6vYc4E')
+    await criarEscala({ id: 'e1', data: FUTURO })
+    await criarItemInteira('i1', 'e1', 'rio', 'D')
+
+    const semMinistro = await (await pedir('/api/escalas/e1', 'julia')).json<{
+      pendencias: { chave: string }[]
+      pronta: boolean
+      anexosPorMusica: Record<string, unknown[]>
+    }>()
+
+    expect(semMinistro.pendencias.map((p) => p.chave)).toContain('sem-ministro')
+    expect(semMinistro.pronta).toBe(false)
+    expect(semMinistro.anexosPorMusica).toEqual({})
+  })
+
   it('Escala que não existe devolve 404', async () => {
     expect((await pedir('/api/escalas/nada', 'julia')).status).toBe(404)
   })

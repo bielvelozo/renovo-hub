@@ -33,11 +33,22 @@ export type PropriedadesDoCatalogo = {
   titulo?: string
   sub?: string
   aoVoltar?: () => void
+  acima?: ReactNode
 }
 
 const PRIMEIRAS_DA_SECAO_NUNCA = 3
 
-export function Catalogo({ modo, escalaId, permiteYoutube, aoEscolher, aoEscolherSugestao, titulo, sub, aoVoltar }: PropriedadesDoCatalogo) {
+export function Catalogo({
+  modo,
+  escalaId,
+  permiteYoutube,
+  aoEscolher,
+  aoEscolherSugestao,
+  titulo,
+  sub,
+  aoVoltar,
+  acima,
+}: PropriedadesDoCatalogo) {
   const eu = usarEu()
   const catalogo = usarBusca<{ musicas: MusicaNaLista[]; semanasDeRepeticao: number }>(
     '/api/musicas' + (escalaId ? `?escalaId=${encodeURIComponent(escalaId)}` : ''),
@@ -62,6 +73,7 @@ export function Catalogo({ modo, escalaId, permiteYoutube, aoEscolher, aoEscolhe
           permiteYoutube={permiteYoutube}
           aoEscolher={aoEscolher}
           aoEscolherSugestao={aoEscolherSugestao}
+          acima={acima}
           resolverLink={async (link) => escolhaDoLink(await api<Resolucao>('/api/musicas/resolver', { metodo: 'POST', corpo: { link } }), link)}
           buscarNoYoutube={async (termo) =>
             (await api<{ achados: AchadoNoYoutube[] }>(`/api/musicas/buscar?termo=${encodeURIComponent(termo)}`)).achados
@@ -81,6 +93,7 @@ export function CorpoDoCatalogo({
   permiteYoutube,
   aoEscolher,
   aoEscolherSugestao,
+  acima,
   resolverLink,
   buscarNoYoutube,
   hoje = hojeEmBrasilia(),
@@ -93,6 +106,7 @@ export function CorpoDoCatalogo({
   permiteYoutube: boolean
   aoEscolher?: (escolha: Escolha) => void
   aoEscolherSugestao?: (sugestao: SugestaoApresentada) => void
+  acima?: ReactNode
   resolverLink?: (link: string) => Promise<Escolha>
   buscarNoYoutube?: (termo: string) => Promise<AchadoNoYoutube[]>
   hoje?: string
@@ -199,6 +213,8 @@ export function CorpoDoCatalogo({
     <>
       <Busca valor={termo} aoMudar={escrever} placeholder="Buscar ou colar um link" rotulo="Buscar ou colar um link" />
       {acao.erro && <p className="aviso">{acao.erro}</p>}
+
+      {acima}
 
       <div className="topo-do-catalogo">
         <Segmento

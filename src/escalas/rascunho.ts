@@ -1,6 +1,7 @@
 import type {
   Cobertura,
   ExecucaoApresentada,
+  ItemApresentado,
   MusicaNaLista,
   MusicaResumida,
   Resolucao,
@@ -106,6 +107,61 @@ export function trechoDe(
   primeiro: boolean,
 ): TrechoEmMontagem {
   return { escolha, tom: sugerido?.tom ?? null, inicio: primeiro ? '0:00' : '', fim: '' }
+}
+
+export function rascunhoDoTrecho(trecho: TrechoEmMontagem): Rascunho {
+  return {
+    escolha: trecho.escolha,
+    tom: trecho.tom,
+    tomOriginal: null,
+    modo: 'trecho',
+    inicio: trecho.inicio,
+    fim: trecho.fim,
+    observacao: '',
+    ministradoPor: null,
+  }
+}
+
+export function trechoDoRascunho(rascunho: Rascunho): TrechoEmMontagem {
+  return { escolha: rascunho.escolha, tom: rascunho.tom, inicio: rascunho.inicio, fim: rascunho.fim }
+}
+
+export function rascunhoDoItem(item: ItemApresentado, escolha: Escolha): Rascunho {
+  if (item.tipo === 'medley') {
+    return {
+      escolha,
+      tom: null,
+      tomOriginal: null,
+      modo: 'inteira',
+      inicio: '',
+      fim: '',
+      observacao: item.observacao,
+      ministradoPor: item.ministradoPor,
+    }
+  }
+
+  return {
+    escolha,
+    tom: item.tom,
+    tomOriginal: null,
+    modo: item.tipo,
+    inicio: item.tipo === 'trecho' ? item.inicio : '',
+    fim: item.tipo === 'trecho' ? item.fim : '',
+    observacao: item.observacao,
+    ministradoPor: item.ministradoPor,
+  }
+}
+
+export function corpoDaEdicao(rascunho: Rascunho) {
+  const comum = {
+    tom: rascunho.tom ?? '',
+    observacao: rascunho.observacao.trim(),
+    ministradoPor: rascunho.ministradoPor,
+  }
+
+  if (rascunho.modo === 'inteira') return { tipo: 'inteira', ...comum }
+
+  return { tipo: 'trecho', ...comum, inicio: rascunho.inicio, fim: rascunho.fim }
 }
 
 export function rascunhoPronto(rascunho: Rascunho): boolean {

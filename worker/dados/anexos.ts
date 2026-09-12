@@ -112,3 +112,13 @@ async function proximaVersao(db: D1Database, musicaId: string): Promise<number> 
 
   return linha?.proxima ?? 1
 }
+
+export function anexosPorMusica(anexos: Anexo[]): Record<string, Anexo[]> {
+  const mapa: Record<string, Anexo[]> = {}
+
+  for (const anexo of anexos) {
+    mapa[anexo.musicaId] = [...(mapa[anexo.musicaId] ?? []), anexo]
+  }
+
+  return mapa
+}

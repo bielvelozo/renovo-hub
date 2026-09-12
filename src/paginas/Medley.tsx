@@ -6,9 +6,8 @@ import { usarAcao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
 import { Cabecalho } from '../casca/Cabecalho'
 import { usarAviso } from '../componentes/Avisos'
-import { BlocoDeMinutagem } from '../componentes/BlocoDeMinutagem'
-import { BlocoDeTom } from '../componentes/BlocoDeTom'
 import { Botao } from '../componentes/Botao'
+import { CamposDoItem } from '../componentes/CamposDoItem'
 import { Campo } from '../componentes/Campo'
 import { Capa } from '../componentes/Capa'
 import { Catalogo } from '../componentes/Catalogo'
@@ -17,13 +16,15 @@ import { LinhaDeMusica } from '../componentes/LinhaDeMusica'
 import { RodapeDeAcao } from '../componentes/RodapeDeAcao'
 import { usarRemocaoPendente } from '../componentes/usarRemocaoPendente'
 import { Vazio } from '../componentes/Vazio'
-import type { Escolha, TrechoEmMontagem } from '../escalas/rascunho'
+import type { Escolha, Rascunho, TrechoEmMontagem } from '../escalas/rascunho'
 import {
   corpoDoMedley,
   linksPendentes,
   medleyPronto,
+  rascunhoDoTrecho,
   textoDaCobertura,
   trechoDe,
+  trechoDoRascunho,
   trechoPronto,
   trechosComMusica,
 } from '../escalas/rascunho'
@@ -223,9 +224,12 @@ function Campos({
   aoVoltar: () => void
   aoConfirmar: (trecho: TrechoEmMontagem) => void
 }) {
-  const [trecho, escrever] = useState<TrechoEmMontagem>(() => trechoDe(escolha, musica?.tomSugerido ?? null, primeiro))
+  const [rascunho, escrever] = useState<Rascunho>(() =>
+    rascunhoDoTrecho(trechoDe(escolha, musica?.tomSugerido ?? null, primeiro)),
+  )
 
-  const mudar = (mudanca: Partial<TrechoEmMontagem>) => escrever((antes) => ({ ...antes, ...mudanca }))
+  const mudar = (mudanca: Partial<Rascunho>) => escrever((antes) => ({ ...antes, ...mudanca }))
+  const trecho = trechoDoRascunho(rascunho)
   const cobertura = textoDaCobertura(musica?.cobertura ?? null)
 
   return (
@@ -239,24 +243,7 @@ function Campos({
 
       {cobertura && <p className="cobertura">{cobertura}</p>}
 
-      <BlocoDeTom
-        tom={trecho.tom}
-        sugerido={musica?.tomSugerido ?? null}
-        historico={musica?.historico ?? []}
-        tomOriginal={musica?.tomOriginal ?? null}
-        musica={escolha.resumo}
-        escolher={(tom) => mudar({ tom })}
-        aoAcharOriginal={(tom) => {
-          mudar({ tom })
-          if (musica) void api(`/api/musicas/${musica.id}`, { metodo: 'PATCH', corpo: { tomOriginal: tom } })
-        }}
-      />
-
-      <BlocoDeMinutagem
-        inicio={trecho.inicio}
-        fim={trecho.fim}
-        escrever={(campo, valor) => mudar({ [campo]: valor })}
-      />
+      <CamposDoItem rascunho={rascunho} mudar={mudar} musica={musica} como={false} observacao={false} />
 
       <RodapeDeAcao
         primario={

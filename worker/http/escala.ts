@@ -17,6 +17,8 @@ import type { Escala, Item, Ministerio } from '../../src/dominio'
 import { apresentarExecucao, resumirMusica } from './musica'
 
 export function apresentarEscala(m: Ministerio, escala: Escala, semanas: number) {
+  const { pendencias, pronta } = pendenciasDaEscala(m, escala)
+
   return {
     ...escala,
     itens: escala.itens.map((item) => apresentarItem(m, item, semanas, escala.id)),
@@ -25,6 +27,8 @@ export function apresentarEscala(m: Ministerio, escala: Escala, semanas: number)
     grupos: gruposEquipe(m, escala),
     pessoas: pessoasDaEquipe(m, escala),
     resumoDoRepertorio: resumoDoRepertorio(m, escala, semanas),
+    pendencias,
+    pronta,
   }
 }
 

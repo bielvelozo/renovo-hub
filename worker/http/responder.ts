@@ -1,3 +1,5 @@
+import { musicasDoItem } from '../../src/dominio'
+import { anexosPorMusica, lerAnexosDeMusicas } from '../dados/anexos'
 import { lerSemanasDeRepeticao } from '../dados/configuracoes'
 import { carregarMinisterio } from '../dados/ministerio'
 import { apresentarEscala } from './escala'
@@ -7,6 +9,12 @@ import { apresentarEscala } from './escala'
 export async function responderEscala(db: D1Database, id: string) {
   const [m, semanas] = await Promise.all([carregarMinisterio(db), lerSemanasDeRepeticao(db)])
   const escala = m.escalas.find((x) => x.id === id)
+  if (!escala) return null
 
-  return escala ? apresentarEscala(m, escala, semanas) : null
+  const musicas = [...new Set(escala.itens.flatMap(musicasDoItem))]
+
+  return {
+    ...apresentarEscala(m, escala, semanas),
+    anexosPorMusica: anexosPorMusica(await lerAnexosDeMusicas(db, musicas)),
+  }
 }

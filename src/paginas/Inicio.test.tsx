@@ -45,6 +45,8 @@ const escala = (itens: ItemApresentado[]): EscalaApresentada => ({
   grupos: [],
   pessoas: [],
   resumoDoRepertorio: { recentes: 0, antigas: 0, nuncaTocadas: 0, total: 0 },
+  pendencias: [],
+  pronta: true,
 })
 
 const mostrar = (elemento: React.ReactElement) => render(<MemoryRouter>{elemento}</MemoryRouter>)

@@ -1,20 +1,19 @@
 import { useState } from 'react'
-import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router'
+import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router'
 import { api } from '../api/cliente'
-import type { MusicaDetalhada, SugestaoApresentada } from '../api/tipos'
+import type { EscalaApresentada, MusicaDetalhada, SugestaoApresentada } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
 import { Cabecalho } from '../casca/Cabecalho'
-import { BlocoDeMinutagem } from '../componentes/BlocoDeMinutagem'
-import { BlocoDeTom } from '../componentes/BlocoDeTom'
+import { Icone } from '../casca/Icone'
 import { Botao } from '../componentes/Botao'
-import { Campo } from '../componentes/Campo'
+import { CamposDoItem } from '../componentes/CamposDoItem'
 import { Capa } from '../componentes/Capa'
 import { Catalogo } from '../componentes/Catalogo'
 import { Esqueleto } from '../componentes/Esqueleto'
+import { FaixaDeAlerta, frasesDeAlerta } from '../componentes/FaixaDeAlerta'
 import { RodapeDeAcao } from '../componentes/RodapeDeAcao'
-import { Segmento } from '../componentes/Segmento'
-import { buscaNoCifraClub } from '../dominio'
+import { buscaNoCifraClub, hojeEmBrasilia } from '../dominio'
 import type { Escolha, Rascunho } from '../escalas/rascunho'
 import {
   corpoDaPromocao,
@@ -25,6 +24,7 @@ import {
   rascunhoPronto,
   textoDaCobertura,
 } from '../escalas/rascunho'
+import { ministrosDaEscala, padraoDeQuemPuxa } from '../escalas/repertorio'
 import { usarEu } from '../sessao/sessao'
 
 export function Adicionar() {
@@ -61,7 +61,7 @@ export function Adicionar() {
     if (!musica.dados) return <Esqueleto forma="paragrafo" />
 
     return (
-      <Formulario
+      <Detalhes
         escalaId={id}
         escolha={escolhaDaMusica(musica.dados)}
         musica={musica.dados}
@@ -84,6 +84,17 @@ export function Adicionar() {
           aoVoltar={() => navegar(`/escalas/${id}`)}
           aoEscolher={escolher}
           aoEscolherSugestao={(escolhida) => navegar(`/escalas/${id}/adicionar?sugestao=${escolhida.id}`)}
+          acima={
+            <ul className="lista cartao">
+              <li>
+                <Link to={`/escalas/${id}/medley`} className="toque">
+                  <Icone nome="musica" />
+                  <span className="cresce titulo">Montar um medley</span>
+                  <Icone nome="seta" />
+                </Link>
+              </li>
+            </ul>
+          }
         />
       </section>
     )
@@ -106,25 +117,30 @@ function Detalhes({
   promoverDe,
   rotulo,
   aoVoltar,
+  musica: jaBuscada = null,
 }: {
   escalaId: string
   escolha: Escolha
   promoverDe: string | null
   rotulo: string
   aoVoltar: () => void
+  musica?: MusicaDetalhada | null
 }) {
+  const escala = usarBusca<EscalaApresentada>(`/api/escalas/${escalaId}`)
   const detalhe = usarBusca<MusicaDetalhada>(
-    escolha.musicaId ? `/api/musicas/${escolha.musicaId}?escalaId=${escalaId}` : null,
+    !jaBuscada && escolha.musicaId ? `/api/musicas/${escolha.musicaId}?escalaId=${escalaId}` : null,
   )
 
   if (detalhe.erro) return <p className="aviso">{detalhe.erro}</p>
-  if (detalhe.carregando) return <Esqueleto forma="paragrafo" />
+  if (escala.erro) return <p className="aviso">{escala.erro}</p>
+  if (detalhe.carregando || !escala.dados) return <Esqueleto forma="paragrafo" />
 
   return (
     <Formulario
       escalaId={escalaId}
+      escala={escala.dados}
       escolha={escolha}
-      musica={detalhe.dados}
+      musica={jaBuscada ?? detalhe.dados}
       promoverDe={promoverDe}
       rotulo={rotulo}
       aoVoltar={aoVoltar}
@@ -134,6 +150,7 @@ function Detalhes({
 
 function Formulario({
   escalaId,
+  escala,
   escolha,
   musica,
   promoverDe,
@@ -141,6 +158,7 @@ function Formulario({
   aoVoltar,
 }: {
   escalaId: string
+  escala: EscalaApresentada
   escolha: Escolha
   musica: MusicaDetalhada | null
   promoverDe: string | null
@@ -149,7 +167,9 @@ function Formulario({
 }) {
   const navegar = useNavigate()
   const acao = usarAcao()
-  const [rascunho, escrever] = useState<Rascunho>(() => rascunhoDe(escolha, musica?.tomSugerido ?? null))
+  const [rascunho, escrever] = useState<Rascunho>(() =>
+    rascunhoDe(escolha, musica?.tomSugerido ?? null, padraoDeQuemPuxa(escala)),
+  )
 
   const mudar = (mudanca: Partial<Rascunho>) => escrever((antes) => ({ ...antes, ...mudanca }))
 
@@ -178,6 +198,12 @@ function Formulario({
   }
 
   const cobertura = textoDaCobertura(musica?.cobertura ?? null)
+  const frases = musica
+    ? frasesDeAlerta(
+        { recente: musica.recente, ultimaExecucao: musica.ultimaExecucao, planejadaEm: musica.planejadaEm },
+        hojeEmBrasilia(),
+      )
+    : []
 
   return (
     <section className="pagina">
@@ -187,56 +213,17 @@ function Formulario({
 
       <div className="cabecalho-da-musica">
         <Capa musicas={[escolha.resumo]} grande />
-        <p className="dica">{situacao(musica, !!promoverDe)}</p>
       </div>
+
+      <FaixaDeAlerta frases={frases} />
 
       {cobertura ? (
         <p className="cobertura">{cobertura}</p>
       ) : (
-        <p className="dica">Música nova: ninguém da Equipe tocou ainda.</p>
+        <p className="dica">Ninguém da equipe tocou esta música ainda.</p>
       )}
 
-      <BlocoDeTom
-        tom={rascunho.tom}
-        sugerido={musica?.tomSugerido ?? null}
-        historico={musica?.historico ?? []}
-        tomOriginal={musica?.tomOriginal ?? rascunho.tomOriginal}
-        musica={escolha.resumo}
-        escolher={(tom) => mudar({ tom })}
-        aoAcharOriginal={(tom) => {
-          mudar({ tom, tomOriginal: tom })
-          if (musica) void api(`/api/musicas/${musica.id}`, { metodo: 'PATCH', corpo: { tomOriginal: tom } })
-        }}
-      />
-
-      <div className="secao">
-        <h2>Como</h2>
-        <Segmento
-          rotulo="Como"
-          opcoes={[
-            { valor: 'inteira', rotulo: 'Inteira' },
-            { valor: 'trecho', rotulo: 'Trecho' },
-          ]}
-          valor={rascunho.modo}
-          aoMudar={(modo) => mudar({ modo })}
-        />
-      </div>
-
-      {rascunho.modo === 'trecho' && (
-        <BlocoDeMinutagem
-          inicio={rascunho.inicio}
-          fim={rascunho.fim}
-          escrever={(campo, valor) => mudar({ [campo]: valor })}
-        />
-      )}
-
-      <Campo rotulo="Observação pro grupo">
-        <input
-          placeholder="opcional: começar mais baixo, solo na transição…"
-          value={rascunho.observacao}
-          onChange={(evento) => mudar({ observacao: evento.target.value })}
-        />
-      </Campo>
+      <CamposDoItem rascunho={rascunho} mudar={mudar} musica={musica} ministros={ministrosDaEscala(escala.pessoas)} />
 
       <a className="dica" href={musica?.cifraClub ?? buscaNoCifraClub(escolha.resumo)} target="_blank" rel="noopener">
         Conferir no Cifra Club
@@ -251,17 +238,4 @@ function Formulario({
       />
     </section>
   )
-}
-
-function situacao(musica: MusicaDetalhada | null, promovendo: boolean): string {
-  if (!musica) {
-    return promovendo
-      ? 'Ainda não está no catálogo: entra quando você promover.'
-      : 'Ainda não está no catálogo: entra quando você adicionar.'
-  }
-
-  if (musica.legado) return 'Legado: veio da playlist, sem histórico no app.'
-  if (musica.nova) return 'Nova: está no catálogo e ainda não foi tocada.'
-
-  return 'Já tocada no app.'
 }

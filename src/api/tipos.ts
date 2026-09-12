@@ -84,6 +84,9 @@ export type EscalaApresentada = {
   grupos: GrupoEquipe[]
   pessoas: PessoaDaEquipe[]
   resumoDoRepertorio: ResumoDoRepertorio
+  pendencias: Pendencia[]
+  pronta: boolean
+  anexosPorMusica?: Record<string, Anexo[]>
 }
 
 export type EscalaResumida = {

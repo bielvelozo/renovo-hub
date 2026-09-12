@@ -461,6 +461,15 @@
   gap: 10px;
 }
 
+.trechos-do-medley a.cresce {
+  color: inherit;
+  text-decoration: none;
+}
+
+.trechos-do-medley a.cresce:hover {
+  color: var(--acento-forte);
+}
+
 .trechos-do-medley .capa {
   width: 56px;
   height: 32px;
@@ -681,6 +690,14 @@
 
 .cartao.pos-culto {
   background: var(--atencao-suave);
+}
+
+.cartao.cancelada {
+  background: var(--perigo-suave);
+}
+
+.cartao.cancelada .titulo {
+  color: var(--perigo);
 }
 
 .selo.destaque {
@@ -1449,6 +1466,12 @@ textarea.texto-longo {
   color: var(--acento);
   font: 800 30px/1 var(--fonte-display);
   font-variation-settings: var(--display-eixos);
+}
+
+.inicial.pequena {
+  width: 34px;
+  height: 34px;
+  font-size: 16px;
 }
 
 .escalas-do-perfil {
