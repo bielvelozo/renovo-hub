@@ -1,6 +1,6 @@
 import type { MusicaNaLista, TomSugeridoApresentado } from '../api/tipos'
 import type { OrdemDoCatalogo } from '../dominio'
-import { formatarDia, hojeEmBrasilia } from '../dominio'
+import { formatarDia, hojeEmBrasilia, tempoRelativo } from '../dominio'
 
 export type FiltroDoCatalogo = 'todas' | 'nova' | 'legado' | 'uma-vez' | 'meses-3' | 'meses-6' | 'meses-12'
 
@@ -59,7 +59,9 @@ export function textoDoUltimoTom(sugerido: TomSugeridoApresentado | null, hoje =
   return `Tom original da gravação: ${sugerido.tom}.`
 }
 
-export type SeloDaMusica = { chave: string; texto: string }
+export type ChaveDoSelo = 'tom' | 'quando' | 'parcial' | 'nunca' | 'legado' | 'nova'
+
+export type SeloDaMusica = { chave: ChaveDoSelo; texto: string }
 
 export function selosDaMusica(musica: MusicaNaLista, hoje = hojeEmBrasilia()): SeloDaMusica[] {
   const selos: SeloDaMusica[] = []
@@ -69,7 +71,7 @@ export function selosDaMusica(musica: MusicaNaLista, hoje = hojeEmBrasilia()): S
     selos.push({ chave: 'tom', texto: `Tom ${ultima.tom}` })
     selos.push({
       chave: 'quando',
-      texto: formatarDia(ultima.data, hoje) + (ultima.ministradoPorNome ? ` · ${ultima.ministradoPorNome}` : ''),
+      texto: tempoRelativo(ultima.data, hoje) + (ultima.ministradoPorNome ? ` · ${ultima.ministradoPorNome}` : ''),
     })
     if (ultima.parcial) selos.push({ chave: 'parcial', texto: 'trecho' })
   } else {

@@ -119,6 +119,7 @@ function TomOriginal({ musica, trocar }: { musica: MusicaDetalhada; trocar: (nov
 
       <SeletorDeTom
         tom={musica.tomOriginal}
+        original={musica.tomOriginal}
         desligado={acao.ocupado}
         escolher={(tom) => definir(musica.tomOriginal === tom ? null : tom)}
       />

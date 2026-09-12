@@ -37,7 +37,7 @@ export function BlocoDeTom({
         Tom original{tomOriginal ? `: ${tomOriginal}` : ''}
       </button>
 
-      <SeletorDeTom tom={tom} sugerido={sugerido?.tom ?? null} escolher={escolher} />
+      <SeletorDeTom tom={tom} sugerido={sugerido?.tom ?? null} original={tomOriginal} escolher={escolher} />
 
       <BuscaNoCifraClub musica={musica} aoUsar={aoAcharOriginal} rotulo="Descobrir o tom no Cifra Club" />
 

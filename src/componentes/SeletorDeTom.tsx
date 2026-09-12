@@ -4,11 +4,13 @@ import { NOTAS_BRANCAS, NOTAS_PRETAS, partesDoTom, tomDe } from '../dominio'
 export function SeletorDeTom({
   tom,
   sugerido,
+  original,
   desligado,
   escolher,
 }: {
   tom: string | null
   sugerido?: string | null
+  original?: string | null
   desligado?: boolean
   escolher: (tom: string) => void
 }) {
@@ -50,6 +52,7 @@ export function SeletorDeTom({
             menor={menor}
             escolhido={escolhido}
             sugerido={sugerido}
+            original={original}
             desligado={desligado}
             escolher={escolher}
           />
@@ -61,6 +64,7 @@ export function SeletorDeTom({
             menor={menor}
             escolhido={escolhido}
             sugerido={sugerido}
+            original={original}
             desligado={desligado}
             escolher={escolher}
           />
@@ -76,6 +80,7 @@ function Tecla({
   menor,
   escolhido,
   sugerido,
+  original,
   desligado,
   escolher,
 }: {
@@ -84,13 +89,18 @@ function Tecla({
   menor: boolean
   escolhido: { nota: string; menor: boolean }
   sugerido?: string | null
+  original?: string | null
   desligado?: boolean
   escolher: (tom: string) => void
 }) {
+  const ehSugerida = partesDoTom(sugerido ?? '').nota === nota
+  const ehOriginal = partesDoTom(original ?? '').nota === nota
+
   return (
     <button
       type="button"
-      className={`tecla${preta ? ' preta' : ''}${partesDoTom(sugerido ?? '').nota === nota ? ' sugerido' : ''}`}
+      className={`tecla${preta ? ' preta' : ''}${ehSugerida ? ' sugerido' : ''}${ehOriginal ? ' original' : ''}`}
+      data-original={ehOriginal || undefined}
       data-nota={nota}
       aria-pressed={escolhido.nota === nota}
       aria-label={tomDe(nota, menor)}

@@ -120,7 +120,7 @@ describe('selosDaMusica', () => {
   it('mostra o Tom, a data e quem ministrou da última vez', () => {
     expect(selosDaMusica({ ...base, ultimaExecucao: execucao }, HOJE)).toEqual([
       { chave: 'tom', texto: 'Tom C' },
-      { chave: 'quando', texto: 'dom, 16 de ago · Marcos' },
+      { chave: 'quando', texto: 'há 4 semanas · Marcos' },
     ])
   })
 
@@ -129,10 +129,10 @@ describe('selosDaMusica', () => {
       selosDaMusica({
         ...base,
         ultimaExecucao: { ...execucao, parcial: true, ministradoPor: null, ministradoPorNome: null },
-      }),
+      }, HOJE),
     ).toEqual([
       { chave: 'tom', texto: 'Tom C' },
-      { chave: 'quando', texto: 'dom, 16 de ago' },
+      { chave: 'quando', texto: 'há 4 semanas' },
       { chave: 'parcial', texto: 'trecho' },
     ])
   })

@@ -11,11 +11,11 @@ type Aba = {
 }
 
 const ABAS: Aba[] = [
-  { para: '/', rotulo: 'Início', icone: 'inicio' },
-  { para: '/mes', rotulo: 'Mês', icone: 'mes', soMinistro: true },
-  { para: '/musicas', rotulo: 'Músicas', icone: 'musicas' },
-  { para: '/sugestoes', rotulo: 'Sugestões', icone: 'sugestoes' },
-  { para: '/perfil', rotulo: 'Perfil', icone: 'perfil' },
+  { para: '/', rotulo: 'Início', icone: 'casa' },
+  { para: '/mes', rotulo: 'Mês', icone: 'calendario', soMinistro: true },
+  { para: '/musicas', rotulo: 'Músicas', icone: 'musica' },
+  { para: '/sugestoes', rotulo: 'Sugestões', icone: 'lampada' },
+  { para: '/perfil', rotulo: 'Perfil', icone: 'pessoa' },
 ]
 
 export function Abas({ eu, sugestoes }: { eu: Eu; sugestoes: number }) {
@@ -27,7 +27,7 @@ export function Abas({ eu, sugestoes }: { eu: Eu; sugestoes: number }) {
         <NavLink key={aba.para} to={aba.para} end={aba.para === '/'}>
           <Icone nome={aba.icone} />
           <span>{aba.rotulo}</span>
-          {aba.icone === 'sugestoes' && sugestoes > 0 && (
+          {aba.icone === 'lampada' && sugestoes > 0 && (
             <span className="contagem" aria-label={`${sugestoes} sem promover`}>
               {sugestoes > 99 ? '99+' : sugestoes}
             </span>
