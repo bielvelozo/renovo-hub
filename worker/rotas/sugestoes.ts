@@ -5,9 +5,9 @@ import {
   avisoDeSugestaoGuardada,
   avisoDeSugestaoRecusada,
   descricaoDaMudanca,
+  escalaPorId,
   estadoEscala,
   limparTitulo,
-  ministradoPorDe,
   transicao,
   videoIdDoLink,
 } from '../../src/dominio'
@@ -34,7 +34,7 @@ import { apresentarEscala } from '../http/escala'
 import { apresentarSugestao, tituloDaSugestao } from '../http/sugestao'
 import { corpoJson, ehMinutagem, ehTextoCheio } from '../http/validacao'
 import type { Contexto } from '../tipos'
-import { lerNovoItem } from './itens'
+import { lerMinistradoPor, lerNovoItem } from './itens'
 
 type FormaDaPromocao = { tipo: 'inteira' | 'trecho'; tom: string; inicio?: string; fim?: string; observacao?: string }
 
@@ -146,9 +146,12 @@ sugestoes.post('/api/sugestoes/:id/promover', exigirMinistro, async (c) => {
   const novo = lerNovoItem(depois, { ...forma, musicaId })
   if (typeof novo === 'string') return c.json({ erro: novo }, 422)
 
+  const marca = lerMinistradoPor(depois.escalas[0], corpo.ministradoPor)
+  if ('erro' in marca) return c.json({ erro: marca.erro }, 422)
+
   const eu = c.get('membro')
   const itemId = await criarItem(c.env.DB, escalaId, novo, {
-    ministradoPor: ministradoPorDe(depois.escalas[0], null),
+    ministradoPor: marca.quem,
     origemSugestaoId: sugestao.id,
   })
   await marcarPromovida(c.env.DB, sugestao.id, musicaId, escalaId, { decididaPor: eu.id })
@@ -182,7 +185,7 @@ sugestoes.post('/api/sugestoes/:id/promover', exigirMinistro, async (c) => {
 
   return c.json(
     {
-      escala: apresentarEscala(final, final.escalas[0]),
+      escala: apresentarEscala(completo, escalaPorId(completo, escalaId), contexto.semanas),
       sugestao: apresentarSugestao(completo, (await lerSugestao(c.env.DB, sugestao.id))!, eu.id, contexto),
     },
     201,

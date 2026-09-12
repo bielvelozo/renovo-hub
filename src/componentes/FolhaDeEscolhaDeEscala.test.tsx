@@ -16,6 +16,10 @@ const escala = (id: string, extra: Partial<EscalaResumida> = {}): EscalaResumida
   membros: [],
   quantidadeNaEquipe: 4,
   quantidadeDeItens: 6,
+  pendencias: [],
+  pronta: true,
+  porGrupo: [],
+  minhasFuncoes: [],
   ...extra,
 })
 

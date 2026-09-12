@@ -4,7 +4,7 @@ import type { Notificacao } from '../dados/notificacoes'
 import { apagarInscricao, inscricoesDeMembros, silenciados } from '../dados/push'
 import type { Ambiente } from '../tipos'
 import { cargaDoAviso, enviarPush, inscricaoMorreu } from './envio'
-import { gerarLembretes } from './gatilhos'
+import { gerarLembretes, gerarPosCulto } from './gatilhos'
 import { chavesDeVapid } from './vapid'
 
 export const CHAVE_DA_ORIGEM = 'origem'
@@ -19,6 +19,7 @@ export type Resultado = {
 
 export async function rodarNotificacoes(env: Ambiente, agora = new Date()): Promise<Resultado> {
   await gerarLembretes(env.DB, agora)
+  await gerarPosCulto(env.DB, agora)
 
   return despachar(env, agora)
 }

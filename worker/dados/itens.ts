@@ -16,6 +16,7 @@ export type MarcasDoItem = {
 }
 
 export type CamposDoItem = {
+  tipo?: 'inteira' | 'trecho'
   tom?: string
   inicio?: string
   fim?: string
@@ -36,7 +37,7 @@ export async function criarItem(
   const comandos = [
     db
       .prepare(
-        'insert into itens (id, escala_id, ordem, tipo, musica_id, tom, inicio, fim, observacao, ministrado_por, origem_sugestao_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        'insert into itens (id, escala_id, ordem, tipo, musica_id, tom, inicio, fim, observacao, ministrado_por, origem_sugestao_id, atualizado_em) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       )
       .bind(
         id,
@@ -50,6 +51,7 @@ export async function criarItem(
         novo.observacao,
         marcas.ministradoPor,
         marcas.origemSugestaoId ?? null,
+        new Date().toISOString(),
       ),
     ...(novo.tipo === 'medley' ? comandosDeTrechos(db, id, novo.trechos) : []),
   ]
@@ -62,14 +64,23 @@ export async function criarItem(
 export async function atualizarItem(db: D1Database, itemId: string, campos: CamposDoItem): Promise<void> {
   const colunas: Record<string, string | null> = {}
 
+  if (campos.tipo !== undefined) colunas.tipo = campos.tipo
   if (campos.tom !== undefined) colunas.tom = campos.tom
   if (campos.inicio !== undefined) colunas.inicio = campos.inicio
   if (campos.fim !== undefined) colunas.fim = campos.fim
   if (campos.observacao !== undefined) colunas.observacao = campos.observacao
   if (campos.ministradoPor !== undefined) colunas.ministrado_por = campos.ministradoPor
 
+  if (campos.tipo === 'inteira') {
+    colunas.inicio = null
+    colunas.fim = null
+  }
+
   const nomes = Object.keys(colunas)
   if (!nomes.length) return
+
+  colunas.atualizado_em = new Date().toISOString()
+  nomes.push('atualizado_em')
 
   await db
     .prepare(`update itens set ${nomes.map((nome) => nome + ' = ?').join(', ')} where id = ?`)
@@ -81,6 +92,7 @@ export async function trocarTrechos(db: D1Database, itemId: string, trechos: Tre
   await db.batch([
     db.prepare('delete from trechos where item_id = ?').bind(itemId),
     ...comandosDeTrechos(db, itemId, trechos),
+    db.prepare('update itens set atualizado_em = ? where id = ?').bind(new Date().toISOString(), itemId),
   ])
 }
 

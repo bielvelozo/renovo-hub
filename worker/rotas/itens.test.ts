@@ -23,6 +23,8 @@ type Resposta = {
     fim?: string
     observacao: string
     ministradoPor: string | null
+    ministradoPorNome: string | null
+    atualizadoEm: string | null
     descricao: string
     link?: string
     musica?: { id: string; titulo: string; capa: string }
@@ -244,7 +246,36 @@ describe('editar Item', () => {
     expect(itens.map((i) => i.id)).toEqual(['i2', 'i1'])
   })
 
-  it('troca os Trechos de um Medley', async () => {
+  it('muda Tom e minutagem dos Trechos de um Medley', async () => {
+    const { itens } = await (
+      await adicionar({
+        tipo: 'medley',
+        trechos: [
+          { musicaId: 'rio', tom: 'D', inicio: '0:00', fim: '1:20' },
+          { musicaId: 'dono', tom: 'F', inicio: '2:10', fim: '3:40' },
+        ],
+      })
+    ).json<Resposta>()
+
+    const resposta = await pedir(`/api/escalas/e1/itens/${itens[0].id}`, 'marcos', {
+      method: 'PATCH',
+      body: JSON.stringify({
+        trechos: [
+          { musicaId: 'rio', tom: 'G', inicio: '0:10', fim: '1:00' },
+          { musicaId: 'dono', tom: 'A', inicio: '1:00', fim: '2:00' },
+        ],
+      }),
+    })
+
+    const depois = await resposta.json<Resposta>()
+
+    expect(depois.itens[0].trechos?.map((t) => [t.musicaId, t.tom])).toEqual([
+      ['rio', 'G'],
+      ['dono', 'A'],
+    ])
+  })
+
+  it('recusa trocar as músicas de um Medley pelo PATCH', async () => {
     const { itens } = await (
       await adicionar({
         tipo: 'medley',
@@ -265,12 +296,7 @@ describe('editar Item', () => {
       }),
     })
 
-    const depois = await resposta.json<Resposta>()
-
-    expect(depois.itens[0].trechos?.map((t) => [t.musicaId, t.tom])).toEqual([
-      ['dono', 'G'],
-      ['rio', 'A'],
-    ])
+    expect(resposta.status).toBe(422)
   })
 
   it('recusa Tom num Medley, que não tem Tom próprio', async () => {
@@ -348,5 +374,180 @@ describe('remover Item', () => {
     const { results } = await env.DB.prepare('select id from trechos').all()
 
     expect(results).toHaveLength(0)
+  })
+})
+
+async function atualizadoEmDe(itemId: string): Promise<string | null> {
+  const linha = await env.DB.prepare('select atualizado_em from itens where id = ?')
+    .bind(itemId)
+    .first<{ atualizado_em: string | null }>()
+
+  return linha?.atualizado_em ?? null
+}
+
+async function tiposDaFila(): Promise<string[]> {
+  const { results } = await env.DB.prepare('select tipo from notificacoes').all<{ tipo: string }>()
+
+  return results.map((linha) => linha.tipo)
+}
+
+describe('marca de atualização do Item', () => {
+  it('grava a marca quando o Item nasce', async () => {
+    const { itens } = await (await adicionar({ tipo: 'inteira', musicaId: 'rio', tom: 'D' })).json<Resposta>()
+
+    expect(itens[0].atualizadoEm).not.toBeNull()
+  })
+
+  it('grava a marca em cada campo editável', async () => {
+    const campos: Record<string, unknown>[] = [
+      { tom: 'E' },
+      { observacao: 'começar baixo' },
+      { tipo: 'trecho', inicio: '1:00', fim: '2:00' },
+      { ministradoPor: 'marcos' },
+    ]
+
+    for (const corpo of campos) {
+      await criarItemInteira('alvo', 'e1', 'rio', 'D', 0)
+      await env.DB.prepare('update itens set atualizado_em = null where id = ?').bind('alvo').run()
+
+      await pedir('/api/escalas/e1/itens/alvo', 'marcos', { method: 'PATCH', body: JSON.stringify(corpo) })
+
+      expect(await atualizadoEmDe('alvo')).not.toBeNull()
+      await env.DB.prepare('delete from itens where id = ?').bind('alvo').run()
+    }
+  })
+
+  it('grava a marca ao mexer nos Trechos do Medley', async () => {
+    const { itens } = await (
+      await adicionar({
+        tipo: 'medley',
+        trechos: [
+          { musicaId: 'rio', tom: 'D', inicio: '0:00', fim: '1:20' },
+          { musicaId: 'dono', tom: 'F', inicio: '2:10', fim: '3:40' },
+        ],
+      })
+    ).json<Resposta>()
+
+    await env.DB.prepare('update itens set atualizado_em = null where id = ?').bind(itens[0].id).run()
+
+    await pedir(`/api/escalas/e1/itens/${itens[0].id}`, 'marcos', {
+      method: 'PATCH',
+      body: JSON.stringify({
+        trechos: [
+          { musicaId: 'rio', tom: 'G', inicio: '0:00', fim: '1:20' },
+          { musicaId: 'dono', tom: 'A', inicio: '2:10', fim: '3:40' },
+        ],
+      }),
+    })
+
+    expect(await atualizadoEmDe(itens[0].id)).not.toBeNull()
+  })
+
+  it('não grava a marca no reordenar', async () => {
+    await criarItemInteira('i1', 'e1', 'rio', 'D', 0)
+    await criarItemInteira('i2', 'e1', 'dono', 'F', 1)
+    await env.DB.prepare('update itens set atualizado_em = null').run()
+
+    await pedir('/api/escalas/e1/itens/i2', 'marcos', { method: 'PATCH', body: JSON.stringify({ ordem: 0 }) })
+
+    expect(await atualizadoEmDe('i2')).toBeNull()
+    expect(await tiposDaFila()).toEqual([])
+  })
+})
+
+describe('trocar o tipo e quem puxa o Item', () => {
+  it('vira Trecho com minutagem e volta a ser Música inteira', async () => {
+    await criarItemInteira('i1', 'e1', 'rio', 'D', 0)
+
+    const virou = await pedir('/api/escalas/e1/itens/i1', 'marcos', {
+      method: 'PATCH',
+      body: JSON.stringify({ tipo: 'trecho', inicio: '1:00', fim: '2:00' }),
+    })
+    expect((await virou.json<Resposta>()).itens[0]).toMatchObject({ tipo: 'trecho', inicio: '1:00', fim: '2:00' })
+
+    const voltou = await pedir('/api/escalas/e1/itens/i1', 'marcos', {
+      method: 'PATCH',
+      body: JSON.stringify({ tipo: 'inteira' }),
+    })
+    const item = (await voltou.json<Resposta>()).itens[0]
+    expect(item.tipo).toBe('inteira')
+    expect(item.inicio).toBeUndefined()
+  })
+
+  it('recusa virar Trecho sem minutagem', async () => {
+    await criarItemInteira('i1', 'e1', 'rio', 'D', 0)
+
+    const resposta = await pedir('/api/escalas/e1/itens/i1', 'marcos', {
+      method: 'PATCH',
+      body: JSON.stringify({ tipo: 'trecho' }),
+    })
+
+    expect(resposta.status).toBe(422)
+  })
+
+  it('recusa trocar o tipo de um Medley', async () => {
+    const { itens } = await (
+      await adicionar({
+        tipo: 'medley',
+        trechos: [
+          { musicaId: 'rio', tom: 'D', inicio: '0:00', fim: '1:20' },
+          { musicaId: 'dono', tom: 'F', inicio: '2:10', fim: '3:40' },
+        ],
+      })
+    ).json<Resposta>()
+
+    const resposta = await pedir(`/api/escalas/e1/itens/${itens[0].id}`, 'marcos', {
+      method: 'PATCH',
+      body: JSON.stringify({ tipo: 'inteira' }),
+    })
+
+    expect(resposta.status).toBe(422)
+  })
+
+  it('grava quem puxa quando é Ministro da Escala', async () => {
+    await porNaEquipe('e1', 'isa', ['vocal'], true)
+    await criarItemInteira('i1', 'e1', 'rio', 'D', 0)
+
+    const resposta = await pedir('/api/escalas/e1/itens/i1', 'marcos', {
+      method: 'PATCH',
+      body: JSON.stringify({ ministradoPor: 'isa' }),
+    })
+
+    expect((await resposta.json<Resposta>()).itens[0]).toMatchObject({
+      ministradoPor: 'isa',
+      ministradoPorNome: 'Isa',
+    })
+  })
+
+  it('recusa quem não é Ministro da Escala', async () => {
+    await criarItemInteira('i1', 'e1', 'rio', 'D', 0)
+
+    const resposta = await pedir('/api/escalas/e1/itens/i1', 'marcos', {
+      method: 'PATCH',
+      body: JSON.stringify({ ministradoPor: 'julia' }),
+    })
+
+    expect(resposta.status).toBe(422)
+  })
+
+  it('avisa a Equipe quando o tipo ou quem puxa muda', async () => {
+    await porNaEquipe('e1', 'isa', ['vocal'], true)
+    await porNaEquipe('e1', 'julia', ['vocal'])
+    await criarItemInteira('i1', 'e1', 'rio', 'D', 0)
+
+    await pedir('/api/escalas/e1/itens/i1', 'marcos', {
+      method: 'PATCH',
+      body: JSON.stringify({ tipo: 'trecho', inicio: '1:00', fim: '2:00' }),
+    })
+    expect(await tiposDaFila()).toEqual(['musica', 'musica'])
+
+    await pedir('/api/escalas/e1/itens/i1', 'marcos', {
+      method: 'PATCH',
+      body: JSON.stringify({ ministradoPor: 'isa' }),
+    })
+    const { results } = await env.DB.prepare('select mudancas from notificacoes where membro_id = ?')
+      .bind('julia')
+      .all<{ mudancas: number }>()
+    expect(results[0].mudancas).toBe(2)
   })
 })

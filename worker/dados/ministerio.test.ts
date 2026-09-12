@@ -46,8 +46,24 @@ describe('lerEscalas', () => {
         { membroId: 'gabriel', funcoes: ['guitarra'], ministro: false },
       ],
       itens: [
-        { id: 'i1', tipo: 'inteira', musicaId: 'meia-noite', tom: 'E', observacao: '', ministradoPor: null },
-        { id: 'i2', tipo: 'inteira', musicaId: 'firme', tom: 'C', observacao: '', ministradoPor: null },
+        {
+          id: 'i1',
+          tipo: 'inteira',
+          musicaId: 'meia-noite',
+          tom: 'E',
+          observacao: '',
+          ministradoPor: null,
+          atualizadoEm: null,
+        },
+        {
+          id: 'i2',
+          tipo: 'inteira',
+          musicaId: 'firme',
+          tom: 'C',
+          observacao: '',
+          ministradoPor: null,
+          atualizadoEm: null,
+        },
       ],
     })
   })
@@ -64,6 +80,29 @@ describe('lerEscalas', () => {
     const escalas = await lerEscalas(env.DB, { mes: '2020-09' })
 
     expect(escalas.map((e) => e.id)).toEqual(['e1', 'e2'])
+  })
+
+  it('filtra por intervalo de datas, com teto aberto', async () => {
+    await criarEscala({ id: 'e0', data: '2020-08-30' })
+    await criarEscala({ id: 'e1', data: '2020-09-06' })
+    await criarEscala({ id: 'e2', data: '2020-09-20' })
+
+    const abertas = await lerEscalas(env.DB, { intervalo: { de: '2020-09-01' } })
+    expect(abertas.map((e) => e.id)).toEqual(['e1', 'e2'])
+
+    const fechadas = await lerEscalas(env.DB, { intervalo: { de: '2020-08-30', ate: '2020-09-06' } })
+    expect(fechadas.map((e) => e.id)).toEqual(['e0', 'e1'])
+  })
+
+  it('traz Equipe e Repertório das Escalas do intervalo', async () => {
+    await criarEscala({ id: 'e1', data: '2020-09-06' })
+    await porNaEquipe('e1', 'marcos', ['vocal'], true)
+    await criarItemInteira('i1', 'e1', 'meia-noite', 'E')
+
+    const escalas = await lerEscalas(env.DB, { intervalo: { de: '2020-09-01' } })
+
+    expect(escalas[0].equipe).toHaveLength(1)
+    expect(escalas[0].itens.map((i) => i.id)).toEqual(['i1'])
   })
 
   it('carrega uma Escala vazia com Equipe e Repertório vazios', async () => {

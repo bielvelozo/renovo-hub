@@ -309,6 +309,20 @@ describe('promover Sugestão', () => {
     expect(item?.ministrado_por).toBe('marcos')
   })
 
+  it('grava quem puxa quando o corpo diz, e recusa quem não é Ministro da Escala', async () => {
+    await porNaEquipe('e1', 'gabriel', ['vocal'], true)
+
+    const resposta = await promover({ escalaId: 'e1', tom: 'D', ministradoPor: 'gabriel' })
+    expect(resposta.status).toBe(201)
+
+    const item = await env.DB.prepare('select ministrado_por from itens').first<{ ministrado_por: string }>()
+    expect(item?.ministrado_por).toBe('gabriel')
+
+    await criarSugestao({ id: 's3', membroId: 'ana', musicaId: 'rio' })
+    const recusada = await promover({ escalaId: 'e1', tom: 'D', ministradoPor: 'julia' }, 'marcos', 's3')
+    expect(recusada.status).toBe(422)
+  })
+
   it('aceita virar Trecho com minutagem', async () => {
     const resposta = await promover({ escalaId: 'e1', tipo: 'trecho', tom: 'G', inicio: '1:05', fim: '2:30' })
 

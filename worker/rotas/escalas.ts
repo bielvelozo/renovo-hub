@@ -22,7 +22,8 @@ import {
 } from '../dados/escalas'
 import { carregarMinisterio } from '../dados/ministerio'
 import { conferirVideos, reconferirVideos } from '../dados/videos'
-import { apresentarEscala, resumirEscala } from '../http/escala'
+import { resumirEscala } from '../http/escala'
+import { responderEscala } from '../http/responder'
 import { avisarCancelada, avisarEscalados, avisarRemarcada } from '../push/gatilhos'
 import { corpoJson, ehData, ehHorario, ehListaDeTextos, ehMes, ehTextoCheio } from '../http/validacao'
 import type { Escala } from '../../src/dominio'
@@ -35,8 +36,9 @@ escalas.get('/api/escalas', exigirMembro, async (c) => {
   if (mes !== undefined && !ehMes(mes)) return c.json({ erro: MES_INVALIDO }, 422)
 
   const m = await carregarMinisterio(c.env.DB, mes ? { mes } : {})
+  const eu = c.get('membro')
 
-  return c.json({ escalas: m.escalas.map((escala) => resumirEscala(m, escala)) })
+  return c.json({ escalas: m.escalas.map((escala) => resumirEscala(m, escala, eu.id)) })
 })
 
 escalas.post('/api/escalas/mes', exigirMinistro, async (c) => {
@@ -66,8 +68,9 @@ escalas.post('/api/escalas/mes', exigirMinistro, async (c) => {
 
   const m = await carregarMinisterio(c.env.DB, { mes })
   const criadas = m.escalas.filter((escala) => !existentes.includes(escala.data))
+  const eu = c.get('membro')
 
-  return c.json({ criadas: criadas.map((escala) => resumirEscala(m, escala)), existentes }, 201)
+  return c.json({ criadas: criadas.map((escala) => resumirEscala(m, escala, eu.id)), existentes }, 201)
 })
 
 escalas.post('/api/escalas', exigirMinistro, async (c) => {
@@ -128,7 +131,7 @@ escalas.patch('/api/escalas/:id', exigirMinistro, async (c) => {
     await avisarRemarcada(c.env.DB, m, m.escalas[0], depois.escalas[0], new Date())
   }
 
-  return c.json(apresentarEscala(depois, depois.escalas[0]))
+  return c.json(await responderEscala(c.env.DB, id))
 })
 
 escalas.post('/api/escalas/:id/cancelar', exigirMinistro, (c) => marcarCancelada(c, c.req.param('id'), true))
@@ -164,7 +167,7 @@ escalas.put('/api/escalas/:id/equipe/:membroId', exigirMinistro, async (c) => {
   const depois = await carregarMinisterio(c.env.DB, { ids: [id] })
   await avisarEscalados(c.env.DB, depois, depois.escalas[0], [membro.id], new Date())
 
-  return c.json(apresentarEscala(depois, depois.escalas[0]))
+  return c.json(await responderEscala(c.env.DB, id))
 })
 
 escalas.delete('/api/escalas/:id/equipe/:membroId', exigirMinistro, async (c) => {
@@ -217,13 +220,6 @@ async function marcarCancelada(c: Context<Contexto>, id: string, cancelada: bool
 
 function remarcou(antes: Escala, depois: Escala): boolean {
   return antes.data !== depois.data || antes.horario !== depois.horario
-}
-
-async function responderEscala(db: D1Database, id: string) {
-  const m = await carregarMinisterio(db, { ids: [id] })
-  const escala = m.escalas[0]
-
-  return escala ? apresentarEscala(m, escala) : null
 }
 
 const MES_INVALIDO = 'Informe o mês no formato 2026-09.'

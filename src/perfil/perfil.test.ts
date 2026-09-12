@@ -22,6 +22,10 @@ const ULTIMA: EscalaResumida = {
   membros: ['gabriel'],
   quantidadeNaEquipe: 6,
   quantidadeDeItens: 4,
+  pendencias: [],
+  pronta: true,
+  porGrupo: [],
+  minhasFuncoes: [],
 }
 
 describe('números do Perfil', () => {

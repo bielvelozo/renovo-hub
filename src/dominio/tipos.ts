@@ -55,6 +55,7 @@ type ItemBase = {
   id: string
   observacao: string
   ministradoPor: string | null
+  atualizadoEm?: string | null
 }
 
 export type ItemInteira = ItemBase & { tipo: 'inteira'; musicaId: string; tom: string }

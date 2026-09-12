@@ -6,6 +6,8 @@ import { LinhaDeMusica, LinhaDoItem } from './LinhaDeMusica'
 
 const HOJE = '2026-09-13'
 
+const SEM_MEMORIA = { recente: false, ultimaExecucao: null, planejadaEm: [] }
+
 const resumida: MusicaResumida = {
   id: 'meia-noite',
   titulo: 'Meia Noite (Ao Vivo) | fhop music',
@@ -168,10 +170,29 @@ describe('LinhaDeMusica', () => {
       tipo: 'medley',
       observacao: '',
       ministradoPor: null,
+      ministradoPorNome: null,
+      atualizadoEm: null,
       descricao: '',
+      memoria: null,
       trechos: [
-        { musicaId: 'a', tom: 'G', inicio: '0:00', fim: '1:00', musica: { ...resumida, id: 'a', titulo: 'Primeira' }, link: 'https://youtu.be/a' },
-        { musicaId: 'b', tom: 'Em', inicio: '1:00', fim: '2:00', musica: { ...resumida, id: 'b', titulo: 'Segunda' }, link: 'https://youtu.be/b?t=60' },
+        {
+          musicaId: 'a',
+          tom: 'G',
+          inicio: '0:00',
+          fim: '1:00',
+          musica: { ...resumida, id: 'a', titulo: 'Primeira' },
+          link: 'https://youtu.be/a',
+          memoria: SEM_MEMORIA,
+        },
+        {
+          musicaId: 'b',
+          tom: 'Em',
+          inicio: '1:00',
+          fim: '2:00',
+          musica: { ...resumida, id: 'b', titulo: 'Segunda' },
+          link: 'https://youtu.be/b?t=60',
+          memoria: SEM_MEMORIA,
+        },
       ],
     }
     montar(<LinhaDoItem item={item} modo="leitura" numero={4} />)

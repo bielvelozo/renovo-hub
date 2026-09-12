@@ -184,6 +184,43 @@ describe('listar e ver', () => {
     expect(escalas.find((e) => e.id === 'alheia')?.membros).toEqual([])
   })
 
+  it('o resumo do mês traz as pendências e as Funções de quem pede', async () => {
+    await criarFuncao('bateria', 'instrumentos', 5, 'Bateria', 1)
+    await criarEscala({ id: 'e1', data: FUTURO })
+    await porNaEquipe('e1', 'marcos', ['vocal'], true)
+    await porNaEquipe('e1', 'julia', ['vocal'])
+    await criarMusica('meia-noite', 'Meia Noite', 'hRJUcvsnqKs')
+    await criarItemInteira('i1', 'e1', 'meia-noite', 'G', 1)
+
+    const { escalas } = await (await pedir('/api/escalas?mes=2099-08', 'julia')).json<{
+      escalas: {
+        id: string
+        pendencias: { chave: string; texto: string }[]
+        pronta: boolean
+        porGrupo: { grupo: string; texto: string }[]
+        minhasFuncoes: string[]
+      }[]
+    }>()
+
+    expect(escalas[0].pendencias).toEqual([
+      { chave: 'falta-funcao', texto: 'falta 1 bateria', funcaoId: 'bateria' },
+    ])
+    expect(escalas[0].pronta).toBe(false)
+    expect(escalas[0].porGrupo.map((g) => g.texto)).toEqual(['vocal 2', 'músicos 0 de 1 · falta bateria', 'som 0'])
+    expect(escalas[0].minhasFuncoes).toEqual(['vocal'])
+  })
+
+  it('as Funções de quem pede vêm vazias pra quem não está na Equipe', async () => {
+    await criarEscala({ id: 'e1', data: FUTURO })
+    await porNaEquipe('e1', 'marcos', ['vocal'], true)
+
+    const { escalas } = await (await pedir('/api/escalas', 'julia')).json<{
+      escalas: { minhasFuncoes: string[]; pronta: boolean }[]
+    }>()
+
+    expect(escalas[0].minhasFuncoes).toEqual([])
+  })
+
   it('a Escala do passado aparece como Realizada e a do futuro como Agendada', async () => {
     await criarEscala({ id: 'velha', data: PASSADO })
     await criarEscala({ id: 'nova', data: FUTURO })
@@ -208,6 +245,30 @@ describe('listar e ver', () => {
       { nome: 'Vocal', itens: ['Júlia'] },
       { nome: 'Som', itens: ['Davi'] },
     ])
+  })
+
+  it('a Escala traz a memória de cada Item e o resumo do Repertório', async () => {
+    await criarMusica('rio', 'Rio', 's1oU-6vYc4E')
+    await criarMusica('dono', 'Dono', '2anDhu7L-Cc')
+    await criarEscala({ id: 'passada', data: PASSADO })
+    await criarItemInteira('i0', 'passada', 'rio', 'G')
+    await criarEscala({ id: 'e1', data: FUTURO })
+    await criarItemInteira('i1', 'e1', 'rio', 'D', 0)
+    await criarItemInteira('i2', 'e1', 'dono', 'F', 1)
+    await criarEscala({ id: 'e2', data: '2099-08-23' })
+    await criarItemInteira('i3', 'e2', 'rio', 'E')
+
+    const escala = await (await pedir('/api/escalas/e1', 'julia')).json<{
+      itens: {
+        memoria: { recente: boolean; ultimaExecucao: { escalaId: string } | null; planejadaEm: { escalaId: string }[] }
+      }[]
+      resumoDoRepertorio: { recentes: number; antigas: number; nuncaTocadas: number; total: number }
+    }>()
+
+    expect(escala.itens[0].memoria.ultimaExecucao?.escalaId).toBe('passada')
+    expect(escala.itens[0].memoria.planejadaEm.map((p) => p.escalaId)).toEqual(['e2'])
+    expect(escala.itens[1].memoria.ultimaExecucao).toBeNull()
+    expect(escala.resumoDoRepertorio).toEqual({ recentes: 0, antigas: 1, nuncaTocadas: 1, total: 2 })
   })
 
   it('Escala que não existe devolve 404', async () => {

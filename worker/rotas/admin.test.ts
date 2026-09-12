@@ -29,9 +29,11 @@ type MembroJson = {
   convites?: number
   convitesUsados?: number
   push?: number
+  silenciado?: boolean
+  presenca?: { ultimaVez: string | null; seguidos: number; paradaHaMeses: number | null }
 }
 
-type FuncaoJson = { id: string; nome: string; grupo: string; ordem: number }
+type FuncaoJson = { id: string; nome: string; grupo: string; ordem: number; minimo: number }
 
 beforeEach(async () => {
   await limparBanco()
@@ -60,6 +62,20 @@ describe('listas abertas ao Membro', () => {
     expect(membros.map((m) => m.id)).toEqual(['gabriel', 'julia', 'marcos'])
     expect(membros[0].funcoes).toEqual(['guitarra'])
     expect(membros[0].sessoes).toBeUndefined()
+  })
+
+  it('GET /api/membros traz presença e o interruptor de silêncio de cada um', async () => {
+    await criarEscala({ id: 'passada', data: PASSADO })
+    await porNaEquipe('passada', 'julia', ['vocal'])
+    await env.DB.prepare('update membros set silenciado = 1 where id = ?').bind('marcos').run()
+
+    const { membros } = await corpoDe<{ membros: MembroJson[] }>(await pedir('/api/membros', 'julia'))
+    const porId = new Map(membros.map((membro) => [membro.id, membro]))
+
+    expect(porId.get('julia')?.presenca).toEqual({ ultimaVez: PASSADO, seguidos: 1, paradaHaMeses: 0 })
+    expect(porId.get('marcos')?.presenca).toEqual({ ultimaVez: null, seguidos: 0, paradaHaMeses: null })
+    expect(porId.get('marcos')?.silenciado).toBe(true)
+    expect(porId.get('julia')?.silenciado).toBe(false)
   })
 
   it('GET /api/funcoes sai na ordem definida pelo Admin', async () => {
@@ -252,6 +268,32 @@ describe('Funções do Admin', () => {
     })
 
     expect(await corpoDe<FuncaoJson>(resposta)).toMatchObject({ nome: 'Guitarra elétrica', ordem: 9 })
+  })
+
+  it('grava o mínimo por escala e recusa fora de 0 a 4', async () => {
+    const criada = await pedir('/api/admin/funcoes', 'gabriel', {
+      method: 'POST',
+      body: JSON.stringify({ nome: 'Baixo', grupo: 'instrumentos', ordem: 4, minimo: 1 }),
+    })
+    expect(await corpoDe<FuncaoJson>(criada)).toMatchObject({ minimo: 1 })
+
+    const alterada = await pedir('/api/admin/funcoes/vocal', 'gabriel', {
+      method: 'PATCH',
+      body: JSON.stringify({ minimo: 2 }),
+    })
+    expect(await corpoDe<FuncaoJson>(alterada)).toMatchObject({ minimo: 2 })
+
+    const demais = await pedir('/api/admin/funcoes/vocal', 'gabriel', {
+      method: 'PATCH',
+      body: JSON.stringify({ minimo: 5 }),
+    })
+    expect(demais.status).toBe(422)
+
+    const negativo = await pedir('/api/admin/funcoes', 'gabriel', {
+      method: 'POST',
+      body: JSON.stringify({ nome: 'Sopro', grupo: 'instrumentos', minimo: -1 }),
+    })
+    expect(negativo.status).toBe(422)
   })
 
   it('apaga a que ninguém usou', async () => {

@@ -1,12 +1,17 @@
 import {
+  MINUTOS_DO_POS_CULTO,
   avisoDeCancelada,
   avisoDeEscalado,
   avisoDeLembrete,
   avisoDeMudanca,
+  avisoDePosCulto,
   avisoDeRemarcada,
   avisoDeVariasMudancas,
   dataDoLembrete,
   estadoEscala,
+  hojeEmBrasilia,
+  ministros,
+  minutosEmBrasilia,
 } from '../../src/dominio'
 import type { AcaoNaMusica, Aviso, Escala, Ministerio, TipoDeNotificacao } from '../../src/dominio'
 import { enfileirar, jaTeve, pendenteDe, regravarAviso, ultimoEnvio } from '../dados/notificacoes'
@@ -144,6 +149,39 @@ export async function gerarLembretes(db: D1Database, agora: Date): Promise<numbe
           tipo: 'lembrete',
           escalaId: escala.id,
           aviso: avisoDeLembrete(escala, escala.itens.length),
+          enviarApos: agora.toISOString(),
+        },
+        agora,
+      )
+      criados++
+    }
+  }
+
+  return criados
+}
+
+// Lembrete de fim de culto: não filtra por estado, porque a Escala de hoje só
+// vira Realizada à meia-noite e o cartão precisa aparecer nesta noite.
+export async function gerarPosCulto(db: D1Database, agora: Date): Promise<number> {
+  if (minutosEmBrasilia(agora) < MINUTOS_DO_POS_CULTO) return 0
+
+  const hoje = hojeEmBrasilia(agora)
+  const m = await carregarMinisterio(db, { mes: hoje.slice(0, 7) })
+  let criados = 0
+
+  for (const escala of m.escalas) {
+    if (escala.data !== hoje || escala.cancelada || !escala.itens.length) continue
+
+    for (const membroId of ministros(escala)) {
+      if (await jaTeve(db, membroId, 'pos-culto', escala.id)) continue
+
+      await enfileirar(
+        db,
+        {
+          membroId,
+          tipo: 'pos-culto',
+          escalaId: escala.id,
+          aviso: avisoDePosCulto(escala, escala.itens.length),
           enviarApos: agora.toISOString(),
         },
         agora,

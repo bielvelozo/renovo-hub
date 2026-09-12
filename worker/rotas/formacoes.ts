@@ -13,7 +13,7 @@ import {
 } from '../dados/formacoes'
 import type { EntradaDaFormacao } from '../dados/formacoes'
 import { carregarMinisterio } from '../dados/ministerio'
-import { apresentarEscala } from '../http/escala'
+import { responderEscala } from '../http/responder'
 import { avisarEscalados } from '../push/gatilhos'
 import { corpoJson, ehListaDeTextos, ehTextoCheio } from '../http/validacao'
 import type { Contexto } from '../tipos'
@@ -117,7 +117,7 @@ formacoes.post('/api/escalas/:id/formacao', exigirMinistro, async (c) => {
     new Date(),
   )
 
-  return c.json(apresentarEscala(depois, depois.escalas[0]))
+  return c.json(await responderEscala(c.env.DB, escalaId))
 })
 
 function lerEntradas(valor: unknown): EntradaDaFormacao[] | null {

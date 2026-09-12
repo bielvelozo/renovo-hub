@@ -4,6 +4,7 @@ import { admin } from './rotas/admin'
 import { anexos } from './rotas/anexos'
 import { escalas } from './rotas/escalas'
 import { formacoes } from './rotas/formacoes'
+import { inicio } from './rotas/inicio'
 import { itens } from './rotas/itens'
 import { musicas } from './rotas/musicas'
 import { perfil } from './rotas/perfil'
@@ -17,6 +18,7 @@ const app = new Hono<Contexto>()
 
 app.route('/', saude)
 app.route('/', acesso)
+app.route('/', inicio)
 app.route('/', escalas)
 app.route('/', formacoes)
 app.route('/', itens)

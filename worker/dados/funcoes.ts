@@ -4,12 +4,14 @@ export type NovaFuncao = {
   nome: string
   grupo: Grupo
   ordem: number
+  minimo: number
 }
 
 export type CamposDaFuncao = {
   nome?: string
   grupo?: Grupo
   ordem?: number
+  minimo?: number
 }
 
 export const GRUPOS: Grupo[] = ['vocal', 'instrumentos', 'tecnica']
@@ -22,8 +24,8 @@ export async function criarFuncao(db: D1Database, nova: NovaFuncao): Promise<str
   const id = crypto.randomUUID()
 
   await db
-    .prepare('insert into funcoes (id, nome, grupo, ordem) values (?, ?, ?, ?)')
-    .bind(id, nova.nome, nova.grupo, nova.ordem)
+    .prepare('insert into funcoes (id, nome, grupo, ordem, minimo) values (?, ?, ?, ?, ?)')
+    .bind(id, nova.nome, nova.grupo, nova.ordem, nova.minimo)
     .run()
 
   return id
@@ -35,6 +37,7 @@ export async function atualizarFuncao(db: D1Database, id: string, campos: Campos
   if (campos.nome !== undefined) colunas.nome = campos.nome
   if (campos.grupo !== undefined) colunas.grupo = campos.grupo
   if (campos.ordem !== undefined) colunas.ordem = campos.ordem
+  if (campos.minimo !== undefined) colunas.minimo = campos.minimo
 
   const nomes = Object.keys(colunas)
   if (!nomes.length) return

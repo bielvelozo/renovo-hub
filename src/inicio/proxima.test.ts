@@ -17,6 +17,10 @@ function escala(id: string, data: string, membros: string[], extra: Partial<Esca
     membros,
     quantidadeNaEquipe: membros.length,
     quantidadeDeItens: 0,
+    pendencias: [],
+    pronta: true,
+    porGrupo: [],
+    minhasFuncoes: [],
     ...extra,
   }
 }

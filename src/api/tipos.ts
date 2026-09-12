@@ -6,7 +6,10 @@ import type {
   Funcao,
   GrupoEquipe,
   Membro,
+  Pendencia,
   Planejada,
+  ResumoDeGrupo,
+  ResumoDoRepertorio,
   SecaoDaMusica,
   TomSugerido,
 } from '../dominio'
@@ -20,6 +23,12 @@ export type MusicaResumida = {
   capaAlternativa: string
 }
 
+export type MemoriaApresentada = {
+  recente: boolean
+  ultimaExecucao: ExecucaoApresentada | null
+  planejadaEm: Planejada[]
+}
+
 export type TrechoApresentado = {
   musicaId: string
   tom: string
@@ -27,17 +36,27 @@ export type TrechoApresentado = {
   fim: string
   musica: MusicaResumida
   link: string
+  memoria: MemoriaApresentada
 }
 
 type ItemBase = {
   id: string
   observacao: string
   ministradoPor: string | null
+  ministradoPorNome: string | null
+  atualizadoEm: string | null
   descricao: string
 }
 
 export type ItemApresentado =
-  | (ItemBase & { tipo: 'inteira'; musicaId: string; tom: string; musica: MusicaResumida; link: string })
+  | (ItemBase & {
+      tipo: 'inteira'
+      musicaId: string
+      tom: string
+      musica: MusicaResumida
+      link: string
+      memoria: MemoriaApresentada
+    })
   | (ItemBase & {
       tipo: 'trecho'
       musicaId: string
@@ -46,8 +65,9 @@ export type ItemApresentado =
       fim: string
       musica: MusicaResumida
       link: string
+      memoria: MemoriaApresentada
     })
-  | (ItemBase & { tipo: 'medley'; trechos: TrechoApresentado[] })
+  | (ItemBase & { tipo: 'medley'; trechos: TrechoApresentado[]; memoria: null })
 
 export type EscalaApresentada = {
   id: string
@@ -61,6 +81,7 @@ export type EscalaApresentada = {
   estado: EstadoEscala
   titulo: string
   grupos: GrupoEquipe[]
+  resumoDoRepertorio: ResumoDoRepertorio
 }
 
 export type EscalaResumida = {
@@ -76,6 +97,22 @@ export type EscalaResumida = {
   membros: string[]
   quantidadeNaEquipe: number
   quantidadeDeItens: number
+  pendencias: Pendencia[]
+  pronta: boolean
+  porGrupo: ResumoDeGrupo[]
+  minhasFuncoes: string[]
+}
+
+export type PosCultoApresentado = { escalaId: string; titulo: string; data: string; itens: number }
+
+export type InicioApresentado = {
+  minhaProxima: EscalaApresentada | null
+  proximoCulto: EscalaApresentada | null
+  pendencias: EscalaResumida[]
+  posCulto: PosCultoApresentado | null
+  anexosPorMusica: Record<string, Anexo[]>
+  semanasDeRepeticao: number
+  proximoMesVazio: string | null
 }
 
 export type Formacao = {

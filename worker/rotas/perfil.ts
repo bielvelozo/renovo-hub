@@ -28,7 +28,7 @@ perfil.get('/api/perfil/:id', exigirMembro, async (c) => {
   return c.json({
     membro: { ...membro, funcoes: membro.funcoes.map((id) => funcaoPorId(m, id)) },
     escalasNoAno: escalasNoAno(m, membro.id),
-    ultimaEscala: ultima ? resumirEscala(m, ultima) : null,
+    ultimaEscala: ultima ? resumirEscala(m, ultima, c.get('membro').id) : null,
     proximaEscala: proxima
       ? {
           id: proxima.escala.id,

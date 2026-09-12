@@ -1,11 +1,11 @@
 import { Hono } from 'hono'
 import { descricaoDaMudanca, ministradoPorDe, ministros, musicaPorId } from '../../src/dominio'
-import type { Escala, Item, Ministerio } from '../../src/dominio'
+import type { Escala, Item, Ministerio, Trecho } from '../../src/dominio'
 import { exigirMinistro } from '../autenticacao'
 import { atualizarItem, criarItem, removerItem, reordenarItens, trocarTrechos } from '../dados/itens'
 import type { NovoItem, TrechoNovo } from '../dados/itens'
 import { carregarMinisterio } from '../dados/ministerio'
-import { apresentarEscala } from '../http/escala'
+import { responderEscala } from '../http/responder'
 import { corpoJson, ehMinutagem, ehTextoCheio } from '../http/validacao'
 import { avisarMudancaDeMusica } from '../push/gatilhos'
 import type { Contexto } from '../tipos'
@@ -40,7 +40,7 @@ itens.post('/api/escalas/:id/itens', exigirMinistro, async (c) => {
     )
   }
 
-  return c.json(apresentarEscala(depois, depois.escalas[0]), 201)
+  return c.json(await responderEscala(c.env.DB, escalaId), 201)
 })
 
 itens.patch('/api/escalas/:id/itens/:itemId', exigirMinistro, async (c) => {
@@ -56,11 +56,16 @@ itens.patch('/api/escalas/:id/itens/:itemId', exigirMinistro, async (c) => {
   const recusa = conferirEdicao(m, item, corpo)
   if (recusa) return c.json({ erro: recusa }, 422)
 
+  const marca = corpo.ministradoPor === undefined ? null : lerMinistradoPor(escala, corpo.ministradoPor)
+  if (marca && 'erro' in marca) return c.json({ erro: marca.erro }, 422)
+
   await atualizarItem(c.env.DB, item.id, {
+    tipo: corpo.tipo as 'inteira' | 'trecho' | undefined,
     tom: corpo.tom as string | undefined,
     inicio: corpo.inicio as string | undefined,
     fim: corpo.fim as string | undefined,
     observacao: typeof corpo.observacao === 'string' ? corpo.observacao.trim() : undefined,
+    ministradoPor: marca && 'quem' in marca ? marca.quem : undefined,
   })
 
   if (corpo.trechos !== undefined) await trocarTrechos(c.env.DB, item.id, corpo.trechos as TrechoNovo[])
@@ -83,7 +88,7 @@ itens.patch('/api/escalas/:id/itens/:itemId', exigirMinistro, async (c) => {
     )
   }
 
-  return c.json(apresentarEscala(depois, depois.escalas[0]))
+  return c.json(await responderEscala(c.env.DB, escalaId))
 })
 
 itens.delete('/api/escalas/:id/itens/:itemId', exigirMinistro, async (c) => {
@@ -164,7 +169,7 @@ function conferirMusica(m: Ministerio, musicaId: unknown): string | null {
   return musica.arquivada ? `${musica.titulo} está arquivada e não entra em Repertório.` : null
 }
 
-function lerMinistradoPor(escala: Escala, valor: unknown): { quem: string | null } | { erro: string } {
+export function lerMinistradoPor(escala: Escala, valor: unknown): { quem: string | null } | { erro: string } {
   if (valor === undefined || valor === null) return { quem: ministradoPorDe(escala, null) }
   if (typeof valor !== 'string' || !ministros(escala).includes(valor)) {
     return { erro: 'Ministrado por só pode ser um Ministro marcado nessa Escala.' }
@@ -179,13 +184,19 @@ function conferirEdicao(m: Ministerio, item: Item, corpo: Record<string, unknown
 
   if (corpo.observacao !== undefined && typeof corpo.observacao !== 'string') return 'A observação é um texto.'
 
+  if (corpo.tipo !== undefined && corpo.tipo !== 'inteira' && corpo.tipo !== 'trecho') {
+    return 'Um Item vira Música inteira ou Trecho.'
+  }
+
   if (item.tipo === 'medley') {
+    if (corpo.tipo !== undefined) return MEDLEY_NAO_TROCA
     if (corpo.tom !== undefined || corpo.inicio !== undefined || corpo.fim !== undefined) {
       return 'O Medley não tem Tom próprio: cada Trecho tem o seu.'
     }
     if (corpo.trechos !== undefined) {
       const trechos = lerTrechos(m, corpo.trechos)
       if (typeof trechos === 'string') return trechos
+      if (!mesmasMusicas(item.trechos, trechos)) return MUSICAS_DO_MEDLEY
     }
     return null
   }
@@ -193,19 +204,33 @@ function conferirEdicao(m: Ministerio, item: Item, corpo: Record<string, unknown
   if (corpo.trechos !== undefined) return 'Só um Medley tem Trechos.'
   if (corpo.tom !== undefined && !ehTextoCheio(corpo.tom)) return TOM_OBRIGATORIO
 
-  if (item.tipo === 'inteira' && (corpo.inicio !== undefined || corpo.fim !== undefined)) {
+  const tipo = (corpo.tipo as 'inteira' | 'trecho' | undefined) ?? item.tipo
+
+  if (tipo === 'inteira' && (corpo.inicio !== undefined || corpo.fim !== undefined)) {
     return 'Uma Música inteira não tem minutagem.'
   }
 
   if (corpo.inicio !== undefined && !ehMinutagem(corpo.inicio)) return MINUTAGEM_INVALIDA
   if (corpo.fim !== undefined && !ehMinutagem(corpo.fim)) return MINUTAGEM_INVALIDA
 
+  if (tipo === 'trecho' && item.tipo === 'inteira' && (corpo.inicio === undefined || corpo.fim === undefined)) {
+    return 'Um Trecho precisa de início e fim.'
+  }
+
   return null
+}
+
+function mesmasMusicas(atuais: Trecho[], novos: TrechoNovo[]): boolean {
+  return (
+    atuais.length === novos.length && atuais.every((trecho, i) => trecho.musicaId === novos[i].musicaId)
+  )
 }
 
 // Reordenar não é mudança de Repertório pra quem recebe o aviso.
 function mexeuNaMusica(corpo: Record<string, unknown>): boolean {
-  return ['tom', 'inicio', 'fim', 'observacao', 'trechos'].some((campo) => corpo[campo] !== undefined)
+  return ['tipo', 'tom', 'inicio', 'fim', 'observacao', 'trechos', 'ministradoPor'].some(
+    (campo) => corpo[campo] !== undefined,
+  )
 }
 
 function comOItemNaPosicao(escala: Escala, itemId: string, posicao: number): string[] {
@@ -214,13 +239,10 @@ function comOItemNaPosicao(escala: Escala, itemId: string, posicao: number): str
   return outros
 }
 
-async function responderEscala(db: D1Database, id: string) {
-  const m = await carregarMinisterio(db, { ids: [id] })
-  return apresentarEscala(m, m.escalas[0])
-}
-
 const TOM_OBRIGATORIO = 'Escolha o Tom.'
 const MINUTAGEM_INVALIDA = 'Informe a minutagem no formato 1:05.'
 const TRECHO_INVALIDO = 'Cada Trecho precisa de Música, Tom e minutagem.'
+const MEDLEY_NAO_TROCA = 'O Medley não vira Música inteira nem Trecho.'
+const MUSICAS_DO_MEDLEY = 'Para trocar as músicas, remova o Medley e monte de novo.'
 const ESCALA_NAO_ENCONTRADA = 'Escala não encontrada.'
 const ITEM_NAO_ENCONTRADO = 'Item não encontrado nessa Escala.'

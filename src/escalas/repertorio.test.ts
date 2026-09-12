@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 import type { ItemApresentado, MusicaResumida } from '../api/tipos'
 import { capasDoItem, resumoDoItem, tituloDoItem, videosDoRepertorio } from './repertorio'
 
+const SEM_MEMORIA = { recente: false, ultimaExecucao: null, planejadaEm: [] }
+
 const musica = (id: string, titulo: string): MusicaResumida => ({
   id,
   titulo,
@@ -16,11 +18,14 @@ const inteira: ItemApresentado = {
   tipo: 'inteira',
   observacao: '',
   ministradoPor: null,
+  ministradoPorNome: null,
+  atualizadoEm: null,
   descricao: 'Rio · Tom D',
   musicaId: 'rio',
   tom: 'D',
   musica: musica('rio', 'Rio'),
   link: 'https://youtu.be/v-rio',
+  memoria: SEM_MEMORIA,
 }
 
 const trecho: ItemApresentado = {
@@ -28,6 +33,8 @@ const trecho: ItemApresentado = {
   tipo: 'trecho',
   observacao: '',
   ministradoPor: null,
+  ministradoPorNome: null,
+  atualizadoEm: null,
   descricao: 'Dono (1:05–2:30) · Tom F',
   musicaId: 'dono',
   tom: 'F',
@@ -35,6 +42,7 @@ const trecho: ItemApresentado = {
   fim: '2:30',
   musica: musica('dono', 'Dono da Minha Afeição'),
   link: 'https://youtu.be/v-dono?t=65',
+  memoria: SEM_MEMORIA,
 }
 
 const medley: ItemApresentado = {
@@ -42,10 +50,13 @@ const medley: ItemApresentado = {
   tipo: 'medley',
   observacao: '',
   ministradoPor: null,
+  ministradoPorNome: null,
+  atualizadoEm: null,
   descricao: 'Medley: Rio (0:10–1:00, Tom D) + Dono (1:05–2:30, Tom F)',
+  memoria: null,
   trechos: [
-    { musicaId: 'rio', tom: 'D', inicio: '0:10', fim: '1:00', musica: musica('rio', 'Rio'), link: 'x' },
-    { musicaId: 'dono', tom: 'F', inicio: '1:05', fim: '2:30', musica: musica('dono', 'Dono'), link: 'y' },
+    { musicaId: 'rio', tom: 'D', inicio: '0:10', fim: '1:00', musica: musica('rio', 'Rio'), link: 'x', memoria: SEM_MEMORIA },
+    { musicaId: 'dono', tom: 'F', inicio: '1:05', fim: '2:30', musica: musica('dono', 'Dono'), link: 'y', memoria: SEM_MEMORIA },
   ],
 }
 
@@ -91,15 +102,27 @@ describe('capasDoItem', () => {
 describe('videosDoRepertorio', () => {
   it('leva os vídeos na ordem, com o Medley aberto trecho a trecho', () => {
     const itens: ItemApresentado[] = [
-      { ...base, tipo: 'inteira', musicaId: 'a', tom: 'G', musica: resumo('aaa'), link: '' },
-      { ...base, id: 'i2', tipo: 'trecho', musicaId: 'b', tom: 'C', inicio: '1:00', fim: '2:00', musica: resumo('bbb'), link: '' },
+      { ...base, tipo: 'inteira', musicaId: 'a', tom: 'G', musica: resumo('aaa'), link: '', memoria: SEM_MEMORIA },
+      {
+        ...base,
+        id: 'i2',
+        tipo: 'trecho',
+        musicaId: 'b',
+        tom: 'C',
+        inicio: '1:00',
+        fim: '2:00',
+        musica: resumo('bbb'),
+        link: '',
+        memoria: SEM_MEMORIA,
+      },
       {
         ...base,
         id: 'i3',
         tipo: 'medley',
+        memoria: null,
         trechos: [
-          { musicaId: 'c', tom: 'D', inicio: '0:00', fim: '1:00', musica: resumo('ccc'), link: '' },
-          { musicaId: 'd', tom: 'E', inicio: '0:00', fim: '1:00', musica: resumo('ddd'), link: '' },
+          { musicaId: 'c', tom: 'D', inicio: '0:00', fim: '1:00', musica: resumo('ccc'), link: '', memoria: SEM_MEMORIA },
+          { musicaId: 'd', tom: 'E', inicio: '0:00', fim: '1:00', musica: resumo('ddd'), link: '', memoria: SEM_MEMORIA },
         ],
       },
     ]
@@ -112,7 +135,7 @@ describe('videosDoRepertorio', () => {
   })
 })
 
-const base = { id: 'i1', observacao: '', ministradoPor: null, descricao: '' }
+const base = { id: 'i1', observacao: '', ministradoPor: null, ministradoPorNome: null, atualizadoEm: null, descricao: '' }
 
 function resumo(videoId: string) {
   return { id: videoId, titulo: 'Música', artista: 'Artista', videoId, capa: '', capaAlternativa: '' }

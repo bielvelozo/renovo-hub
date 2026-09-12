@@ -11,7 +11,15 @@ import {
   limparBanco,
   porNaEquipe,
 } from '../testes/apoio'
-import { JANELA_DE_AGRUPAMENTO, avisarCancelada, avisarEscalados, avisarMudancaDeMusica, avisarRemarcada, gerarLembretes } from './gatilhos'
+import {
+  JANELA_DE_AGRUPAMENTO,
+  avisarCancelada,
+  avisarEscalados,
+  avisarMudancaDeMusica,
+  avisarRemarcada,
+  gerarLembretes,
+  gerarPosCulto,
+} from './gatilhos'
 
 const AGORA = new Date('2026-09-05T15:00:00.000Z')
 const FUTURA = '2099-09-13'
@@ -215,5 +223,59 @@ describe('gerarLembretes', () => {
     await env.DB.prepare('update escalas set cancelada = 1 where id = ?').bind('e0913').run()
 
     expect(await gerarLembretes(env.DB, dezDaManha('2099-09-12'))).toBe(0)
+  })
+})
+
+// 22:30 de Brasília do dia 13 é 01:30 UTC do dia 14.
+const VINTE_E_DUAS_E_MEIA = new Date('2099-09-14T01:30:00.000Z')
+const VINTE_E_DUAS_E_VINTE_E_NOVE = new Date('2099-09-14T01:29:00.000Z')
+
+describe('gerarPosCulto', () => {
+  beforeEach(async () => {
+    await criarMusica('rio', 'Rio', 'v-rio')
+    await criarEscala({ id: 'hoje', data: '2099-09-13' })
+    await porNaEquipe('hoje', 'marcos', ['vocal'], true)
+    await porNaEquipe('hoje', 'julia', ['vocal'])
+    await criarItemInteira('i1', 'hoje', 'rio', 'D')
+  })
+
+  it('não enfileira nada às 22:29', async () => {
+    expect(await gerarPosCulto(env.DB, VINTE_E_DUAS_E_VINTE_E_NOVE)).toBe(0)
+  })
+
+  it('enfileira às 22:30, só pros Ministros da Escala', async () => {
+    expect(await gerarPosCulto(env.DB, VINTE_E_DUAS_E_MEIA)).toBe(1)
+
+    const fila = await vencidas(env.DB, VINTE_E_DUAS_E_MEIA)
+    expect(fila).toHaveLength(1)
+    expect(fila[0]).toMatchObject({ membroId: 'marcos', tipo: 'pos-culto', escalaId: 'hoje' })
+    expect(fila[0].titulo).toBe('Todas as músicas de hoje foram tocadas?')
+    expect(fila[0].corpo).toContain('1 música registrada')
+  })
+
+  it('manda uma vez só por Ministro por Escala', async () => {
+    await gerarPosCulto(env.DB, VINTE_E_DUAS_E_MEIA)
+
+    expect(await gerarPosCulto(env.DB, new Date('2099-09-14T01:45:00.000Z'))).toBe(0)
+  })
+
+  it('não lembra de Escala Cancelada nem de Escala sem músicas', async () => {
+    await env.DB.prepare('update escalas set cancelada = 1 where id = ?').bind('hoje').run()
+    expect(await gerarPosCulto(env.DB, VINTE_E_DUAS_E_MEIA)).toBe(0)
+
+    await env.DB.prepare('update escalas set cancelada = 0 where id = ?').bind('hoje').run()
+    await env.DB.prepare('delete from itens where id = ?').bind('i1').run()
+    expect(await gerarPosCulto(env.DB, VINTE_E_DUAS_E_MEIA)).toBe(0)
+  })
+
+  it('não lembra de Escala de outro dia', async () => {
+    await criarEscala({ id: 'ontem', data: '2099-09-12' })
+    await porNaEquipe('ontem', 'marcos', ['vocal'], true)
+    await criarItemInteira('i2', 'ontem', 'rio', 'D')
+
+    await gerarPosCulto(env.DB, VINTE_E_DUAS_E_MEIA)
+
+    const fila = await vencidas(env.DB, VINTE_E_DUAS_E_MEIA)
+    expect(fila.map((n) => n.escalaId)).toEqual(['hoje'])
   })
 })

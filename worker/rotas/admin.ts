@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { hojeEmBrasilia } from '../../src/dominio'
+import { finsDeSemanaSeguidos, hojeEmBrasilia, paradaHaMeses, ultimaEscala } from '../../src/dominio'
 import type { Funcao, Membro } from '../../src/dominio'
 import { exigirAdmin, exigirMembro } from '../autenticacao'
 import { definirListaEsqueci, listaEsqueciLigada } from '../dados/acesso'
@@ -14,20 +14,35 @@ import {
   desativarMembro,
   serviuEmEscalaRealizada,
 } from '../dados/membros'
-import { lerFuncoes, lerMembros } from '../dados/ministerio'
-import { contarInscricoes } from '../dados/push'
+import { carregarMinisterio, lerFuncoes, lerMembros } from '../dados/ministerio'
+import { contarInscricoes, silenciados } from '../dados/push'
 import { corpoJson, ehListaDeTextos, ehTextoCheio } from '../http/validacao'
 import type { Contexto } from '../tipos'
+
+export const MAXIMO_DO_MINIMO = 4
 
 export const admin = new Hono<Contexto>()
 
 admin.get('/api/membros', exigirMembro, async (c) => {
-  const [membros, push] = await Promise.all([lerMembros(c.env.DB), contarInscricoes(c.env.DB)])
+  const [m, push, mudos] = await Promise.all([
+    carregarMinisterio(c.env.DB),
+    contarInscricoes(c.env.DB),
+    silenciados(c.env.DB),
+  ])
 
   return c.json({
-    membros: membros
+    membros: m.membros
       .filter((membro) => !membro.inativo)
-      .map((membro) => ({ ...membro, push: push.get(membro.id) ?? 0 })),
+      .map((membro) => ({
+        ...membro,
+        push: push.get(membro.id) ?? 0,
+        silenciado: mudos.has(membro.id),
+        presenca: {
+          ultimaVez: ultimaEscala(m, membro.id)?.data ?? null,
+          seguidos: finsDeSemanaSeguidos(m, membro.id),
+          paradaHaMeses: paradaHaMeses(m, membro.id),
+        },
+      })),
   })
 })
 
@@ -117,11 +132,13 @@ admin.post('/api/admin/funcoes', exigirAdmin, async (c) => {
   if (!ehTextoCheio(corpo.nome)) return c.json({ erro: NOME_DA_FUNCAO }, 422)
   if (!ehNaipe(corpo.grupo)) return c.json({ erro: NAIPE_INVALIDO }, 422)
   if (corpo.ordem !== undefined && !Number.isInteger(corpo.ordem)) return c.json({ erro: ORDEM_INVALIDA }, 422)
+  if (corpo.minimo !== undefined && !ehMinimo(corpo.minimo)) return c.json({ erro: MINIMO_INVALIDO }, 422)
 
   const id = await criarFuncao(c.env.DB, {
     nome: corpo.nome.trim(),
     grupo: corpo.grupo,
     ordem: (corpo.ordem as number | undefined) ?? 0,
+    minimo: (corpo.minimo as number | undefined) ?? 0,
   })
 
   return c.json(await responderFuncao(c.env.DB, id), 201)
@@ -135,11 +152,13 @@ admin.patch('/api/admin/funcoes/:id', exigirAdmin, async (c) => {
   if (corpo.nome !== undefined && !ehTextoCheio(corpo.nome)) return c.json({ erro: NOME_DA_FUNCAO }, 422)
   if (corpo.grupo !== undefined && !ehNaipe(corpo.grupo)) return c.json({ erro: NAIPE_INVALIDO }, 422)
   if (corpo.ordem !== undefined && !Number.isInteger(corpo.ordem)) return c.json({ erro: ORDEM_INVALIDA }, 422)
+  if (corpo.minimo !== undefined && !ehMinimo(corpo.minimo)) return c.json({ erro: MINIMO_INVALIDO }, 422)
 
   await atualizarFuncao(c.env.DB, id, {
     nome: typeof corpo.nome === 'string' ? corpo.nome.trim() : undefined,
     grupo: ehNaipe(corpo.grupo) ? corpo.grupo : undefined,
     ordem: corpo.ordem as number | undefined,
+    minimo: corpo.minimo as number | undefined,
   })
 
   return c.json(await responderFuncao(c.env.DB, id))
@@ -197,6 +216,10 @@ async function lerFuncoesPedidas(db: D1Database, valor: unknown): Promise<string
   return desconhecida ? `Função desconhecida: ${desconhecida}.` : [...new Set(valor)]
 }
 
+function ehMinimo(valor: unknown): valor is number {
+  return Number.isInteger(valor) && (valor as number) >= 0 && (valor as number) <= MAXIMO_DO_MINIMO
+}
+
 function lerMarca(valor: unknown): boolean | undefined {
   return typeof valor === 'boolean' ? valor : undefined
 }
@@ -213,5 +236,6 @@ const NOME_DO_MEMBRO = 'O Membro precisa de um nome.'
 const NOME_DA_FUNCAO = 'A Função precisa de um nome.'
 const NAIPE_INVALIDO = 'O Grupo é vocal, instrumentos ou tecnica.'
 const ORDEM_INVALIDA = 'A ordem da Função é um número inteiro.'
+const MINIMO_INVALIDO = 'O mínimo por escala é um número de 0 a 4.'
 const MEMBRO_NAO_ENCONTRADO = 'Membro não encontrado.'
 const FUNCAO_NAO_ENCONTRADA = 'Função não encontrada.'

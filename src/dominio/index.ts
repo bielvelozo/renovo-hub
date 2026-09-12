@@ -100,6 +100,15 @@ export {
   vezesTocadaDesde,
 } from './memoria'
 
+export type { DadosDoInicio, PosCulto } from './inicio'
+
+export {
+  DIAS_DAS_PENDENCIAS,
+  DIAS_PARA_TRAS_NO_INICIO,
+  dadosDoInicio,
+  posCultoDoMinistro,
+} from './inicio'
+
 export type { ChaveDePendencia, Pendencia, PendenciasDaEscala, ResumoDeGrupo } from './pendencias'
 
 export { GRUPOS, NOME_DO_GRUPO, pendenciasDaEscala, resumoPorGrupo } from './pendencias'
