@@ -142,8 +142,16 @@ describe('rascunho de Item', () => {
 
     expect(rascunhoPronto(base)).toBe(false)
     expect(rascunhoPronto({ ...base, inicio: '1:05', fim: '2:30' })).toBe(true)
-    expect(rascunhoPronto({ ...base, inicio: '1:5', fim: '2:30' })).toBe(false)
     expect(rascunhoPronto({ ...base, inicio: '1:05', fim: '2:70' })).toBe(false)
+    expect(rascunhoPronto({ ...base, inicio: 'um', fim: '2:30' })).toBe(false)
+  })
+
+  it('aceita a minutagem sem «:» e manda o formato certo no corpo', () => {
+    const base = { ...rascunhoDe(escolhaDaMusica(resumida('rio')), sugerido()), modo: 'trecho' as const }
+    const rascunho = { ...base, inicio: '1.5', fim: '230' }
+
+    expect(rascunhoPronto(rascunho)).toBe(true)
+    expect(corpoDoItem(rascunho, 'rio')).toMatchObject({ tipo: 'trecho', inicio: '1:05', fim: '2:30' })
   })
 
   it('vira corpo de Música inteira sem minutagem', () => {

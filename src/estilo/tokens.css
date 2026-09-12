@@ -76,6 +76,8 @@
   --espaco-6: 24px;
   --espaco-8: 32px;
   --toque: 44px;
+  --altura-da-capa: 60px;
+  --largura-da-capa: clamp(84px, 24vw, 108px);
   --seguro-baixo: env(safe-area-inset-bottom, 0px);
   --seguro-alto: env(safe-area-inset-top, 0px);
 

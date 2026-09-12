@@ -26,6 +26,7 @@ export {
   domingoDaSantaCeia,
   domingosDoMes,
   ehMinutagem,
+  normalizarMinutagem,
   fimDeSemanaDe,
   formatarDia,
   formatarDiaLongo,

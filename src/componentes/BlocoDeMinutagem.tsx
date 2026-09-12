@@ -1,3 +1,4 @@
+import { normalizarMinutagem } from '../dominio'
 import { Campo } from './Campo'
 
 export function BlocoDeMinutagem({
@@ -12,7 +13,7 @@ export function BlocoDeMinutagem({
   return (
     <div className="secao">
       <h2>Minutagem</h2>
-      <p className="dica">O trecho do vídeo de referência, no formato 1:05.</p>
+      <p className="dica">O trecho do vídeo de referência, no formato 1:05. Sem «:» no teclado, use ponto (1.05) ou só os números (105).</p>
 
       <div className="minutagem">
         <Campo rotulo="Início">
@@ -21,6 +22,7 @@ export function BlocoDeMinutagem({
             placeholder="0:00"
             value={inicio}
             onChange={(evento) => escrever('inicio', evento.target.value)}
+            onBlur={() => escrever('inicio', normalizarMinutagem(inicio) ?? inicio)}
           />
         </Campo>
 
@@ -30,6 +32,7 @@ export function BlocoDeMinutagem({
             placeholder="3:45"
             value={fim}
             onChange={(evento) => escrever('fim', evento.target.value)}
+            onBlur={() => escrever('fim', normalizarMinutagem(fim) ?? fim)}
           />
         </Campo>
       </div>

@@ -172,7 +172,7 @@ a {
   max-width: none;
   margin: -16px -16px 0;
   padding-top: var(--seguro-alto);
-  background: color-mix(in srgb, var(--fundo) 88%, transparent);
+  background: color-mix(in srgb, var(--fundo) 96%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
