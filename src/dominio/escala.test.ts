@@ -164,7 +164,7 @@ describe('membrosMusicais', () => {
 describe('gruposEquipe', () => {
   it('agrupa em Ministro, Vocal, Músicos e Som, com o Ministro fora dos outros grupos', () => {
     expect(gruposEquipe(m, emEscala('e0816'))).toEqual([
-      { nome: 'Ministro', itens: ['Marcos (violão)'] },
+      { nome: 'Ministro', itens: ['Marcos (vocal, violão)'] },
       { nome: 'Vocal', itens: ['Ana'] },
       { nome: 'Músicos', itens: ['Gabriel (guitarra)', 'Pedro (baixo)', 'Lucas (bateria)'] },
       { nome: 'Som', itens: ['Davi'] },
@@ -178,7 +178,7 @@ describe('gruposEquipe', () => {
       equipe: escala.equipe.map((x) => (x.membroId === 'ana' ? { ...x, ministro: true } : x)),
     }
 
-    expect(gruposEquipe(m, doisMinistros)[0]).toEqual({ nome: 'Ministros', itens: ['Marcos (violão)', 'Ana'] })
+    expect(gruposEquipe(m, doisMinistros)[0]).toEqual({ nome: 'Ministros', itens: ['Marcos (vocal, violão)', 'Ana (vocal)'] })
   })
 
   it('lista o vocal pelos nomes e omite grupo vazio', () => {

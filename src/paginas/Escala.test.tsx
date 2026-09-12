@@ -62,6 +62,7 @@ function mostrar(mudar = vi.fn()) {
           podeEditar
           acao={acao}
           mudar={mudar}
+          definir={vi.fn()}
           hoje={HOJE}
           visita={null}
         />

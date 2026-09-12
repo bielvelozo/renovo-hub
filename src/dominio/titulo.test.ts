@@ -3,6 +3,48 @@ import { limparTitulo } from './titulo'
 
 const CASOS: { nome: string; titulo: string; canal: string; limpo: { titulo: string; artista: string } }[] = [
   {
+    nome: 'reconhece o canal dentro de uma parte maior e a usa como artista',
+    titulo: 'GABRIELA ROCHA FEAT. ELEVATION WORSHIP - VIDA AOS SEPULCROS (CLIPE OFICIAL)',
+    canal: 'Gabriela Rocha',
+    limpo: { titulo: 'VIDA AOS SEPULCROS', artista: 'GABRIELA ROCHA FEAT. ELEVATION WORSHIP' },
+  },
+  {
+    nome: 'trata «@handle», «convida» e «Ministério» como marca de artista',
+    titulo: 'Paulo Cesar Baruk, @MarsenaOficial - Clamo Jesus (I Speak Jesus)',
+    canal: 'Baruk TV e mais 3',
+    limpo: { titulo: 'Clamo Jesus (I Speak Jesus)', artista: 'Paulo Cesar Baruk, @MarsenaOficial' },
+  },
+  {
+    nome: 'põe o Ministério como artista mesmo quando vem antes do hífen',
+    titulo: 'Ministério Pedras Vivas - Pai nosso (Our father)',
+    canal: 'Pedras Vivas',
+    limpo: { titulo: 'Pai nosso (Our father)', artista: 'Ministério Pedras Vivas' },
+  },
+  {
+    nome: 'tira legendas, DVD e um parêntese que ficou aberto',
+    titulo: 'Irmão Lázaro - Eu Te Amo Tanto (DVD Eu Te Amo Tanto',
+    canal: 'Irmão Lázaro',
+    limpo: { titulo: 'Eu Te Amo Tanto', artista: 'Irmão Lázaro' },
+  },
+  {
+    nome: 'não descarta um pedaço com hífen só porque menciona o canal',
+    titulo: 'Ser Mudado (Lyric) - Alessandro Vilas Boas // O Fogo Nunca Dorme (EP)',
+    canal: 'Alessandro Vilas Boas',
+    limpo: { titulo: 'Ser Mudado', artista: 'Alessandro Vilas Boas' },
+  },
+  {
+    nome: 'com três partes, ignora a que é descrição de gravação',
+    titulo: 'Lugar da Habitação - Os Bravos feat. Alessandro Vilas Boas - Ao Vivo na Conferência JesusCopy 2024',
+    canal: 'JesusCopy Music',
+    limpo: { titulo: 'Lugar da Habitação', artista: 'Os Bravos feat. Alessandro Vilas Boas' },
+  },
+  {
+    nome: 'descarta o pedaço que é só «Ministração Ao Vivo»',
+    titulo: 'Felipe Rodrigues - Oh Quão Lindo Esse Nome é | Ministração Ao Vivo',
+    canal: 'Felipe Rodrigues',
+    limpo: { titulo: 'Oh Quão Lindo Esse Nome é', artista: 'Felipe Rodrigues' },
+  },
+  {
     nome: 'corta no separador de canal e separa artista pelo hífen',
     titulo: '1 Coríntios 15 (Esse Corpo É Uma Semente) - Eric & Evellyn Emerick | TELOS (Ao Vivo)',
     canal: 'TELOS',

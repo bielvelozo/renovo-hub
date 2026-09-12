@@ -125,9 +125,9 @@ describe('convites', () => {
   it('token inválido não cria sessão', async () => {
     const resposta = await SELF.fetch(`${RAIZ}/entrar/nao-existe`, { redirect: 'manual' })
 
-    expect(resposta.status).toBe(404)
+    expect(resposta.status).toBe(302)
+    expect(resposta.headers.get('Location')).toBe('/esqueci?convite=invalido')
     expect(resposta.headers.get('Set-Cookie')).toBeNull()
-    expect(await resposta.text()).toContain('Link inválido')
   })
 })
 

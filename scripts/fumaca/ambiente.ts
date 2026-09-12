@@ -99,6 +99,7 @@ export function migrarESemear(raiz: string): void {
 
   rodar([wrangler, 'd1', 'migrations', 'apply', 'renovo-hub', '--local'], 'db:migrate')
   rodar([tsx, resolve(raiz, 'scripts/seed.ts'), '--demo'], 'db:seed --demo')
+  rodar([tsx, resolve(raiz, 'scripts/titulos.ts')], 'titulos')
 }
 
 export async function sessaoPorConvite(raiz: string, nome: string): Promise<string> {

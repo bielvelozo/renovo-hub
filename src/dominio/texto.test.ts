@@ -32,7 +32,7 @@ describe('textoParaWhatsApp', () => {
     expect(textoParaWhatsApp(m, 'e0830')).toBe(
       [
         '*Culto de Domingo 18h · 30/08*',
-        'Ministro: Isa',
+        'Ministro: Isa (vocal)',
         'Vocal: Ana, Bia',
         'Músicos: Gabriel (guitarra), Marcos (violão), Lucas (bateria)',
         'Som: Davi',

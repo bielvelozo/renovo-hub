@@ -137,6 +137,7 @@ export function Sugestoes() {
         aoEnviar={() => {
           sugerir(null)
           busca.recarregar()
+          if (sugerirParam) navegar('/sugestoes', { replace: true })
         }}
       />
     )

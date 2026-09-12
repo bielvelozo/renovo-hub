@@ -162,8 +162,8 @@ export function gruposEquipe(m: Ministerio, escala: Escala): GrupoEquipe[] {
     grupos.push({
       nome: marcados.length > 1 ? 'Ministros' : 'Ministro',
       itens: marcados.map((x) => {
-        const instrumentos = ordenadas(x.funcoes, 'instrumentos')
-        return nome(x.membroId) + (instrumentos.length ? ' (' + instrumentos.map(nomeDaFuncao).join(', ') + ')' : '')
+        const funcoes = [...ordenadas(x.funcoes, 'vocal'), ...ordenadas(x.funcoes, 'instrumentos'), ...ordenadas(x.funcoes, 'tecnica')]
+        return nome(x.membroId) + (funcoes.length ? ' (' + funcoes.map(nomeDaFuncao).join(', ') + ')' : '')
       }),
     })
   }

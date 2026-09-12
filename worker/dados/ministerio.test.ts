@@ -136,7 +136,7 @@ describe('carregarMinisterio', () => {
     const m = await carregarMinisterio(env.DB)
 
     expect(gruposEquipe(m, m.escalas[0])).toEqual([
-      { nome: 'Ministro', itens: ['Marcos'] },
+      { nome: 'Ministro', itens: ['Marcos (vocal)'] },
       { nome: 'Som', itens: ['Davi'] },
     ])
     expect(textoParaWhatsApp(m, 'e1')).toContain('Meia Noite')
