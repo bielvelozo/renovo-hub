@@ -1,41 +1,39 @@
-const CORTES = ['|', '//', '•']
-const SEPARADORES = [' - ', ' – ']
-const RUIDO = ['ao vivo', 'live', 'clipe oficial', 'official', 'lyric', 'playback', 'video oficial', 'visualizer', 'audio']
+const CORTES = /\s*(?:\||\/\/|•)\s*/
+const SEPARADORES = /\s[-–]\s/
+const RUIDO = ['ao vivo', 'live', 'oficial', 'official', 'lyric', 'playback', 'visualizer', 'audio']
 const SUFIXOS_DO_CANAL = ['music', 'oficial', 'official']
 const PONTAS = /^[\s\-–•|:,.]+|[\s\-–•|:,.]+$/g
 
 export type TituloLimpo = { titulo: string; artista: string }
 
 export function limparTitulo(titulo: string, canal: string): TituloLimpo {
-  const cortado = semRuido(antesDoCorte(titulo))
-  const partes = dividir(cortado).filter((parte) => aparar(parte) !== '' && !ehSoRuido(parte))
-  const nomeDoCanal = semSufixos(canal)
+  const partes = semRuido(pedacoPrincipal(titulo, canal))
+    .split(SEPARADORES)
+    .filter((parte) => aparar(parte) !== '' && !ehSoRuido(parte))
 
   if (partes.length >= 2) {
-    const [primeira, segunda] = partes
-    if (coincide(primeira, canal)) return { titulo: aparar(segunda), artista: aparar(primeira) }
-    if (coincide(segunda, canal)) return { titulo: aparar(primeira), artista: aparar(segunda) }
-    return { titulo: aparar(primeira), artista: aparar(segunda) }
+    const doCanal = partes.find((parte) => coincide(parte, canal))
+    if (doCanal !== undefined) {
+      return { titulo: aparar(partes.find((parte) => parte !== doCanal) ?? ''), artista: semSufixos(doCanal) }
+    }
+    return { titulo: aparar(partes[0]), artista: semSufixos(partes[1]) }
   }
 
-  return { titulo: aparar(partes[0] ?? ''), artista: aparar(nomeDoCanal) }
+  return { titulo: aparar(partes[0] ?? ''), artista: semSufixos(canal) }
 }
 
-function antesDoCorte(texto: string): string {
-  const posicoes = CORTES.map((corte) => texto.indexOf(corte)).filter((posicao) => posicao > 0)
-  return posicoes.length ? texto.slice(0, Math.min(...posicoes)) : texto
+// O YouTube tanto põe o canal depois do corte ("Música | Canal") quanto antes
+// ("Canal | Música"): fica o primeiro pedaço que não menciona o canal.
+function pedacoPrincipal(texto: string, canal: string): string {
+  const pedacos = texto.split(CORTES).filter((pedaco) => aparar(pedaco) !== '')
+  const nomeDoCanal = normalizar(semSufixos(canal))
+  const semCanal = nomeDoCanal ? pedacos.filter((pedaco) => !normalizar(pedaco).includes(nomeDoCanal)) : pedacos
+
+  return semCanal[0] ?? pedacos[0] ?? texto
 }
 
 function semRuido(texto: string): string {
   return texto.replace(/\s*[([]([^)\]]*)[)\]]/g, (trecho, conteudo: string) => (temRuido(conteudo) ? '' : trecho))
-}
-
-function dividir(texto: string): string[] {
-  const separador = SEPARADORES.map((s) => ({ s, i: texto.indexOf(s) }))
-    .filter(({ i }) => i > 0)
-    .sort((a, b) => a.i - b.i)[0]
-  if (!separador) return [texto]
-  return [texto.slice(0, separador.i), texto.slice(separador.i + separador.s.length)]
 }
 
 function temRuido(texto: string): boolean {

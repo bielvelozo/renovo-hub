@@ -1,40 +1,83 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router'
-import { api } from '../api/cliente'
-import type { EscalaResumida, SugestaoApresentada } from '../api/tipos'
+import { useEffect, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router'
+import { api, ErroDaApi, textoDoErro } from '../api/cliente'
+import type { MusicaDetalhada, SugestaoApresentada, SugestaoRepetida } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
 import { Cabecalho } from '../casca/Cabecalho'
+import { Icone } from '../casca/Icone'
 import { usarAviso } from '../componentes/Avisos'
 import { Botao } from '../componentes/Botao'
+import { BotaoDeApoio } from '../componentes/BotaoDeApoio'
 import { Campo } from '../componentes/Campo'
 import { Capa } from '../componentes/Capa'
-import { EscolhaDeMusica } from '../componentes/EscolhaDeMusica'
+import { Catalogo } from '../componentes/Catalogo'
 import { Esqueleto } from '../componentes/Esqueleto'
+import { FaixaDeAlerta, frasesDeAlerta } from '../componentes/FaixaDeAlerta'
 import { Folha } from '../componentes/Folha'
+import { FolhaDeEscolhaDeEscala } from '../componentes/FolhaDeEscolhaDeEscala'
 import { LinhaDeMusica } from '../componentes/LinhaDeMusica'
 import { RodapeDeAcao } from '../componentes/RodapeDeAcao'
+import { Segmento } from '../componentes/Segmento'
 import { Selo } from '../componentes/Selo'
 import { usarRemocaoPendente } from '../componentes/usarRemocaoPendente'
 import { Vazio } from '../componentes/Vazio'
-import { formatarDia } from '../dominio'
+import { hojeEmBrasilia, limparTitulo } from '../dominio'
 import type { Escolha } from '../escalas/rascunho'
-import { escolhaDaSugestao } from '../escalas/rascunho'
-import { corpoDaSugestao, diaDaSugestao, podeApagar, textoDosApoios } from '../escalas/sugestoes'
+import { escolhaDaMusica, escolhaDaSugestao } from '../escalas/rascunho'
+import {
+  CHAVE_DE_VISITA_DAS_SUGESTOES,
+  corpoDaSugestao,
+  podeApagar,
+  textoDeAceita,
+  textoDeGuardada,
+  textoDeQuemSugeriu,
+  textoDeRecusada,
+} from '../escalas/sugestoes'
 import { usarEu } from '../sessao/sessao'
-import { VistoEm } from '../componentes/VistoEm'
+
+type Aba = 'abertas' | 'guardadas' | 'aceitas'
+
+function linkDaSugestao(sugestao: SugestaoApresentada): string {
+  if (sugestao.musica) return `https://youtu.be/${sugestao.musica.videoId}`
+  return sugestao.link ?? ''
+}
+
+function tituloDaSugestao(sugestao: SugestaoApresentada): string {
+  const musica = sugestao.musica
+  if (!musica) return escolhaDaSugestao(sugestao).resumo.titulo
+  return musica.revisar ? limparTitulo(musica.titulo, musica.artista).titulo : musica.titulo
+}
 
 export function Sugestoes() {
   const eu = usarEu()
   const dirige = eu.ministro || eu.admin
   const navegar = useNavigate()
-  const busca = usarBusca<{ sugestoes: SugestaoApresentada[] }>('/api/sugestoes')
-  const escalas = usarBusca<{ escalas: EscalaResumida[] }>(dirige ? '/api/escalas' : null)
-  const acao = usarAcao()
+  const [parametros] = useSearchParams()
   const avisar = usarAviso()
+  const acao = usarAcao()
+  const acaoApoio = usarAcao()
   const pendente = usarRemocaoPendente()
-  const [promovendo, escolher] = useState<SugestaoApresentada | null>(null)
-  const [sugerindo, sugerir] = useState<Escolha | null | 'escolhendo'>(null)
+
+  const sugerirParam = parametros.get('sugerir')
+  const abaParam = parametros.get('aba')
+  const abaValida = abaParam === 'guardadas' || abaParam === 'aceitas' ? abaParam : 'abertas'
+
+  const busca = usarBusca<{ sugestoes: SugestaoApresentada[] }>('/api/sugestoes')
+  const musicaDoLink = usarBusca<MusicaDetalhada>(
+    sugerirParam && sugerirParam !== '1' ? `/api/musicas/${sugerirParam}` : null,
+  )
+
+  const [aba, mudarAba] = useState<Aba>(abaValida)
+  const [recusadasAbertas, abrirRecusadas] = useState(false)
+  const [sugerindo, sugerir] = useState<Escolha | 'escolhendo' | null>(sugerirParam === '1' ? 'escolhendo' : null)
+  const [folhaDe, abrirFolhaDe] = useState<SugestaoApresentada | null>(null)
+  const [promovendo, definirPromovendo] = useState<SugestaoApresentada | null>(null)
+  const [recusando, definirRecusando] = useState<SugestaoApresentada | null>(null)
+
+  useEffect(() => {
+    localStorage.setItem(CHAVE_DE_VISITA_DAS_SUGESTOES, new Date().toISOString())
+  }, [])
 
   const trocar = (sugestao: SugestaoApresentada) => {
     busca.definir({
@@ -42,14 +85,47 @@ export function Sugestoes() {
     })
   }
 
+  if (sugerirParam && sugerirParam !== '1') {
+    const cabecalhoDoLink = <Cabecalho titulo="Sugerir uma música" aoVoltar={() => navegar('/sugestoes')} />
+
+    if (musicaDoLink.erro) {
+      return (
+        <section className="pagina">
+          {cabecalhoDoLink}
+          <p className="aviso">{musicaDoLink.erro}</p>
+        </section>
+      )
+    }
+    if (!musicaDoLink.dados) {
+      return (
+        <section className="pagina">
+          {cabecalhoDoLink}
+          <Esqueleto forma="paragrafo" />
+        </section>
+      )
+    }
+
+    return (
+      <Envio
+        escolha={escolhaDaMusica(musicaDoLink.dados)}
+        aoVoltar={() => navegar('/sugestoes')}
+        aoEnviar={() => navegar('/sugestoes')}
+      />
+    )
+  }
+
   if (sugerindo === 'escolhendo') {
     return (
-      <EscolhaDeMusica
-        titulo="Sugerir uma música"
-        sub="cole um link ou escolha do catálogo"
-        aoVoltar={() => sugerir(null)}
-        aoEscolher={(escolha) => sugerir(escolha)}
-      />
+      <section className="pagina">
+        <Catalogo
+          modo="escolha"
+          permiteYoutube
+          titulo="Sugerir uma música"
+          sub="busque, cole um link ou escolha do catálogo"
+          aoVoltar={() => sugerir(null)}
+          aoEscolher={(escolha) => sugerir(escolha)}
+        />
+      </section>
     )
   }
 
@@ -67,10 +143,15 @@ export function Sugestoes() {
   }
 
   const cabecalho = (
-    <>
-      <Cabecalho raiz titulo="Sugestões" />
-      <VistoEm hora={busca.vistoEm} />
-    </>
+    <Cabecalho
+      raiz
+      titulo="Sugestões"
+      acao={
+        <Botao variante="terciario" pequeno onClick={() => sugerir('escolhendo')}>
+          + Sugerir
+        </Botao>
+      }
+    />
   )
 
   if (busca.erro) {
@@ -91,10 +172,49 @@ export function Sugestoes() {
     )
   }
 
-  const lista = busca.dados.sugestoes
-  const agendadas = (escalas.dados?.escalas ?? []).filter((escala) => escala.estado === 'agendada')
+  const todas = busca.dados.sugestoes
+  const abertas = todas.filter((sugestao) => sugestao.estado === 'aberta')
+  const guardadas = todas.filter((sugestao) => sugestao.estado === 'guardada')
+  const aceitas = todas.filter((sugestao) => sugestao.estado === 'aceita')
+  const recusadas = todas.filter((sugestao) => sugestao.estado === 'recusada')
 
-  function apagar(sugestao: SugestaoApresentada) {
+  const apoiar = (sugestao: SugestaoApresentada) => {
+    const desapoiando = sugestao.apoiei
+    const otimista: SugestaoApresentada = desapoiando
+      ? { ...sugestao, apoiei: false, apoios: sugestao.apoios.filter((apoio) => apoio.id !== eu.id) }
+      : { ...sugestao, apoiei: true, apoios: [...sugestao.apoios, { id: eu.id, nome: eu.nome }] }
+    trocar(otimista)
+
+    acaoApoio.executar(async () => {
+      try {
+        trocar(
+          await api<SugestaoApresentada>(`/api/sugestoes/${sugestao.id}/apoiar`, {
+            metodo: desapoiando ? 'DELETE' : 'POST',
+          }),
+        )
+      } catch (problema) {
+        trocar(sugestao)
+        avisar(textoDoErro(problema))
+      }
+    })
+  }
+
+  const guardar = (sugestao: SugestaoApresentada) => {
+    abrirFolhaDe(null)
+    acao.executar(async () => {
+      trocar(await api<SugestaoApresentada>(`/api/sugestoes/${sugestao.id}/guardar`, { metodo: 'POST' }))
+    })
+  }
+
+  const reabrir = (sugestao: SugestaoApresentada) => {
+    abrirFolhaDe(null)
+    acao.executar(async () => {
+      trocar(await api<SugestaoApresentada>(`/api/sugestoes/${sugestao.id}/reabrir`, { metodo: 'POST' }))
+    })
+  }
+
+  const apagar = (sugestao: SugestaoApresentada) => {
+    abrirFolhaDe(null)
     pendente.agendar(sugestao.id, () =>
       acao.executar(async () => {
         await api(`/api/sugestoes/${sugestao.id}`, { metodo: 'DELETE' })
@@ -104,105 +224,270 @@ export function Sugestoes() {
     avisar('Sugestão apagada', { desfazer: () => pendente.desfazer(sugestao.id) })
   }
 
+  const abrirMusica = (sugestao: SugestaoApresentada) => {
+    if (sugestao.musica) navegar(`/musicas/${sugestao.musica.id}`)
+    else if (sugestao.link) window.open(sugestao.link, '_blank', 'noopener')
+  }
+
+  const tocarNaLinha = (sugestao: SugestaoApresentada) => {
+    if (dirige || (podeApagar(sugestao, eu) && sugestao.estado === 'aberta')) {
+      abrirFolhaDe(sugestao)
+      return
+    }
+    abrirMusica(sugestao)
+  }
+
+  const promover = (sugestao: SugestaoApresentada) => {
+    abrirFolhaDe(null)
+    definirPromovendo(sugestao)
+  }
+
+  const recusar = (sugestao: SugestaoApresentada) => {
+    abrirFolhaDe(null)
+    definirRecusando(sugestao)
+  }
+
+  const linha = (sugestao: SugestaoApresentada) => {
+    if (pendente.pendentes.includes(sugestao.id)) return null
+
+    return (
+      <LinhaDeMusica
+        key={sugestao.id}
+        musica={sugestao.musica ?? escolhaDaSugestao(sugestao).resumo}
+        modo="escolha"
+        tempo="direita"
+        aoEscolher={() => tocarNaLinha(sugestao)}
+        observacao={sugestao.observacao || undefined}
+        selos={
+          <>
+            <Selo>{textoDeQuemSugeriu(sugestao)}</Selo>
+            {aba === 'guardadas' && <Selo>{textoDeGuardada(sugestao.decididaEm ?? sugestao.data)}</Selo>}
+            {aba === 'aceitas' && <Selo variante="sucesso">{textoDeAceita(sugestao)}</Selo>}
+          </>
+        }
+        direita={
+          aba === 'abertas' ? (
+            <BotaoDeApoio
+              apoios={sugestao.apoios.length}
+              apoiei={sugestao.apoiei}
+              desligado={acaoApoio.ocupado}
+              aoTocar={() => apoiar(sugestao)}
+            />
+          ) : undefined
+        }
+      />
+    )
+  }
+
+  const linhaDeRecusada = (sugestao: SugestaoApresentada) => (
+    <LinhaDeMusica
+      key={sugestao.id}
+      musica={sugestao.musica ?? escolhaDaSugestao(sugestao).resumo}
+      modo="escolha"
+      tempo="direita"
+      aoEscolher={() => tocarNaLinha(sugestao)}
+      observacao={sugestao.observacao || undefined}
+      selos={
+        <>
+          <Selo>{textoDeQuemSugeriu(sugestao)}</Selo>
+          <Selo variante="perigo">{textoDeRecusada(sugestao.motivo)}</Selo>
+        </>
+      }
+    />
+  )
+
+  const listaDaAba =
+    aba === 'abertas' ? abertas : aba === 'guardadas' ? guardadas : aceitas
+
+  const vazioDaAba: Record<Aba, string> = {
+    abertas: 'Nenhuma sugestão aberta. Toque em Sugerir para pedir uma música.',
+    guardadas: 'Nada guardado pra depois.',
+    aceitas: 'Nenhuma sugestão aceita ainda.',
+  }
+
   return (
     <section className="pagina">
       {cabecalho}
 
-      <Botao largo onClick={() => sugerir('escolhendo')}>
-        + Sugerir uma música
-      </Botao>
+      <Segmento
+        rotulo="Sugestões"
+        opcoes={[
+          {
+            valor: 'abertas',
+            rotulo: (
+              <>
+                <span>Abertas</span>
+                <span className="conta">{abertas.length}</span>
+              </>
+            ),
+          },
+          {
+            valor: 'guardadas',
+            rotulo: (
+              <>
+                <span>Guardadas</span>
+                <span className="conta">{guardadas.length}</span>
+              </>
+            ),
+          },
+          {
+            valor: 'aceitas',
+            rotulo: (
+              <>
+                <span>Aceitas</span>
+                <span className="conta">{aceitas.length}</span>
+              </>
+            ),
+          },
+        ]}
+        valor={aba}
+        aoMudar={mudarAba}
+      />
 
-      {acao.erro && <p className="aviso">{acao.erro}</p>}
-
-      {lista.length === 0 ? (
-        <Vazio icone="lampada">Nenhuma Sugestão aberta.</Vazio>
+      {listaDaAba.length === 0 ? (
+        <Vazio icone="lampada">{vazioDaAba[aba]}</Vazio>
       ) : (
-        <ul className="lista cartao">
-          {lista.map((sugestao) => {
-            if (pendente.pendentes.includes(sugestao.id)) return null
-
-            return (
-              <LinhaDeMusica
-                key={sugestao.id}
-                musica={escolhaDaSugestao(sugestao).resumo}
-                modo="leitura"
-                observacao={sugestao.observacao || undefined}
-                selos={
-                  <Selo>
-                    {sugestao.membro.nome}, {diaDaSugestao(sugestao.data)} · {textoDosApoios(sugestao.apoios)}
-                  </Selo>
-                }
-                direita={
-                  <>
-                    <Botao
-                      variante={sugestao.apoiei ? 'primario' : 'secundario'}
-                      pequeno
-                      aria-pressed={sugestao.apoiei}
-                      disabled={acao.ocupado}
-                      onClick={() =>
-                        acao.executar(async () => {
-                          trocar(
-                            await api<SugestaoApresentada>(`/api/sugestoes/${sugestao.id}/apoiar`, {
-                              metodo: sugestao.apoiei ? 'DELETE' : 'POST',
-                            }),
-                          )
-                        })
-                      }
-                    >
-                      {sugestao.apoiei ? 'Apoiado' : 'Apoiar'}
-                    </Botao>
-
-                    {dirige && (
-                      <Botao pequeno onClick={() => escolher(sugestao)}>
-                        Promover
-                      </Botao>
-                    )}
-
-                    {podeApagar(sugestao, eu) && (
-                      <Botao
-                        variante="icone"
-                        icone="remover"
-                        aria-label={`Apagar ${sugestao.titulo}`}
-                        disabled={acao.ocupado}
-                        onClick={() => apagar(sugestao)}
-                      />
-                    )}
-                  </>
-                }
-              />
-            )
-          })}
-        </ul>
+        <ul className="lista cartao">{listaDaAba.map(linha)}</ul>
       )}
 
-      {promovendo && (
-        <Folha titulo="Pra qual Escala?" fechar={() => escolher(null)}>
-          {agendadas.length === 0 ? (
-            <Vazio icone="calendario">Nenhuma Escala Agendada. Crie o mês antes de promover.</Vazio>
-          ) : (
-            <ul className="lista">
-              {agendadas.map((escala) => (
-                <li key={escala.id}>
-                  <button
-                    type="button"
-                    className="toque"
-                    onClick={() => navegar(`/escalas/${escala.id}/adicionar?sugestao=${promovendo.id}`)}
-                  >
-                    <span className="cresce">
-                      <span className="titulo">{escala.titulo}</span>
-                      <span className="dica">{formatarDia(escala.data)}</span>
-                    </span>
-                    <span className="dica">
-                      {escala.quantidadeNaEquipe ? `${escala.quantidadeNaEquipe} na Equipe` : 'sem Equipe'}
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+      {aba === 'aceitas' && recusadas.length > 0 && (
+        recusadasAbertas ? (
+          <div className="secao-do-catalogo">
+            <h2 className="titulo-da-secao">Recusadas</h2>
+            <ul className="lista cartao">{recusadas.map(linhaDeRecusada)}</ul>
+          </div>
+        ) : (
+          <button type="button" className="ver-todas" onClick={() => abrirRecusadas(true)}>
+            Ver {recusadas.length} recusadas
+            <Icone nome="seta" />
+          </button>
+        )
+      )}
+
+      {folhaDe && (
+        <Folha titulo={tituloDaSugestao(folhaDe)} fechar={() => abrirFolhaDe(null)}>
+          {acao.erro && <p className="aviso">{acao.erro}</p>}
+          <ul className="lista">
+            <li>
+              <a className="toque" href={linkDaSugestao(folhaDe)} target="_blank" rel="noopener">
+                <span className="cresce">
+                  <span className="titulo">Ouvir</span>
+                </span>
+              </a>
+            </li>
+            {folhaDe.musica && (
+              <li>
+                <button type="button" className="toque" onClick={() => abrirMusica(folhaDe)}>
+                  <span className="cresce">
+                    <span className="titulo">Ver a música</span>
+                  </span>
+                </button>
+              </li>
+            )}
+            {dirige && (folhaDe.estado === 'aberta' || folhaDe.estado === 'guardada') && (
+              <li>
+                <button type="button" className="toque" onClick={() => promover(folhaDe)}>
+                  <span className="cresce">
+                    <span className="titulo">Promover pra uma escala</span>
+                  </span>
+                </button>
+              </li>
+            )}
+            {dirige && folhaDe.estado === 'aberta' && (
+              <li>
+                <button type="button" className="toque" disabled={acao.ocupado} onClick={() => guardar(folhaDe)}>
+                  <span className="cresce">
+                    <span className="titulo">Guardar pra depois</span>
+                  </span>
+                </button>
+              </li>
+            )}
+            {dirige && folhaDe.estado === 'guardada' && (
+              <li>
+                <button type="button" className="toque" disabled={acao.ocupado} onClick={() => reabrir(folhaDe)}>
+                  <span className="cresce">
+                    <span className="titulo">Reabrir</span>
+                  </span>
+                </button>
+              </li>
+            )}
+            {dirige && (folhaDe.estado === 'aberta' || folhaDe.estado === 'guardada') && (
+              <li>
+                <button type="button" className="toque perigo" onClick={() => recusar(folhaDe)}>
+                  <span className="cresce">
+                    <span className="titulo">Recusar</span>
+                  </span>
+                </button>
+              </li>
+            )}
+            {podeApagar(folhaDe, eu) && folhaDe.estado === 'aberta' && (
+              <li>
+                <button type="button" className="toque perigo" onClick={() => apagar(folhaDe)}>
+                  <span className="cresce">
+                    <span className="titulo">Apagar</span>
+                  </span>
+                </button>
+              </li>
+            )}
+          </ul>
         </Folha>
       )}
+
+      {recusando && (
+        <FolhaDeRecusa
+          sugestao={recusando}
+          fechar={() => definirRecusando(null)}
+          aoRecusar={(nova) => {
+            trocar(nova)
+            definirRecusando(null)
+          }}
+        />
+      )}
+
+      <FolhaDeEscolhaDeEscala
+        aberta={!!promovendo}
+        fechar={() => definirPromovendo(null)}
+        jaEsta={promovendo?.musica?.planejadaEm.map((planejada) => planejada.escalaId) ?? []}
+        aoEscolher={(escalaId) => navegar(`/escalas/${escalaId}/adicionar?sugestao=${promovendo?.id}`)}
+      />
     </section>
+  )
+}
+
+function FolhaDeRecusa({
+  sugestao,
+  fechar,
+  aoRecusar,
+}: {
+  sugestao: SugestaoApresentada
+  fechar: () => void
+  aoRecusar: (nova: SugestaoApresentada) => void
+}) {
+  const acao = usarAcao()
+  const [motivo, escrever] = useState('')
+
+  const confirmar = () =>
+    acao.executar(async () => {
+      aoRecusar(
+        await api<SugestaoApresentada>(`/api/sugestoes/${sugestao.id}/recusar`, {
+          metodo: 'POST',
+          corpo: { motivo: motivo.trim() },
+        }),
+      )
+    })
+
+  return (
+    <Folha titulo="Recusar sugestão" fechar={fechar}>
+      {acao.erro && <p className="aviso">{acao.erro}</p>}
+
+      <Campo rotulo="Motivo (opcional)">
+        <input maxLength={80} placeholder="até 80 caracteres" value={motivo} onChange={(evento) => escrever(evento.target.value)} />
+      </Campo>
+
+      <Botao largo variante="perigo" disabled={acao.ocupado} onClick={confirmar}>
+        Recusar
+      </Botao>
+    </Folha>
   )
 }
 
@@ -217,10 +502,30 @@ function Envio({
 }) {
   const acao = usarAcao()
   const [observacao, escrever] = useState('')
+  const [duplicata, definirDuplicata] = useState<SugestaoRepetida | null>(null)
+  const musica = usarBusca<MusicaDetalhada>(escolha.musicaId ? `/api/musicas/${escolha.musicaId}` : null)
+  const hoje = hojeEmBrasilia()
 
   const enviar = () => {
+    definirDuplicata(null)
     acao.executar(async () => {
-      await api('/api/sugestoes', { metodo: 'POST', corpo: corpoDaSugestao(escolha, observacao) })
+      try {
+        await api('/api/sugestoes', { metodo: 'POST', corpo: corpoDaSugestao(escolha, observacao) })
+        aoEnviar()
+      } catch (problema) {
+        if (problema instanceof ErroDaApi && problema.status === 409 && ehSugestaoRepetida(problema.corpo)) {
+          definirDuplicata(problema.corpo)
+          return
+        }
+        throw problema
+      }
+    })
+  }
+
+  const apoiarDuplicata = () => {
+    if (!duplicata) return
+    acao.executar(async () => {
+      await api(`/api/sugestoes/${duplicata.sugestaoId}/apoiar`, { metodo: 'POST' })
       aoEnviar()
     })
   }
@@ -232,8 +537,10 @@ function Envio({
       {acao.erro && <p className="aviso">{acao.erro}</p>}
 
       <div className="cabecalho-da-musica">
-        <Capa musicas={[escolha.resumo]} grande />
+        <Capa musicas={[escolha.resumo]} tamanho="grande" />
       </div>
+
+      {musica.dados && <FaixaDeAlerta frases={frasesDeAlerta(musica.dados, hoje)} />}
 
       <Campo rotulo="Por que essa música?">
         <input
@@ -245,11 +552,26 @@ function Envio({
 
       <RodapeDeAcao
         primario={
-          <Botao largo disabled={acao.ocupado} onClick={enviar}>
-            Enviar Sugestão
-          </Botao>
+          duplicata ? (
+            <Botao largo disabled={acao.ocupado} onClick={apoiarDuplicata}>
+              {duplicata.erro} · Apoiar
+            </Botao>
+          ) : (
+            <Botao largo disabled={acao.ocupado} onClick={enviar}>
+              Enviar sugestão
+            </Botao>
+          )
         }
       />
     </section>
+  )
+}
+
+function ehSugestaoRepetida(corpo: unknown): corpo is SugestaoRepetida {
+  return (
+    typeof corpo === 'object' &&
+    corpo !== null &&
+    typeof (corpo as { sugestaoId?: unknown }).sugestaoId === 'string' &&
+    typeof (corpo as { erro?: unknown }).erro === 'string'
   )
 }

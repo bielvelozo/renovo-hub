@@ -6,6 +6,9 @@ import {
   avisoDeLembrete,
   avisoDeMudanca,
   avisoDeRemarcada,
+  avisoDeSugestaoAceita,
+  avisoDeSugestaoGuardada,
+  avisoDeSugestaoRecusada,
   avisoDeVariasMudancas,
   caminhoDaEscala,
   dataDoLembrete,
@@ -183,5 +186,28 @@ describe('descricaoDaMudanca', () => {
       ],
     }
     expect(descricaoDaMudanca(comMusicas, item)).toBe('Medley: Meia Noite + Sublime')
+  })
+})
+
+describe('avisos de Sugestão', () => {
+  it('aceita diz a música e o dia, e leva pra Escala', () => {
+    expect(avisoDeSugestaoAceita(escala, 'Bondade de Deus')).toEqual({
+      titulo: 'Sua sugestão entrou',
+      corpo: 'Bondade de Deus no dia dom, 13 de set',
+      url: '/escalas/e0913',
+    })
+  })
+
+  it('guardada e recusada levam pra Sugestões, e a recusada carrega o motivo quando há', () => {
+    expect(avisoDeSugestaoGuardada('Bondade de Deus')).toEqual({
+      titulo: 'Sua sugestão foi guardada pra depois',
+      corpo: 'Bondade de Deus',
+      url: '/sugestoes',
+    })
+    expect(avisoDeSugestaoRecusada('Bondade de Deus', '')).toMatchObject({
+      titulo: 'Sua sugestão não entrou desta vez',
+      corpo: 'Bondade de Deus',
+    })
+    expect(avisoDeSugestaoRecusada('Bondade de Deus', 'já tocamos muito').corpo).toBe('Bondade de Deus · já tocamos muito')
   })
 })

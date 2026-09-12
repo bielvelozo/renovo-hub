@@ -14,7 +14,6 @@ export type {
   Ministerio,
   Musica,
   Grupo,
-  OrdemDoCatalogo,
   OrigemDoTom,
   TipoItem,
   TomSugerido,
@@ -66,13 +65,36 @@ export {
   ehLegado,
   execucoes,
   historicoDaMusica,
-  ordenarPorExecucao,
   ultimaExecucao,
   ultimoTom,
   vezesTocada,
 } from './execucoes'
 
-export { escalasNoAno, finsDeSemanaSeguidos, presencaDoMembro, ultimaEscala } from './presenca'
+export {
+  JANELA_DE_FINS_DE_SEMANA,
+  escalasNoAno,
+  finsDeSemanaSeguidos,
+  finsDeSemanaServidos,
+  presencaDoMembro,
+  proximaEscalaDoMembro,
+  ultimaEscala,
+} from './presenca'
+
+export type { AbaDaMusica, Planejada, SecaoDaMusica } from './memoria'
+
+export {
+  MESES_PARA_REDESCOBRIR,
+  abaDaMusica,
+  coberturaDoMinisterio,
+  planejadaEm,
+  recente,
+  secaoDaMusica,
+  vezesTocadaDesde,
+} from './memoria'
+
+export type { AcaoNaSugestao, EstadoDaSugestao } from './sugestao'
+
+export { ESTADOS_DA_SUGESTAO, ehEstadoDaSugestao, transicao } from './sugestao'
 
 export {
   buscaNoCifraClub,
@@ -91,6 +113,7 @@ export {
   linkDeVideos,
   linkDoVideo,
   mesesDesde,
+  normalizarTexto,
   videoIdDoLink,
   videosDaPlaylist,
 } from './musica'
@@ -98,12 +121,16 @@ export {
 export type { AcaoNaMusica, Aviso, TipoDeNotificacao } from './notificacoes'
 
 export {
+  CAMINHO_DAS_SUGESTOES,
   HORA_DO_LEMBRETE,
   avisoDeCancelada,
   avisoDeEscalado,
   avisoDeLembrete,
   avisoDeMudanca,
   avisoDeRemarcada,
+  avisoDeSugestaoAceita,
+  avisoDeSugestaoGuardada,
+  avisoDeSugestaoRecusada,
   avisoDeVariasMudancas,
   caminhoDaEscala,
   dataDoLembrete,

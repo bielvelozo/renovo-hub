@@ -64,6 +64,14 @@ export async function lerAnexosDeMusicas(db: D1Database, musicaIds: string[]): P
   return results.map(montar)
 }
 
+export async function musicasComLetra(db: D1Database): Promise<Set<string>> {
+  const { results } = await db
+    .prepare('select musica_id from anexos group by musica_id')
+    .all<{ musica_id: string }>()
+
+  return new Set(results.map((linha) => linha.musica_id))
+}
+
 export async function lerAnexo(db: D1Database, id: string): Promise<Anexo | null> {
   const linha = await db
     .prepare('select id, musica_id, nome, mime, tamanho, versao, criado_em from anexos where id = ?')

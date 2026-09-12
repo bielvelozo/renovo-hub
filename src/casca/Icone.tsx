@@ -27,6 +27,7 @@ export type NomeDoIcone =
   | 'sol'
   | 'lua'
   | 'sistema'
+  | 'coracao'
 
 type Ponto = [number, number]
 
@@ -61,6 +62,9 @@ const TRACOS: Record<NomeDoIcone, string[]> = {
   sol: ['M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z', ...RAIOS],
   lua: ['M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z'],
   sistema: ['M3 5.5A1.5 1.5 0 0 1 4.5 4h15A1.5 1.5 0 0 1 21 5.5v9.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 15V5.5Z', 'M8 21h8', 'M12 16.5V21'],
+  coracao: [
+    'M12 20.3c-.2 0-.4-.1-.55-.2C9.6 18.6 3.5 13.9 3.5 9.3 3.5 6.4 5.7 4.2 8.5 4.2c1.6 0 3.1.75 4.05 2 .5.65 1.5.65 2 0 .95-1.25 2.45-2 4.05-2 2.8 0 5 2.2 5 5.1 0 4.6-6.1 9.3-8.5 10.8-.15.1-.35.2-.55.2Z',
+  ],
 }
 
 const PONTOS: Partial<Record<NomeDoIcone, Ponto[]>> = {

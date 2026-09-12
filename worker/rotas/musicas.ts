@@ -3,18 +3,16 @@ import type { Context } from 'hono'
 import {
   cobertura,
   combinaBusca,
-  ehLegado,
   historicoDaMusica,
-  mesesDesde,
+  limparTitulo,
   musicaPorId,
-  ordenarPorExecucao,
-  ultimaExecucao,
-  vezesTocada,
+  normalizarTexto,
   videoIdDoLink,
 } from '../../src/dominio'
-import type { Ministerio, Musica, OrdemDoCatalogo } from '../../src/dominio'
+import type { Musica } from '../../src/dominio'
 import { exigirMembro, exigirMinistro } from '../autenticacao'
 import { lerAnexos } from '../dados/anexos'
+import { lerContextoDoCatalogo } from '../dados/catalogo'
 import { acharNoCifraClub } from '../dados/cifraclub'
 import { carregarMinisterio } from '../dados/ministerio'
 import {
@@ -76,33 +74,38 @@ musicas.post('/api/musicas', exigirMinistro, async (c) => {
   const tons = lerTons(corpo)
   if (tons === null) return c.json({ erro: TOM_INVALIDO }, 422)
 
+  const artista = (typeof corpo.artista === 'string' ? corpo.artista.trim() : '') || (dados?.canal ?? '')
   const id = await criarMusica(c.env.DB, {
-    titulo,
-    artista: (typeof corpo.artista === 'string' ? corpo.artista.trim() : '') || (dados?.canal ?? ''),
+    ...limparTitulo(titulo, artista),
     videoId,
     tomConhecido: tons.tomConhecido ?? null,
     tomOriginal: tons.tomOriginal ?? null,
+    revisar: true,
   })
 
   return c.json(await responderMusica(c.env.DB, id), 201)
 })
 
 musicas.get('/api/musicas', exigirMembro, async (c) => {
-  const m = await carregarMinisterio(c.env.DB)
+  const escalaId = c.req.query('escalaId') || undefined
+  const [m, contexto] = await Promise.all([carregarMinisterio(c.env.DB), lerContextoDoCatalogo(c.env.DB, escalaId)])
+  if (escalaId && !m.escalas.some((escala) => escala.id === escalaId)) {
+    return c.json({ erro: ESCALA_NAO_ENCONTRADA }, 404)
+  }
+
   const busca = c.req.query('busca') ?? ''
-  const filtro = c.req.query('filtro')
-  const meses = Number(c.req.query('meses'))
+  const soRevisar = c.req.query('filtro') === 'revisar'
   const comArquivadas = c.req.query('arquivadas') === '1'
 
   const achadas = m.musicas
     .filter((musica) => comArquivadas || !musica.arquivada)
     .filter((musica) => combinaBusca(musica, busca))
-    .filter((musica) => cabeNoFiltro(m, musica, filtro))
-    .filter((musica) => cabeNosMeses(m, musica, meses))
+    .filter((musica) => !soRevisar || musica.revisar)
 
-  const ordem: OrdemDoCatalogo = c.req.query('ordem') === 'menos-tempo' ? 'menos-tempo' : 'mais-tempo'
-
-  return c.json({ musicas: ordenarPorExecucao(m, achadas, ordem).map((musica) => naListaDeMusicas(m, musica)) })
+  return c.json({
+    musicas: porTitulo(achadas).map((musica) => naListaDeMusicas(m, musica, contexto)),
+    semanasDeRepeticao: contexto.semanas,
+  })
 })
 
 musicas.get('/api/cifraclub', exigirMinistro, async (c) => {
@@ -113,17 +116,17 @@ musicas.get('/api/cifraclub', exigirMinistro, async (c) => {
 })
 
 musicas.get('/api/musicas/:id', exigirMembro, async (c) => {
-  const m = await carregarMinisterio(c.env.DB)
+  const escalaId = c.req.query('escalaId') || undefined
+  const [m, contexto] = await Promise.all([carregarMinisterio(c.env.DB), lerContextoDoCatalogo(c.env.DB, escalaId)])
   const musica = m.musicas.find((x) => x.id === c.req.param('id'))
   if (!musica) return c.json({ erro: MUSICA_NAO_ENCONTRADA }, 404)
 
-  const escalaId = c.req.query('escalaId')
   if (escalaId && !m.escalas.some((escala) => escala.id === escalaId)) {
-    return c.json({ erro: 'Escala não encontrada.' }, 404)
+    return c.json({ erro: ESCALA_NAO_ENCONTRADA }, 404)
   }
 
   return c.json({
-    ...apresentarMusica(m, musica),
+    ...apresentarMusica(m, musica, contexto),
     cobertura: escalaId ? cobertura(m, escalaId, musica.id) : null,
     anexos: await lerAnexos(c.env.DB, musica.id),
   })
@@ -196,18 +199,8 @@ async function guardar(c: Context<Contexto>, id: string, arquivada: boolean) {
   return c.json(await responderMusica(c.env.DB, id))
 }
 
-function cabeNoFiltro(m: Ministerio, musica: Musica, filtro: string | undefined): boolean {
-  if (filtro === 'nova') return !musica.legado && !ultimaExecucao(m, musica.id)
-  if (filtro === 'legado') return ehLegado(m, musica)
-  if (filtro === 'revisar') return musica.revisar
-  if (filtro === 'uma-vez') return vezesTocada(m, musica.id) === 1
-  return true
-}
-
-function cabeNosMeses(m: Ministerio, musica: Musica, meses: number): boolean {
-  if (!Number.isFinite(meses) || meses <= 0) return true
-  const ultima = ultimaExecucao(m, musica.id)
-  return !!ultima && mesesDesde(ultima.data, m.hoje) >= meses
+function porTitulo(musicas: Musica[]): Musica[] {
+  return [...musicas].sort((a, b) => normalizarTexto(a.titulo).localeCompare(normalizarTexto(b.titulo)))
 }
 
 function lerTons(corpo: Record<string, unknown>): { tomConhecido?: string | null; tomOriginal?: string | null } | null {
@@ -225,13 +218,14 @@ function lerTons(corpo: Record<string, unknown>): { tomConhecido?: string | null
 }
 
 async function responderMusica(db: D1Database, id: string) {
-  const m = await carregarMinisterio(db)
-  return apresentarMusica(m, musicaPorId(m, id))
+  const [m, contexto] = await Promise.all([carregarMinisterio(db), lerContextoDoCatalogo(db)])
+  return apresentarMusica(m, musicaPorId(m, id), contexto)
 }
 
 const LINK_INVALIDO = 'Cole o link do vídeo no YouTube.'
 const VIDEO_DESCONHECIDO = 'O YouTube não reconheceu esse vídeo.'
 const TOM_INVALIDO = 'O Tom é um texto ou vazio.'
 const MUSICA_NAO_ENCONTRADA = 'Música não encontrada.'
+const ESCALA_NAO_ENCONTRADA = 'Escala não encontrada.'
 const BUSCA_SEM_CHAVE = 'A busca no YouTube ainda não está configurada. Cole o link do vídeo.'
 const BUSCA_FALHOU = 'O YouTube não respondeu a busca. Tente de novo ou cole o link.'

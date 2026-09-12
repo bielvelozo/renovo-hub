@@ -5,7 +5,6 @@ import {
   ehLegado,
   execucoes,
   historicoDaMusica,
-  ordenarPorExecucao,
   ultimaExecucao,
   ultimoTom,
   vezesTocada,
@@ -163,30 +162,6 @@ describe('cobertura', () => {
 })
 
 const m = ministerioDeExemplo()
-
-describe('ordenarPorExecucao', () => {
-  const catalogo = ['firme', 'meia-noite', 'grato', 'algo-novo'].map((id) =>
-    m.musicas.find((musica) => musica.id === id) ?? { ...musicaPorId(m, 'grato'), id },
-  )
-
-  it('põe quem faz mais tempo primeiro, e quem nunca foi tocada no fim', () => {
-    expect(ordenarPorExecucao(m, catalogo, 'mais-tempo').map((musica) => musica.id)).toEqual([
-      'firme',
-      'grato',
-      'meia-noite',
-      'algo-novo',
-    ])
-  })
-
-  it('inverte pra faz menos tempo, e quem nunca foi tocada continua no fim', () => {
-    expect(ordenarPorExecucao(m, catalogo, 'menos-tempo').map((musica) => musica.id)).toEqual([
-      'meia-noite',
-      'grato',
-      'firme',
-      'algo-novo',
-    ])
-  })
-})
 
 describe('vezesTocada', () => {
   it('conta as Execuções da Música', () => {

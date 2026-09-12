@@ -4,6 +4,7 @@ export type NovaMusica = {
   videoId: string
   tomConhecido: string | null
   tomOriginal: string | null
+  revisar: boolean
 }
 
 export type CamposDaMusica = {
@@ -19,9 +20,18 @@ export async function criarMusica(db: D1Database, nova: NovaMusica): Promise<str
 
   await db
     .prepare(
-      'insert into musicas (id, titulo, artista, video_id, legado, tom_conhecido, tom_original, arquivada, revisar, criado_em) values (?, ?, ?, ?, 0, ?, ?, 0, 0, ?)',
+      'insert into musicas (id, titulo, artista, video_id, legado, tom_conhecido, tom_original, arquivada, revisar, criado_em) values (?, ?, ?, ?, 0, ?, ?, 0, ?, ?)',
     )
-    .bind(id, nova.titulo, nova.artista, nova.videoId, nova.tomConhecido, nova.tomOriginal, new Date().toISOString())
+    .bind(
+      id,
+      nova.titulo,
+      nova.artista,
+      nova.videoId,
+      nova.tomConhecido,
+      nova.tomOriginal,
+      nova.revisar ? 1 : 0,
+      new Date().toISOString(),
+    )
     .run()
 
   return id

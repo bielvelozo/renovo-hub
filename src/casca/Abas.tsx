@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router'
-import type { Eu } from '../sessao/sessao'
 import { Icone } from './Icone'
 import type { NomeDoIcone } from './Icone'
 
@@ -18,8 +17,7 @@ const ABAS: Aba[] = [
   { para: '/perfil', rotulo: 'Perfil', icone: 'pessoa' },
 ]
 
-export function Abas({ eu, sugestoes }: { eu: Eu; sugestoes: number }) {
-  const dirige = eu.ministro || eu.admin
+export function Abas({ sugestoes }: { sugestoes: number }) {
   const [saltando, saltar] = useState<string | null>(null)
 
   return (
@@ -33,7 +31,7 @@ export function Abas({ eu, sugestoes }: { eu: Eu; sugestoes: number }) {
             <Icone nome={aba.icone} />
           </span>
           <span>{aba.rotulo}</span>
-          {aba.icone === 'lampada' && dirige && sugestoes > 0 && (
+          {aba.icone === 'lampada' && sugestoes > 0 && (
             <span className="contagem" aria-label={`${sugestoes} sem promover`}>
               {sugestoes > 99 ? '99+' : sugestoes}
             </span>

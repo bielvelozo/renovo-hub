@@ -1,6 +1,7 @@
 import { SELF, env } from 'cloudflare:test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { hojeEmBrasilia } from '../../src/dominio'
+import { hojeEmBrasilia, somarDias } from '../../src/dominio'
+import { CHAVE_SEMANAS_DE_REPETICAO } from '../dados/configuracoes'
 import { limparCacheDeVideos } from '../dados/oembed'
 import {
   cookieDe,
@@ -9,6 +10,7 @@ import {
   criarItemInteira,
   criarMembro,
   criarMusica,
+  definirConfiguracao,
   limparBanco,
   porNaEquipe,
 } from '../testes/apoio'
@@ -27,6 +29,13 @@ type NaLista = {
   revisar: boolean
   capa: string
   ultimaExecucao: { data: string; tom: string; parcial: boolean } | null
+  aba: string
+  secao: string | null
+  recente: boolean
+  planejadaEm: { escalaId: string; data: string; titulo: string; ministros: string[] }[]
+  vezesTocada: number
+  vezesEm6Meses: number
+  temLetra: boolean
 }
 
 afterEach(() => vi.unstubAllGlobals())
@@ -60,12 +69,6 @@ beforeEach(async () => {
   await porNaEquipe('e1', 'marcos', ['vocal'], true)
   await porNaEquipe('e1', 'julia', ['vocal'])
 })
-
-function mesesAtras(quantidade: number): string {
-  const [ano, mes] = hojeEmBrasilia().split('-').map(Number)
-  const dia = new Date(Date.UTC(ano, mes - 1 - quantidade, 15, 12))
-  return dia.toISOString().slice(0, 10)
-}
 
 async function pedir(caminho: string, quem: string, init: RequestInit = {}): Promise<Response> {
   return SELF.fetch(`${RAIZ}${caminho}`, {
@@ -144,8 +147,10 @@ describe('resolver link', () => {
 })
 
 describe('criar Música', () => {
-  it('cadastra pelo link, com título e canal do oEmbed, sem Legado e sem revisar', async () => {
-    fingirRede({ [MEIA_NOITE]: { status: 200, corpo: { title: 'Meia Noite', author_name: 'Fhop Music' } } })
+  it('cadastra pelo link com o título já limpo, sem Legado e marcada pra revisar', async () => {
+    fingirRede({
+      [MEIA_NOITE]: { status: 200, corpo: { title: 'Meia Noite (Ao Vivo) | fhop music', author_name: 'fhop music' } },
+    })
 
     const resposta = await pedir('/api/musicas', 'marcos', {
       method: 'POST',
@@ -155,12 +160,17 @@ describe('criar Música', () => {
     expect(resposta.status).toBe(201)
     expect(await resposta.json()).toMatchObject({
       titulo: 'Meia Noite',
-      artista: 'Fhop Music',
+      artista: 'fhop',
       videoId: MEIA_NOITE,
       legado: false,
       nova: true,
-      revisar: false,
+      revisar: true,
     })
+
+    const guardada = await env.DB.prepare('select titulo, artista, revisar from musicas where video_id = ?')
+      .bind(MEIA_NOITE)
+      .first<{ titulo: string; artista: string; revisar: number }>()
+    expect(guardada).toEqual({ titulo: 'Meia Noite', artista: 'fhop', revisar: 1 })
   })
 
   it('o título informado ganha do que veio do oEmbed', async () => {
@@ -330,19 +340,58 @@ describe('tom pelo Cifra Club', () => {
 })
 
 describe('listar Músicas', () => {
-  it('ordena por última Execução, faz mais tempo primeiro, e as sem Execução no fim', async () => {
+  it('sai em ordem estável por título, com a última Execução de cada uma', async () => {
     const musicas = await listar('')
 
-    expect(musicas.map((m) => m.id)).toEqual(['rio', 'dono', 'sublime'])
-    expect(musicas[0].ultimaExecucao).toMatchObject({ data: '2020-08-16', tom: 'D', parcial: false })
+    expect(musicas.map((m) => m.id)).toEqual(['dono', 'rio', 'sublime'])
+    expect(musicas[1].ultimaExecucao).toMatchObject({ data: '2020-08-16', tom: 'D', parcial: false })
     expect(musicas[2].ultimaExecucao).toBeNull()
+  })
+
+  it('traz o limite de repetição junto com a lista, 4 por padrão', async () => {
+    const resposta = await pedir('/api/musicas', 'julia')
+    const corpo = await resposta.json<{ semanasDeRepeticao: number }>()
+
+    expect(corpo.semanasDeRepeticao).toBe(4)
+
+    await definirConfiguracao(CHAVE_SEMANAS_DE_REPETICAO, '8')
+    expect((await (await pedir('/api/musicas', 'julia')).json<{ semanasDeRepeticao: number }>()).semanasDeRepeticao).toBe(8)
+  })
+
+  it('cada Música diz a aba, a seção, se é recente, quantas vezes tocou e se tem letra', async () => {
+    await criarEscala({ id: 'erecente', data: somarDias(hojeEmBrasilia(), -10) })
+    await porNaEquipe('erecente', 'marcos', ['vocal'], true)
+    await criarItemInteira('irecente', 'erecente', 'dono', 'F')
+    await env.DB.prepare(
+      "insert into anexos (id, musica_id, nome, mime, tamanho, conteudo, versao, criado_em) values ('a1', 'rio', 'Rio.docx', 'application/octet-stream', 1, x'00', 1, '2026-09-01T00:00:00.000Z')",
+    ).run()
+
+    const musicas = await listar('')
+    const porId = Object.fromEntries(musicas.map((m) => [m.id, m]))
+
+    expect(porId.dono).toMatchObject({ aba: 'recentes', secao: null, recente: true, vezesTocada: 2, vezesEm6Meses: 1, temLetra: false })
+    expect(porId.rio).toMatchObject({ aba: 'redescobrir', secao: 'paradas', recente: false, vezesTocada: 1, vezesEm6Meses: 0, temLetra: true })
+    expect(porId.sublime).toMatchObject({ aba: 'redescobrir', secao: 'nunca', recente: false, vezesTocada: 0, temLetra: false })
+  })
+
+  it('diz em quais Escalas agendadas a Música já está, e exclui a Escala pedida', async () => {
+    await criarItemInteira('ifuturo', 'e1', 'rio', 'D')
+
+    const comTudo = await listar('')
+    expect(comTudo.find((m) => m.id === 'rio')?.planejadaEm).toEqual([
+      { escalaId: 'e1', data: FUTURO, titulo: 'Culto de Domingo 18h', ministros: ['Marcos'] },
+    ])
+    expect(comTudo.find((m) => m.id === 'dono')?.planejadaEm).toEqual([])
+
+    expect((await listar('?escalaId=e1')).find((m) => m.id === 'rio')?.planejadaEm).toEqual([])
+    expect((await pedir('/api/musicas?escalaId=nada', 'marcos')).status).toBe(404)
   })
 
   it('esconde as arquivadas, e mostra quando pedem', async () => {
     await env.DB.prepare('update musicas set arquivada = 1 where id = ?').bind('sublime').run()
 
-    expect((await listar('')).map((m) => m.id)).toEqual(['rio', 'dono'])
-    expect((await listar('?arquivadas=1')).map((m) => m.id)).toEqual(['rio', 'dono', 'sublime'])
+    expect((await listar('')).map((m) => m.id)).toEqual(['dono', 'rio'])
+    expect((await listar('?arquivadas=1')).map((m) => m.id)).toEqual(['dono', 'rio', 'sublime'])
   })
 
   it('marca Legado quem veio da playlist e nunca foi tocada', async () => {
@@ -350,17 +399,6 @@ describe('listar Músicas', () => {
 
     expect(musicas.find((m) => m.id === 'sublime')?.legado).toBe(true)
     expect(musicas.find((m) => m.id === 'rio')?.legado).toBe(false)
-  })
-
-  it('o filtro nova traz só as sem Execução e sem Legado', async () => {
-    await criarMusica('nova', 'Canção Nova', 'CmM1pcHohdI')
-    await env.DB.prepare('update musicas set legado = 0 where id = ?').bind('nova').run()
-
-    expect((await listar('?filtro=nova')).map((m) => m.id)).toEqual(['nova'])
-  })
-
-  it('o filtro legado traz só as importadas ainda não tocadas', async () => {
-    expect((await listar('?filtro=legado')).map((m) => m.id)).toEqual(['sublime'])
   })
 
   it('o filtro revisar traz as que precisam de título e artista conferidos', async () => {
@@ -375,26 +413,8 @@ describe('listar Músicas', () => {
     expect(await listar('?busca=aleluia')).toEqual([])
   })
 
-  it('o filtro de meses traz só quem tem Execução mais velha que o pedido', async () => {
-    await criarEscala({ id: 'erecente', data: mesesAtras(3) })
-    await porNaEquipe('erecente', 'marcos', ['vocal'], true)
-    await criarItemInteira('irecente', 'erecente', 'sublime', 'A')
-
-    const musicas = await listar('?meses=12')
-
-    expect(musicas.map((m) => m.id)).toEqual(['rio', 'dono'])
-  })
-
-  it('inverte a ordem quando pedem faz menos tempo, com as sem Execução ainda no fim', async () => {
-    expect((await listar('?ordem=menos-tempo')).map((m) => m.id)).toEqual(['dono', 'rio', 'sublime'])
-  })
-
-  it('o filtro de tocada uma vez só traz quem tem exatamente uma Execução', async () => {
-    await criarEscala({ id: 'esegunda', data: '2020-09-13' })
-    await porNaEquipe('esegunda', 'marcos', ['vocal'], true)
-    await criarItemInteira('isegunda', 'esegunda', 'rio', 'D')
-
-    expect((await listar('?filtro=uma-vez')).map((m) => m.id)).toEqual(['dono'])
+  it('os parâmetros antigos de filtro e ordem são ignorados: a lista é uma só', async () => {
+    expect((await listar('?filtro=legado&meses=12&ordem=menos-tempo')).map((m) => m.id)).toEqual(['dono', 'rio', 'sublime'])
   })
 
   it('deixa o Membro comum ver o catálogo', async () => {
@@ -494,7 +514,7 @@ describe('apagar e arquivar', () => {
     const resposta = await pedir('/api/musicas/sublime', 'marcos', { method: 'DELETE' })
 
     expect(resposta.status).toBe(200)
-    expect((await listar('?arquivadas=1')).map((m) => m.id)).toEqual(['rio', 'dono'])
+    expect((await listar('?arquivadas=1')).map((m) => m.id)).toEqual(['dono', 'rio'])
   })
 
   it('recusa apagar Música com Execução e manda arquivar', async () => {
@@ -540,10 +560,34 @@ describe('apagar e arquivar', () => {
     const resposta = await pedir('/api/musicas/rio/desarquivar', 'marcos', { method: 'POST' })
 
     expect(await resposta.json()).toMatchObject({ arquivada: false })
-    expect((await listar('')).map((m) => m.id)).toEqual(['rio', 'dono', 'sublime'])
+    expect((await listar('')).map((m) => m.id)).toEqual(['dono', 'rio', 'sublime'])
   })
 
   it('recusa Membro comum', async () => {
     expect((await pedir('/api/musicas/sublime', 'julia', { method: 'DELETE' })).status).toBe(403)
+  })
+})
+
+describe('memória no detalhe da Música', () => {
+  it('traz recente, planejada, vezes, letra e a cobertura do ministério inteiro', async () => {
+    await criarItemInteira('ifuturo', 'e1', 'rio', 'D')
+
+    const resposta = await pedir('/api/musicas/rio?escalaId=e1', 'julia')
+    const corpo = await resposta.json<{
+      recente: boolean
+      planejadaEm: unknown[]
+      vezesTocada: number
+      vezesEm6Meses: number
+      temLetra: boolean
+      cobertura: { ja: string[]; nunca: string[] } | null
+      coberturaDoMinisterio: { ja: string[]; nunca: string[] }
+    }>()
+
+    expect(corpo).toMatchObject({ recente: false, planejadaEm: [], vezesTocada: 1, vezesEm6Meses: 0, temLetra: false })
+    expect(corpo.cobertura).toEqual({ ja: ['Marcos'], nunca: ['Júlia'] })
+    expect(corpo.coberturaDoMinisterio).toEqual({ ja: ['Gabriel', 'Marcos'], nunca: ['Júlia'] })
+
+    const semEscala = await (await pedir('/api/musicas/rio', 'julia')).json<{ planejadaEm: { escalaId: string }[] }>()
+    expect(semEscala.planejadaEm.map((p) => p.escalaId)).toEqual(['e1'])
   })
 })

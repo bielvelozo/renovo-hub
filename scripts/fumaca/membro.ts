@@ -54,30 +54,52 @@ export async function fluxosDoMembro(prova: Prova, cenario: Cenario): Promise<vo
   prova.grupo('Membro · Músicas')
 
   const catalogo = exigir(await prova.api('/api/musicas', { cookie: cenario.julia }), 200, 'listar o catálogo')
-  const datas = catalogo.musicas.map((m: any) => m.ultimaExecucao?.data ?? '9999-99-99')
+  const musicas: any[] = catalogo.musicas
 
   prova.conferir(
-    'o catálogo sai faz-mais-tempo-primeiro',
-    datas.every((data: string, i: number) => i === 0 || datas[i - 1] <= data),
-    `${catalogo.musicas.length} Músicas · a primeira é ${catalogo.musicas[0].titulo}`,
-  )
-
-  const legado = exigir(await prova.api('/api/musicas?filtro=legado', { cookie: cenario.julia }), 200, 'filtro Legado')
-  const nova = exigir(await prova.api('/api/musicas?filtro=nova', { cookie: cenario.julia }), 200, 'filtro Nova')
-
-  prova.conferir(
-    'o filtro Legado traz só quem nunca foi tocada no app',
-    legado.musicas.length > 0 && legado.musicas.every((m: any) => m.legado),
-    `${legado.musicas.length} Legado`,
+    'a lista vem com o limite de repetição do Admin',
+    [2, 4, 6, 8].includes(catalogo.semanasDeRepeticao),
+    `${catalogo.semanasDeRepeticao} semanas`,
   )
   prova.conferir(
-    'o filtro Nova traz a Música que entrou agora e nunca foi tocada',
-    nova.musicas.every((m: any) => !m.legado && !m.ultimaExecucao),
-    `${nova.musicas.length} Novas`,
+    'toda Música traz aba e seção coerentes',
+    musicas.every(
+      (m) =>
+        (m.aba === 'redescobrir' && (m.secao === 'nunca' || m.secao === 'paradas')) ||
+        (m.aba === 'recentes' && m.secao === null),
+    ),
+    `${musicas.length} Músicas`,
+  )
+  prova.conferir(
+    'quem nunca foi tocada no app está em Redescobrir, na seção nunca',
+    musicas.some((m) => m.secao === 'nunca') &&
+      musicas.filter((m) => !m.ultimaExecucao).every((m) => m.aba === 'redescobrir' && m.secao === 'nunca'),
+    `${musicas.filter((m) => m.secao === 'nunca').length} nunca tocadas`,
+  )
+  prova.conferir(
+    'recente só vale pra quem tem Execução e está em Recentes',
+    musicas.every((m) => !m.recente || (m.aba === 'recentes' && !!m.ultimaExecucao)),
+    `${musicas.filter((m) => m.recente).length} recentes`,
   )
 
-  const meses = exigir(await prova.api('/api/musicas?meses=1200', { cookie: cenario.julia }), 200, 'filtro de meses')
-  prova.conferir('"há mais de X meses" só considera quem tem Execução', meses.musicas.length === 0, 'nenhuma há 100 anos')
+  const planejada = musicas.find((m) => m.videoId === VIDEOS.permanecerei)
+  prova.conferir(
+    'a Música promovida pela Sugestão aparece planejada na Escala do mês',
+    planejada?.planejadaEm.some((p: any) => p.escalaId === cenario.escalaDoMes && p.ministros.includes('Isa')),
+    planejada?.planejadaEm.map((p: any) => `${p.titulo} · ${p.data}`).join(' | '),
+  )
+
+  const semAAtual = exigir(
+    await prova.api(`/api/musicas?escalaId=${cenario.escalaDoMes}`, { cookie: cenario.julia }),
+    200,
+    'listar excluindo a Escala atual',
+  )
+  prova.conferir(
+    'com escalaId, a própria Escala sai de planejadaEm',
+    !semAAtual.musicas
+      .find((m: any) => m.videoId === VIDEOS.permanecerei)
+      ?.planejadaEm.some((p: any) => p.escalaId === cenario.escalaDoMes),
+  )
 
   const busca = exigir(await prova.api('/api/musicas?busca=afeicao', { cookie: cenario.julia }), 200, 'busca')
   prova.conferir(

@@ -3,6 +3,7 @@ import { hojeEmBrasilia } from '../../src/dominio'
 import type { Funcao, Membro } from '../../src/dominio'
 import { exigirAdmin, exigirMembro } from '../autenticacao'
 import { definirListaEsqueci, listaEsqueciLigada } from '../dados/acesso'
+import { definirSemanasDeRepeticao, ehSemanasDeRepeticao, lerSemanasDeRepeticao } from '../dados/configuracoes'
 import { apagarFuncao, atualizarFuncao, criarFuncao, ehNaipe, funcaoEmAlgumaEquipe } from '../dados/funcoes'
 import {
   acessoDosMembros,
@@ -158,19 +159,33 @@ admin.delete('/api/admin/funcoes/:id', exigirAdmin, async (c) => {
   return c.json({ apagada: true })
 })
 
-admin.get('/api/admin/configuracoes', exigirAdmin, async (c) => {
-  return c.json({ listaEsqueci: await listaEsqueciLigada(c.env.DB) })
-})
+admin.get('/api/admin/configuracoes', exigirAdmin, async (c) => c.json(await responderConfiguracoes(c.env.DB)))
 
 admin.patch('/api/admin/configuracoes', exigirAdmin, async (c) => {
-  const { listaEsqueci } = await corpoJson<{ listaEsqueci?: unknown }>(c.req.raw)
+  const { listaEsqueci, semanasDeRepeticao } = await corpoJson<{ listaEsqueci?: unknown; semanasDeRepeticao?: unknown }>(
+    c.req.raw,
+  )
 
-  if (typeof listaEsqueci !== 'boolean') return c.json({ erro: 'A lista do "esqueci" fica ligada ou desligada.' }, 422)
+  if (listaEsqueci === undefined && semanasDeRepeticao === undefined) {
+    return c.json({ erro: 'Nada pra mudar: mande a lista do "esqueci" ou o alerta de repetição.' }, 422)
+  }
+  if (listaEsqueci !== undefined && typeof listaEsqueci !== 'boolean') {
+    return c.json({ erro: 'A lista do "esqueci" fica ligada ou desligada.' }, 422)
+  }
+  if (semanasDeRepeticao !== undefined && !ehSemanasDeRepeticao(semanasDeRepeticao)) {
+    return c.json({ erro: 'O alerta de repetição é de 2, 4, 6 ou 8 semanas.' }, 422)
+  }
 
-  await definirListaEsqueci(c.env.DB, listaEsqueci)
+  if (typeof listaEsqueci === 'boolean') await definirListaEsqueci(c.env.DB, listaEsqueci)
+  if (ehSemanasDeRepeticao(semanasDeRepeticao)) await definirSemanasDeRepeticao(c.env.DB, semanasDeRepeticao)
 
-  return c.json({ listaEsqueci: await listaEsqueciLigada(c.env.DB) })
+  return c.json(await responderConfiguracoes(c.env.DB))
 })
+
+async function responderConfiguracoes(db: D1Database) {
+  const [listaEsqueci, semanasDeRepeticao] = await Promise.all([listaEsqueciLigada(db), lerSemanasDeRepeticao(db)])
+  return { listaEsqueci, semanasDeRepeticao }
+}
 
 async function lerFuncoesPedidas(db: D1Database, valor: unknown): Promise<string[] | string> {
   if (valor === undefined) return []

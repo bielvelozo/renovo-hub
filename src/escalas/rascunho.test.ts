@@ -39,6 +39,13 @@ const naLista = (extra: Partial<MusicaNaLista> = {}): MusicaNaLista => ({
   revisar: false,
   tomConhecido: null,
   tomOriginal: null,
+  aba: 'redescobrir',
+  secao: 'nunca',
+  recente: false,
+  planejadaEm: [],
+  vezesTocada: 0,
+  vezesEm6Meses: 0,
+  temLetra: false,
   ultimaExecucao: null,
   ...extra,
 })
@@ -93,7 +100,16 @@ describe('escolha', () => {
   })
 
   it('de link que já está no catálogo vira escolha do catálogo', () => {
-    const jaTem = { ...naLista(), link: '', cifraClub: '', tomSugerido: null, historico: [], cobertura: null, anexos: [] }
+    const jaTem = {
+      ...naLista(),
+      link: '',
+      cifraClub: '',
+      tomSugerido: null,
+      historico: [],
+      cobertura: null,
+      coberturaDoMinisterio: { ja: [], nunca: [] },
+      anexos: [],
+    }
     const escolha = escolhaDoLink(resolucao(jaTem), 'https://youtu.be/v-rio')
 
     expect(escolha.musicaId).toBe('rio')

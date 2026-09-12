@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Navigate, useNavigate, useParams } from 'react-router'
+import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router'
 import { api } from '../api/cliente'
 import type { MusicaDetalhada } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
@@ -11,7 +11,7 @@ import { BlocoDeTom } from '../componentes/BlocoDeTom'
 import { Botao } from '../componentes/Botao'
 import { Campo } from '../componentes/Campo'
 import { Capa } from '../componentes/Capa'
-import { EscolhaDeMusica } from '../componentes/EscolhaDeMusica'
+import { Catalogo } from '../componentes/Catalogo'
 import { Esqueleto } from '../componentes/Esqueleto'
 import { LinhaDeMusica } from '../componentes/LinhaDeMusica'
 import { RodapeDeAcao } from '../componentes/RodapeDeAcao'
@@ -35,6 +35,7 @@ const MAXIMO_DE_CAPAS = 4
 
 export function Medley() {
   const { id = '' } = useParams()
+  const [parametros] = useSearchParams()
   const eu = usarEu()
   const navegar = useNavigate()
   const acao = usarAcao()
@@ -42,7 +43,7 @@ export function Medley() {
   const pendente = usarRemocaoPendente()
   const [trechos, guardarTrechos] = useState<TrechoEmMontagem[]>([])
   const [observacao, escreverObservacao] = useState('')
-  const [passo, irPara] = useState<Passo>('montar')
+  const [passo, irPara] = useState<Passo>(parametros.has('escolher') ? 'escolher' : 'montar')
   const [escolha, escolher] = useState<Escolha | null>(null)
 
   if (!eu.ministro && !eu.admin) return <Navigate to={`/escalas/${id}`} replace />
@@ -73,15 +74,20 @@ export function Medley() {
 
   if (passo === 'escolher') {
     return (
-      <EscolhaDeMusica
-        titulo={`Trecho ${trechos.length + 1} do Medley`}
-        sub="cole um link ou escolha do catálogo"
-        aoVoltar={() => irPara('montar')}
-        aoEscolher={(escolhida) => {
-          escolher(escolhida)
-          irPara('trecho')
-        }}
-      />
+      <section className="pagina">
+        <Catalogo
+          modo="escolha"
+          escalaId={id}
+          permiteYoutube
+          titulo={`Trecho ${trechos.length + 1} do Medley`}
+          sub="busque, cole um link ou escolha do catálogo"
+          aoVoltar={() => irPara('montar')}
+          aoEscolher={(escolhida) => {
+            escolher(escolhida)
+            irPara('trecho')
+          }}
+        />
+      </section>
     )
   }
 

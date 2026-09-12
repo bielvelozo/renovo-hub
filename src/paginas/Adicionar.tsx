@@ -10,7 +10,7 @@ import { BlocoDeTom } from '../componentes/BlocoDeTom'
 import { Botao } from '../componentes/Botao'
 import { Campo } from '../componentes/Campo'
 import { Capa } from '../componentes/Capa'
-import { EscolhaDeMusica } from '../componentes/EscolhaDeMusica'
+import { Catalogo } from '../componentes/Catalogo'
 import { Esqueleto } from '../componentes/Esqueleto'
 import { RodapeDeAcao } from '../componentes/RodapeDeAcao'
 import { Segmento } from '../componentes/Segmento'
@@ -19,6 +19,7 @@ import type { Escolha, Rascunho } from '../escalas/rascunho'
 import {
   corpoDaPromocao,
   corpoDoItem,
+  escolhaDaMusica,
   escolhaDaSugestao,
   rascunhoDe,
   rascunhoPronto,
@@ -34,37 +35,57 @@ export function Adicionar() {
   const [escolha, escolher] = useState<Escolha | null>(null)
 
   const sugestaoId = parametros.get('sugestao')
-  const sugestoes = usarBusca<{ sugestoes: SugestaoApresentada[] }>(sugestaoId ? '/api/sugestoes?promovidas=1' : null)
+  const musicaId = parametros.get('musica')
+  const sugestao = usarBusca<SugestaoApresentada>(sugestaoId ? `/api/sugestoes/${sugestaoId}` : null)
+  const musica = usarBusca<MusicaDetalhada>(musicaId ? `/api/musicas/${musicaId}?escalaId=${id}` : null)
 
   if (!eu.ministro && !eu.admin) return <Navigate to={`/escalas/${id}`} replace />
 
   if (sugestaoId) {
-    if (sugestoes.erro) return <p className="aviso">{sugestoes.erro}</p>
-    if (!sugestoes.dados) return <Esqueleto forma="paragrafo" />
-
-    const sugestao = sugestoes.dados.sugestoes.find((cada) => cada.id === sugestaoId)
-    if (!sugestao) return <p className="aviso">Sugestão não encontrada.</p>
+    if (sugestao.erro) return <p className="aviso">{sugestao.erro}</p>
+    if (!sugestao.dados) return <Esqueleto forma="paragrafo" />
 
     return (
       <Detalhes
         escalaId={id}
-        escolha={escolhaDaSugestao(sugestao)}
-        promoverDe={sugestao.id}
+        escolha={escolhaDaSugestao(sugestao.dados)}
+        promoverDe={sugestao.dados.id}
         rotulo="Promover pro Repertório"
         aoVoltar={() => navegar('/sugestoes')}
       />
     )
   }
 
+  if (musicaId) {
+    if (musica.erro) return <p className="aviso">{musica.erro}</p>
+    if (!musica.dados) return <Esqueleto forma="paragrafo" />
+
+    return (
+      <Formulario
+        escalaId={id}
+        escolha={escolhaDaMusica(musica.dados)}
+        musica={musica.dados}
+        promoverDe={null}
+        rotulo="Adicionar ao Repertório"
+        aoVoltar={() => navegar(`/musicas/${musicaId}`)}
+      />
+    )
+  }
+
   if (!escolha) {
     return (
-      <EscolhaDeMusica
-        titulo="Adicionar música"
-        sub="cole um link ou escolha do catálogo"
-        aoVoltar={() => navegar(`/escalas/${id}`)}
-        aoEscolher={escolher}
-        aoEscolherSugestao={(sugestao) => navegar(`/escalas/${id}/adicionar?sugestao=${sugestao.id}`)}
-      />
+      <section className="pagina">
+        <Catalogo
+          modo="escolha"
+          escalaId={id}
+          permiteYoutube
+          titulo="Adicionar música"
+          sub="busque, cole um link ou escolha do catálogo"
+          aoVoltar={() => navegar(`/escalas/${id}`)}
+          aoEscolher={escolher}
+          aoEscolherSugestao={(escolhida) => navegar(`/escalas/${id}/adicionar?sugestao=${escolhida.id}`)}
+        />
+      </section>
     )
   }
 

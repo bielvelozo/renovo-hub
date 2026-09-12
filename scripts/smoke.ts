@@ -28,6 +28,7 @@ import {
   roteiroDoTrecho,
   roteiroDoWhatsapp,
 } from './fumaca/roteiros'
+import { roteiroDeSugestoes } from './fumaca/sugestoes'
 
 const raiz = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const prova = criarProva()
@@ -42,6 +43,7 @@ try {
   await roteiroDoTrecho(prova, cenario)
   await roteiroDoMedley(prova, cenario)
   await roteiroDaSugestao(prova, cenario)
+  await roteiroDeSugestoes(prova, cenario)
   await roteiroDoWhatsapp(prova, cenario)
   await roteiroDeCorrigir(prova, cenario)
   await roteiroDeCancelar(prova, cenario)
