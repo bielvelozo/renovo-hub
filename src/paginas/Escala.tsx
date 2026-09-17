@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import { anexosDoItem } from '../api/anexos'
 import { api, textoDoErro } from '../api/cliente'
 import type { Opcoes } from '../api/cliente'
@@ -20,6 +20,7 @@ import { FolhaDaPlaylist, FolhaDoWhatsapp } from '../componentes/FolhasDaEscala'
 import { FolhaDoItem } from '../componentes/FolhaDoItem'
 import { LinhaDoItem } from '../componentes/LinhaDeMusica'
 import { Menu } from '../componentes/Menu'
+import type { ItemDoMenu } from '../componentes/Menu'
 import { RodapeDeAcao } from '../componentes/RodapeDeAcao'
 import { Selo } from '../componentes/Selo'
 import { mover } from '../componentes/ordenacao'
@@ -83,7 +84,7 @@ export function Escala() {
         titulo={escala ? nomeDaEscala(escala) : 'Escala'}
         sub={escala && formatarDia(escala.data, hoje) + ' · ' + rotuloDoHorario(escala.horario)}
         voltarPara="/mes"
-        acao={escala && dirige ? <MenuDaEscala escala={escala} abrir={abrir} mudar={mudar} /> : undefined}
+        acao={escala ? <MenuDaEscala escala={escala} dirige={dirige} abrir={abrir} mudar={mudar} /> : undefined}
       />
       <VistoEm hora={busca.vistoEm} />
     </>
@@ -208,48 +209,56 @@ export function Escala() {
   )
 }
 
-function MenuDaEscala({
+export function MenuDaEscala({
   escala,
+  dirige,
   abrir,
   mudar,
 }: {
   escala: EscalaApresentada
+  dirige: boolean
   abrir: (aberta: Aberta) => void
   mudar: Mudanca
 }) {
+  const navegar = useNavigate()
   const ceia = escala.santaCeia
+  const itens: ItemDoMenu[] = []
 
-  return (
-    <Menu
-      rotulo="Mais"
-      itens={[
-        { rotulo: 'Editar data e horário', icone: 'calendario', aoEscolher: () => abrir('editar') },
-        {
-          rotulo: ceia ? 'Tirar Santa Ceia' : 'Marcar como Santa Ceia',
-          icone: 'confirmar',
-          aoEscolher: () =>
-            mudar(
-              `/api/escalas/${escala.id}`,
-              { metodo: 'PATCH', corpo: { santaCeia: !ceia } },
-              ceia ? 'Não é mais Santa Ceia' : 'Agora é Santa Ceia',
-            ),
-        },
-        escala.estado === 'cancelada'
-          ? {
-              rotulo: 'Desfazer cancelamento',
-              icone: 'desfazer' as const,
-              aoEscolher: () =>
-                mudar(`/api/escalas/${escala.id}/desfazer`, { metodo: 'POST' }, 'Cancelamento desfeito'),
-            }
-          : {
-              rotulo: 'Marcar como cancelada',
-              icone: 'remover' as const,
-              perigo: true,
-              aoEscolher: () => abrir('cancelar'),
-            },
-      ]}
-    />
-  )
+  if (escala.estado !== 'cancelada') {
+    itens.push({ rotulo: 'Modo culto', icone: 'musica', aoEscolher: () => navegar(`/culto/${escala.id}`) })
+  }
+
+  if (dirige) {
+    itens.push(
+      { rotulo: 'Editar data e horário', icone: 'calendario', aoEscolher: () => abrir('editar') },
+      {
+        rotulo: ceia ? 'Tirar Santa Ceia' : 'Marcar como Santa Ceia',
+        icone: 'confirmar',
+        aoEscolher: () =>
+          mudar(
+            `/api/escalas/${escala.id}`,
+            { metodo: 'PATCH', corpo: { santaCeia: !ceia } },
+            ceia ? 'Não é mais Santa Ceia' : 'Agora é Santa Ceia',
+          ),
+      },
+      escala.estado === 'cancelada'
+        ? {
+            rotulo: 'Desfazer cancelamento',
+            icone: 'desfazer',
+            aoEscolher: () => mudar(`/api/escalas/${escala.id}/desfazer`, { metodo: 'POST' }, 'Cancelamento desfeito'),
+          }
+        : {
+            rotulo: 'Marcar como cancelada',
+            icone: 'remover',
+            perigo: true,
+            aoEscolher: () => abrir('cancelar'),
+          },
+    )
+  }
+
+  if (!itens.length) return null
+
+  return <Menu rotulo="Mais" itens={itens} />
 }
 
 export function Equipe({ escala, euId, dirige }: { escala: EscalaApresentada; euId: string; dirige: boolean }) {

@@ -15,7 +15,7 @@ import { LinhaDoItem } from '../componentes/LinhaDeMusica'
 import { Selo } from '../componentes/Selo'
 import { Vazio } from '../componentes/Vazio'
 import { VistoEm } from '../componentes/VistoEm'
-import { hojeEmBrasilia, nomeDaEscala, nomeDoDia, nomeDoDiaLongo } from '../dominio'
+import { hojeEmBrasilia, nomeDaEscala, nomeDoDia, nomeDoDiaLongo, rotuloDoHorario } from '../dominio'
 import { nomeDoMes } from '../escalas/mes'
 import { CHAVE_DE_VISITA_DAS_SUGESTOES } from '../escalas/sugestoes'
 import { mudouDesdeAVisita, visitaNaEscala } from '../escalas/visita'
@@ -98,12 +98,36 @@ export function Inicio() {
 
       {acao.erro && <p className="aviso">{acao.erro}</p>}
 
+      {escala && <CartaoDoCulto escala={escala} hoje={hoje} />}
+
       {escala && <RepertorioDoInicio escala={escala} anexosPorDono={dados.anexosPorDono} hoje={hoje} />}
 
       {dados.pendencias.length > 0 && <Pendencias escalas={dados.pendencias} />}
 
       <LinhaDeSugestoes sugestoes={sugestoes.dados?.sugestoes ?? []} />
     </section>
+  )
+}
+
+export function CartaoDoCulto({ escala, hoje }: { escala: EscalaApresentada; hoje: string }) {
+  if (escala.data !== hoje) return null
+
+  const musicas = escala.itens.length === 1 ? '1 música' : escala.itens.length + ' músicas'
+
+  return (
+    <Cartao destaque className="pagina">
+      <div className="secao-topo">
+        <div className="cresce">
+          <div className="titulo">Culto de hoje</div>
+          <div className="dica">
+            {musicas} · {rotuloDoHorario(escala.horario)}
+          </div>
+        </div>
+        <BotaoLink para={`/culto/${escala.id}`} pequeno>
+          Modo culto
+        </BotaoLink>
+      </div>
+    </Cartao>
   )
 }
 

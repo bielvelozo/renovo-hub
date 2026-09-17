@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { EscalaApresentada, ItemApresentado } from '../api/tipos'
 import { ProvedorDeAvisos } from '../componentes/Avisos'
-import { Equipe, Repertorio } from './Escala'
+import { Equipe, MenuDaEscala, Repertorio } from './Escala'
 
 const HOJE = '2026-09-13'
 
@@ -164,5 +164,37 @@ describe('Equipe na tela da Escala', () => {
 
     expect(screen.getByText('Ninguém escalado ainda.')).not.toBeNull()
     expect(screen.getByRole('link', { name: 'Montar' })).not.toBeNull()
+  })
+})
+
+describe('menu da Escala', () => {
+  function abrirMenu(escala: EscalaApresentada, dirige: boolean) {
+    render(
+      <MemoryRouter>
+        <MenuDaEscala escala={escala} dirige={dirige} abrir={vi.fn()} mudar={vi.fn()} />
+      </MemoryRouter>,
+    )
+
+    const gatilho = screen.queryByLabelText('Mais')
+    if (gatilho) fireEvent.click(gatilho)
+    return gatilho
+  }
+
+  it('abre o modo culto pra qualquer Membro, sem os itens de edição', async () => {
+    abrirMenu(escala, false)
+
+    await waitFor(() => expect(screen.getByText('Modo culto')).not.toBeNull())
+    expect(screen.queryByText('Editar data e horário')).toBeNull()
+  })
+
+  it('mostra edição pra quem dirige, com o modo culto na frente', async () => {
+    abrirMenu(escala, true)
+
+    await waitFor(() => expect(screen.getByText('Modo culto')).not.toBeNull())
+    expect(screen.getByText('Editar data e horário')).not.toBeNull()
+  })
+
+  it('não oferece modo culto na Escala cancelada, nem menu pra quem não dirige', () => {
+    expect(abrirMenu({ ...escala, estado: 'cancelada', cancelada: true }, false)).toBeNull()
   })
 })
