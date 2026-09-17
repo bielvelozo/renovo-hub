@@ -1,5 +1,10 @@
 import { Route, Routes } from 'react-router'
 import { Casca } from './casca/Casca'
+import { LetraDaMusica } from './culto/LetraDaMusica'
+import { LetraDoItem } from './culto/LetraDoItem'
+import { ModoCulto } from './culto/ModoCulto'
+import { Ordem } from './culto/Ordem'
+import { Pesquisar } from './culto/Pesquisar'
 import { Adicionar } from './paginas/Adicionar'
 import { Admin } from './paginas/Admin'
 import { Convites } from './paginas/admin/Convites'
@@ -16,6 +21,8 @@ import { Escala } from './paginas/Escala'
 import { Esqueci } from './paginas/Esqueci'
 import { Inicio } from './paginas/Inicio'
 import { Instalar } from './paginas/Instalar'
+import { LetraDoItemNaCasca } from './paginas/LetraDoItemNaCasca'
+import { LetraNaCasca } from './paginas/LetraNaCasca'
 import { Medley } from './paginas/Medley'
 import { Mes } from './paginas/Mes'
 import { Musica } from './paginas/Musica'
@@ -32,6 +39,12 @@ export function App() {
         <Route path="/entrar/:token" element={<Entrar />} />
         <Route path="/esqueci" element={<Esqueci />} />
         <Route path="/instalar" element={<Instalar />} />
+        <Route path="/culto/:escalaId" element={<ModoCulto />}>
+          <Route index element={<Ordem />} />
+          <Route path="item/:itemId" element={<LetraDoItem />} />
+          <Route path="pesquisar" element={<Pesquisar />} />
+          <Route path="musica/:musicaId" element={<LetraDaMusica />} />
+        </Route>
         <Route path="/" element={<Casca />}>
           <Route index element={<Inicio />} />
           <Route path="mes" element={<Mes />} />
@@ -39,8 +52,10 @@ export function App() {
           <Route path="escalas/:id/equipe" element={<Equipe />} />
           <Route path="escalas/:id/adicionar" element={<Adicionar />} />
           <Route path="escalas/:id/medley" element={<Medley />} />
+          <Route path="escalas/:id/itens/:itemId/letra" element={<LetraDoItemNaCasca />} />
           <Route path="musicas" element={<Musicas />} />
           <Route path="musicas/:id" element={<Musica />} />
+          <Route path="musicas/:id/letra" element={<LetraNaCasca />} />
           <Route path="sugestoes" element={<Sugestoes />} />
           <Route path="perfil" element={<Perfil />} />
           <Route path="admin" element={<Admin />}>

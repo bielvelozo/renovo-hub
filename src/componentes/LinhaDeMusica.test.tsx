@@ -154,14 +154,20 @@ describe('LinhaDeMusica', () => {
         modo="leitura"
         trecho={{ inicio: '1:05', fim: '3:40' }}
         observacao="Entrar direto"
-        anexos={[{ id: 'a1', musicaId: 'meia-noite', nome: 'x.docx', mime: '', tamanho: 1, versao: 1, criadoEm: '', url: '/anexos/a1' }]}
+        letraEm="/escalas/e0913/itens/i1/letra"
       />,
     )
 
     expect(screen.getByText('trecho 1:05–3:40').className).toBe('selo trecho')
     expect(screen.getByText('letra').className).toBe('selo neutro')
-    expect(screen.getByText('letra').getAttribute('href')).toBe('/anexos/a1')
+    expect(screen.getByText('letra').getAttribute('href')).toBe('/escalas/e0913/itens/i1/letra')
     expect(screen.getByText('Entrar direto').className).toBe('observacao')
+  })
+
+  it('não põe o selo da letra dentro do botão do modo escolha', () => {
+    montar(<LinhaDeMusica musica={resumida} modo="escolha" letraEm="/escalas/e0913/itens/i1/letra" />)
+
+    expect(screen.queryByText('letra')).toBeNull()
   })
 
   it('Medley em leitura lista os Trechos com minutagem e Tom', () => {

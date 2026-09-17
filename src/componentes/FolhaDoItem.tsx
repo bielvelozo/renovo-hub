@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import type { EscalaApresentada, ItemApresentado, MusicaDetalhada } from '../api/tipos'
+import { useRef, useState } from 'react'
+import type { Anexo, EscalaApresentada, ItemApresentado, MusicaDetalhada } from '../api/tipos'
 import { usarBusca } from '../api/usarBusca'
-import { hojeEmBrasilia, normalizarMinutagem } from '../dominio'
+import { formatarDiaNumerico, hojeEmBrasilia, normalizarMinutagem } from '../dominio'
 import { corpoDaEdicao, escolhaDaMusica, rascunhoDoItem, trechosNormalizados } from '../escalas/rascunho'
 import type { Rascunho, TrechoPronto } from '../escalas/rascunho'
 import { capasDoItem, ministrosDaEscala, tituloDoItem } from '../escalas/repertorio'
@@ -12,6 +12,7 @@ import { Capa } from './Capa'
 import { Esqueleto } from './Esqueleto'
 import { FaixaDeAlerta, frasesDeAlerta } from './FaixaDeAlerta'
 import { Folha } from './Folha'
+import { FolhaDaLetra } from './FolhaDaLetra'
 import { SeletorDeTom } from './SeletorDeTom'
 
 export type PropriedadesDaFolhaDoItem = {
@@ -21,6 +22,8 @@ export type PropriedadesDaFolhaDoItem = {
   fechar: () => void
   salvar: (corpo: Record<string, unknown>) => void
   remover: () => void
+  anexos?: Anexo[]
+  recarregar?: () => void
   hoje?: string
 }
 
@@ -48,9 +51,19 @@ export function CorpoDaFolhaDoItem({
   fechar,
   salvar,
   remover,
+  anexos = [],
+  recarregar,
   hoje = hojeEmBrasilia(),
 }: PropriedadesDaFolhaDoItem & { musica: MusicaDetalhada | null }) {
   const ministros = ministrosDaEscala(escala.pessoas)
+  const [letra, abrirLetra] = useState(false)
+  const enviou = useRef(false)
+
+  const fecharALetra = () => {
+    abrirLetra(false)
+    if (enviou.current) recarregar?.()
+    enviou.current = false
+  }
 
   return (
     <Folha titulo={tituloDoItem(item)} fechar={fechar}>
@@ -71,6 +84,8 @@ export function CorpoDaFolhaDoItem({
           ocupado={ocupado}
           salvar={salvar}
           aoSalvar={fechar}
+          anexos={anexos}
+          abrirLetra={() => abrirLetra(true)}
         />
       ) : (
         <CamposDaMusica
@@ -95,6 +110,18 @@ export function CorpoDaFolhaDoItem({
       >
         Remover do repertório
       </Botao>
+
+      {letra && (
+        <FolhaDaLetra
+          titulo={tituloDoItem(item)}
+          dono={{ itemId: item.id }}
+          anexos={anexos}
+          fechar={fecharALetra}
+          aoEnviar={() => {
+            enviou.current = true
+          }}
+        />
+      )}
     </Folha>
   )
 }
@@ -143,12 +170,16 @@ function CamposDoMedley({
   ocupado,
   salvar,
   aoSalvar,
+  anexos,
+  abrirLetra,
 }: {
   item: ItemApresentado & { tipo: 'medley' }
   ministros: ReturnType<typeof ministrosDaEscala>
   ocupado: boolean
   salvar: (corpo: Record<string, unknown>) => void
   aoSalvar: () => void
+  anexos: Anexo[]
+  abrirLetra: () => void
 }) {
   const [trechos, escreverTrechos] = useState<TrechoPronto[]>(() =>
     item.trechos.map((trecho) => ({
@@ -182,6 +213,8 @@ function CamposDoMedley({
         </div>
       ))}
 
+      <LetraDoMedley anexos={anexos} abrirLetra={abrirLetra} />
+
       <QuemPuxa ministros={ministros} valor={ministradoPor} aoMudar={escolherQuemPuxa} />
 
       <ObservacaoDoItem valor={observacao} aoMudar={escreverObservacao} />
@@ -197,6 +230,26 @@ function CamposDoMedley({
         Salvar
       </Botao>
     </>
+  )
+}
+
+function LetraDoMedley({ anexos, abrirLetra }: { anexos: Anexo[]; abrirLetra: () => void }) {
+  const maisNovo = anexos[0]
+
+  return (
+    <div className="secao">
+      <h2>Letra do medley</h2>
+
+      {maisNovo && (
+        <p className="dica">
+          letra v{maisNovo.versao} · {formatarDiaNumerico(maisNovo.criadoEm.slice(0, 10))}
+        </p>
+      )}
+
+      <Botao variante="secundario" onClick={abrirLetra}>
+        {maisNovo ? 'Trocar' : 'Enviar letra (Word)'}
+      </Botao>
+    </div>
   )
 }
 

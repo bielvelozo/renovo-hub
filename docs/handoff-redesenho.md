@@ -54,7 +54,7 @@ Da auditoria (tabelas "Admin (F5)" e "Fora da casca (F6)", mais Parte 5):
 
 - **Admin**: painel com números de pendência ("12 músicas a revisar", "3 Membros sem acesso") e lista de "Primeiros passos" para o primeiro uso; revisão de músicas com o título e o artista limpos já sugeridos (a função `limparTitulo` existe e é idempotente); Convites com o texto atrás de "?" e a lista do "esqueci" como seção; Membro sem acesso com selo de alerta; Formação criada já abrindo a montagem. O mínimo por Função já entrou na F2+F3 e o limite de repetição na F4.
 - **Fora da casca**: boas-vindas curta depois do convite (duas ações opcionais, instalar e notificações, "Agora não", "Pronto" sempre visível; passos de instalação só ao tocar em instalar); "esqueci" com uma linha explicando; Não encontrada, erro de sessão e convite inválido com o selo e o tom da marca.
-- **Registrado como fora do redesenho** (não puxar sem o Gabriel pedir): modo culto, disponibilidade do Membro, letra dentro do app, etiquetas de ocasião.
+- **Registrado como fora do redesenho** (não puxar sem o Gabriel pedir): disponibilidade do Membro, etiquetas de ocasião. O modo culto e a letra dentro do app saíram desta lista em 16/09/2026: viraram a fatia `docs/superpowers/specs/2026-09-16-modo-culto-e-letra-design.md`, entregue na branch `modo-culto`.
 
 Os mockups da F5+F6 ainda não existem; os das fatias anteriores mostram o padrão (uma proposta por tela quando não há decisão a tomar, duas ou três opções quando há).
 

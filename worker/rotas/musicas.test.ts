@@ -1,6 +1,7 @@
 import { SELF, env } from 'cloudflare:test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { hojeEmBrasilia, somarDias } from '../../src/dominio'
+import type { Letra } from '../../src/dominio'
 import { CHAVE_SEMANAS_DE_REPETICAO } from '../dados/configuracoes'
 import { limparCacheDeVideos } from '../dados/oembed'
 import {
@@ -363,7 +364,7 @@ describe('listar Músicas', () => {
     await porNaEquipe('erecente', 'marcos', ['vocal'], true)
     await criarItemInteira('irecente', 'erecente', 'dono', 'F')
     await env.DB.prepare(
-      "insert into anexos (id, musica_id, nome, mime, tamanho, conteudo, versao, criado_em) values ('a1', 'rio', 'Rio.docx', 'application/octet-stream', 1, x'00', 1, '2026-09-01T00:00:00.000Z')",
+      "insert into anexos (id, musica_id, nome, mime, tamanho, conteudo, letra, versao, criado_em) values ('a1', 'rio', 'Rio.docx', 'application/octet-stream', 1, x'00', '{\"cabecalho\":[],\"blocos\":[]}', 1, '2026-09-01T00:00:00.000Z')",
     ).run()
 
     const musicas = await listar('')
@@ -590,4 +591,28 @@ describe('memória no detalhe da Música', () => {
     const semEscala = await (await pedir('/api/musicas/rio', 'julia')).json<{ planejadaEm: { escalaId: string }[] }>()
     expect(semEscala.planejadaEm.map((p) => p.escalaId)).toEqual(['e1'])
   })
+
+  it('traz a letra do anexo mais novo, e nula quando não há letra', async () => {
+    const semAnexo = await (await pedir('/api/musicas/rio', 'julia')).json<{ letra: unknown }>()
+    expect(semAnexo.letra).toBeNull()
+
+    await gravarAnexo('a1', 1, 'Primeira letra')
+    await gravarAnexo('a2', 2, 'Segunda letra')
+
+    const corpo = await (await pedir('/api/musicas/rio', 'julia')).json<{ letra: Letra | null }>()
+
+    expect(corpo.letra?.blocos).toEqual([
+      { tipo: 'estrofe', linhas: [{ texto: 'Segunda letra', forte: false }] },
+    ])
+  })
 })
+
+async function gravarAnexo(id: string, versao: number, texto: string): Promise<void> {
+  const letra: Letra = { cabecalho: [], blocos: [{ tipo: 'estrofe', linhas: [{ texto, forte: false }] }] }
+
+  await env.DB.prepare(
+    "insert into anexos (id, musica_id, nome, mime, tamanho, conteudo, letra, versao, criado_em) values (?, 'rio', 'Rio.docx', 'word', 1, x'00', ?, ?, '2026-09-01T00:00:00.000Z')",
+  )
+    .bind(id, JSON.stringify(letra), versao)
+    .run()
+}

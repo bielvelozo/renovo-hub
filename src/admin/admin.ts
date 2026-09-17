@@ -19,7 +19,7 @@ export const SECOES: SecaoDoAdmin[] = [
   { caminho: '/admin/funcoes', titulo: 'Funções', dica: 'Nome, grupo e ordem de cada Função.' },
   { caminho: '/admin/formacoes', titulo: 'Formações', dica: 'Os grupos que a Equipe aplica de uma vez.' },
   { caminho: '/admin/musicas', titulo: 'Músicas a revisar', dica: 'Arrumar título e artista do que veio da playlist.' },
-  { caminho: '/admin/sequencias', titulo: 'Sequências', dica: 'Enviar o Word da letra e guardar as versões.' },
+  { caminho: '/admin/sequencias', titulo: 'Sequências', dica: 'Enviar o Word da letra de várias músicas' },
 ]
 
 export const LIMITE_DO_ANEXO = 1024 * 1024

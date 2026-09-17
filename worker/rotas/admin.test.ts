@@ -1,6 +1,6 @@
 import { SELF, env } from 'cloudflare:test'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { hojeEmBrasilia, somarDias } from '../../src/dominio'
+import { diaDaSemana, hojeEmBrasilia, somarDias } from '../../src/dominio'
 import { CHAVE_LISTA_ESQUECI } from '../dados/acesso'
 import {
   cookieDe,
@@ -15,7 +15,7 @@ import {
 
 const RAIZ = 'http://local.test'
 const hoje = hojeEmBrasilia()
-const PASSADO = somarDias(hoje, -14)
+const PASSADO = somarDias(hoje, -7 - diaDaSemana(hoje))
 const FUTURO = somarDias(hoje, 14)
 
 type MembroJson = {

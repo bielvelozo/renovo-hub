@@ -28,6 +28,7 @@ export type NomeDoIcone =
   | 'lua'
   | 'sistema'
   | 'coracao'
+  | 'sem-conexao'
 
 type Ponto = [number, number]
 
@@ -58,6 +59,7 @@ const TRACOS: Record<NomeDoIcone, string[]> = {
   youtube: ['M3 8.5A2.5 2.5 0 0 1 5.5 6h13A2.5 2.5 0 0 1 21 8.5v7a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 15.5v-7Z', 'M10 9.3v5.4l4.6-2.7L10 9.3Z'],
   cifra: ['M6 5h12', 'M6 10h12', 'M6 15h12', 'M6 20h12', 'M8 5v15', 'M12 5v15', 'M16 5v15'],
   lista: ['M8 6h13', 'M8 12h13', 'M8 18h13'],
+  'sem-conexao': ['M3.6 9.4a12.5 12.5 0 0 1 16.8 0', 'M7 13a8 8 0 0 1 10 0', 'M4 4l16 16'],
   desfazer: ['M9 14 4 9l5-5', 'M4 9h10a6 6 0 0 1 0 12h-4'],
   sol: ['M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z', ...RAIOS],
   lua: ['M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z'],
@@ -86,6 +88,7 @@ const PONTOS: Partial<Record<NomeDoIcone, Ponto[]>> = {
     [16.7, 15.2],
   ],
   atencao: [[12, 17.2]],
+  'sem-conexao': [[12, 17.4]],
   cifra: [[12, 7.5]],
   lista: [
     [4, 6],

@@ -102,8 +102,16 @@ Música com Execuções que saiu de uso. Fora das buscas e de "adicionar Item", 
 _Avoid_: excluída, deletada, inativa
 
 **Sequência**:
-Documento com a letra da Música na ordem em que é cantada, repetições por extenso e gancho em destaque. Hoje é um arquivo Word; anexado à Música, com versões.
+Documento com a letra da Música na ordem em que é cantada, repetições por extenso e gancho em destaque. É um arquivo Word anexado à Música ou a um Medley (um Word único para o Medley inteiro, que vale no lugar das letras das Músicas dele), com versões. O app lê o texto na hora do envio e o mostra como está no Word: linha colorida ou começada por `//` ou `*` é marcador, negrito é destaque; nada é interpretado. Enviada por Ministro ou Admin.
 _Avoid_: arranjo, cifra, estrutura
+
+**Modo culto**:
+Tela inteira, escura e sem internet, para o dia da Escala: a ordem dos Itens com o Tom em letra grande, a Sequência de cada um a um toque, troca por deslize e busca de qualquer Música do catálogo. Lê só do Pacote do culto.
+_Avoid_: modo palco, apresentação
+
+**Pacote do culto**:
+Cópia guardada no aparelho das Escalas dos próximos 30 dias e do catálogo inteiro com Tom e Sequência, baixada em segundo plano toda vez que o app abre com internet. É o que o Modo culto usa; sem pacote e sem internet, o Modo culto pede para abrir o app com internet antes.
+_Avoid_: cache, sincronização
 
 **Sugestão**:
 Música proposta por qualquer Membro para ser tocada, nova ou já conhecida, com link, observação e data. Outros Membros podem apoiá-la, para o Ministro ver quantos querem a música antes de promovê-la a Item de uma Escala.

@@ -13,12 +13,14 @@
     "db:seed": "tsx scripts/seed.ts",
     "titulos": "tsx scripts/titulos.ts",
     "convite": "tsx scripts/convite.ts",
+    "letra": "tsx scripts/letra.ts",
     "vapid": "tsx scripts/vapid.ts",
     "smoke": "tsx scripts/smoke.ts",
     "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
     "@base-ui-components/react": "^1.0.0-rc.0",
+    "fflate": "^0.8.3",
     "hono": "^4.13.7",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

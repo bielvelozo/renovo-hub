@@ -5,6 +5,7 @@ import { api } from '../api/cliente'
 import { ProvedorDeAvisos } from '../componentes/Avisos'
 import { Botao } from '../componentes/Botao'
 import { Esqueleto } from '../componentes/Esqueleto'
+import { baixarPacote } from '../culto/pacote'
 import { CHAVE_DE_VISITA_DAS_SUGESTOES, contarNovas } from '../escalas/sugestoes'
 import { ProvedorDoEu, usarSessao } from '../sessao/sessao'
 import type { Eu } from '../sessao/sessao'
@@ -42,6 +43,11 @@ export function Casca() {
 
 function Dentro({ eu }: { eu: Eu }) {
   const sugestoes = usarContagemDeSugestoes()
+
+  // O pacote do culto é melhor esforço: quem avisa da falha é o modo culto, não o app inteiro.
+  useEffect(() => {
+    baixarPacote().catch(() => {})
+  }, [])
 
   return (
     <ProvedorDoEu eu={eu}>

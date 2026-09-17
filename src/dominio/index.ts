@@ -1,4 +1,5 @@
 export type {
+  Bloco,
   EntradaDaFormacao,
   EntradaEquipe,
   Escala,
@@ -10,6 +11,8 @@ export type {
   ItemInteira,
   ItemMedley,
   ItemTrecho,
+  Letra,
+  Linha,
   Membro,
   Ministerio,
   Musica,

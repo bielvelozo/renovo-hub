@@ -1,3 +1,4 @@
+import { docxDe } from '../../src/letra/docxSintetico'
 import { VIDEOS, exigir } from './cenario'
 import type { Cenario } from './cenario'
 import { RAIZ, buscar } from './prova'
@@ -193,10 +194,10 @@ export async function fluxosDoAdmin(prova: Prova, cenario: Cenario): Promise<voi
   )
 
   const musicaId = cenario.musicas.get(VIDEOS.meiaNoite)!
-  const conteudo = new Uint8Array(2048).map((_, i) => (i * 7) % 256)
+  const conteudo = wordDaLetra()
 
   const anexo = exigir(await enviarSequencia(prova, cenario, musicaId, conteudo), 201, 'enviar a Sequência')
-  prova.conferir('a Sequência sobe como versão 1', anexo.versao === 1 && anexo.tamanho === 2048, anexo.nome)
+  prova.conferir('a Sequência sobe como versão 1 com a letra lida', anexo.versao === 1 && anexo.temLetra === true, anexo.nome)
   prova.conferir('o nome com acento e travessão volta inteiro', anexo.nome === NOME_DA_SEQUENCIA, anexo.nome)
 
   const baixado = await buscar(`${RAIZ}/api/anexos/${anexo.id}`, { headers: { cookie: cenario.julia } })
@@ -276,9 +277,23 @@ export async function fluxosDoAdmin(prova: Prova, cenario: Cenario): Promise<voi
   prova.conferir('a configuração recusa valor que não é sim ou não', valorTorto.status === 422, valorTorto.corpo?.erro)
 }
 
-function enviarSequencia(prova: Prova, cenario: Cenario, musicaId: string, conteudo: Uint8Array<ArrayBuffer>) {
+// A rota lê a letra do Word na hora do envio, então o smoke manda um .docx de verdade.
+function wordDaLetra(): Uint8Array {
+  return docxDe([
+    { runs: [{ texto: 'Meia Noite – fhop music', negrito: true }] },
+    '',
+    { runs: [{ texto: '//VERSO', cor: '1F4E79' }] },
+    'Na meia noite eu te busco',
+    'E a tua voz me responde',
+    '',
+    { runs: [{ texto: '*Refrão*', cor: 'FF0000' }] },
+    { runs: [{ texto: 'Tu és o meu abrigo', negrito: true }] },
+  ])
+}
+
+function enviarSequencia(prova: Prova, cenario: Cenario, musicaId: string, conteudo: Uint8Array) {
   const formulario = new FormData()
-  formulario.set('arquivo', new File([conteudo], NOME_DA_SEQUENCIA, { type: MIME_DO_WORD }))
+  formulario.set('arquivo', new File([conteudo as BufferSource], NOME_DA_SEQUENCIA, { type: MIME_DO_WORD }))
 
   return prova.api(`/api/musicas/${musicaId}/anexos`, { cookie: cenario.gabriel, formulario })
 }

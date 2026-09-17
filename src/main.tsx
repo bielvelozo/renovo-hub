@@ -6,6 +6,7 @@ import { App } from './App'
 import './estilo/tokens.css'
 import './estilo/base.css'
 import './estilo/componentes.css'
+import './estilo/culto.css'
 
 registerSW({
   immediate: true,

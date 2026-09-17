@@ -1,6 +1,7 @@
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { fluxosDoAdmin } from './fumaca/administracao'
+import { fluxosDoCulto } from './fumaca/culto'
 import {
   derrubarServidor,
   exigirBuild,
@@ -55,6 +56,7 @@ try {
 
   await fluxosDoMembro(prova, cenario)
   await fluxosDoAdmin(prova, cenario)
+  await fluxosDoCulto(prova, cenario)
   await fluxosDeNotificacao(prova, cenario)
 
   encerrar(prova.encerrar())
@@ -80,7 +82,11 @@ async function preparar(prova: Prova): Promise<Cenario> {
   prova.conferir('o convite do primeiro Admin abre sessão', gabriel.startsWith('sessao='))
 
   const invalido = await buscar(`${RAIZ}/entrar/nao-existe`, { redirect: 'manual' })
-  prova.conferir('convite inválido devolve 404 em PT-BR', invalido.status === 404, String(invalido.status))
+  prova.conferir(
+    'convite inválido cai no Esqueci com aviso',
+    invalido.status === 302 && invalido.headers.get('location') === '/esqueci?convite=invalido',
+    `${invalido.status} ${invalido.headers.get('location')}`,
+  )
 
   const isa = await sessaoPorEsqueci('isa')
   const julia = await sessaoPorEsqueci('julia')

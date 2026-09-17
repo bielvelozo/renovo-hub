@@ -70,7 +70,7 @@ export async function roteiroDoMes(prova: Prova, cenario: Cenario): Promise<void
     200,
     'marcar a Isa como Ministra',
   )
-  prova.conferir('a marca de Ministro vai pra quem tem o papel', grupo(comIsa, 'Ministro').includes('Isa'))
+  prova.conferir('a marca de Ministro vai pra quem tem o papel', grupo(comIsa, 'Ministro').some(comecaComIsa))
 
   const recusa = await prova.api(`/api/escalas/${cenario.escalaDoMes}/equipe/ana`, {
     metodo: 'PUT',
@@ -136,7 +136,7 @@ export async function roteiroDoMes(prova: Prova, cenario: Cenario): Promise<void
     montada.equipe.length >= 6,
     `${montada.equipe.length} na Equipe`,
   )
-  prova.conferir('aplicar a Formação preserva a marca de Ministro', grupo(montada, 'Ministro').includes('Isa'))
+  prova.conferir('aplicar a Formação preserva a marca de Ministro', grupo(montada, 'Ministro').some(comecaComIsa))
   prova.conferir(
     'a Equipe sai agrupada por grupo',
     ['Ministro', 'Vocal', 'Músicos', 'Som'].every((nome) => grupo(montada, nome).length > 0),
@@ -794,10 +794,14 @@ export async function roteiroDasPendencias(prova: Prova, cenario: Cenario): Prom
   )
   prova.conferir(
     'o Início traz o limite de repetição e os anexos sem outra requisição',
-    Number.isInteger(inicio.semanasDeRepeticao) && !!inicio.anexosPorMusica,
+    Number.isInteger(inicio.semanasDeRepeticao) && !!inicio.anexosPorDono,
     `${inicio.semanasDeRepeticao} semanas`,
   )
 
   const semSessao = await prova.api('/api/inicio')
   prova.conferir('o Início sem sessão devolve 401', semSessao.status === 401, semSessao.corpo?.erro)
+}
+
+function comecaComIsa(pessoa: string): boolean {
+  return pessoa === 'Isa' || pessoa.startsWith('Isa (')
 }

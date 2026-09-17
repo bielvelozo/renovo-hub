@@ -5,7 +5,9 @@ import type {
   EstadoEscala,
   Funcao,
   GrupoEquipe,
+  Letra,
   Membro,
+  OrigemDoTom,
   Pendencia,
   PessoaDaEquipe,
   Planejada,
@@ -86,7 +88,7 @@ export type EscalaApresentada = {
   resumoDoRepertorio: ResumoDoRepertorio
   pendencias: Pendencia[]
   pronta: boolean
-  anexosPorMusica?: Record<string, Anexo[]>
+  anexosPorDono?: Record<string, Anexo[]>
 }
 
 export type EscalaResumida = {
@@ -115,7 +117,7 @@ export type InicioApresentado = {
   proximoCulto: EscalaApresentada | null
   pendencias: EscalaResumida[]
   posCulto: PosCultoApresentado | null
-  anexosPorMusica: Record<string, Anexo[]>
+  anexosPorDono: Record<string, Anexo[]>
   semanasDeRepeticao: number
   proximoMesVazio: string | null
 }
@@ -164,10 +166,12 @@ export type Cobertura = { ja: string[]; nunca: string[] }
 
 export type Anexo = {
   id: string
-  musicaId: string
+  musicaId: string | null
+  itemId: string | null
   nome: string
   mime: string
   tamanho: number
+  temLetra: boolean
   versao: number
   criadoEm: string
   url: string
@@ -181,6 +185,7 @@ export type MusicaDetalhada = MusicaNaLista & {
   cobertura: Cobertura | null
   coberturaDoMinisterio: Cobertura
   anexos: Anexo[]
+  letra: Letra | null
 }
 
 export type AchadoNoCifraClub = {
@@ -235,6 +240,55 @@ export type SugestaoApresentada = {
 export type SugestaoRepetida = { erro: string; sugestaoId: string }
 
 export type Configuracoes = { listaEsqueci: boolean; semanasDeRepeticao: number }
+
+export type TomDoCulto = {
+  valor: string
+  origem: OrigemDoTom
+  data?: string
+  ministradoPorNome?: string | null
+}
+
+export type MusicaDoCulto = {
+  id: string
+  titulo: string
+  artista: string
+  tom: TomDoCulto | null
+  vezesTocada: number
+  letra: Letra | null
+}
+
+export type TrechoDoCulto = {
+  musicaId: string
+  titulo: string
+  artista: string
+  tom: string
+  inicio: string
+  fim: string
+}
+
+export type ItemDoCulto =
+  | {
+      id: string
+      tipo: 'inteira' | 'trecho'
+      musicaId: string
+      titulo: string
+      artista: string
+      tom: string
+      inicio: string | null
+      fim: string | null
+      observacao: string
+    }
+  | { id: string; tipo: 'medley'; trechos: TrechoDoCulto[]; observacao: string; letra: Letra | null }
+
+export type EscalaDoCulto = {
+  id: string
+  data: string
+  horario: string
+  titulo: string
+  itens: ItemDoCulto[]
+}
+
+export type Pacote = { geradoEm: string; escalas: EscalaDoCulto[]; catalogo: MusicaDoCulto[] }
 
 export type MembroDetalhado = {
   id: string

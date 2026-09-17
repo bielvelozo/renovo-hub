@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { acesso } from './rotas/acesso'
 import { admin } from './rotas/admin'
 import { anexos } from './rotas/anexos'
+import { culto } from './rotas/culto'
 import { escalas } from './rotas/escalas'
 import { formacoes } from './rotas/formacoes'
 import { inicio } from './rotas/inicio'
@@ -24,6 +25,7 @@ app.route('/', formacoes)
 app.route('/', itens)
 app.route('/', musicas)
 app.route('/', anexos)
+app.route('/', culto)
 app.route('/', sugestoes)
 app.route('/', perfil)
 app.route('/', push)
