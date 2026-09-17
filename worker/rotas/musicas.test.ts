@@ -363,7 +363,7 @@ describe('listar Músicas', () => {
     await porNaEquipe('erecente', 'marcos', ['vocal'], true)
     await criarItemInteira('irecente', 'erecente', 'dono', 'F')
     await env.DB.prepare(
-      "insert into anexos (id, musica_id, nome, mime, tamanho, conteudo, versao, criado_em) values ('a1', 'rio', 'Rio.docx', 'application/octet-stream', 1, x'00', 1, '2026-09-01T00:00:00.000Z')",
+      "insert into anexos (id, musica_id, nome, mime, tamanho, conteudo, letra, versao, criado_em) values ('a1', 'rio', 'Rio.docx', 'application/octet-stream', 1, x'00', '{\"cabecalho\":[],\"blocos\":[]}', 1, '2026-09-01T00:00:00.000Z')",
     ).run()
 
     const musicas = await listar('')

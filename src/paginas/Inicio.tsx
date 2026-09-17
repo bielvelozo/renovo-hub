@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
+import { anexosDoItem } from '../api/anexos'
 import { api } from '../api/cliente'
 import type { Anexo, EscalaApresentada, EscalaResumida, InicioApresentado, PosCultoApresentado, SugestaoApresentada } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
@@ -14,7 +15,7 @@ import { LinhaDoItem } from '../componentes/LinhaDeMusica'
 import { Selo } from '../componentes/Selo'
 import { Vazio } from '../componentes/Vazio'
 import { VistoEm } from '../componentes/VistoEm'
-import { hojeEmBrasilia, musicasDoItem, nomeDaEscala, nomeDoDia, nomeDoDiaLongo } from '../dominio'
+import { hojeEmBrasilia, nomeDaEscala, nomeDoDia, nomeDoDiaLongo } from '../dominio'
 import { nomeDoMes } from '../escalas/mes'
 import { CHAVE_DE_VISITA_DAS_SUGESTOES } from '../escalas/sugestoes'
 import { mudouDesdeAVisita, visitaNaEscala } from '../escalas/visita'
@@ -97,7 +98,7 @@ export function Inicio() {
 
       {acao.erro && <p className="aviso">{acao.erro}</p>}
 
-      {escala && <RepertorioDoInicio escala={escala} anexosPorMusica={dados.anexosPorMusica} hoje={hoje} />}
+      {escala && <RepertorioDoInicio escala={escala} anexosPorDono={dados.anexosPorDono} hoje={hoje} />}
 
       {dados.pendencias.length > 0 && <Pendencias escalas={dados.pendencias} />}
 
@@ -185,11 +186,11 @@ function ProximaEscala({
 
 export function RepertorioDoInicio({
   escala,
-  anexosPorMusica,
+  anexosPorDono,
   hoje,
 }: {
   escala: EscalaApresentada
-  anexosPorMusica: Record<string, Anexo[]>
+  anexosPorDono: Record<string, Anexo[]>
   hoje: string
 }) {
   const eu = usarEuTalvez()
@@ -217,7 +218,7 @@ export function RepertorioDoInicio({
               modo="leitura"
               numero={indice + 1}
               hoje={hoje}
-              anexos={musicasDoItem(item).flatMap((musicaId) => anexosPorMusica[musicaId] ?? [])}
+              anexos={anexosDoItem(item, anexosPorDono)}
               selos={mudouDesdeAVisita(item.atualizadoEm, visita) ? <Selo variante="atencao">mudou</Selo> : undefined}
             />
           ))}

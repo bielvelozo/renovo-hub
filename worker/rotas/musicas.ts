@@ -11,7 +11,7 @@ import {
 } from '../../src/dominio'
 import type { Musica } from '../../src/dominio'
 import { exigirMembro, exigirMinistro } from '../autenticacao'
-import { lerAnexos } from '../dados/anexos'
+import { lerAnexosDoDono } from '../dados/anexos'
 import { lerContextoDoCatalogo } from '../dados/catalogo'
 import { acharNoCifraClub } from '../dados/cifraclub'
 import { carregarMinisterio } from '../dados/ministerio'
@@ -128,7 +128,7 @@ musicas.get('/api/musicas/:id', exigirMembro, async (c) => {
   return c.json({
     ...apresentarMusica(m, musica, contexto),
     cobertura: escalaId ? cobertura(m, escalaId, musica.id) : null,
-    anexos: await lerAnexos(c.env.DB, musica.id),
+    anexos: await lerAnexosDoDono(c.env.DB, { musicaId: musica.id }),
   })
 })
 

@@ -86,7 +86,7 @@ export type EscalaApresentada = {
   resumoDoRepertorio: ResumoDoRepertorio
   pendencias: Pendencia[]
   pronta: boolean
-  anexosPorMusica?: Record<string, Anexo[]>
+  anexosPorDono?: Record<string, Anexo[]>
 }
 
 export type EscalaResumida = {
@@ -115,7 +115,7 @@ export type InicioApresentado = {
   proximoCulto: EscalaApresentada | null
   pendencias: EscalaResumida[]
   posCulto: PosCultoApresentado | null
-  anexosPorMusica: Record<string, Anexo[]>
+  anexosPorDono: Record<string, Anexo[]>
   semanasDeRepeticao: number
   proximoMesVazio: string | null
 }
@@ -164,10 +164,12 @@ export type Cobertura = { ja: string[]; nunca: string[] }
 
 export type Anexo = {
   id: string
-  musicaId: string
+  musicaId: string | null
+  itemId: string | null
   nome: string
   mime: string
   tamanho: number
+  temLetra: boolean
   versao: number
   criadoEm: string
   url: string

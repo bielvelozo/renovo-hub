@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
+import { anexosDoItem } from '../api/anexos'
 import { api, textoDoErro } from '../api/cliente'
 import type { Opcoes } from '../api/cliente'
 import type { EscalaApresentada, ItemApresentado } from '../api/tipos'
@@ -25,7 +26,7 @@ import { mover } from '../componentes/ordenacao'
 import { usarOrdenacao } from '../componentes/usarOrdenacao'
 import { usarRemocaoPendente } from '../componentes/usarRemocaoPendente'
 import { VistoEm } from '../componentes/VistoEm'
-import { formatarDia, hojeEmBrasilia, musicasDoItem, nomeDaEscala, rotuloDoHorario } from '../dominio'
+import { formatarDia, hojeEmBrasilia, nomeDaEscala, rotuloDoHorario } from '../dominio'
 import {
   ministrosDaEscala,
   selosDaMemoria,
@@ -326,7 +327,7 @@ export function Repertorio({
 
   const itens = escala.itens
   const quantosMinistros = ministrosDaEscala(escala.pessoas).length
-  const anexosPorMusica = escala.anexosPorMusica ?? {}
+  const porDono = escala.anexosPorDono ?? {}
   const resumo = textoDoResumoDoRepertorio(escala.resumoDoRepertorio)
   const contagem = itens.length === 1 ? ' · 1 música' : itens.length ? ' · ' + itens.length + ' músicas' : ''
 
@@ -373,7 +374,7 @@ export function Repertorio({
                 modo={podeEditar ? 'leitura' : 'navegacao'}
                 numero={indice + 1}
                 hoje={hoje}
-                anexos={musicasDoItem(item).flatMap((musicaId) => anexosPorMusica[musicaId] ?? [])}
+                anexos={anexosDoItem(item, porDono)}
                 ref={ordenacao.linha(indice)}
                 arrastando={ordenacao.arrastando === indice}
                 aoEscolher={podeEditar ? () => abrirItem(item.id) : undefined}

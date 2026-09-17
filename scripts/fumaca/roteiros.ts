@@ -794,7 +794,7 @@ export async function roteiroDasPendencias(prova: Prova, cenario: Cenario): Prom
   )
   prova.conferir(
     'o Início traz o limite de repetição e os anexos sem outra requisição',
-    Number.isInteger(inicio.semanasDeRepeticao) && !!inicio.anexosPorMusica,
+    Number.isInteger(inicio.semanasDeRepeticao) && !!inicio.anexosPorDono,
     `${inicio.semanasDeRepeticao} semanas`,
   )
 

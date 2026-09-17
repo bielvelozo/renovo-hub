@@ -11,6 +11,7 @@
     "src/semente",
     "src/fumaca",
     "src/admin/admin.ts",
+    "src/api/anexos.ts",
     "src/api/cache.ts",
     "src/api/cliente.ts",
     "src/api/erros.ts",

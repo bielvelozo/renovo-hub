@@ -154,7 +154,20 @@ describe('LinhaDeMusica', () => {
         modo="leitura"
         trecho={{ inicio: '1:05', fim: '3:40' }}
         observacao="Entrar direto"
-        anexos={[{ id: 'a1', musicaId: 'meia-noite', nome: 'x.docx', mime: '', tamanho: 1, versao: 1, criadoEm: '', url: '/anexos/a1' }]}
+        anexos={[
+          {
+            id: 'a1',
+            musicaId: 'meia-noite',
+            itemId: null,
+            nome: 'x.docx',
+            mime: '',
+            tamanho: 1,
+            temLetra: true,
+            versao: 1,
+            criadoEm: '',
+            url: '/anexos/a1',
+          },
+        ]}
       />,
     )
 

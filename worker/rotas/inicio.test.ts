@@ -27,7 +27,7 @@ type Inicio = {
   proximoCulto: { id: string } | null
   pendencias: { id: string; pendencias: { chave: string }[]; minhasFuncoes: string[] }[]
   posCulto: { escalaId: string } | null
-  anexosPorMusica: Record<string, { id: string }[]>
+  anexosPorDono: Record<string, { id: string }[]>
   semanasDeRepeticao: number
   proximoMesVazio: string | null
 }
@@ -140,13 +140,18 @@ describe('GET /api/inicio', () => {
     await criarEscala({ id: 'outra', data: somarDias(hoje, 14) })
     await criarItemInteira('i2', 'outra', 'rio', 'E')
 
-    await criarAnexo(env.DB, 'rio', { nome: 'rio.docx', mime: 'texto', conteudo: new ArrayBuffer(4) })
+    await criarAnexo(env.DB, { musicaId: 'rio' }, {
+      nome: 'rio.docx',
+      mime: 'texto',
+      conteudo: new ArrayBuffer(4),
+      letra: { cabecalho: [], blocos: [] },
+    })
 
     const inicio = await pedir('julia')
     const item = inicio.minhaProxima?.itens[0]
 
     expect(inicio.semanasDeRepeticao).toBe(4)
-    expect(inicio.anexosPorMusica.rio).toHaveLength(1)
+    expect(inicio.anexosPorDono.rio).toHaveLength(1)
     expect(item?.atualizadoEm).toBeNull()
     expect(item?.memoria?.ultimaExecucao).toMatchObject({ escalaId: 'passada', tom: 'G' })
     expect(item?.memoria?.planejadaEm.map((p) => p.escalaId)).toEqual(['outra'])

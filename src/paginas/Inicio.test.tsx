@@ -84,25 +84,25 @@ describe('marca «mudou» no Repertório do Início', () => {
   const repertorio = escala([item('i1', '2026-09-12T10:00:00.000Z')])
 
   it('aparece pra quem ainda não abriu a Escala', () => {
-    mostrar(<RepertorioDoInicio escala={repertorio} anexosPorMusica={{}} hoje={HOJE} />)
+    mostrar(<RepertorioDoInicio escala={repertorio} anexosPorDono={{}} hoje={HOJE} />)
 
     expect(screen.getByText('mudou')).not.toBeNull()
   })
 
   it('some depois da visita, e volta quando o Item é editado de novo', () => {
     marcarVisitaNaEscala('e0913', new Date('2026-09-12T11:00:00.000Z'))
-    const { unmount } = mostrar(<RepertorioDoInicio escala={repertorio} anexosPorMusica={{}} hoje={HOJE} />)
+    const { unmount } = mostrar(<RepertorioDoInicio escala={repertorio} anexosPorDono={{}} hoje={HOJE} />)
 
     expect(screen.queryByText('mudou')).toBeNull()
 
     unmount()
-    mostrar(<RepertorioDoInicio escala={escala([item('i1', '2026-09-12T12:00:00.000Z')])} anexosPorMusica={{}} hoje={HOJE} />)
+    mostrar(<RepertorioDoInicio escala={escala([item('i1', '2026-09-12T12:00:00.000Z')])} anexosPorDono={{}} hoje={HOJE} />)
 
     expect(screen.getByText('mudou')).not.toBeNull()
   })
 
   it('nomeia o Repertório pelo dia da semana da Escala e cala quando não há música', () => {
-    mostrar(<RepertorioDoInicio escala={escala([])} anexosPorMusica={{}} hoje={HOJE} />)
+    mostrar(<RepertorioDoInicio escala={escala([])} anexosPorDono={{}} hoje={HOJE} />)
 
     expect(screen.getByText('Repertório de domingo')).not.toBeNull()
     expect(screen.getByText('O Ministro ainda não escolheu as músicas.')).not.toBeNull()

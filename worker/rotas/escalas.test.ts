@@ -279,12 +279,12 @@ describe('listar e ver', () => {
     const semMinistro = await (await pedir('/api/escalas/e1', 'julia')).json<{
       pendencias: { chave: string }[]
       pronta: boolean
-      anexosPorMusica: Record<string, unknown[]>
+      anexosPorDono: Record<string, unknown[]>
     }>()
 
     expect(semMinistro.pendencias.map((p) => p.chave)).toContain('sem-ministro')
     expect(semMinistro.pronta).toBe(false)
-    expect(semMinistro.anexosPorMusica).toEqual({})
+    expect(semMinistro.anexosPorDono).toEqual({})
   })
 
   it('Escala que não existe devolve 404', async () => {
