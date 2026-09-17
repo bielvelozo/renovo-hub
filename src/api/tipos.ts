@@ -7,6 +7,7 @@ import type {
   GrupoEquipe,
   Letra,
   Membro,
+  OrigemDoTom,
   Pendencia,
   PessoaDaEquipe,
   Planejada,
@@ -239,6 +240,55 @@ export type SugestaoApresentada = {
 export type SugestaoRepetida = { erro: string; sugestaoId: string }
 
 export type Configuracoes = { listaEsqueci: boolean; semanasDeRepeticao: number }
+
+export type TomDoCulto = {
+  valor: string
+  origem: OrigemDoTom
+  data?: string
+  ministradoPorNome?: string | null
+}
+
+export type MusicaDoCulto = {
+  id: string
+  titulo: string
+  artista: string
+  tom: TomDoCulto | null
+  vezesTocada: number
+  letra: Letra | null
+}
+
+export type TrechoDoCulto = {
+  musicaId: string
+  titulo: string
+  artista: string
+  tom: string
+  inicio: string
+  fim: string
+}
+
+export type ItemDoCulto =
+  | {
+      id: string
+      tipo: 'inteira' | 'trecho'
+      musicaId: string
+      titulo: string
+      artista: string
+      tom: string
+      inicio: string | null
+      fim: string | null
+      observacao: string
+    }
+  | { id: string; tipo: 'medley'; trechos: TrechoDoCulto[]; observacao: string; letra: Letra | null }
+
+export type EscalaDoCulto = {
+  id: string
+  data: string
+  horario: string
+  titulo: string
+  itens: ItemDoCulto[]
+}
+
+export type Pacote = { geradoEm: string; escalas: EscalaDoCulto[]; catalogo: MusicaDoCulto[] }
 
 export type MembroDetalhado = {
   id: string
