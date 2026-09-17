@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { describe, expect, it, vi } from 'vitest'
-import type { EscalaApresentada, ItemApresentado, MusicaDetalhada } from '../api/tipos'
+import type { Anexo, EscalaApresentada, ItemApresentado, MusicaDetalhada } from '../api/tipos'
 import { CorpoDaFolhaDoItem } from './FolhaDoItem'
 
 const HOJE = '2026-09-13'
@@ -78,6 +78,59 @@ const escala = (pessoas: typeof isa[]): EscalaApresentada => ({
   pronta: true,
 })
 
+const medley: ItemApresentado = {
+  id: 'i9',
+  tipo: 'medley',
+  observacao: '',
+  ministradoPor: null,
+  ministradoPorNome: null,
+  atualizadoEm: null,
+  descricao: 'Medley',
+  memoria: null,
+  trechos: [
+    {
+      musicaId: 'rio',
+      tom: 'G',
+      inicio: '0:00',
+      fim: '1:00',
+      musica,
+      link: 'https://youtu.be/v-rio',
+      memoria: { recente: false, ultimaExecucao: null, planejadaEm: [] },
+    },
+  ],
+}
+
+const doMedley: Anexo = {
+  id: 'a2',
+  musicaId: null,
+  itemId: 'i9',
+  nome: 'Medley.docx',
+  mime: '',
+  tamanho: 2048,
+  temLetra: true,
+  versao: 2,
+  criadoEm: '2026-09-12T12:00:00.000Z',
+  url: '/api/anexos/a2',
+}
+
+function mostrarMedley(anexos: Anexo[]) {
+  return render(
+    <MemoryRouter>
+      <CorpoDaFolhaDoItem
+        escala={escala([isa])}
+        item={medley}
+        musica={null}
+        ocupado={false}
+        hoje={HOJE}
+        anexos={anexos}
+        fechar={vi.fn()}
+        salvar={vi.fn()}
+        remover={vi.fn()}
+      />
+    </MemoryRouter>,
+  )
+}
+
 function mostrar(pessoas: typeof isa[], acoes: { salvar?: () => void; remover?: () => void; fechar?: () => void } = {}) {
   return render(
     <MemoryRouter>
@@ -127,6 +180,27 @@ describe('FolhaDoItem', () => {
       inicio: '1:05',
       fim: '2:30',
     })
+  })
+
+  it('no Medley sem anexo, oferece enviar a letra do medley', () => {
+    mostrarMedley([])
+
+    expect(screen.getByText('Letra do medley')).not.toBeNull()
+    expect(screen.queryByText(/letra v/)).toBeNull()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Enviar letra (Word)' }))
+
+    expect(screen.getByText('Arquivo Word (.docx, até 1 MB)')).not.toBeNull()
+  })
+
+  it('no Medley com anexo, mostra a versão e abre a folha da letra pra trocar', () => {
+    mostrarMedley([doMedley])
+
+    expect(screen.getByText('letra v2 · 12/09')).not.toBeNull()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trocar' }))
+
+    expect(screen.getByRole('button', { name: 'Enviar nova versão' })).not.toBeNull()
   })
 
   it('remove pelo botão de perigo e fecha a folha', () => {

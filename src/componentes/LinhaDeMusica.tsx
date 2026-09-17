@@ -1,6 +1,6 @@
 import type { ReactNode, Ref } from 'react'
 import { Link } from 'react-router'
-import type { Anexo, ItemApresentado, MusicaNaLista, MusicaResumida, TrechoApresentado } from '../api/tipos'
+import type { ItemApresentado, MusicaNaLista, MusicaResumida, TrechoApresentado } from '../api/tipos'
 import { formatarDia, hojeEmBrasilia, limparTitulo, tempoRelativo } from '../dominio'
 import { Icone } from '../casca/Icone'
 import { Capa } from './Capa'
@@ -29,7 +29,7 @@ type Comum = {
   selos?: ReactNode
   direita?: ReactNode
   aoEscolher?: () => void
-  anexos?: Anexo[]
+  letraEm?: string
   hoje?: string
   ref?: Ref<HTMLLIElement>
   arrastando?: boolean
@@ -48,7 +48,7 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
     selos,
     direita,
     aoEscolher,
-    anexos = [],
+    letraEm,
     hoje = hojeEmBrasilia(),
     ref,
     arrastando,
@@ -100,12 +100,12 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
         )}
         {!ehMedley && props.musica.legado && tempo === 'selo' && <Selo variante="legado">Legado</Selo>}
         {!ehMedley && props.musica.nova && tempo === 'selo' && <Selo>nova</Selo>}
-        {anexos.map((anexo) => (
-          <a key={anexo.id} className="selo neutro" href={anexo.url}>
+        {letraEm && modo !== 'escolha' && (
+          <Link className="selo neutro" to={letraEm} onClick={(evento) => evento.stopPropagation()}>
             <Icone nome="documento" />
-            letra{anexos.length > 1 ? ` v${anexo.versao}` : ''}
-          </a>
-        ))}
+            letra
+          </Link>
+        )}
         {selos}
       </span>
     </>

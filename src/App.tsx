@@ -21,6 +21,7 @@ import { Escala } from './paginas/Escala'
 import { Esqueci } from './paginas/Esqueci'
 import { Inicio } from './paginas/Inicio'
 import { Instalar } from './paginas/Instalar'
+import { LetraDoItemNaCasca } from './paginas/LetraDoItemNaCasca'
 import { LetraNaCasca } from './paginas/LetraNaCasca'
 import { Medley } from './paginas/Medley'
 import { Mes } from './paginas/Mes'
@@ -51,6 +52,7 @@ export function App() {
           <Route path="escalas/:id/equipe" element={<Equipe />} />
           <Route path="escalas/:id/adicionar" element={<Adicionar />} />
           <Route path="escalas/:id/medley" element={<Medley />} />
+          <Route path="escalas/:id/itens/:itemId/letra" element={<LetraDoItemNaCasca />} />
           <Route path="musicas" element={<Musicas />} />
           <Route path="musicas/:id" element={<Musica />} />
           <Route path="musicas/:id/letra" element={<LetraNaCasca />} />

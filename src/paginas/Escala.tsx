@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import { anexosDoItem } from '../api/anexos'
+import { chaveDoItem, temLetraNoItem } from '../api/anexos'
 import { api, textoDoErro } from '../api/cliente'
 import type { Opcoes } from '../api/cliente'
 import type { EscalaApresentada, ItemApresentado } from '../api/tipos'
@@ -383,7 +383,9 @@ export function Repertorio({
                 modo={podeEditar ? 'leitura' : 'navegacao'}
                 numero={indice + 1}
                 hoje={hoje}
-                anexos={anexosDoItem(item, porDono)}
+                letraEm={
+                  temLetraNoItem(item, porDono) ? `/escalas/${escala.id}/itens/${item.id}/letra` : undefined
+                }
                 ref={ordenacao.linha(indice)}
                 arrastando={ordenacao.arrastando === indice}
                 aoEscolher={podeEditar ? () => abrirItem(item.id) : undefined}
@@ -415,6 +417,8 @@ export function Repertorio({
           item={aberto}
           ocupado={acao.ocupado}
           hoje={hoje}
+          anexos={porDono[chaveDoItem(aberto.id)] ?? []}
+          recarregar={() => mudar(`/api/escalas/${escala.id}`, {})}
           fechar={() => abrirItem(null)}
           salvar={(corpo) =>
             mudar(`/api/escalas/${escala.id}/itens/${aberto.id}`, { metodo: 'PATCH', corpo }, 'Item salvo')

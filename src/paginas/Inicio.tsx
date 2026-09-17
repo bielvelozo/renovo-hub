@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
-import { anexosDoItem } from '../api/anexos'
+import { temLetraNoItem } from '../api/anexos'
 import { api } from '../api/cliente'
 import type { Anexo, EscalaApresentada, EscalaResumida, InicioApresentado, PosCultoApresentado, SugestaoApresentada } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
@@ -242,7 +242,9 @@ export function RepertorioDoInicio({
               modo="leitura"
               numero={indice + 1}
               hoje={hoje}
-              anexos={anexosDoItem(item, anexosPorDono)}
+              letraEm={
+                temLetraNoItem(item, anexosPorDono) ? `/escalas/${escala.id}/itens/${item.id}/letra` : undefined
+              }
               selos={mudouDesdeAVisita(item.atualizadoEm, visita) ? <Selo variante="atencao">mudou</Selo> : undefined}
             />
           ))}
