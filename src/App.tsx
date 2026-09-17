@@ -1,5 +1,10 @@
 import { Route, Routes } from 'react-router'
 import { Casca } from './casca/Casca'
+import { LetraDaMusica } from './culto/LetraDaMusica'
+import { LetraDoItem } from './culto/LetraDoItem'
+import { ModoCulto } from './culto/ModoCulto'
+import { Ordem } from './culto/Ordem'
+import { Pesquisar } from './culto/Pesquisar'
 import { Adicionar } from './paginas/Adicionar'
 import { Admin } from './paginas/Admin'
 import { Convites } from './paginas/admin/Convites'
@@ -32,6 +37,12 @@ export function App() {
         <Route path="/entrar/:token" element={<Entrar />} />
         <Route path="/esqueci" element={<Esqueci />} />
         <Route path="/instalar" element={<Instalar />} />
+        <Route path="/culto/:escalaId" element={<ModoCulto />}>
+          <Route index element={<Ordem />} />
+          <Route path="item/:itemId" element={<LetraDoItem />} />
+          <Route path="pesquisar" element={<Pesquisar />} />
+          <Route path="musica/:musicaId" element={<LetraDaMusica />} />
+        </Route>
         <Route path="/" element={<Casca />}>
           <Route index element={<Inicio />} />
           <Route path="mes" element={<Mes />} />

@@ -1,0 +1,211 @@
+/* O modo culto nasce escuro, seja qual for o tema da pessoa: o color-scheme aqui
+   faz todo light-dark() dos tokens resolver no valor escuro dentro desta subárvore. */
+.culto {
+  color-scheme: dark;
+  --grao: var(--grao-escuro);
+  --altura-das-abas: 0px;
+
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  padding: var(--seguro-alto) 0 0;
+  background-color: var(--fundo);
+  background-image: var(--grao);
+  color: var(--texto);
+}
+
+.culto .rolagem {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 16px 24px;
+}
+
+.culto:has(.rodape-de-acao) .rolagem {
+  padding-bottom: calc(var(--toque) + 40px + var(--seguro-baixo));
+}
+
+.culto .culto-parado {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.topo-do-culto {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 4px;
+}
+
+.topo-do-culto .dica {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topo-do-culto .centro {
+  text-align: center;
+}
+
+.topo-do-culto .botao.icone {
+  flex: none;
+  background: var(--superficie-alta);
+  border-radius: var(--raio-total);
+}
+
+.volta-do-culto {
+  color: var(--acento);
+  font-size: 14px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.ordem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.culto .item-do-culto {
+  padding: 0;
+  box-shadow: none;
+}
+
+.toque-do-culto {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: var(--toque);
+  padding: 12px 14px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.toque-do-culto .numero-do-culto {
+  flex: none;
+  font-size: clamp(28px, 8vw, 34px);
+  line-height: 1;
+  color: var(--texto-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.toque-do-culto .titulo {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.toque-do-culto .dica {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.culto .nota {
+  font-size: clamp(28px, 8vw, 34px);
+  line-height: 1;
+  color: var(--acento);
+}
+
+.culto .nota.grande {
+  font-size: clamp(40px, 12vw, 48px);
+}
+
+.culto .notas {
+  font-size: clamp(14px, 4vw, 18px);
+  line-height: 1;
+  color: var(--acento);
+}
+
+.culto .selo {
+  font-size: 11px;
+  padding: 2px 8px;
+}
+
+.cabecalho-da-letra {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 16px 8px;
+}
+
+.cabecalho-da-letra h1 {
+  font-size: clamp(22px, 6vw, 26px);
+}
+
+.tom-grande {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.trecho-do-culto {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding-top: 8px;
+}
+
+.trecho-do-culto + .trecho-do-culto {
+  border-top: 1px dashed var(--linha);
+}
+
+.observacao-do-culto {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-left: 3px solid var(--realce);
+  border-radius: 0 var(--raio) var(--raio) 0;
+  background: var(--superficie);
+  font-size: 14px;
+}
+
+.busca-do-culto {
+  padding: 4px 16px 0;
+}
+
+.culto .rodape-de-acao {
+  background: var(--fundo);
+  border-top: 1px solid var(--linha);
+  box-shadow: none;
+}
+
+.culto .rodape-interno .conteudo-do-botao {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Letra: vale dentro e fora do modo culto, porque a tela da Música usa o mesmo corpo. */
+.letra {
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+.letra p {
+  margin: 0 0 12px;
+}
+
+.letra .marcador {
+  margin: 16px 0 6px;
+  color: var(--realce);
+  font: 600 12px/1.4 var(--fonte-corpo);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.letra .marcador:first-child {
+  margin-top: 0;
+}
+
+.letra strong {
+  font-weight: 700;
+  color: var(--texto);
+}
