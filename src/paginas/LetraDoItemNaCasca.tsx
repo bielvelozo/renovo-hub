@@ -84,7 +84,7 @@ export function LetraDoItemNaCasca() {
 
       {item.observacao && <p className="observacao-do-culto">{item.observacao}</p>}
 
-      {letra.dados && <BarraDeLeitura />}
+      {letra.dados && <BarraDeLeitura key={itemId} />}
 
       {letra.carregando ? (
         <Esqueleto forma="paragrafo" />

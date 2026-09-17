@@ -25,6 +25,7 @@ export function LetraDoItem() {
   const { itemId = '' } = useParams()
   const navegar = useNavigate()
   const comeco = useRef<{ x: number; y: number } | null>(null)
+  const corpo = useRef<HTMLDivElement>(null)
 
   const item = escala.itens.find((candidato) => candidato.id === itemId)
   if (!item) return <Navigate to={`/culto/${escala.id}`} replace />
@@ -76,9 +77,9 @@ export function LetraDoItem() {
         {item.observacao && <p className="observacao-do-culto">{item.observacao}</p>}
       </div>
 
-      {letra && <BarraDeLeitura />}
+      {letra && <BarraDeLeitura key={itemId} rolagem={corpo} />}
 
-      <div className="rolagem" onTouchStart={comecarODeslize} onTouchEnd={terminarODeslize}>
+      <div className="rolagem" ref={corpo} onTouchStart={comecarODeslize} onTouchEnd={terminarODeslize}>
         {letra ? <CorpoDaLetra letra={letra} /> : <Vazio icone="documento">Sem letra ainda</Vazio>}
       </div>
 

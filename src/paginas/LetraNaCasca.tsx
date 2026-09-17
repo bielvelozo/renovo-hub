@@ -48,7 +48,7 @@ export function LetraNaCasca() {
         </div>
       )}
 
-      {musica.letra && <BarraDeLeitura />}
+      {musica.letra && <BarraDeLeitura key={id} />}
 
       {musica.letra ? <CorpoDaLetra letra={musica.letra} /> : <Vazio icone="documento">Sem letra ainda</Vazio>}
     </section>

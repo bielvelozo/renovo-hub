@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { Link, Navigate, useParams } from 'react-router'
 import { Vazio } from '../componentes/Vazio'
 import { BarraDeLeitura } from '../letra/BarraDeLeitura'
@@ -9,6 +10,7 @@ import { TomDaMusica } from './NotaDoTom'
 export function LetraDaMusica() {
   const { escala, catalogo } = usarCulto()
   const { musicaId = '' } = useParams()
+  const corpo = useRef<HTMLDivElement>(null)
 
   const musica = musicaDoCatalogo(catalogo, musicaId)
   if (!musica) return <Navigate to={`/culto/${escala.id}/pesquisar`} replace />
@@ -30,9 +32,9 @@ export function LetraDaMusica() {
         </p>
       </div>
 
-      {musica.letra && <BarraDeLeitura />}
+      {musica.letra && <BarraDeLeitura key={musicaId} rolagem={corpo} />}
 
-      <div className="rolagem">
+      <div className="rolagem" ref={corpo}>
         {musica.letra ? <CorpoDaLetra letra={musica.letra} /> : <Vazio icone="documento">Sem letra ainda</Vazio>}
       </div>
     </>
