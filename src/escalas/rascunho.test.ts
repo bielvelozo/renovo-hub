@@ -109,6 +109,7 @@ describe('escolha', () => {
       cobertura: null,
       coberturaDoMinisterio: { ja: [], nunca: [] },
       anexos: [],
+  letra: null,
     }
     const escolha = escolhaDoLink(resolucao(jaTem), 'https://youtu.be/v-rio')
 

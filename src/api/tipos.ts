@@ -5,6 +5,7 @@ import type {
   EstadoEscala,
   Funcao,
   GrupoEquipe,
+  Letra,
   Membro,
   Pendencia,
   PessoaDaEquipe,
@@ -183,6 +184,7 @@ export type MusicaDetalhada = MusicaNaLista & {
   cobertura: Cobertura | null
   coberturaDoMinisterio: Cobertura
   anexos: Anexo[]
+  letra: Letra | null
 }
 
 export type AchadoNoCifraClub = {

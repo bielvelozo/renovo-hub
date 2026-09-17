@@ -54,7 +54,7 @@ export function buscaNoCifraClub(musica: Pick<Musica, 'titulo'>): string {
   return 'https://www.cifraclub.com.br/?q=' + encodeURIComponent(musica.titulo)
 }
 
-export function combinaBusca(musica: Musica, termo: string): boolean {
+export function combinaBusca(musica: Pick<Musica, 'titulo' | 'artista'>, termo: string): boolean {
   const busca = normalizarTexto(termo)
   if (!busca) return true
   return normalizarTexto(musica.titulo + ' ' + musica.artista).includes(busca)

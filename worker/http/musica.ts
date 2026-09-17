@@ -88,6 +88,6 @@ export function apresentarExecucao(m: Ministerio, execucao: Execucao) {
   }
 }
 
-function nomeDe(m: Ministerio, membroId: string | null): string | null {
+export function nomeDe(m: Ministerio, membroId: string | null): string | null {
   return membroId ? membroPorId(m, membroId).nome : null
 }

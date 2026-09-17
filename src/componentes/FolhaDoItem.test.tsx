@@ -53,6 +53,7 @@ const detalhada: MusicaDetalhada = {
   cobertura: null,
   coberturaDoMinisterio: { ja: [], nunca: [] },
   anexos: [],
+  letra: null,
 }
 
 const isa = { membroId: 'isa', nome: 'Isa', funcoes: ['Vocal'], ministro: true }

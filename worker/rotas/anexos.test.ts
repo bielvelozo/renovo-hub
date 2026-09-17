@@ -1,4 +1,4 @@
-import { SELF } from 'cloudflare:test'
+import { SELF, env } from 'cloudflare:test'
 import { beforeEach, describe, expect, it } from 'vitest'
 import type { Letra } from '../../src/dominio'
 import { docxDe } from '../../src/letra/docxSintetico'
@@ -58,6 +58,31 @@ async function enviar(
     body: formulario,
     headers: { cookie: await cookieDe(quem) },
   })
+}
+
+async function enviarNoItem(bytes: Uint8Array, itemId: string, quem = 'marcos'): Promise<Response> {
+  const formulario = new FormData()
+  formulario.append('arquivo', new File([bytes as BufferSource], 'Medley.docx', { type: WORD }))
+
+  return SELF.fetch(`${RAIZ}/api/itens/${itemId}/anexos`, {
+    method: 'POST',
+    body: formulario,
+    headers: { cookie: await cookieDe(quem) },
+  })
+}
+
+async function criarMedley(id: string, escalaId: string, musicaIds: string[]): Promise<void> {
+  await env.DB.prepare('insert into itens (id, escala_id, ordem, tipo, observacao) values (?, ?, ?, ?, ?)')
+    .bind(id, escalaId, 0, 'medley', '')
+    .run()
+
+  for (const [ordem, musicaId] of musicaIds.entries()) {
+    await env.DB.prepare(
+      'insert into trechos (id, item_id, ordem, musica_id, tom, inicio, fim) values (?, ?, ?, ?, ?, ?, ?)',
+    )
+      .bind(`${id}-t${ordem}`, id, ordem, musicaId, 'D', '0:00', '1:20')
+      .run()
+  }
 }
 
 async function pedir(caminho: string, quem: string): Promise<Response> {
@@ -184,6 +209,72 @@ describe('anexos da Sequência', () => {
 
     expect(anexos).toEqual([])
     expect((await pedir('/api/escalas/nao-existe/anexos', 'julia')).status).toBe(404)
+  })
+
+  it('a Escala traz junto os anexos dos Itens Medley, com a chave do Item', async () => {
+    await criarMusica('dono', 'Dono da Minha Afeição', 'IxpWNuxGmzc')
+    await criarEscala({ id: 'e1', data: '2099-08-16' })
+    await criarItemInteira('i1', 'e1', 'rio', 'D', 1)
+    await criarMedley('i2', 'e1', ['rio', 'dono'])
+    await enviar(word('Do Rio'))
+    const doMedley = await enviarNoItem(word('Do medley'), 'i2')
+
+    expect(doMedley.status).toBe(201)
+    expect(await doMedley.json<Anexo>()).toMatchObject({ musicaId: null, itemId: 'i2', temLetra: true, versao: 1 })
+
+    const { anexos } = await (await pedir('/api/escalas/e1/anexos', 'julia')).json<{ anexos: Anexo[] }>()
+    expect(anexos.map((a) => a.itemId ?? a.musicaId).sort()).toEqual(['i2', 'rio'])
+
+    const escala = await (await pedir('/api/escalas/e1', 'julia')).json<{
+      anexosPorDono: Record<string, Anexo[]>
+    }>()
+    expect(Object.keys(escala.anexosPorDono).sort()).toEqual(['item:i2', 'rio'])
+  })
+
+  it('o Membro lê a letra do Medley pelo Item', async () => {
+    await criarEscala({ id: 'e1', data: '2099-08-16' })
+    await criarMedley('i2', 'e1', ['rio'])
+    await enviarNoItem(word('Do medley'), 'i2')
+    await enviarNoItem(word('Do medley de novo'), 'i2')
+
+    const resposta = await pedir('/api/itens/i2/letra', 'julia')
+
+    expect(resposta.status).toBe(200)
+    const { letra } = await resposta.json<{ letra: Letra | null }>()
+    expect(letra?.blocos).toEqual([
+      { tipo: 'marcador', texto: '//VERSO' },
+      { tipo: 'estrofe', linhas: [{ texto: 'Do medley de novo', forte: false }] },
+    ])
+  })
+
+  it('Item sem anexo devolve letra nula e Item que não existe devolve 404', async () => {
+    await criarEscala({ id: 'e1', data: '2099-08-16' })
+    await criarMedley('i2', 'e1', ['rio'])
+
+    expect(await (await pedir('/api/itens/i2/letra', 'julia')).json<{ letra: Letra | null }>()).toEqual({ letra: null })
+    expect((await pedir('/api/itens/nao-existe/letra', 'julia')).status).toBe(404)
+  })
+
+  it('recusa letra em Item que não é Medley e em Item que não existe', async () => {
+    await criarEscala({ id: 'e1', data: '2099-08-16' })
+    await criarItemInteira('i1', 'e1', 'rio', 'D', 1)
+
+    const naoEhMedley = await enviarNoItem(word('Do item'), 'i1')
+
+    expect(naoEhMedley.status).toBe(422)
+    expect((await naoEhMedley.json<{ erro: string }>()).erro).toBe(
+      'Só um Medley recebe letra pela Escala. Para uma música, envie na tela dela.',
+    )
+    expect((await enviarNoItem(word('Do item'), 'nao-existe')).status).toBe(404)
+  })
+
+  it('recusa Word ilegível no Medley e Membro comum no envio', async () => {
+    await criarEscala({ id: 'e1', data: '2099-08-16' })
+    await criarMedley('i2', 'e1', ['rio'])
+
+    expect((await enviarNoItem(conteudo(2048), 'i2')).status).toBe(422)
+    expect((await enviarNoItem(word('Do medley'), 'i2', 'julia')).status).toBe(403)
+    expect(await (await pedir('/api/itens/i2/letra', 'julia')).json<{ letra: Letra | null }>()).toEqual({ letra: null })
   })
 
   it('recusa quem não entrou', async () => {

@@ -4,7 +4,15 @@ import { musicasDoItem } from '../../src/dominio'
 import type { Letra } from '../../src/dominio'
 import { WordIlegivel, extrairLetra } from '../../src/letra/docx'
 import { exigirMembro, exigirMinistro } from '../autenticacao'
-import { criarAnexo, lerAnexo, lerAnexosDoDono, lerAnexosDeMusicas, lerConteudo } from '../dados/anexos'
+import {
+  criarAnexo,
+  lerAnexo,
+  lerAnexosDeItens,
+  lerAnexosDeMusicas,
+  lerAnexosDoDono,
+  lerConteudo,
+  letraMaisNova,
+} from '../dados/anexos'
 import type { DonoDoAnexo } from '../dados/anexos'
 import { carregarMinisterio } from '../dados/ministerio'
 import type { Contexto } from '../tipos'
@@ -27,14 +35,36 @@ anexos.post('/api/musicas/:id/anexos', exigirMinistro, async (c) => {
   return receberAnexo(c, { musicaId })
 })
 
+anexos.post('/api/itens/:id/anexos', exigirMinistro, async (c) => {
+  const itemId = c.req.param('id')
+  const tipo = await tipoDoItem(c.env.DB, itemId)
+  if (!tipo) return c.json({ erro: ITEM_NAO_ENCONTRADO }, 404)
+  if (tipo !== 'medley') return c.json({ erro: LETRA_SO_NO_MEDLEY }, 422)
+
+  return receberAnexo(c, { itemId })
+})
+
+anexos.get('/api/itens/:id/letra', exigirMembro, async (c) => {
+  const itemId = c.req.param('id')
+  if (!(await tipoDoItem(c.env.DB, itemId))) return c.json({ erro: ITEM_NAO_ENCONTRADO }, 404)
+
+  return c.json({ letra: await letraMaisNova(c.env.DB, { itemId }) })
+})
+
 anexos.get('/api/escalas/:id/anexos', exigirMembro, async (c) => {
   const m = await carregarMinisterio(c.env.DB, { ids: [c.req.param('id')] })
   const escala = m.escalas[0]
   if (!escala) return c.json({ erro: 'Escala não encontrada.' }, 404)
 
   const musicaIds = [...new Set(escala.itens.flatMap(musicasDoItem))]
+  const itemIds = escala.itens.filter((item) => item.tipo === 'medley').map((item) => item.id)
 
-  return c.json({ anexos: await lerAnexosDeMusicas(c.env.DB, musicaIds) })
+  const [deMusicas, deItens] = await Promise.all([
+    lerAnexosDeMusicas(c.env.DB, musicaIds),
+    lerAnexosDeItens(c.env.DB, itemIds),
+  ])
+
+  return c.json({ anexos: [...deMusicas, ...deItens] })
 })
 
 anexos.get('/api/anexos/:id', exigirMembro, async (c) => {
@@ -84,5 +114,12 @@ async function existeMusica(db: D1Database, id: string): Promise<boolean> {
   return !!linha
 }
 
+async function tipoDoItem(db: D1Database, id: string): Promise<string | null> {
+  const linha = await db.prepare('select tipo from itens where id = ?').bind(id).first<{ tipo: string }>()
+  return linha?.tipo ?? null
+}
+
 const MUSICA_NAO_ENCONTRADA = 'Música não encontrada.'
+const ITEM_NAO_ENCONTRADO = 'Item não encontrado.'
 const WORD_ILEGIVEL = 'Não consegui ler a letra desse Word. Salve como .docx e tente de novo.'
+const LETRA_SO_NO_MEDLEY = 'Só um Medley recebe letra pela Escala. Para uma música, envie na tela dela.'
