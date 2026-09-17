@@ -6,12 +6,13 @@ import { usarAcao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
 import { Cabecalho } from '../casca/Cabecalho'
 import { BuscaNoCifraClub } from '../componentes/BlocoDeTom'
-import { Botao, classesDoBotao } from '../componentes/Botao'
+import { Botao, BotaoLink, classesDoBotao } from '../componentes/Botao'
 import { Campo } from '../componentes/Campo'
 import { Capa } from '../componentes/Capa'
 import { Esqueleto } from '../componentes/Esqueleto'
 import { FaixaDeAlerta, frasesDeAlerta } from '../componentes/FaixaDeAlerta'
 import { Folha } from '../componentes/Folha'
+import { FolhaDaLetra } from '../componentes/FolhaDaLetra'
 import { FolhaDeEscolhaDeEscala } from '../componentes/FolhaDeEscolhaDeEscala'
 import { Menu } from '../componentes/Menu'
 import type { ItemDoMenu } from '../componentes/Menu'
@@ -23,7 +24,7 @@ import { formatarDia, hojeEmBrasilia, limparTitulo, tempoRelativo } from '../dom
 import type { TituloLimpo } from '../dominio'
 import { usarEu } from '../sessao/sessao'
 
-type FolhaAberta = 'editar' | 'tom' | 'arquivar' | 'apagar' | 'versoes' | 'historico' | 'escala' | null
+type FolhaAberta = 'editar' | 'tom' | 'letra' | 'arquivar' | 'apagar' | 'versoes' | 'historico' | 'escala' | null
 
 export function Musica() {
   const { id = '' } = useParams()
@@ -43,6 +44,11 @@ export function Musica() {
           ? [
               { rotulo: 'Editar título e artista', aoEscolher: () => abrirFolha('editar') },
               { rotulo: 'Tom original', aoEscolher: () => abrirFolha('tom') },
+              {
+                rotulo: musica.anexos.length ? 'Trocar letra' : 'Enviar letra (Word)',
+                icone: 'documento' as const,
+                aoEscolher: () => abrirFolha('letra'),
+              },
             ]
           : []),
         ...(musica.anexos.length > 1
@@ -122,10 +128,16 @@ export function Musica() {
         <a className={classesDoBotao({ variante: 'secundario' })} href={musica.cifraClub} target="_blank" rel="noopener">
           Cifra Club
         </a>
-        {ultimoAnexo && (
-          <a className={classesDoBotao({ variante: 'secundario' })} href={ultimoAnexo.url}>
+        {musica.letra ? (
+          <BotaoLink para={`/musicas/${musica.id}/letra`} variante="secundario">
             Letra
-          </a>
+          </BotaoLink>
+        ) : (
+          ultimoAnexo && (
+            <a className={classesDoBotao({ variante: 'secundario' })} href={ultimoAnexo.url}>
+              Letra (Word)
+            </a>
+          )
         )}
       </div>
 
@@ -173,6 +185,15 @@ export function Musica() {
       )}
       {folha === 'apagar' && (
         <FolhaDeApagar musica={musica} fechar={fecharFolha} aoConcluir={() => navegar('/musicas')} />
+      )}
+      {folha === 'letra' && (
+        <FolhaDaLetra
+          titulo={nome.titulo}
+          dono={{ musicaId: musica.id }}
+          anexos={musica.anexos}
+          fechar={fecharFolha}
+          aoEnviar={() => busca.recarregar()}
+        />
       )}
       {folha === 'versoes' && <FolhaDeVersoes anexos={musica.anexos} fechar={fecharFolha} />}
       {folha === 'historico' && (
@@ -374,7 +395,7 @@ function FolhaDeVersoes({ anexos, fechar }: { anexos: Anexo[]; fechar: () => voi
   )
 }
 
-function nomeExibido(musica: MusicaDetalhada): TituloLimpo {
+export function nomeExibido(musica: MusicaDetalhada): TituloLimpo {
   if (musica.revisar) return limparTitulo(musica.titulo, musica.artista)
   return { titulo: musica.titulo, artista: musica.artista }
 }
