@@ -191,9 +191,30 @@
   white-space: nowrap;
 }
 
+.barra-de-leitura {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 16px 8px;
+}
+
+.barra-de-leitura .cresce {
+  flex: 1;
+}
+
+.barra-de-leitura .velocidade-da-leitura {
+  min-width: 14px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.culto .barra-de-leitura {
+  border-bottom: 1px solid var(--linha);
+}
+
 /* Letra: vale dentro e fora do modo culto, porque a tela da Música usa o mesmo corpo. */
 .letra {
-  font-size: 17px;
+  font-size: var(--tamanho-da-letra, 17px);
   line-height: 1.45;
 }
 
@@ -219,7 +240,7 @@
 }
 
 .previa-da-letra {
-  max-height: calc(8 * 1.45 * 17px);
+  max-height: calc(8 * 1.45 * var(--tamanho-da-letra, 17px));
   overflow: hidden;
   mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
 }

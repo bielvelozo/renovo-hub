@@ -1,5 +1,6 @@
 import { Link, Navigate, useParams } from 'react-router'
 import { Vazio } from '../componentes/Vazio'
+import { BarraDeLeitura } from '../letra/BarraDeLeitura'
 import { CorpoDaLetra } from '../letra/CorpoDaLetra'
 import { musicaDoCatalogo } from './culto'
 import { TopoDoCulto, usarCulto } from './ModoCulto'
@@ -28,6 +29,8 @@ export function LetraDaMusica() {
           <TomDaMusica tom={musica.tom} grande />
         </p>
       </div>
+
+      {musica.letra && <BarraDeLeitura />}
 
       <div className="rolagem">
         {musica.letra ? <CorpoDaLetra letra={musica.letra} /> : <Vazio icone="documento">Sem letra ainda</Vazio>}

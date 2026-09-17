@@ -4,6 +4,7 @@ import type { ItemDoCulto, MusicaDoCulto } from '../api/tipos'
 import { Botao } from '../componentes/Botao'
 import { RodapeDeAcao } from '../componentes/RodapeDeAcao'
 import { Vazio } from '../componentes/Vazio'
+import { BarraDeLeitura } from '../letra/BarraDeLeitura'
 import { CorpoDaLetra } from '../letra/CorpoDaLetra'
 import {
   itemAnterior,
@@ -74,6 +75,8 @@ export function LetraDoItem() {
 
         {item.observacao && <p className="observacao-do-culto">{item.observacao}</p>}
       </div>
+
+      {letra && <BarraDeLeitura />}
 
       <div className="rolagem" onTouchStart={comecarODeslize} onTouchEnd={terminarODeslize}>
         {letra ? <CorpoDaLetra letra={letra} /> : <Vazio icone="documento">Sem letra ainda</Vazio>}

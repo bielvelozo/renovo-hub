@@ -1,0 +1,65 @@
+import { fireEvent, render, screen } from '@testing-library/react'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { BarraDeLeitura } from './BarraDeLeitura'
+import { CHAVE_DO_TAMANHO } from './leitura'
+
+function tamanhoAplicado(): string {
+  return document.documentElement.style.getPropertyValue('--tamanho-da-letra')
+}
+
+function botao(rotulo: string): HTMLButtonElement {
+  return screen.getByLabelText(rotulo) as HTMLButtonElement
+}
+
+beforeEach(() => {
+  localStorage.clear()
+  document.documentElement.style.removeProperty('--tamanho-da-letra')
+})
+
+describe('tamanho da letra na barra de leitura', () => {
+  it('começa nos 17 px', () => {
+    render(<BarraDeLeitura />)
+
+    expect(tamanhoAplicado()).toBe('17px')
+  })
+
+  it('aumenta a letra e guarda no aparelho', () => {
+    render(<BarraDeLeitura />)
+
+    fireEvent.click(botao('Aumentar a letra'))
+
+    expect(tamanhoAplicado()).toBe('19px')
+    expect(localStorage.getItem(CHAVE_DO_TAMANHO)).toBe('2')
+  })
+
+  it('diminui a letra', () => {
+    render(<BarraDeLeitura />)
+
+    fireEvent.click(botao('Diminuir a letra'))
+
+    expect(tamanhoAplicado()).toBe('15px')
+  })
+
+  it('volta com o tamanho guardado', () => {
+    localStorage.setItem(CHAVE_DO_TAMANHO, '5')
+
+    render(<BarraDeLeitura />)
+
+    expect(tamanhoAplicado()).toBe('26px')
+  })
+
+  it('desabilita nos limites', () => {
+    localStorage.setItem(CHAVE_DO_TAMANHO, '0')
+    const menor = render(<BarraDeLeitura />)
+
+    expect(botao('Diminuir a letra').disabled).toBe(true)
+    expect(botao('Aumentar a letra').disabled).toBe(false)
+
+    menor.unmount()
+    localStorage.setItem(CHAVE_DO_TAMANHO, '5')
+    render(<BarraDeLeitura />)
+
+    expect(botao('Aumentar a letra').disabled).toBe(true)
+    expect(botao('Diminuir a letra').disabled).toBe(false)
+  })
+})
