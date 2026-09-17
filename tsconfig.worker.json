@@ -18,6 +18,8 @@
     "src/api/tipos.ts",
     "src/api/visto.ts",
     "src/componentes/ordenacao.ts",
+    "src/culto/culto.ts",
+    "src/culto/pacote.ts",
     "src/escalas/equipe.ts",
     "src/escalas/mes.ts",
     "src/escalas/rascunho.ts",
