@@ -156,8 +156,6 @@ function CamposDaMusica({
     <>
       <CamposDoItem rascunho={rascunho} mudar={mudar} musica={musica} ministros={ministros} />
 
-      <BlocoDaLetra titulo="Letra" anexos={anexos} abrirLetra={abrirLetra} />
-
       <Botao
         largo
         disabled={ocupado || !pronto}
@@ -168,6 +166,8 @@ function CamposDaMusica({
       >
         Salvar
       </Botao>
+
+      <BlocoDaLetra titulo="Letra" guardadaEm="na Música" anexos={anexos} abrirLetra={abrirLetra} />
     </>
   )
 }
@@ -221,8 +221,6 @@ function CamposDoMedley({
         </div>
       ))}
 
-      <BlocoDaLetra titulo="Letra do medley" anexos={anexos} abrirLetra={abrirLetra} />
-
       <QuemPuxa ministros={ministros} valor={ministradoPor} aoMudar={escolherQuemPuxa} />
 
       <ObservacaoDoItem valor={observacao} aoMudar={escreverObservacao} />
@@ -237,22 +235,34 @@ function CamposDoMedley({
       >
         Salvar
       </Botao>
+
+      <BlocoDaLetra titulo="Letra do medley" guardadaEm="neste Medley" anexos={anexos} abrirLetra={abrirLetra} />
     </>
   )
 }
 
-function BlocoDaLetra({ titulo, anexos, abrirLetra }: { titulo: string; anexos: Anexo[]; abrirLetra: () => void }) {
+function BlocoDaLetra({
+  titulo,
+  guardadaEm,
+  anexos,
+  abrirLetra,
+}: {
+  titulo: string
+  guardadaEm: string
+  anexos: Anexo[]
+  abrirLetra: () => void
+}) {
   const maisNovo = anexos[0]
 
   return (
     <div className="secao">
       <h2>{titulo}</h2>
 
-      {maisNovo && (
-        <p className="dica">
-          letra v{maisNovo.versao} · {formatarDiaNumerico(maisNovo.criadoEm.slice(0, 10))}
-        </p>
-      )}
+      <p className="dica">
+        {maisNovo
+          ? `letra v${maisNovo.versao} · ${formatarDiaNumerico(maisNovo.criadoEm.slice(0, 10))} · já guardada ${guardadaEm}`
+          : 'O Word é guardado na hora do envio, sem precisar salvar.'}
+      </p>
 
       <Botao variante="secundario" onClick={abrirLetra}>
         {maisNovo ? 'Trocar' : 'Enviar letra (Word)'}

@@ -206,7 +206,7 @@ describe('FolhaDoItem', () => {
   it('no Medley com anexo, mostra a versão e abre a folha da letra pra trocar', () => {
     mostrarMedley([doMedley])
 
-    expect(screen.getByText('letra v2 · 12/09')).not.toBeNull()
+    expect(screen.getByText('letra v2 · 12/09 · já guardada neste Medley')).not.toBeNull()
 
     fireEvent.click(screen.getByRole('button', { name: 'Trocar' }))
 
