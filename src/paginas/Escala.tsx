@@ -417,7 +417,7 @@ export function Repertorio({
           item={aberto}
           ocupado={acao.ocupado}
           hoje={hoje}
-          anexos={porDono[chaveDoItem(aberto.id)] ?? []}
+          anexos={porDono[aberto.tipo === 'medley' ? chaveDoItem(aberto.id) : aberto.musicaId] ?? []}
           recarregar={() => mudar(`/api/escalas/${escala.id}`, {})}
           fechar={() => abrirItem(null)}
           salvar={(corpo) =>

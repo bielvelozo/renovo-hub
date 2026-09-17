@@ -182,6 +182,16 @@ describe('FolhaDoItem', () => {
     })
   })
 
+  it('na música sem anexo, oferece enviar a letra pela própria folha', () => {
+    mostrar([isa])
+
+    expect(screen.getByText('Letra')).not.toBeNull()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Enviar letra (Word)' }))
+
+    expect(screen.getByText('Arquivo Word (.docx, até 1 MB)')).not.toBeNull()
+  })
+
   it('no Medley sem anexo, oferece enviar a letra do medley', () => {
     mostrarMedley([])
 

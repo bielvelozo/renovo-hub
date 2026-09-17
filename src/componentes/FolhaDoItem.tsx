@@ -95,6 +95,8 @@ export function CorpoDaFolhaDoItem({
           ocupado={ocupado}
           salvar={salvar}
           aoSalvar={fechar}
+          anexos={anexos}
+          abrirLetra={() => abrirLetra(true)}
         />
       )}
 
@@ -114,7 +116,7 @@ export function CorpoDaFolhaDoItem({
       {letra && (
         <FolhaDaLetra
           titulo={tituloDoItem(item)}
-          dono={{ itemId: item.id }}
+          dono={item.tipo === 'medley' ? { itemId: item.id } : { musicaId: item.musicaId }}
           anexos={anexos}
           fechar={fecharALetra}
           aoEnviar={() => {
@@ -133,6 +135,8 @@ function CamposDaMusica({
   ocupado,
   salvar,
   aoSalvar,
+  anexos,
+  abrirLetra,
 }: {
   item: ItemApresentado
   musica: MusicaDetalhada | null
@@ -140,6 +144,8 @@ function CamposDaMusica({
   ocupado: boolean
   salvar: (corpo: Record<string, unknown>) => void
   aoSalvar: () => void
+  anexos: Anexo[]
+  abrirLetra: () => void
 }) {
   const [rascunho, escrever] = useState<Rascunho>(() => rascunhoDoItem(item, escolhaDoItem(item)))
   const mudar = (mudanca: Partial<Rascunho>) => escrever((antes) => ({ ...antes, ...mudanca }))
@@ -149,6 +155,8 @@ function CamposDaMusica({
   return (
     <>
       <CamposDoItem rascunho={rascunho} mudar={mudar} musica={musica} ministros={ministros} />
+
+      <BlocoDaLetra titulo="Letra" anexos={anexos} abrirLetra={abrirLetra} />
 
       <Botao
         largo
@@ -213,7 +221,7 @@ function CamposDoMedley({
         </div>
       ))}
 
-      <LetraDoMedley anexos={anexos} abrirLetra={abrirLetra} />
+      <BlocoDaLetra titulo="Letra do medley" anexos={anexos} abrirLetra={abrirLetra} />
 
       <QuemPuxa ministros={ministros} valor={ministradoPor} aoMudar={escolherQuemPuxa} />
 
@@ -233,12 +241,12 @@ function CamposDoMedley({
   )
 }
 
-function LetraDoMedley({ anexos, abrirLetra }: { anexos: Anexo[]; abrirLetra: () => void }) {
+function BlocoDaLetra({ titulo, anexos, abrirLetra }: { titulo: string; anexos: Anexo[]; abrirLetra: () => void }) {
   const maisNovo = anexos[0]
 
   return (
     <div className="secao">
-      <h2>Letra do medley</h2>
+      <h2>{titulo}</h2>
 
       {maisNovo && (
         <p className="dica">
