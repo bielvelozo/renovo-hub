@@ -63,6 +63,8 @@ Os Word reais que o Gabriel passou (seis, em `C:\Users\gabri\Downloads\`) **não
 - `<w:del>` ignorado, entidades desfeitas, `<w:tab/>` vira espaço;
 - documento só com marcadores → `WordIlegivel`; bytes que não são zip → `WordIlegivel`; zip sem `document.xml` → `WordIlegivel`.
 
+O ajudante `docxDe` mora em `src/letra/docxSintetico.ts` (não em arquivo de teste), porque o smoke o reaproveita (seção 8): um só gerador de `document.xml`.
+
 Script local `scripts/letra.ts` (`npm run letra -- "<caminho do .docx>"`) imprime a extração de um Word real no terminal, com `[M]` antes de marcador e `[F]` antes de linha forte, para o Gabriel conferir com os arquivos dele. Não faz parte dos testes.
 
 ## 2. Dados e API
@@ -97,7 +99,8 @@ CREATE INDEX anexos_por_item ON anexos(item_id, versao);
 
 ### `worker/dados/anexos.ts`
 
-- `Anexo` ganha `itemId: string | null`, `musicaId: string | null` e `temLetra: boolean`. A letra em si sai por `lerLetra(db, anexoId): Letra | null` e pelas leituras agregadas abaixo; não viaja nas listas.
+- `Anexo` ganha `itemId: string | null`, `musicaId: string | null` e `temLetra: boolean` (tem `letra` extraída). A letra em si sai por `lerLetra(db, anexoId): Letra | null` e pelas leituras agregadas abaixo; não viaja nas listas.
+- `MusicaNaLista.temLetra` (usado pelo filtro "Com letra" do catálogo, `src/musicas/catalogo.ts`) muda de sentido: de "tem algum anexo" para "o anexo mais novo tem letra extraída". `musicasComLetra` passa a `select musica_id from anexos where musica_id is not null and letra is not null group by musica_id`. Anexo antigo sem letra deixa de contar como "com letra" (só no local; a produção não tem anexos).
 - `criarAnexo(db, dono: { musicaId } | { itemId }, novo: NovoAnexo & { letra: Letra })`; versão é por dono.
 - `lerAnexosDoDono`, `lerAnexosDeMusicas` (existe) e `lerAnexosDeItens(db, itemIds)` (nova).
 - `anexosPorDono(anexos): Record<string, Anexo[]>` substitui `anexosPorMusica`: chave `musicaId` para música e `item:<itemId>` para Item. Os campos `anexosPorMusica` de `EscalaApresentada` e `InicioApresentado` passam a se chamar `anexosPorDono` e incluem os Itens Medley da Escala.
@@ -129,8 +132,9 @@ type EscalaDoCulto = { id: string; data: string; horario: string; titulo: string
 type Pacote = { geradoEm: string; escalas: EscalaDoCulto[]; catalogo: MusicaDoCulto[] }
 ```
 
-- `escalas`: `carregarMinisterio` com `intervalo: { de: hoje, ate: hoje + 30 dias }` (Brasília), sem canceladas, ordenadas por data; `titulo` por `tituloEscala`. Só Itens; sem Equipe.
-- `catalogo`: todas as Músicas não arquivadas, `titulo`/`artista` já limpos como em `resumirMusica`, `tom` por `ultimoTom` (regra que já existe: última Execução → `tomConhecido` → `tomOriginal`; `original` como valor de tom vem com `valor: 'original'`), `vezesTocada`, `letra` de `letrasMaisNovas.porMusica`.
+- O ministério é carregado **inteiro** (`carregarMinisterio(db)` sem filtro, como `GET /api/musicas` faz): `ultimoTom` e `vezesTocada` derivam das Execuções, que vêm das Escalas realizadas, e o filtro `intervalo` as cortaria (com a janela de hoje em diante, `origem: 'execucao'` nunca apareceria e `vezesTocada` seria sempre 0).
+- `escalas`: filtradas em memória com `data` entre hoje e hoje + 30 dias (Brasília), sem canceladas, ordenadas por data; `titulo` por `tituloEscala`. Só Itens; sem Equipe.
+- `catalogo`: todas as Músicas não arquivadas, `titulo`/`artista` já limpos como em `resumirMusica`, `tom` por `ultimoTom` (regra que já existe: última Execução → `tomConhecido` → `tomOriginal`; `original` como valor de tom vem com `valor: 'original'`), `ministradoPorNome` por `nomeDe` de `worker/http/musica.ts` (passa a ser exportado), `vezesTocada`, `letra` de `letrasMaisNovas.porMusica`.
 - A letra de uma música inteira ou trecho **não** é repetida no Item: a tela busca no `catalogo` pelo `musicaId`. O Medley leva a própria `letra` (do Item) ou `null`.
 - Tamanho esperado: 102 músicas com letra de ~3 KB dão ~300 KB. Não há paginação nem compressão além do gzip do Cloudflare.
 - Teste de rota: janela de 30 dias, cancelada fora, arquivada fora, Medley com letra do Item, música com letra, `tom` nas três origens e nulo, `geradoEm` presente.
@@ -154,13 +158,13 @@ Rotas fora da `Casca`, irmãs de `/instalar` em `App.tsx`:
 - `/culto/:escalaId/pesquisar` → `Pesquisar`
 - `/culto/:escalaId/musica/:musicaId` → `LetraDaMusica`
 
-Todas dentro de `<ModoCulto>`, componente que: envolve em `<section className="culto" data-theme="escuro">` (o tema escuro é forçado por esse atributo com `color-scheme: dark` em CSS; a `Casca` não é montada, então o interruptor do Perfil não é tocado); pede `navigator.wakeLock?.request('screen')` ao montar e a cada `visibilitychange` para visível, solta ao desmontar, e ignora qualquer erro ou ausência da API (a tipagem entra por `src/culto/wakeLock.d.ts` se o `lib.dom` do projeto não tiver); lê o pacote com `usarPacote()`; resolve a Escala por `escalaId`.
+Todas dentro de `<ModoCulto>`, componente que: envolve em `<section className="culto">` com `color-scheme: dark` no CSS, o que basta para os tokens `light-dark()` resolverem no valor escuro em toda a subárvore, seja qual for o `data-tema` da raiz (a `Casca` não é montada, então o interruptor do Perfil não é tocado; o `--grao` escuro é redefinido em `.culto`); pede `navigator.wakeLock?.request('screen')` ao montar e a cada `visibilitychange` para visível, solta ao desmontar, e ignora qualquer erro ou ausência da API (`lib.dom` já tipa `navigator.wakeLock`); lê o pacote com `usarPacote()`; resolve a Escala por `escalaId`. Fora da `Casca` não há `usarSessao`: um `401` ao baixar o pacote manda para `/esqueci`, como a `Casca` faz, em vez de cair no vazio de "sem internet".
 
 Estados do `ModoCulto` antes de qualquer tela:
 
 - Sem pacote e baixando: `Esqueleto`.
-- Sem pacote e com erro: `Vazio` "Abra o app com internet uma vez antes do culto" e `Botao` "Tentar de novo" (chama `baixar`). Botão "Sair" volta para `/`.
-- Pacote sem a Escala: tenta baixar; se depois de baixar continua sem, "Essa escala não está no pacote de hoje" com "Sair". (Acontece para Escala com mais de 30 dias ou cancelada.)
+- Sem pacote e com erro: `Vazio icone="sem-conexao"` (ícone novo em `Icone.tsx`, se não houver um que sirva) "Abra o app com internet uma vez antes do culto" e `Botao` "Tentar de novo" (chama `baixar`). Botão "Sair" volta para `/`.
+- Pacote sem a Escala: tenta baixar; se depois de baixar continua sem, `Vazio icone="calendario"` "Essa escala não está no pacote de hoje" com "Sair". (Acontece para Escala com mais de 30 dias ou cancelada.)
 - Pacote com mais de 7 dias (`idadeDoPacote`): linha `dica` no topo da Ordem, "atualizado sáb, 14h" (`formatarDia` curto + hora).
 - Erro ao baixar com pacote guardado: `aviso` discreto na Ordem, "Não consegui atualizar; mostrando o de sáb, 14h". Nunca apaga o guardado.
 
@@ -172,7 +176,7 @@ Layout B aprovado. Topo: `titulo · horário` ("Culto de Domingo · 18h") à esq
 - título (`titulo` do Item; no Medley, "Medley: A + B" com os títulos dos trechos), `dica` com artista e " · letra" quando o Item tem letra (inteira/trecho: a música tem `letra` no catálogo; Medley: `letra` do Item ou alguma música dele com letra); no Medley a dica é "2 trechos · letra";
 - coluna do tom, à direita: nota em `Fraunces` grande (`clamp(28px, 8vw, 34px)`) em `--acento`; `tom === 'original'` → `Selo` pequeno "tom original"; Medley → as notas dos trechos separadas por "·" em tamanho menor (`clamp(14px, 4vw, 18px)`), com "original" abreviado como "orig." dentro dessa linha.
 
-Sem Itens: `Vazio` "O Ministro ainda não escolheu as músicas". Rodapé fixo (`RodapeDeAcao`): `Botao` largo secundário "🔍 Pesquisar música" (ícone `busca`). Tocar num Item abre `/culto/:escalaId/item/:itemId` com push lateral (View Transitions, como as outras telas).
+Sem Itens: `Vazio icone="musica"` "O Ministro ainda não escolheu as músicas". Rodapé fixo (`RodapeDeAcao`, com o botão no slot `primario`, que é obrigatório, mas em variante secundária): `Botao` largo "Pesquisar música" com ícone `busca`. Tocar num Item abre `/culto/:escalaId/item/:itemId`; sem transição especial (o app não tem push lateral de página; a capa é o único uso de View Transitions).
 
 ### Letra do Item (`LetraDoItem.tsx`)
 
@@ -180,7 +184,7 @@ Sem Itens: `Vazio` "O Ministro ainda não escolheu as músicas". Rodapé fixo (`
 - Cabeçalho fixo (não rola): título em display, artista em `dica`; tom grande (`clamp(40px, 12vw, 48px)`) e ao lado, em `dica`, o último tom tocado quando existe: "último: G · Isa, 24/08" (do `tom` da música no catálogo, com `origem: 'execucao'`); quando o tom do Item é `original`, a nota grande é substituída por `Selo` "tom original". Observação do Ministro, quando há, em bloco com filete coral (`--realce`) e fundo `--superficie`.
 - Trecho: "1:10–2:40" em `dica` ao lado do artista.
 - Medley: no lugar de título/tom, um bloco por trecho (título, artista, minutagem, tom à direita), separados por linha tracejada; observação abaixo. A letra é a do Item; sem ela, `letrasDoMedley(item, catalogo)` concatena as letras das músicas com um marcador `{ tipo: 'marcador', texto: titulo }` antes de cada uma (músicas sem letra ficam de fora; se nenhuma tem, cai no vazio abaixo).
-- Corpo: `<CorpoDaLetra letra={…} />` (seção 5) rolando. Sem letra: `Vazio` "Sem letra ainda" (com o cabeçalho de tom em cima, que é o que o músico mais precisa).
+- Corpo: `<CorpoDaLetra letra={…} />` (seção 5) rolando. Sem letra: `Vazio icone="documento"` "Sem letra ainda" (com o cabeçalho de tom em cima, que é o que o músico mais precisa).
 - Rodapé fixo: dois `Botao`, "‹ {título anterior}" secundário e "{título seguinte} ›" primário, títulos cortados com reticências; nas pontas, o botão que não existe fica desabilitado com "‹ Início" / "Fim ›".
 - Deslize horizontal: `touchstart`/`touchend` no corpo; conta quando o deslocamento horizontal passa de 60 px e é maior que o vertical; esquerda → próxima, direita → anterior. Navegação por `navigate(..., { replace: true })` para não empilhar histórico a cada deslize.
 - `itemAnterior`/`itemSeguinte` e `letrasDoMedley` em `src/culto/culto.ts` (puro, testado).
@@ -188,7 +192,7 @@ Sem Itens: `Vazio` "O Ministro ainda não escolheu as músicas". Rodapé fixo (`
 ### Pesquisar (`Pesquisar.tsx`)
 
 - Topo: "‹ Ordem", ✕. `Busca` com foco automático e rótulo "Pesquisar música".
-- Antes de digitar: as 8 músicas com maior `vezesTocada` (desempate por título), sob o rótulo "Mais tocadas". Com texto: `combinaBusca` (título e artista, sem acento) sobre `catalogo`, até 50 resultados, ordem alfabética; nada → `Vazio` "Nenhuma música com esse texto".
+- Antes de digitar: as 8 músicas com maior `vezesTocada` (desempate por título), sob o rótulo "Mais tocadas". Com texto: `combinaBusca` (título e artista, sem acento; hoje tipada com `Musica` inteira, passa a `Pick<Musica, 'titulo' | 'artista'>`) sobre `catalogo`, até 50 resultados, ordem alfabética; nada → `Vazio icone="musica"` "Nenhuma música com esse texto".
 - Linha igual à da Ordem, sem número: título, `dica` "artista · letra", coluna do tom com a nota grande, `Selo` "tom original" ou `Selo` neutro "sem tom".
 - Tocar abre `/culto/:escalaId/musica/:musicaId`: `LetraDaMusica`, a mesma tela de letra com "‹ Pesquisa", sem "N de M", sem rodapé de anterior/próxima e sem observação (não há Item).
 
@@ -225,7 +229,7 @@ Props `{ titulo; dono: { musicaId } | { itemId }; anexos: Anexo[]; fechar; aoEnv
 
 ### Admin › Sequências
 
-Continua como atalho de lote. `FolhaDaSequencia` passa a usar `FolhaDaLetra`; a lista de versões mostra "letra lida" (`temLetra`) ou "sem letra (enviado antes)". A dica da seção no `Painel` muda para "Enviar o Word da letra de várias músicas".
+Continua como atalho de lote. `FolhaDaSequencia` passa a usar `FolhaDaLetra`; a lista de versões mostra "letra lida" (`temLetra`) ou "sem letra (enviado antes)". A dica da seção em `SECOES` (`src/admin/admin.ts`) muda para "Enviar o Word da letra de várias músicas".
 
 ## 6. Textos
 
@@ -268,7 +272,7 @@ Continua como atalho de lote. `FolhaDaSequencia` passa a usar `FolhaDaLetra`; a 
 
 - `npm run check && npm test` antes de cada commit; `npm run build && npm run smoke` antes de dar a fatia por pronta (`PORTA_DO_SMOKE=8790` se a 8787 estiver ocupada).
 - Testes exigidos: os da extração (seção 1); `src/culto/culto.test.ts` (`itemAnterior`/`itemSeguinte` nas pontas, `letrasDoMedley` com e sem letras, `maisTocadas` com desempate, busca por acento); `src/culto/pacote.test.ts` (guardar/ler com `Storage` falso, `try/catch` com `Storage` que lança, `idadeDoPacote`); rotas `anexos.test.ts` (Música e Item, 422 de Word ilegível e de Item que não é Medley, `temLetra`, `anexosPorDono` com `item:`), `culto.test.ts`, `musicas.test.ts` (`letra` no detalhe); componentes `dom`: `CorpoDaLetra`, `Ordem` (selos de tom, Medley), `LetraDoItem` (deslize troca; ponta desabilitada), `FolhaDaLetra` (prévia após envio; 422 na folha), `Inicio` (cartão só quando é hoje).
-- Smoke: o roteiro do Ministro envia um Word sintético (gerado no próprio smoke com `zipSync`, letra inventada) numa Música e num Medley, lê `/api/culto/pacote` e confere a letra dos dois; o roteiro do Membro lê o pacote e confere `catalogo` e `escalas`. O smoke passa a gerar o Word sintético em `scripts/fumaca/`, sem arquivo real no repositório.
+- Smoke: o envio de Sequência que existe hoje (`scripts/fumaca/administracao.ts`) manda bytes aleatórios e espera 201; com a extração na rota, isso vira 422. Por isso, **na fase 1**, o smoke passa a enviar um Word sintético gerado por `docxDe` (`src/letra/docxSintetico.ts`, letra inventada) e a conferir `temLetra`. Na fase 5, o roteiro do Ministro envia o Word também num Medley, lê `/api/culto/pacote` e confere a letra dos dois; o roteiro do Membro lê o pacote e confere `catalogo` e `escalas`. Nenhum Word real entra no repositório.
 - Prints a **360 px** (o S23 do Gabriel), medidos por JS, em `.scratch/culto-evidencias/` (ignorado): tema escuro do modo culto (Ordem com Medley e "tom original", Letra com observação, Letra do Medley, Pesquisar com "Mais tocadas", estado sem pacote); tema claro e escuro da `Casca` (Música com botão Letra, `/musicas/:id/letra`, `FolhaDaLetra` com prévia, `FolhaDoItem` do Medley com "Letra do medley", Início com o cartão "Culto de hoje"). Catorze prints.
 - Teste humano do Gabriel antes do deploy: abrir o app com internet, pôr o S23 em modo avião, entrar no modo culto pelo cartão do Início e percorrer as quatro telas; conferir a extração de dois dos Word reais com `npm run letra`.
 - Migration `0011` e `npm run deploy` no fim, como nas fatias anteriores; `main` sem push.
@@ -276,7 +280,7 @@ Continua como atalho de lote. `FolhaDaSequencia` passa a usar `FolhaDaLetra`; a 
 
 ## 9. Fases sugeridas para a orquestração
 
-1. **Letra**: `fflate`, tipo `Letra`, `src/letra/docx.ts` com testes e `npm run letra`; migration 0011; `worker/dados/anexos.ts` com dono e `letra`; `POST` de Música e de Item; `GET /api/itens/:id/letra`; `letra` em `GET /api/musicas/:id`; `anexosPorDono` no lugar de `anexosPorMusica` (Escala e Início). Testes de rota; smoke atual verde.
+1. **Letra**: `fflate`, tipo `Letra`, `src/letra/docx.ts` e `docxSintetico.ts` com testes e `npm run letra`; migration 0011; `worker/dados/anexos.ts` com dono, `letra` e `musicasComLetra` novo; `POST` de Música e de Item; `GET /api/itens/:id/letra`; `letra` em `GET /api/musicas/:id`; `anexosPorDono` no lugar de `anexosPorMusica` (`worker/http/responder.ts`, `worker/rotas/inicio.ts`, `Escala.tsx`, `Inicio.tsx`); smoke enviando o Word sintético. Testes de rota; smoke verde.
 2. **Pacote**: `GET /api/culto/pacote` com testes; `src/culto/pacote.ts`, `usarPacote`, download na `Casca`.
 3. **Modo culto**: `ModoCulto`, `Ordem`, `LetraDoItem`, `Pesquisar`, `LetraDaMusica`, `culto.css`, deslize, wake lock, cartão no Início, "Modo culto" no menu da Escala. Prints do tema escuro.
 4. **Letra na `Casca`**: `CorpoDaLetra`, `/musicas/:id/letra`, `FolhaDaLetra` na Música e no `FolhaDoItem` do Medley, selo "letra" abrindo `/escalas/:id/itens/:itemId/letra`, Sequências. Prints da `Casca`.
