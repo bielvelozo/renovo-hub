@@ -107,3 +107,9 @@ export type GrupoEquipe = {
   nome: string
   itens: string[]
 }
+
+export type Linha = { texto: string; forte: boolean }
+
+export type Bloco = { tipo: 'marcador'; texto: string } | { tipo: 'estrofe'; linhas: Linha[] }
+
+export type Letra = { cabecalho: string[]; blocos: Bloco[] }

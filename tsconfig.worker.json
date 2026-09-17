@@ -23,6 +23,8 @@
     "src/escalas/repertorio.ts",
     "src/escalas/sugestoes.ts",
     "src/inicio/inicio.ts",
+    "src/letra/docx.ts",
+    "src/letra/docxSintetico.ts",
     "src/musicas/catalogo.ts",
     "src/perfil/perfil.ts",
     "src/push/base64.ts",
