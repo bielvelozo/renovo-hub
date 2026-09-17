@@ -209,3 +209,9 @@
   font-weight: 700;
   color: var(--texto);
 }
+
+.previa-da-letra {
+  max-height: calc(8 * 1.45 * 17px);
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+}

@@ -1,5 +1,5 @@
 import type { EscalaDoCulto, ItemDoCulto, MusicaDoCulto, TomDoCulto } from '../api/tipos'
-import type { Bloco, Letra } from '../dominio'
+import type { Letra } from '../dominio'
 import {
   TOM_ORIGINAL,
   combinaBusca,
@@ -11,6 +11,7 @@ import {
   normalizarTexto,
   rotuloDoHorario,
 } from '../dominio'
+import { juntarLetras } from '../letra/letra'
 
 export const MAIS_TOCADAS = 8
 
@@ -60,16 +61,12 @@ export function letrasDoMedley(item: ItemDoCulto, catalogo: MusicaDoCulto[]): Le
   if (item.tipo !== 'medley') return musicaDoCatalogo(catalogo, item.musicaId)?.letra ?? null
   if (item.letra) return item.letra
 
-  const blocos: Bloco[] = []
-
-  for (const trecho of item.trechos) {
-    const letra = musicaDoCatalogo(catalogo, trecho.musicaId)?.letra
-    if (!letra) continue
-
-    blocos.push({ tipo: 'marcador', texto: trecho.titulo }, ...letra.blocos)
-  }
-
-  return blocos.length ? { cabecalho: [], blocos } : null
+  return juntarLetras(
+    item.trechos.map((trecho) => ({
+      titulo: trecho.titulo,
+      letra: musicaDoCatalogo(catalogo, trecho.musicaId)?.letra ?? null,
+    })),
+  )
 }
 
 export function maisTocadas(catalogo: MusicaDoCulto[], quantas = MAIS_TOCADAS): MusicaDoCulto[] {
