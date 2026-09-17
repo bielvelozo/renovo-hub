@@ -1,6 +1,7 @@
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { fluxosDoAdmin } from './fumaca/administracao'
+import { fluxosDoCulto } from './fumaca/culto'
 import {
   derrubarServidor,
   exigirBuild,
@@ -55,6 +56,7 @@ try {
 
   await fluxosDoMembro(prova, cenario)
   await fluxosDoAdmin(prova, cenario)
+  await fluxosDoCulto(prova, cenario)
   await fluxosDeNotificacao(prova, cenario)
 
   encerrar(prova.encerrar())
