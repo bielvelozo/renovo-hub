@@ -28,6 +28,7 @@
     "src/inicio/inicio.ts",
     "src/letra/docx.ts",
     "src/letra/docxSintetico.ts",
+    "src/letra/leitura.ts",
     "src/letra/letra.ts",
     "src/musicas/catalogo.ts",
     "src/perfil/perfil.ts",

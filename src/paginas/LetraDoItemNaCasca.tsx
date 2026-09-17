@@ -10,6 +10,7 @@ import { Vazio } from '../componentes/Vazio'
 import { TOM_ORIGINAL } from '../dominio'
 import type { Letra } from '../dominio'
 import { tituloDoItem } from '../escalas/repertorio'
+import { BarraDeLeitura } from '../letra/BarraDeLeitura'
 import { CorpoDaLetra } from '../letra/CorpoDaLetra'
 import { juntarLetras } from '../letra/letra'
 
@@ -82,6 +83,8 @@ export function LetraDoItemNaCasca() {
       )}
 
       {item.observacao && <p className="observacao-do-culto">{item.observacao}</p>}
+
+      {letra.dados && <BarraDeLeitura key={itemId} />}
 
       {letra.carregando ? (
         <Esqueleto forma="paragrafo" />

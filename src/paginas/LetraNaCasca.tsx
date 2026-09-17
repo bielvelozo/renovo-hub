@@ -5,6 +5,7 @@ import { Cabecalho } from '../casca/Cabecalho'
 import { Esqueleto } from '../componentes/Esqueleto'
 import { Selo } from '../componentes/Selo'
 import { Vazio } from '../componentes/Vazio'
+import { BarraDeLeitura } from '../letra/BarraDeLeitura'
 import { CorpoDaLetra } from '../letra/CorpoDaLetra'
 import { nomeExibido } from './Musica'
 
@@ -46,6 +47,8 @@ export function LetraNaCasca() {
           </Selo>
         </div>
       )}
+
+      {musica.letra && <BarraDeLeitura key={id} />}
 
       {musica.letra ? <CorpoDaLetra letra={musica.letra} /> : <Vazio icone="documento">Sem letra ainda</Vazio>}
     </section>

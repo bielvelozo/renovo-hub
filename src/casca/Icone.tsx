@@ -4,6 +4,7 @@ export type NomeDoIcone =
   | 'remover'
   | 'arrastar'
   | 'play'
+  | 'pausar'
   | 'documento'
   | 'sino'
   | 'sino-cortado'
@@ -40,6 +41,7 @@ const TRACOS: Record<NomeDoIcone, string[]> = {
   remover: ['M6 6l12 12', 'M18 6 6 18'],
   arrastar: [],
   play: ['M8 5.2v13.6a.6.6 0 0 0 .9.5l10.4-6.8a.6.6 0 0 0 0-1L8.9 4.7a.6.6 0 0 0-.9.5Z'],
+  pausar: ['M9.2 5.2v13.6', 'M14.8 5.2v13.6'],
   documento: ['M14 3H7a1.5 1.5 0 0 0-1.5 1.5v15A1.5 1.5 0 0 0 7 21h10a1.5 1.5 0 0 0 1.5-1.5V8L14 3Z', 'M14 3v5h4.5', 'M9 13h6', 'M9 17h6'],
   sino: ['M6 16.5v-5.7a6 6 0 0 1 12 0v5.7l1.6 2.1H4.4L6 16.5Z', 'M10 21a2 2 0 0 0 4 0'],
   'sino-cortado': ['M6 16.5v-5.7a6 6 0 0 1 9.4-4.9', 'M18 12v4.5l1.6 2.1H4.4L6 16.5', 'M10 21a2 2 0 0 0 4 0', 'M4 4l16 16'],
