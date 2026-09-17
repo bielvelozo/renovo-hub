@@ -177,7 +177,15 @@
   box-shadow: none;
 }
 
+.culto .rodape-interno > .botao {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
 .culto .rodape-interno .conteudo-do-botao {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
