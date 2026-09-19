@@ -215,10 +215,7 @@ function Formulario({
         <Capa musicas={[escolha.resumo]} grande />
       </div>
 
-      <FaixaDeAlerta
-        frases={frases}
-        nota="Pode adicionar mesmo assim: é só um lembrete para variar o repertório."
-      />
+      <FaixaDeAlerta frases={frases} />
 
       {cobertura ? (
         <p className="cobertura">{cobertura}</p>

@@ -9,7 +9,7 @@ export type MemoriaDaMusica = {
   planejadaEm: Planejada[]
 }
 
-export function FaixaDeAlerta({ frases, nota }: { frases: string[]; nota?: string }) {
+export function FaixaDeAlerta({ frases }: { frases: string[] }) {
   if (frases.length === 0) return null
 
   return (
@@ -21,7 +21,6 @@ export function FaixaDeAlerta({ frases, nota }: { frases: string[]; nota?: strin
             {frase}
           </p>
         ))}
-        {nota && <p className="nota">{nota}</p>}
       </div>
     </div>
   )

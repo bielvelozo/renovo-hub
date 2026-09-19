@@ -1337,12 +1337,6 @@ textarea.texto-longo {
   font-size: 15px;
 }
 
-.faixa-de-alerta p.nota {
-  margin-top: 4px;
-  color: var(--texto);
-  font-size: 14px;
-}
-
 .explicacao-da-aba {
   padding-inline: 4px;
 }
