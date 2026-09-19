@@ -20,8 +20,8 @@ const ABERTURA = { largura: 1170, altura: 2532, selo: 420, palavra: 96, sub: 43,
 
 const ALTURA_DAS_MAIUSCULAS = { fraunces: 0.7, inter: 0.73 }
 
-export const CORES_FIXAS: CoresDoSelo = { aneis: '#F3E9E1', barras: '#9FB8E6' }
-export const FUNDO_ESCURO = '#1F1B22'
+export const CORES_FIXAS: CoresDoSelo = { aneis: '#F2F2F0', barras: '#A9C0EA' }
+export const FUNDO_ESCURO = '#0F0F10'
 
 export type Fontes = { fraunces: Font; inter: Font }
 

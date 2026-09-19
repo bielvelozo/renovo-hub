@@ -4,6 +4,7 @@ import type { ItemDoCulto, MusicaDoCulto } from '../api/tipos'
 import { Botao } from '../componentes/Botao'
 import { RodapeDeAcao } from '../componentes/RodapeDeAcao'
 import { Vazio } from '../componentes/Vazio'
+import { TOM_ORIGINAL } from '../dominio'
 import { BarraDeLeitura } from '../letra/BarraDeLeitura'
 import { CorpoDaLetra } from '../letra/CorpoDaLetra'
 import {
@@ -106,17 +107,20 @@ function MusicaNoTopo({ item, musica }: { item: ItemDoCulto; musica: MusicaDoCul
   const ultimo = ultimoTomTocado(musica?.tom ?? null)
 
   return (
-    <>
-      <h1 className="display">{item.titulo}</h1>
-      <p className="dica">
-        {item.artista}
-        {minutagem}
-      </p>
-      <p className="tom-grande">
+    <div className="topo-da-letra">
+      <div className="cresce">
+        <h1 className="display">{item.titulo}</h1>
+        <p className="dica">
+          {item.artista}
+          {minutagem}
+        </p>
+        {ultimo && <p className="dica">{ultimo}</p>}
+      </div>
+      <p className="bloco-do-tom">
+        {item.tom !== TOM_ORIGINAL && <span className="rotulo-do-tom">Tom</span>}
         <NotaDoTom tom={item.tom} grande />
-        {ultimo && <span className="dica">{ultimo}</span>}
       </p>
-    </>
+    </div>
   )
 }
 

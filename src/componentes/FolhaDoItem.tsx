@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import type { Anexo, EscalaApresentada, ItemApresentado, MusicaDetalhada } from '../api/tipos'
 import { usarBusca } from '../api/usarBusca'
-import { formatarDiaNumerico, hojeEmBrasilia, normalizarMinutagem } from '../dominio'
+import { formatarDiaNumerico, normalizarMinutagem } from '../dominio'
 import { corpoDaEdicao, escolhaDaMusica, rascunhoDoItem, trechosNormalizados } from '../escalas/rascunho'
 import type { Rascunho, TrechoPronto } from '../escalas/rascunho'
 import { capasDoItem, ministrosDaEscala, tituloDoItem } from '../escalas/repertorio'
@@ -10,7 +10,6 @@ import { Botao } from './Botao'
 import { CamposDoItem, ObservacaoDoItem, QuemPuxa } from './CamposDoItem'
 import { Capa } from './Capa'
 import { Esqueleto } from './Esqueleto'
-import { FaixaDeAlerta, frasesDeAlerta } from './FaixaDeAlerta'
 import { Folha } from './Folha'
 import { FolhaDaLetra } from './FolhaDaLetra'
 import { SeletorDeTom } from './SeletorDeTom'
@@ -24,7 +23,6 @@ export type PropriedadesDaFolhaDoItem = {
   remover: () => void
   anexos?: Anexo[]
   recarregar?: () => void
-  hoje?: string
 }
 
 export function FolhaDoItem({ escala, item, ...resto }: PropriedadesDaFolhaDoItem) {
@@ -53,7 +51,6 @@ export function CorpoDaFolhaDoItem({
   remover,
   anexos = [],
   recarregar,
-  hoje = hojeEmBrasilia(),
 }: PropriedadesDaFolhaDoItem & { musica: MusicaDetalhada | null }) {
   const ministros = ministrosDaEscala(escala.pessoas)
   const [letra, abrirLetra] = useState(false)
@@ -75,7 +72,6 @@ export function CorpoDaFolhaDoItem({
         </span>
       </div>
 
-      {item.memoria && <FaixaDeAlerta frases={frasesDeAlerta(item.memoria, hoje)} />}
 
       {item.tipo === 'medley' ? (
         <CamposDoMedley

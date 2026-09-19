@@ -9,16 +9,19 @@ export type MemoriaDaMusica = {
   planejadaEm: Planejada[]
 }
 
-export function FaixaDeAlerta({ frases }: { frases: string[] }) {
+export function FaixaDeAlerta({ frases, nota }: { frases: string[]; nota?: string }) {
   if (frases.length === 0) return null
 
   return (
-    <div className="faixa-de-alerta">
+    <div className="faixa-de-alerta" role="status">
       <Icone nome="atencao" />
       <div>
         {frases.map((frase) => (
-          <p key={frase}>{frase}</p>
+          <p key={frase} className="frase">
+            {frase}
+          </p>
         ))}
+        {nota && <p className="nota">{nota}</p>}
       </div>
     </div>
   )

@@ -1203,10 +1203,19 @@ textarea.texto-longo {
 
 .topo-do-catalogo .segmento button {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0 2px;
+  gap: 2px;
+  min-height: 46px;
+  padding: 4px 2px;
   font-size: 13px;
+  line-height: 1.1;
+}
+
+.topo-do-catalogo .segmento .conta {
+  margin: 0;
+  font-size: 11px;
 }
 
 .chip-do-ver {
@@ -1315,12 +1324,27 @@ textarea.texto-longo {
 
 .faixa-de-alerta {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: flex-start;
-  padding: 10px 12px;
-  border-radius: var(--raio);
+  padding: 14px;
+  border-radius: var(--raio-g);
   background: var(--atencao-suave);
   color: var(--atencao);
+}
+
+.faixa-de-alerta p.frase {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.faixa-de-alerta p.nota {
+  margin-top: 4px;
+  color: var(--texto);
+  font-size: 14px;
+}
+
+.explicacao-da-aba {
+  padding-inline: 4px;
 }
 
 .faixa-de-alerta .icone {

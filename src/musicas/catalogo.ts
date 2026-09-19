@@ -17,10 +17,18 @@ export function textoDoUltimoTom(sugerido: TomSugeridoApresentado | null, hoje =
 
 export type AbaDoCatalogo = 'redescobrir' | 'recentes' | 'todas'
 
-export const ABAS_DO_CATALOGO: { valor: AbaDoCatalogo; rotulo: string }[] = [
-  { valor: 'redescobrir', rotulo: 'Redescobrir' },
-  { valor: 'recentes', rotulo: 'Recentes' },
-  { valor: 'todas', rotulo: 'Todas' },
+export const ABAS_DO_CATALOGO: { valor: AbaDoCatalogo; rotulo: string; explicacao: string }[] = [
+  {
+    valor: 'redescobrir',
+    rotulo: 'Redescobrir',
+    explicacao: 'Músicas que o ministério nunca tocou ou não toca há muito tempo. Boas para variar o repertório.',
+  },
+  {
+    valor: 'recentes',
+    rotulo: 'Recentes',
+    explicacao: 'Tocadas nas últimas semanas. Em laranja, o que pode soar repetido.',
+  },
+  { valor: 'todas', rotulo: 'Todas', explicacao: 'O catálogo inteiro, em ordem alfabética.' },
 ]
 
 export type Ver = 'todas' | 'minhas' | 'outros' | 'com-letra' | 'sugestoes'
