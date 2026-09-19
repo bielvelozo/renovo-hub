@@ -2,7 +2,6 @@
    faz todo light-dark() dos tokens resolver no valor escuro dentro desta subárvore. */
 .culto {
   color-scheme: dark;
-  --grao: var(--grao-escuro);
   --altura-das-abas: 0px;
 
   display: flex;
@@ -10,7 +9,6 @@
   height: 100dvh;
   padding: var(--seguro-alto) 0 0;
   background-color: var(--fundo);
-  background-image: var(--grao);
   color: var(--texto);
 }
 
@@ -55,8 +53,6 @@
 
 .topo-do-culto .botao.icone {
   flex: none;
-  background: var(--superficie-alta);
-  border-radius: var(--raio-total);
 }
 
 .volta-do-culto {
@@ -224,7 +220,7 @@
 
 .letra .marcador {
   margin: 16px 0 6px;
-  color: var(--realce);
+  color: var(--texto-2);
   font: 600 12px/1.4 var(--fonte-corpo);
   letter-spacing: 0.06em;
   text-transform: uppercase;

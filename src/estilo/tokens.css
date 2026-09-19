@@ -3,47 +3,49 @@
 :root {
   color-scheme: light dark;
 
-  --fundo: light-dark(#efeaec, #1f1b22);
-  --superficie: light-dark(#fbf9fa, #2a2530);
-  --superficie-alta: light-dark(#ffffff, #342e3a);
-  --linha: light-dark(#dad3d8, #443c4a);
-  --texto: light-dark(#2a2430, #f3e9e1);
-  --texto-2: light-dark(#6f6672, #b4a8a8);
+  --fundo: light-dark(#f4f4f2, #0f0f10);
+  --superficie: light-dark(#ffffff, #18181a);
+  --superficie-alta: light-dark(#ededeb, #222225);
+  --linha: light-dark(#e2e2df, #2b2b2f);
+  --texto: light-dark(#19191b, #f2f2f0);
+  --texto-2: light-dark(#5d5d64, #a3a3a8);
+  --neutro-suave: light-dark(rgb(0 0 0 / 5.5%), rgb(255 255 255 / 7%));
 
-  --acento: light-dark(#46508f, #9fb8e6);
-  --acento-forte: light-dark(#363f78, #b8cbf0);
-  --acento-suave: light-dark(#e0e3f3, #2e3550);
-  --sobre-acento: light-dark(#ffffff, #1a1620);
-  --realce: light-dark(#d8683f, #f0906a);
+  --acento: light-dark(#3a4789, #a9c0ea);
+  --acento-forte: light-dark(#2d386f, #c2d3f2);
+  --acento-suave: light-dark(#ebedf3, #2c3037);
+  --sobre-acento: light-dark(#ffffff, #0f131b);
+  --realce: light-dark(#b5502d, #eba560);
 
-  --atencao: light-dark(#b5502d, #f0906a);
-  --atencao-suave: light-dark(#f8e3da, #4a2e28);
+  --atencao: light-dark(#9a4f12, #eba560);
+  --atencao-suave: light-dark(#f5ede7, #332a23);
   --perigo: light-dark(#a8323e, #f08a93);
-  --perigo-suave: light-dark(#f9e0e3, #4a262b);
-  --sucesso: light-dark(#3e7a4f, #9ccfa8);
-  --sucesso-suave: light-dark(#dfefe3, #24392b);
+  --perigo-suave: light-dark(#f6eaec, #34272a);
+  --sucesso: light-dark(#2c6b42, #7fc79a);
+  --sucesso-suave: light-dark(#eaf0ec, #252f2b);
 
-  --realizada-fundo: light-dark(#e6e1e4, #34303a);
-  --realizada-texto: light-dark(#6f6672, #b4a8a8);
-  --cancelada-fundo: light-dark(#f9e0e3, #4a262b);
-  --cancelada-texto: light-dark(#a8323e, #f08a93);
-  --ceia-fundo: light-dark(#e9e0f3, #3a2e4d);
-  --ceia-texto: light-dark(#5b3f8a, #cfc0f5);
-  --parcial-fundo: light-dark(#f8ebd6, #45361c);
-  --parcial-texto: light-dark(#8a5a14, #f0c675);
-  --legado-fundo: light-dark(#e6e1e4, #34303a);
-  --legado-texto: light-dark(#6f6672, #b4a8a8);
+  --realizada-fundo: var(--neutro-suave);
+  --realizada-texto: var(--texto-2);
+  --cancelada-fundo: var(--perigo-suave);
+  --cancelada-texto: var(--perigo);
+  --ceia-fundo: light-dark(#ece8f3, #2b2733);
+  --ceia-texto: light-dark(#57407f, #c9bdea);
+  --parcial-fundo: var(--neutro-suave);
+  --parcial-texto: var(--texto-2);
+  --legado-fundo: var(--neutro-suave);
+  --legado-texto: var(--texto-2);
 
-  --fonte-display: 'Fraunces', Georgia, serif;
-  --fonte-corpo: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --display-eixos: 'SOFT' 100, 'WONK' 1;
+  --fonte-display: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --fonte-corpo: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --display-eixos: normal;
 
   --raio: 12px;
-  --raio-g: 20px;
+  --raio-g: 14px;
+  --raio-p: 6px;
   --raio-total: 999px;
 
-  --sombra: 0 2px 10px light-dark(rgb(42 36 48 / 8%), rgb(0 0 0 / 30%)), 0 0 0 1px var(--linha);
-  --sombra-alta: 0 -8px 30px light-dark(rgb(42 36 48 / 14%), rgb(0 0 0 / 45%));
+  --sombra: 0 0 0 1px var(--linha);
+  --sombra-alta: 0 -1px 0 var(--linha), 0 -12px 32px light-dark(rgb(25 25 27 / 8%), rgb(0 0 0 / 50%));
 
   --mola-entrada: linear(
     0,
@@ -80,9 +82,6 @@
   --largura-da-capa: clamp(84px, 24vw, 108px);
   --seguro-baixo: env(safe-area-inset-bottom, 0px);
   --seguro-alto: env(safe-area-inset-top, 0px);
-
-  --grao: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncA type='table' tableValues='0 0.04'/></feComponentTransfer></filter><rect width='100%25' height='100%25' filter='url(%23g)'/></svg>");
-  --grao-escuro: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncA type='table' tableValues='0 0.06'/></feComponentTransfer></filter><rect width='100%25' height='100%25' filter='url(%23g)'/></svg>");
 }
 
 :root[data-tema='claro'] {
@@ -91,13 +90,6 @@
 
 :root[data-tema='escuro'] {
   color-scheme: dark;
-  --grao: var(--grao-escuro);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-tema='claro']) {
-    --grao: var(--grao-escuro);
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
