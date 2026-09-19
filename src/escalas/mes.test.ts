@@ -6,6 +6,8 @@ import {
   domingosQueFaltam,
   linhasDoMes,
   mesDaData,
+  passadasEProximas,
+  resumoDoMes,
   nomeDoMes,
   rotuloDoMes,
   selosDaEscala,
@@ -106,6 +108,58 @@ describe('selos do Mês', () => {
     expect(selosDaEscala(umaEscala({ minhasFuncoes: ['Vocal', 'Teclado'] }), false)).toEqual([
       { chave: 'voce', texto: 'você · vocal, teclado', variante: 'destaque' },
     ])
+  })
+})
+
+describe('passadas e próximas', () => {
+  const escalas = [
+    umaEscala({ id: 'e1', data: '2026-09-06' }),
+    umaEscala({ id: 'e2', data: '2026-09-13' }),
+    umaEscala({ id: 'e3', data: '2026-09-20' }),
+  ]
+
+  it('separa o que já passou do que vem de hoje em diante', () => {
+    const { passadas, proximas } = passadasEProximas(linhasDoMes(escalas, '2026-09', '2026-09-13'), '2026-09-13')
+
+    expect(passadas.map((linha) => linha.tipo === 'escala' && linha.escala.id)).toEqual(['e1'])
+    expect(proximas.map((linha) => linha.tipo === 'escala' && linha.escala.id)).toEqual(['e2', 'e3'])
+  })
+
+  it('deixa o "nada hoje" abrindo as próximas', () => {
+    const { passadas, proximas } = passadasEProximas(linhasDoMes(escalas, '2026-09', '2026-09-15'), '2026-09-15')
+
+    expect(passadas).toHaveLength(2)
+    expect(proximas[0]).toEqual({ tipo: 'nada', data: '2026-09-15' })
+  })
+
+  it('não recolhe nada num mês que ainda não começou', () => {
+    const { passadas, proximas } = passadasEProximas(linhasDoMes(escalas, '2026-09', '2026-08-30'), '2026-08-30')
+
+    expect(passadas).toHaveLength(0)
+    expect(proximas).toHaveLength(3)
+  })
+
+  it('não recolhe um mês que já passou inteiro: não sobraria nada pra ver', () => {
+    const { passadas, proximas } = passadasEProximas(linhasDoMes(escalas, '2026-09', '2026-10-02'), '2026-10-02')
+
+    expect(passadas).toHaveLength(0)
+    expect(proximas).toHaveLength(3)
+  })
+})
+
+describe('resumo do Mês', () => {
+  it('conta as Escalas e em quantas a pessoa está', () => {
+    const escalas = [
+      umaEscala({ id: 'e1', minhasFuncoes: ['Guitarra'] }),
+      umaEscala({ id: 'e2' }),
+      umaEscala({ id: 'e3', minhasFuncoes: ['Vocal'] }),
+    ]
+
+    expect(resumoDoMes(escalas)).toBe('3 escalas no mês · você está em 2')
+  })
+
+  it('concorda o singular e diz quando a pessoa não está em nenhuma', () => {
+    expect(resumoDoMes([umaEscala({ id: 'e1' })])).toBe('1 escala no mês · você não está em nenhuma')
   })
 })
 

@@ -106,6 +106,25 @@ export function linhasDoMes(escalas: EscalaResumida[], mes: string, hoje: string
   return linhas
 }
 
+export function passadasEProximas(
+  linhas: LinhaDoMes[],
+  hoje: string,
+): { passadas: LinhaDoMes[]; proximas: LinhaDoMes[] } {
+  const dataDa = (linha: LinhaDoMes) => (linha.tipo === 'escala' ? linha.escala.data : linha.data)
+  const proximas = linhas.filter((linha) => dataDa(linha) >= hoje)
+
+  if (!proximas.length) return { passadas: [], proximas: linhas }
+
+  return { passadas: linhas.filter((linha) => dataDa(linha) < hoje), proximas }
+}
+
+export function resumoDoMes(escalas: EscalaResumida[]): string {
+  const minhas = escalas.filter((escala) => escala.minhasFuncoes.length > 0).length
+  const total = escalas.length === 1 ? '1 escala no mês' : `${escalas.length} escalas no mês`
+
+  return `${total} · ${minhas ? `você está em ${minhas}` : 'você não está em nenhuma'}`
+}
+
 export function textoDeCriarDomingos(quantos: number, vazio: boolean): string {
   const quais = quantos === 1 ? 'o domingo' : `os ${quantos} domingos`
   if (vazio) return `Criar ${quais}`

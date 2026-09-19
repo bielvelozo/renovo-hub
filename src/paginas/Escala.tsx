@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router'
+import { Link, useNavigate, useParams } from 'react-router'
 import { chaveDoItem, temLetraNoItem } from '../api/anexos'
 import { api, textoDoErro } from '../api/cliente'
 import type { Opcoes } from '../api/cliente'
@@ -28,14 +28,8 @@ import { usarOrdenacao } from '../componentes/usarOrdenacao'
 import { usarRemocaoPendente } from '../componentes/usarRemocaoPendente'
 import { VistoEm } from '../componentes/VistoEm'
 import { formatarDia, hojeEmBrasilia, nomeDaEscala, rotuloDoHorario } from '../dominio'
-import {
-  ministrosDaEscala,
-  selosDaMemoria,
-  selosDeEstado,
-  textoDeQuemPuxa,
-  textoDoResumoDoRepertorio,
-  tituloDoItem,
-} from '../escalas/repertorio'
+import { equipePorGrupo } from '../escalas/equipe'
+import { ministrosDaEscala, situacaoDaEscala, textoDeQuemPuxa, tituloDoItem } from '../escalas/repertorio'
 import { marcarVisitaNaEscala, mudouDesdeAVisita, visitaNaEscala } from '../escalas/visita'
 import { inicialDoNome } from '../perfil/perfil'
 import { usarEu } from '../sessao/sessao'
@@ -43,8 +37,6 @@ import { usarEu } from '../sessao/sessao'
 type Aberta = 'editar' | 'cancelar' | 'whatsapp' | null
 
 type Mudanca = (caminho: string, opcoes: Opcoes, aviso?: string) => void
-
-const MAXIMO_DE_PESSOAS = 6
 
 export function Escala() {
   const { id = '' } = useParams()
@@ -108,21 +100,34 @@ export function Escala() {
     )
   }
 
-  const selos = selosDeEstado(escala, dirige)
+  const situacao = situacaoDaEscala(escala, dirige)
   const podeEditar = dirige && escala.estado !== 'cancelada'
 
   return (
     <section className="pagina">
       {cabecalho}
 
-      {selos.length > 0 && (
-        <span className="selos faixa-de-estado">
-          {selos.map((selo) => (
-            <Selo key={selo.chave} variante={selo.variante}>
-              {selo.texto}
-            </Selo>
+      {escala.estado !== 'cancelada' && (
+        <Link to={`/culto/${id}`} className="atalho-do-culto">
+          <Icone nome="documento" />
+          <span className="cresce">
+            <span className="titulo">Abrir o modo culto</span>
+            <span className="dica">Letras e tons em tela cheia, sem internet</span>
+          </span>
+          <Icone nome="seta" />
+        </Link>
+      )}
+
+      {situacao.length > 0 && (
+        <ul className="lista cartao situacao" aria-label="Situação da escala">
+          {situacao.map((linha) => (
+            <li key={linha.chave} className={linha.tom}>
+              <Icone nome={linha.tom === 'sucesso' ? 'confirmar' : 'atencao'} />
+              <span className="cresce">{linha.texto}</span>
+              <span className="dica">{linha.detalhe}</span>
+            </li>
           ))}
-        </span>
+        </ul>
       )}
 
       {acao.erro && <p className="aviso">{acao.erro}</p>}
@@ -262,47 +267,42 @@ export function MenuDaEscala({
 }
 
 export function Equipe({ escala, euId, dirige }: { escala: EscalaApresentada; euId: string; dirige: boolean }) {
-  const [tudo, mostrarTudo] = useState(false)
-  const pessoas = tudo ? escala.pessoas : escala.pessoas.slice(0, MAXIMO_DE_PESSOAS)
-  const escondidas = escala.pessoas.length - pessoas.length
+  const grupos = equipePorGrupo(escala.pessoas)
 
   return (
     <div className="secao">
       <div className="secao-topo">
         <h2>Equipe</h2>
         {dirige && (
-          <BotaoLink para={`/escalas/${escala.id}/equipe`} variante="secundario" pequeno>
+          <BotaoLink para={`/escalas/${escala.id}/equipe`} variante="terciario" pequeno>
             {escala.pessoas.length ? 'Editar' : 'Montar'}
           </BotaoLink>
         )}
       </div>
 
       {escala.pessoas.length ? (
-        <ul className="lista cartao">
-          {pessoas.map((pessoa) => (
-            <li key={pessoa.membroId} className="pessoa">
-              <span className="inicial pequena" aria-hidden="true">
-                {inicialDoNome(pessoa.nome)}
-              </span>
-              <span className="cresce titulo">{pessoa.nome}</span>
-              <span className="selos">
-                {pessoa.membroId === euId && <Selo variante="destaque">você</Selo>}
-                {pessoa.ministro && <Selo variante="ministro">ministro</Selo>}
-                {pessoa.funcoes.map((funcao) => (
-                  <Selo key={funcao}>{funcao.toLowerCase()}</Selo>
+        <div className="cartao equipe-por-grupo">
+          {grupos.map((grupo) => (
+            <section key={grupo.chave} aria-label={grupo.nome}>
+              <h3 className="nome-do-grupo">{grupo.nome}</h3>
+              <ul className="lista">
+                {grupo.pessoas.map((pessoa) => (
+                  <li key={pessoa.membroId} className="pessoa">
+                    <span className="inicial pequena" aria-hidden="true">
+                      {inicialDoNome(pessoa.nome)}
+                    </span>
+                    <span className="cresce nome-da-pessoa">
+                      <span className="titulo">{pessoa.nome}</span>
+                      {pessoa.ministro && <Selo variante="ministro">ministro</Selo>}
+                      {pessoa.membroId === euId && <Selo variante="destaque">você</Selo>}
+                    </span>
+                    <span className="dica">{pessoa.funcoes.map((funcao) => funcao.toLowerCase()).join(', ')}</span>
+                  </li>
                 ))}
-              </span>
-            </li>
+              </ul>
+            </section>
           ))}
-
-          {escondidas > 0 && (
-            <li>
-              <Botao variante="terciario" pequeno onClick={() => mostrarTudo(true)}>
-                e mais {escondidas} <Icone nome="seta" />
-              </Botao>
-            </li>
-          )}
-        </ul>
+        </div>
       ) : (
         <p className="dica">Ninguém escalado ainda.</p>
       )}
@@ -337,7 +337,6 @@ export function Repertorio({
   const itens = escala.itens
   const quantosMinistros = ministrosDaEscala(escala.pessoas).length
   const porDono = escala.anexosPorDono ?? {}
-  const resumo = textoDoResumoDoRepertorio(escala.resumoDoRepertorio)
   const contagem = itens.length === 1 ? ' · 1 música' : itens.length ? ' · ' + itens.length + ' músicas' : ''
 
   const ordenacao = usarOrdenacao(itens.length, (de, para) => {
@@ -391,11 +390,6 @@ export function Repertorio({
                 aoEscolher={podeEditar ? () => abrirItem(item.id) : undefined}
                 selos={
                   <>
-                    {selosDaMemoria(item.memoria, hoje).map((selo) => (
-                      <Selo key={selo.chave} variante="atencao">
-                        {selo.texto}
-                      </Selo>
-                    ))}
                     {!dirige && mudouDesdeAVisita(item.atualizadoEm, visita) && <Selo variante="atencao">mudou</Selo>}
                     {puxa && <span className="dica">{puxa}</span>}
                   </>
@@ -409,7 +403,11 @@ export function Repertorio({
         <p className="dica">Nenhuma música ainda.</p>
       )}
 
-      {resumo && <p className="dica">{resumo}</p>}
+      {podeEditar && itens.length > 0 && (
+        <p className="dica legenda">
+          Toque numa música para mudar o tom, o trecho ou a observação. Arraste pela alça para reordenar.
+        </p>
+      )}
 
       {aberto && (
         <FolhaDoItem

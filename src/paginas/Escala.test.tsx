@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import { fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -88,11 +88,11 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals())
 
 describe('Repertório da Escala', () => {
-  it('conta as músicas no título e resume o repertório embaixo', () => {
+  it('conta as músicas no título e não fala de repetição depois que a música já foi escolhida', () => {
     mostrar()
 
     expect(screen.getByText('Repertório · 3 músicas')).not.toBeNull()
-    expect(screen.getByText('1 recente · 2 nunca tocadas')).not.toBeNull()
+    expect(screen.queryByText(/recente/)).toBeNull()
   })
 
   it('remove pela folha do Item com desfazer, sem chamar o servidor na hora', async () => {
@@ -119,24 +119,14 @@ describe('Repertório da Escala', () => {
 })
 
 describe('Equipe na tela da Escala', () => {
-  const pessoa = (id: string, nome: string, ministro = false) => ({
-    membroId: id,
-    nome,
-    funcoes: ['Vocal'],
-    ministro,
-  })
-
-  it('marca você e o Ministro, e esconde do sétimo em diante até o toque', () => {
+  it('marca você e o Ministro e separa a Equipe por Grupo, mostrando todo mundo', () => {
     const muita = {
       ...escala,
       pessoas: [
-        pessoa('isa', 'Isa', true),
-        pessoa('ana', 'Ana'),
-        pessoa('bia', 'Bia'),
-        pessoa('caio', 'Caio'),
-        pessoa('davi', 'Davi'),
-        pessoa('eva', 'Eva'),
-        pessoa('gabriel', 'Gabriel'),
+        { membroId: 'isa', nome: 'Isa', funcoes: ['Vocal'], ministro: true, grupo: 'vocal' as const },
+        { membroId: 'ana', nome: 'Ana', funcoes: ['Vocal'], ministro: false, grupo: 'vocal' as const },
+        { membroId: 'gabriel', nome: 'Gabriel', funcoes: ['Guitarra'], ministro: false, grupo: 'instrumentos' as const },
+        { membroId: 'davi', nome: 'Davi', funcoes: ['Som'], ministro: false, grupo: 'tecnica' as const },
       ],
     }
 
@@ -148,11 +138,12 @@ describe('Equipe na tela da Escala', () => {
 
     expect(screen.getByText('você')).not.toBeNull()
     expect(screen.getByText('ministro')).not.toBeNull()
-    expect(screen.queryByText('Gabriel')).toBeNull()
-
-    fireEvent.click(screen.getByRole('button', { name: /e mais 1/ }))
-
-    expect(screen.getByText('Gabriel')).not.toBeNull()
+    expect(screen.getAllByRole('heading', { level: 3 }).map((titulo) => titulo.textContent)).toEqual([
+      'Vocal',
+      'Músicos',
+      'Som',
+    ])
+    expect(within(screen.getByRole('region', { name: 'Músicos' })).getByText('Gabriel')).not.toBeNull()
   })
 
   it('diz que ninguém está escalado e chama o Montar', () => {

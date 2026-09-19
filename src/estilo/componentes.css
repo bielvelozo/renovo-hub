@@ -1458,6 +1458,13 @@ textarea.texto-longo {
   font-size: 13px;
 }
 
+.inicial.mini {
+  width: 26px;
+  height: 26px;
+  font-size: 11px;
+  box-shadow: 0 0 0 2px var(--superficie);
+}
+
 .escalas-do-perfil {
   padding: 0 12px;
 }

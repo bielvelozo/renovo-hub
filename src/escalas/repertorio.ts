@@ -1,9 +1,7 @@
-import type { EscalaApresentada, ItemApresentado, MemoriaApresentada, MusicaResumida } from '../api/tipos'
-import type { PessoaDaEquipe, ResumoDoRepertorio } from '../dominio'
-import { formatarDiaNumerico, tempoRelativo } from '../dominio'
+import type { EscalaApresentada, ItemApresentado, MusicaResumida } from '../api/tipos'
+import type { PessoaDaEquipe } from '../dominio'
 
 const MAXIMO_DE_CAPAS = 4
-const MAXIMO_DE_PLANEJADAS = 2
 
 export function tituloDoItem(item: ItemApresentado): string {
   return item.tipo === 'medley' ? 'Medley' : item.musica.titulo
@@ -32,66 +30,48 @@ export function videosDoRepertorio(itens: ItemApresentado[]): string[] {
   )
 }
 
-export type SeloDoEstado = {
+export type LinhaDaSituacao = {
   chave: string
   texto: string
-  variante: 'atencao' | 'sucesso' | 'cancelada'
+  detalhe: string
+  tom: 'atencao' | 'sucesso'
 }
 
-export type SeloDaMemoria = { chave: string; texto: string }
-
-export function selosDeEstado(escala: EscalaApresentada, dirige: boolean): SeloDoEstado[] {
-  if (escala.estado === 'cancelada') return [{ chave: 'cancelada', texto: 'cancelada', variante: 'cancelada' }]
+export function situacaoDaEscala(escala: EscalaApresentada, dirige: boolean): LinhaDaSituacao[] {
   if (!dirige || escala.estado !== 'agendada') return []
 
-  const selos: SeloDoEstado[] = escala.pronta
-    ? [
-        { chave: 'equipe', texto: 'equipe completa', variante: 'sucesso' },
-        { chave: 'musicas', texto: contar(escala.itens.length, 'música', 'músicas'), variante: 'sucesso' },
-      ]
-    : escala.pendencias.map((pendencia) => ({
+  const daEquipe = escala.pendencias.filter((pendencia) => pendencia.chave !== 'sem-musicas')
+
+  const equipe: LinhaDaSituacao[] = daEquipe.length
+    ? daEquipe.map((pendencia) => ({
         chave: pendencia.chave + (pendencia.funcaoId ?? ''),
-        texto: pendencia.texto,
-        variante: 'atencao' as const,
+        texto: comMaiuscula(pendencia.texto),
+        detalhe: 'na equipe',
+        tom: 'atencao',
       }))
+    : [
+        {
+          chave: 'equipe',
+          texto: 'Equipe completa',
+          detalhe: contar(escala.pessoas.length, 'pessoa', 'pessoas'),
+          tom: 'sucesso',
+        },
+      ]
 
-  if (escala.resumoDoRepertorio.recentes > 0) {
-    selos.push({
-      chave: 'recentes',
-      texto: contar(escala.resumoDoRepertorio.recentes, 'repetição recente', 'repetições recentes'),
-      variante: 'atencao',
-    })
-  }
+  const musicas: LinhaDaSituacao = escala.itens.length
+    ? {
+        chave: 'musicas',
+        texto: 'Músicas escolhidas',
+        detalhe: `${escala.itens.length} no repertório`,
+        tom: 'sucesso',
+      }
+    : { chave: 'musicas', texto: 'Sem músicas ainda', detalhe: 'no repertório', tom: 'atencao' }
 
-  return selos
+  return [...equipe, musicas]
 }
 
-export function textoDoResumoDoRepertorio(resumo: ResumoDoRepertorio): string {
-  return [
-    resumo.recentes && contar(resumo.recentes, 'recente', 'recentes'),
-    resumo.antigas && contar(resumo.antigas, 'há mais de 6 meses', 'há mais de 6 meses'),
-    resumo.nuncaTocadas && contar(resumo.nuncaTocadas, 'nunca tocada', 'nunca tocadas'),
-  ]
-    .filter(Boolean)
-    .join(' · ')
-}
-
-export function selosDaMemoria(memoria: MemoriaApresentada | null, hoje: string): SeloDaMemoria[] {
-  if (!memoria) return []
-
-  const selos: SeloDaMemoria[] = []
-  const ultima = memoria.ultimaExecucao
-
-  if (memoria.recente && ultima) {
-    const quem = ultima.ministradoPorNome ? ` · ${ultima.ministradoPorNome}` : ''
-    selos.push({ chave: 'recente', texto: `tocada ${tempoRelativo(ultima.data, hoje)}${quem}` })
-  }
-
-  for (const planejada of memoria.planejadaEm.slice(0, MAXIMO_DE_PLANEJADAS)) {
-    selos.push({ chave: planejada.escalaId, texto: `também dia ${formatarDiaNumerico(planejada.data)}` })
-  }
-
-  return selos
+function comMaiuscula(texto: string): string {
+  return texto.charAt(0).toUpperCase() + texto.slice(1)
 }
 
 export function textoDeQuemPuxa(item: ItemApresentado, quantosMinistros: number): string | null {

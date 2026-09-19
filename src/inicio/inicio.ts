@@ -3,11 +3,14 @@ import type { PessoaDaEquipe } from '../dominio'
 import { diasEntre, formatarDia, rotuloDoHorario } from '../dominio'
 import { novasDesde } from '../escalas/sugestoes'
 
-export type SeloDaEquipe = {
-  membroId: string
-  texto: string
-  variante: 'destaque' | 'ministro' | 'neutro'
+export type ResumoDaProximaEscala = {
+  suaFuncao: string | null
+  ministros: string | null
+  iniciais: string[]
+  total: number
 }
+
+const MAXIMO_DE_INICIAIS = 6
 
 export function chaveDoPosCultoFechado(escalaId: string): string {
   return `renovo:pos-culto-fechado:${escalaId}`
@@ -33,26 +36,31 @@ export function linhaDaEscala(escala: Pick<EscalaApresentada, 'data' | 'horario'
   return [formatarDia(escala.data, hoje), rotuloDoHorario(escala.horario), quandoAcontece(escala.data, hoje)].join(' · ')
 }
 
-export function selosDaEquipe(pessoas: PessoaDaEquipe[], euId: string): SeloDaEquipe[] {
-  return [...pessoas]
-    .sort((a, b) => Number(b.membroId === euId) - Number(a.membroId === euId))
-    .map((pessoa) => {
-      const funcoes = pessoa.funcoes.map((funcao) => funcao.toLowerCase())
+export function resumoDaProximaEscala(pessoas: PessoaDaEquipe[], euId: string): ResumoDaProximaEscala {
+  const eu = pessoas.find((pessoa) => pessoa.membroId === euId)
+  const ministros = pessoas.filter((pessoa) => pessoa.ministro).map((pessoa) => pessoa.nome)
 
-      if (pessoa.membroId === euId) {
-        const papeis = [...(pessoa.ministro ? ['ministro'] : []), ...funcoes]
+  return {
+    suaFuncao: eu ? funcaoDeQuemOlha(eu) : null,
+    ministros: ministros.length ? emLista(ministros) : null,
+    iniciais: pessoas.slice(0, MAXIMO_DE_INICIAIS).map((pessoa) => pessoa.nome.trim().charAt(0).toUpperCase()),
+    total: pessoas.length,
+  }
+}
 
-        return { membroId: pessoa.membroId, texto: papeis.length ? `você: ${papeis.join(', ')}` : 'você', variante: 'destaque' as const }
-      }
+function funcaoDeQuemOlha(eu: PessoaDaEquipe): string {
+  const papeis = [...(eu.ministro ? ['ministro'] : []), ...eu.funcoes.map((funcao) => funcao.toLowerCase())]
+  if (!papeis.length) return 'Escalado'
 
-      if (pessoa.ministro) return { membroId: pessoa.membroId, texto: `${pessoa.nome} · ministro`, variante: 'ministro' as const }
+  const texto = papeis.join(', ')
 
-      return {
-        membroId: pessoa.membroId,
-        texto: [pessoa.nome, funcoes.join(', ')].filter(Boolean).join(' '),
-        variante: 'neutro' as const,
-      }
-    })
+  return texto.charAt(0).toUpperCase() + texto.slice(1)
+}
+
+function emLista(nomes: string[]): string {
+  if (nomes.length === 1) return nomes[0]
+
+  return `${nomes.slice(0, -1).join(', ')} e ${nomes[nomes.length - 1]}`
 }
 
 export function textoDeSugestoesNovas(sugestoes: SugestaoApresentada[], vistasEm: string | null): string | null {

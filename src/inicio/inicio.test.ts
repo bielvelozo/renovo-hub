@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { SugestaoApresentada } from '../api/tipos'
 import type { PessoaDaEquipe } from '../dominio'
-import { linhaDaEscala, quandoAcontece, selosDaEquipe, textoDeSugestoesNovas, textoDoPosCulto } from './inicio'
+import { linhaDaEscala, quandoAcontece, resumoDaProximaEscala, textoDeSugestoesNovas, textoDoPosCulto } from './inicio'
 
 const HOJE = '2026-09-13'
 
@@ -65,38 +65,49 @@ describe('textoDoPosCulto', () => {
   })
 })
 
-describe('selosDaEquipe', () => {
+describe('resumoDaProximaEscala', () => {
   const equipe = [
     pessoa('isa', 'Isa', ['Vocal'], true),
     pessoa('ana', 'Ana', ['Vocal']),
     pessoa('gabriel', 'Gabriel', ['Guitarra']),
   ]
 
-  it('põe você na frente, com as Funções em minúscula', () => {
-    expect(selosDaEquipe(equipe, 'gabriel')).toEqual([
-      { membroId: 'gabriel', texto: 'você: guitarra', variante: 'destaque' },
-      { membroId: 'isa', texto: 'Isa · ministro', variante: 'ministro' },
-      { membroId: 'ana', texto: 'Ana vocal', variante: 'neutro' },
-    ])
-  })
-
-  it('mantém a ordem recebida de quem não é você', () => {
-    expect(selosDaEquipe(equipe, 'ninguem').map((selo) => selo.membroId)).toEqual(['isa', 'ana', 'gabriel'])
-  })
-
-  it('diz ministro junto das Funções quando quem olha dirige a Escala', () => {
-    expect(selosDaEquipe(equipe, 'isa')[0]).toEqual({
-      membroId: 'isa',
-      texto: 'você: ministro, vocal',
-      variante: 'destaque',
+  it('diz a Função de quem olha, quem ministra e as iniciais na ordem recebida', () => {
+    expect(resumoDaProximaEscala(equipe, 'gabriel')).toEqual({
+      suaFuncao: 'Guitarra',
+      ministros: 'Isa',
+      iniciais: ['I', 'A', 'G'],
+      total: 3,
     })
   })
 
-  it('aceita pessoa sem Função', () => {
+  it('não diz Função pra quem não está na Equipe', () => {
+    expect(resumoDaProximaEscala(equipe, 'ninguem').suaFuncao).toBeNull()
+  })
+
+  it('diz ministro junto das Funções quando quem olha dirige a Escala', () => {
+    expect(resumoDaProximaEscala(equipe, 'isa').suaFuncao).toBe('Ministro, vocal')
+  })
+
+  it('junta os Ministros que dividem a Escala', () => {
+    const dividida = [...equipe, pessoa('marcos', 'Marcos', ['Vocal'], true)]
+
+    expect(resumoDaProximaEscala(dividida, 'gabriel').ministros).toBe('Isa e Marcos')
+  })
+
+  it('aceita pessoa sem Função e Equipe sem Ministro', () => {
     const sozinha = [pessoa('davi', 'Davi', [])]
 
-    expect(selosDaEquipe(sozinha, 'ninguem')[0].texto).toBe('Davi')
-    expect(selosDaEquipe(sozinha, 'davi')[0].texto).toBe('você')
+    expect(resumoDaProximaEscala(sozinha, 'davi')).toEqual({ suaFuncao: 'Escalado', ministros: null, iniciais: ['D'], total: 1 })
+  })
+
+  it('corta as iniciais em seis sem perder a contagem', () => {
+    const grande = Array.from({ length: 9 }, (_, n) => pessoa('m' + n, 'Membro ' + n, ['Vocal']))
+
+    const resumo = resumoDaProximaEscala(grande, 'ninguem')
+
+    expect(resumo.iniciais).toHaveLength(6)
+    expect(resumo.total).toBe(9)
   })
 })
 

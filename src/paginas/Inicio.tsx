@@ -19,7 +19,7 @@ import { hojeEmBrasilia, nomeDaEscala, nomeDoDia, nomeDoDiaLongo, rotuloDoHorari
 import { nomeDoMes } from '../escalas/mes'
 import { CHAVE_DE_VISITA_DAS_SUGESTOES } from '../escalas/sugestoes'
 import { mudouDesdeAVisita, visitaNaEscala } from '../escalas/visita'
-import { chaveDoPosCultoFechado, linhaDaEscala, selosDaEquipe, textoDeSugestoesNovas, textoDoPosCulto } from '../inicio/inicio'
+import { chaveDoPosCultoFechado, quandoAcontece, resumoDaProximaEscala, textoDeSugestoesNovas, textoDoPosCulto } from '../inicio/inicio'
 import { usarEu, usarEuTalvez } from '../sessao/sessao'
 
 export function Inicio() {
@@ -115,7 +115,7 @@ export function CartaoDoCulto({ escala, hoje }: { escala: EscalaApresentada; hoj
   const musicas = escala.itens.length === 1 ? '1 música' : escala.itens.length + ' músicas'
 
   return (
-    <Cartao destaque className="pagina">
+    <Cartao className="pagina cartao-do-culto">
       <div className="secao-topo">
         <div className="cresce">
           <div className="titulo">Culto de hoje</div>
@@ -139,9 +139,10 @@ export function CartaoPosCulto({ posCulto, hoje }: { posCulto: PosCultoApresenta
   return (
     <Cartao className="pagina pos-culto">
       <div className="secao-topo">
+        <Icone nome="confirmar" />
         <div className="cresce">
           <div className="titulo">{textoDoPosCulto(posCulto, hoje)}</div>
-          <div className="dica">Tocaram todas? Algum tom mudou?</div>
+          <div className="dica">O histórico já foi salvo. Só ajuste se alguma música ou tom mudou na hora.</div>
         </div>
         <Botao
           variante="icone"
@@ -154,8 +155,8 @@ export function CartaoPosCulto({ posCulto, hoje }: { posCulto: PosCultoApresenta
         />
       </div>
       <div>
-        <BotaoLink para={`/escalas/${posCulto.escalaId}`} variante="secundario" pequeno>
-          Ajustar
+        <BotaoLink para={`/escalas/${posCulto.escalaId}`} variante="terciario" pequeno>
+          Ajustar o que foi tocado
         </BotaoLink>
       </div>
     </Cartao>
@@ -173,36 +174,61 @@ function ProximaEscala({
   euId: string
   hoje: string
 }) {
-  const selos = selosDaEquipe(escala.pessoas, minha ? euId : '')
+  const resumo = resumoDaProximaEscala(escala.pessoas, minha ? euId : '')
 
   return (
     <div className="secao">
       <h2>{minha ? 'Sua próxima escala' : 'Próximo culto'}</h2>
 
-      <Cartao destaque className="pagina">
-        {!minha && <p className="dica">Você não está em nenhuma escala agendada</p>}
-
-        <div className="secao-topo">
+      <Cartao className="proxima-escala">
+        <div className="topo-da-proxima">
+          <span className="dia destaque">
+            <b>{Number(escala.data.slice(8))}</b>
+            <span>{nomeDoDia(escala.data)}</span>
+          </span>
           <div className="cresce">
-            <div className="titulo">{nomeDaEscala(escala)}</div>
-            <div className="dica">{linhaDaEscala(escala, hoje)}</div>
+            <div className="titulo-do-cartao">{nomeDaEscala(escala)}</div>
+            <div className="dica">
+              {rotuloDoHorario(escala.horario)} · {quandoAcontece(escala.data, hoje)}
+            </div>
           </div>
-          <BotaoLink para={`/escalas/${escala.id}`} variante="secundario" pequeno>
-            Abrir
-          </BotaoLink>
         </div>
 
-        {selos.length ? (
-          <span className="selos">
-            {selos.map((selo) => (
-              <Selo key={selo.membroId} variante={selo.variante}>
-                {selo.texto}
-              </Selo>
-            ))}
-          </span>
-        ) : (
-          <p className="dica">Ninguém escalado ainda</p>
-        )}
+        <dl className="fatos">
+          <div>
+            <dt>{minha ? 'Sua função' : 'Você'}</dt>
+            <dd className={minha ? 'forte' : undefined}>{resumo.suaFuncao ?? 'não está nesta escala'}</dd>
+          </div>
+          {resumo.ministros && (
+            <div>
+              <dt>Ministro</dt>
+              <dd>{resumo.ministros}</dd>
+            </div>
+          )}
+          <div>
+            <dt>Equipe</dt>
+            <dd>
+              {resumo.total ? (
+                <>
+                  <span className="pilha-de-iniciais" aria-hidden="true">
+                    {resumo.iniciais.map((inicial, posicao) => (
+                      <span key={posicao} className="inicial mini">
+                        {inicial}
+                      </span>
+                    ))}
+                  </span>
+                  <span className="dica">{resumo.total === 1 ? '1 pessoa' : `${resumo.total} pessoas`}</span>
+                </>
+              ) : (
+                <span className="dica">Ninguém escalado ainda</span>
+              )}
+            </dd>
+          </div>
+        </dl>
+
+        <BotaoLink para={`/escalas/${escala.id}`} largo>
+          Abrir escala
+        </BotaoLink>
       </Cartao>
     </div>
   )
@@ -225,7 +251,7 @@ export function RepertorioDoInicio({
   return (
     <div className="secao">
       <div className="secao-topo">
-        <h2>Repertório de {nomeDoDiaLongo(escala.data)}</h2>
+        <h2>Repertório · {nomeDoDiaLongo(escala.data)}</h2>
         {escala.itens.length > 0 && (
           <Botao variante="terciario" pequeno icone="play" onClick={() => abrirPlaylist(true)}>
             Ouvir tudo
@@ -267,7 +293,7 @@ function Pendencias({ escalas }: { escalas: EscalaResumida[] }) {
   return (
     <div className="secao">
       <div className="secao-topo">
-        <h2>Pendências · próximas 4 semanas</h2>
+        <h2>Precisa de atenção · 4 semanas</h2>
         <BotaoLink para="/mes" variante="terciario" pequeno>
           Mês <Icone nome="seta" />
         </BotaoLink>
@@ -283,14 +309,12 @@ function Pendencias({ escalas }: { escalas: EscalaResumida[] }) {
               </span>
               <span className="cresce">
                 <span className="titulo">{nomeDaEscala(escala)}</span>
-                <span className="selos">
-                  {escala.pendencias.map((pendencia) => (
-                    <Selo key={pendencia.chave + (pendencia.funcaoId ?? '')} variante="atencao">
-                      {pendencia.texto}
-                    </Selo>
-                  ))}
+                <span className="estado atencao">
+                  <Icone nome="atencao" />
+                  {escala.pendencias.map((pendencia) => pendencia.texto).join(' · ')}
                 </span>
               </span>
+              <Icone nome="seta" />
             </Link>
           </li>
         ))}
