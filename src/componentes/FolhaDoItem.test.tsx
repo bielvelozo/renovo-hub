@@ -121,7 +121,6 @@ function mostrarMedley(anexos: Anexo[]) {
         item={medley}
         musica={null}
         ocupado={false}
-        hoje={HOJE}
         anexos={anexos}
         fechar={vi.fn()}
         salvar={vi.fn()}
@@ -139,7 +138,6 @@ function mostrar(pessoas: typeof isa[], acoes: { salvar?: () => void; remover?: 
         item={item}
         musica={detalhada}
         ocupado={false}
-        hoje={HOJE}
         fechar={acoes.fechar ?? vi.fn()}
         salvar={acoes.salvar ?? vi.fn()}
         remover={acoes.remover ?? vi.fn()}

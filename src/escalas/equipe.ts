@@ -1,5 +1,21 @@
-import { resumoDosGrupos, tempoRelativo } from '../dominio'
-import type { EntradaEquipe, Funcao, Membro, Grupo } from '../dominio'
+import { GRUPOS, resumoDosGrupos, tempoRelativo } from '../dominio'
+import type { EntradaEquipe, Funcao, Membro, Grupo, PessoaDaEquipe } from '../dominio'
+
+export type GrupoDePessoas = { chave: Grupo | 'sem-funcao'; nome: string; pessoas: PessoaDaEquipe[] }
+
+const NOMES_DOS_GRUPOS: Record<Grupo, string> = { vocal: 'Vocal', instrumentos: 'Músicos', tecnica: 'Som' }
+
+export function equipePorGrupo(pessoas: PessoaDaEquipe[]): GrupoDePessoas[] {
+  const grupos: GrupoDePessoas[] = GRUPOS.map((grupo) => ({
+    chave: grupo,
+    nome: NOMES_DOS_GRUPOS[grupo],
+    pessoas: pessoas.filter((pessoa) => pessoa.grupo === grupo),
+  }))
+
+  grupos.push({ chave: 'sem-funcao', nome: 'Sem função', pessoas: pessoas.filter((pessoa) => !pessoa.grupo) })
+
+  return grupos.filter((grupo) => grupo.pessoas.length > 0)
+}
 
 export type ChaveDaSecao = 'vocal' | 'musicos' | 'som'
 

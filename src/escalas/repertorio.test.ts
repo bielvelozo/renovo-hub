@@ -5,10 +5,8 @@ import {
   ministrosDaEscala,
   padraoDeQuemPuxa,
   resumoDoItem,
-  selosDaMemoria,
-  selosDeEstado,
+  situacaoDaEscala,
   textoDeQuemPuxa,
-  textoDoResumoDoRepertorio,
   tituloDoItem,
   videosDoRepertorio,
 } from './repertorio'
@@ -171,77 +169,47 @@ const escala = (mudancas: Partial<EscalaApresentada> = {}): EscalaApresentada =>
   ...mudancas,
 })
 
-describe('selosDeEstado', () => {
-  it('diz que está pronta com a contagem de músicas', () => {
-    expect(selosDeEstado(escala(), true).map((selo) => selo.texto)).toEqual(['equipe completa', '1 música'])
-  })
+describe('situacaoDaEscala', () => {
+  const gente = [
+    { membroId: 'isa', nome: 'Isa', funcoes: ['Vocal'], ministro: true },
+    { membroId: 'ana', nome: 'Ana', funcoes: ['Vocal'], ministro: false },
+  ]
 
-  it('troca o pronta pelas pendências', () => {
-    const comPendencias = escala({
-      pronta: false,
-      pendencias: [
-        { chave: 'sem-ministro', texto: 'sem ministro' },
-        { chave: 'falta-funcao', texto: 'faltam 2 vocais', funcaoId: 'vocal' },
-      ],
-    })
-
-    expect(selosDeEstado(comPendencias, true).map((selo) => selo.texto)).toEqual(['sem ministro', 'faltam 2 vocais'])
-  })
-
-  it('acrescenta as repetições recentes', () => {
-    const comRepeticao = escala({ resumoDoRepertorio: { recentes: 1, antigas: 0, nuncaTocadas: 0, total: 1 } })
-
-    expect(selosDeEstado(comRepeticao, true).map((selo) => selo.texto)).toContain('1 repetição recente')
-  })
-
-  it('cala pro Membro e na Escala realizada, menos quando está cancelada', () => {
-    expect(selosDeEstado(escala(), false)).toEqual([])
-    expect(selosDeEstado(escala({ estado: 'realizada' }), true)).toEqual([])
-    expect(selosDeEstado(escala({ estado: 'cancelada' }), false).map((selo) => selo.texto)).toEqual(['cancelada'])
-  })
-})
-
-describe('textoDoResumoDoRepertorio', () => {
-  it('omite as categorias zeradas', () => {
-    expect(textoDoResumoDoRepertorio({ recentes: 2, antigas: 2, nuncaTocadas: 1, total: 5 })).toBe(
-      '2 recentes · 2 há mais de 6 meses · 1 nunca tocada',
-    )
-    expect(textoDoResumoDoRepertorio({ recentes: 1, antigas: 0, nuncaTocadas: 0, total: 3 })).toBe('1 recente')
-    expect(textoDoResumoDoRepertorio({ recentes: 0, antigas: 0, nuncaTocadas: 0, total: 0 })).toBe('')
-  })
-})
-
-describe('selosDaMemoria', () => {
-  const ultima = {
-    escalaId: 'e0830',
-    data: '2026-08-31',
-    tom: 'D',
-    parcial: false,
-    ministradoPor: 'marcos',
-    ministradoPorNome: 'Marcos',
-  }
-
-  it('mostra a repetição recente com quem puxou e as Escalas planejadas, no máximo duas', () => {
-    const memoria = {
-      recente: true,
-      ultimaExecucao: ultima,
-      planejadaEm: [
-        { escalaId: 'e0920', data: '2026-09-20', titulo: 'Culto', ministros: ['Marcos'] },
-        { escalaId: 'e0927', data: '2026-09-27', titulo: 'Culto', ministros: [] },
-        { escalaId: 'e1004', data: '2026-10-04', titulo: 'Culto', ministros: [] },
-      ],
-    }
-
-    expect(selosDaMemoria(memoria, '2026-09-13').map((selo) => selo.texto)).toEqual([
-      'tocada há 13 dias · Marcos',
-      'também dia 20/09',
-      'também dia 27/09',
+  it('diz equipe completa e músicas escolhidas, com as contagens ao lado', () => {
+    expect(situacaoDaEscala(escala({ pessoas: gente }), true)).toEqual([
+      { chave: 'equipe', texto: 'Equipe completa', detalhe: '2 pessoas', tom: 'sucesso' },
+      { chave: 'musicas', texto: 'Músicas escolhidas', detalhe: '1 no repertório', tom: 'sucesso' },
     ])
   })
 
-  it('cala quando não é recente e não há Medley sem memória', () => {
-    expect(selosDaMemoria({ recente: false, ultimaExecucao: ultima, planejadaEm: [] }, '2026-09-13')).toEqual([])
-    expect(selosDaMemoria(null, '2026-09-13')).toEqual([])
+  it('troca a equipe completa pelo que falta nela e avisa do repertório vazio', () => {
+    const comPendencias = escala({
+      pronta: false,
+      itens: [],
+      pendencias: [
+        { chave: 'sem-ministro', texto: 'sem ministro' },
+        { chave: 'falta-funcao', texto: 'faltam 2 vocais', funcaoId: 'vocal' },
+        { chave: 'sem-musicas', texto: 'sem músicas' },
+      ],
+    })
+
+    expect(situacaoDaEscala(comPendencias, true).map((linha) => [linha.texto, linha.tom])).toEqual([
+      ['Sem ministro', 'atencao'],
+      ['Faltam 2 vocais', 'atencao'],
+      ['Sem músicas ainda', 'atencao'],
+    ])
+  })
+
+  it('não alerta de repetição recente: isso é assunto da hora de adicionar a música', () => {
+    const comRepeticao = escala({ resumoDoRepertorio: { recentes: 1, antigas: 0, nuncaTocadas: 0, total: 1 } })
+
+    expect(situacaoDaEscala(comRepeticao, true).every((linha) => linha.tom === 'sucesso')).toBe(true)
+  })
+
+  it('cala pro Membro e fora da Escala agendada', () => {
+    expect(situacaoDaEscala(escala(), false)).toEqual([])
+    expect(situacaoDaEscala(escala({ estado: 'realizada' }), true)).toEqual([])
+    expect(situacaoDaEscala(escala({ estado: 'cancelada' }), true)).toEqual([])
   })
 })
 

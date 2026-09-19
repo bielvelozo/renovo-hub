@@ -56,8 +56,10 @@
 }
 
 .titulo-da-folha {
-  font: 800 20px/1.2 var(--fonte-display);
-  font-variation-settings: var(--display-eixos);
+  font: 600 18px/1.25 var(--fonte-corpo);
+  letter-spacing: -0.01em;
+  text-transform: none;
+  color: var(--texto);
   margin: 0;
 }
 
@@ -83,10 +85,9 @@
   max-width: 480px;
   min-height: 48px;
   padding: 6px 8px 6px 16px;
-  border-radius: var(--raio-g);
+  border-radius: var(--raio);
   background: var(--texto);
   color: var(--fundo);
-  box-shadow: var(--sombra-alta);
   font-size: 15px;
   pointer-events: auto;
   animation: subir-o-aviso var(--tempo-folha) var(--mola-entrada);
@@ -135,7 +136,7 @@
   bottom: calc(var(--altura-das-abas, 62px) + var(--seguro-baixo));
   z-index: 4;
   background: var(--superficie);
-  box-shadow: var(--sombra-alta);
+  border-top: 1px solid var(--linha);
 }
 
 .rodape-interno {
@@ -416,10 +417,8 @@
 .linha-de-musica .observacao {
   flex-basis: 100%;
   margin-top: 4px;
-  padding-left: 8px;
-  border-left: 2px solid var(--atencao);
   color: var(--texto-2);
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .linha-de-musica .tempo {
@@ -541,10 +540,10 @@
   flex: none;
   width: var(--largura-da-capa);
   height: var(--altura-da-capa);
-  border-radius: var(--raio);
+  border-radius: 8px;
   overflow: hidden;
-  background: var(--acento-suave);
-  color: var(--sobre-acento);
+  background: var(--superficie-alta);
+  color: var(--texto-2);
 }
 
 .capa img,
@@ -559,7 +558,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--realce);
+  background: var(--superficie-alta);
 }
 
 .capa.grande {
@@ -629,11 +628,11 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 3px 10px;
-  border-radius: var(--raio-total);
+  padding: 3px 8px;
+  border-radius: var(--raio-p);
   background: var(--realizada-fundo);
   color: var(--realizada-texto);
-  font: 700 13px/1.4 var(--fonte-corpo);
+  font: 600 12px/1.4 var(--fonte-corpo);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -689,16 +688,9 @@
 }
 
 .selo.tom {
-  background: var(--acento-suave);
-  color: var(--acento-forte);
-}
-
-.cartao.pos-culto {
-  background: var(--atencao-suave);
-}
-
-.cartao.cancelada {
-  background: var(--perigo-suave);
+  background: var(--neutro-suave);
+  color: var(--texto);
+  font-size: 13px;
 }
 
 .cartao.cancelada .titulo {
@@ -706,13 +698,14 @@
 }
 
 .selo.destaque {
-  background: var(--texto);
-  color: var(--fundo);
+  background: var(--acento-suave);
+  color: var(--acento);
 }
 
 .selo.ministro {
-  background: var(--ceia-fundo);
-  color: var(--ceia-texto);
+  background: none;
+  box-shadow: inset 0 0 0 1px var(--linha);
+  color: var(--texto);
 }
 
 /* Botao */
@@ -726,7 +719,7 @@
   min-height: var(--toque);
   padding: 0 20px;
   border: 1px solid transparent;
-  border-radius: var(--raio-total);
+  border-radius: var(--raio);
   background: var(--acento);
   color: var(--sobre-acento);
   font: 600 15px/1 var(--fonte-corpo);
@@ -810,9 +803,10 @@
 }
 
 .botao.pequeno {
-  min-height: 34px;
+  min-height: 36px;
   padding: 0 14px;
-  font-size: 13px;
+  border-radius: 10px;
+  font-size: 14px;
 }
 
 .botao.pequeno .icone {
@@ -860,8 +854,8 @@
   background:
     linear-gradient(to right, var(--fundo) 30%, transparent) left / 32px 100% no-repeat local,
     linear-gradient(to left, var(--fundo) 30%, transparent) right / 32px 100% no-repeat local,
-    linear-gradient(to right, light-dark(rgb(42 36 48 / 12%), rgb(0 0 0 / 40%)), transparent) left / 14px 100% no-repeat scroll,
-    linear-gradient(to left, light-dark(rgb(42 36 48 / 12%), rgb(0 0 0 / 40%)), transparent) right / 14px 100% no-repeat scroll;
+    linear-gradient(to right, light-dark(rgb(25 25 27 / 10%), rgb(0 0 0 / 40%)), transparent) left / 14px 100% no-repeat scroll,
+    linear-gradient(to left, light-dark(rgb(25 25 27 / 10%), rgb(0 0 0 / 40%)), transparent) right / 14px 100% no-repeat scroll;
 }
 
 .chips::-webkit-scrollbar {
@@ -873,10 +867,10 @@
   min-height: 36px;
   padding: 0 14px;
   border: 1px solid var(--linha);
-  border-radius: var(--raio-total);
+  border-radius: 10px;
   background: var(--superficie);
   color: var(--texto-2);
-  font: 600 15px/1 var(--fonte-corpo);
+  font: 600 14px/1 var(--fonte-corpo);
   white-space: nowrap;
   cursor: pointer;
 }
@@ -901,9 +895,9 @@
 }
 
 .chip.ministro[aria-pressed='true'] {
-  background: var(--ceia-texto);
+  background: var(--texto);
   border-style: solid;
-  color: var(--superficie);
+  color: var(--fundo);
 }
 
 .segmento {
@@ -912,7 +906,7 @@
   grid-template-columns: repeat(var(--total, 2), minmax(0, 1fr));
   padding: 3px;
   border-radius: var(--raio);
-  background: var(--acento-suave);
+  background: var(--neutro-suave);
 }
 
 .segmento .marcador {
@@ -922,8 +916,8 @@
   left: 3px;
   width: calc((100% - 6px) / var(--total, 2));
   border-radius: calc(var(--raio) - 3px);
-  background: light-dark(var(--superficie-alta), var(--linha));
-  box-shadow: var(--sombra);
+  background: var(--superficie);
+  box-shadow: var(--sombra), 0 1px 2px light-dark(rgb(25 25 27 / 8%), rgb(0 0 0 / 40%));
   transform: translateX(calc(var(--posicao, 0) * 100%));
   transition: transform var(--tempo-folha) var(--mola-entrada);
 }
@@ -931,7 +925,7 @@
 .segmento button {
   position: relative;
   min-width: 0;
-  min-height: 38px;
+  min-height: var(--toque);
   padding: 0 4px;
   border: 0;
   background: none;
@@ -951,12 +945,10 @@
 }
 
 .segmento .conta {
-  margin-left: 4px;
-  padding: 1px 6px;
-  border-radius: var(--raio-total);
-  background: var(--acento);
-  color: var(--sobre-acento);
-  font: 700 11px/1.5 var(--fonte-corpo);
+  margin-left: 5px;
+  color: var(--texto-2);
+  font: 500 13px/1 var(--fonte-corpo);
+  font-variant-numeric: tabular-nums;
 }
 
 /* Campo */
@@ -1014,9 +1006,8 @@ textarea.texto-longo {
   box-shadow: var(--sombra);
 }
 
-.cartao.destaque {
-  background: var(--acento-suave);
-  box-shadow: none;
+.cartao.cancelada {
+  box-shadow: inset 0 0 0 1px var(--perigo-suave);
 }
 
 /* Vazio */
@@ -1032,10 +1023,9 @@ textarea.texto-longo {
 }
 
 .vazio > .icone {
-  width: 36px;
-  height: 36px;
-  color: var(--acento);
-  opacity: 0.7;
+  width: 32px;
+  height: 32px;
+  color: var(--texto-2);
 }
 
 .vazio p {
@@ -1052,8 +1042,7 @@ textarea.texto-longo {
 }
 
 .ano-do-seletor .titulo {
-  font: 800 20px/1 var(--fonte-display);
-  font-variation-settings: var(--display-eixos);
+  font: 700 19px/1 var(--fonte-corpo);
   font-variant-numeric: tabular-nums;
 }
 
@@ -1068,7 +1057,7 @@ textarea.texto-longo {
   padding: 0 4px;
   border: 0;
   border-radius: var(--raio);
-  background: var(--acento-suave);
+  background: var(--neutro-suave);
   color: var(--texto);
   font: 600 14px/1.2 var(--fonte-corpo);
   cursor: pointer;
@@ -1217,7 +1206,7 @@ textarea.texto-longo {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1px;
+  gap: 2px;
   min-height: 46px;
   padding: 4px 2px;
   font-size: 13px;
@@ -1226,12 +1215,7 @@ textarea.texto-longo {
 
 .topo-do-catalogo .segmento .conta {
   margin: 0;
-  padding: 0;
-  background: none;
-  color: inherit;
-  font: 700 11px/1.2 var(--fonte-corpo);
-  font-variant-numeric: tabular-nums;
-  opacity: 0.7;
+  font-size: 11px;
 }
 
 .chip-do-ver {
@@ -1340,12 +1324,21 @@ textarea.texto-longo {
 
 .faixa-de-alerta {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: flex-start;
-  padding: 10px 12px;
-  border-radius: var(--raio);
+  padding: 14px;
+  border-radius: var(--raio-g);
   background: var(--atencao-suave);
   color: var(--atencao);
+}
+
+.faixa-de-alerta p.frase {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.explicacao-da-aba {
+  padding-inline: 4px;
 }
 
 .faixa-de-alerta .icone {
@@ -1472,16 +1465,22 @@ textarea.texto-longo {
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: var(--acento-suave);
-  color: var(--acento);
-  font: 800 30px/1 var(--fonte-display);
-  font-variation-settings: var(--display-eixos);
+  background: var(--superficie-alta);
+  color: var(--texto-2);
+  font: 600 26px/1 var(--fonte-corpo);
 }
 
 .inicial.pequena {
-  width: 34px;
-  height: 34px;
-  font-size: 16px;
+  width: 32px;
+  height: 32px;
+  font-size: 13px;
+}
+
+.inicial.mini {
+  width: 26px;
+  height: 26px;
+  font-size: 11px;
+  box-shadow: 0 0 0 2px var(--superficie);
 }
 
 .escalas-do-perfil {

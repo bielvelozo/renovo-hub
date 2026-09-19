@@ -120,7 +120,7 @@ describe('marca «mudou» no Repertório do Início', () => {
   it('nomeia o Repertório pelo dia da semana da Escala e cala quando não há música', () => {
     mostrar(<RepertorioDoInicio escala={escala([])} anexosPorDono={{}} hoje={HOJE} />)
 
-    expect(screen.getByText('Repertório de domingo')).not.toBeNull()
+    expect(screen.getByText('Repertório · domingo')).not.toBeNull()
     expect(screen.getByText('O Ministro ainda não escolheu as músicas.')).not.toBeNull()
     expect(screen.queryByText('Ouvir tudo')).toBeNull()
   })

@@ -1,5 +1,6 @@
 import { Link } from 'react-router'
 import type { ItemDoCulto } from '../api/tipos'
+import { Icone } from '../casca/Icone'
 import { BotaoLink } from '../componentes/Botao'
 import { Cartao } from '../componentes/Cartao'
 import { RodapeDeAcao } from '../componentes/RodapeDeAcao'
@@ -22,6 +23,13 @@ export function Ordem() {
 
       <div className="rolagem">
         <h1 className="display">{tituloDaOrdem(escala, hoje)}</h1>
+
+        {!erroAoAtualizar && (
+          <p className="dica guardado-no-aparelho">
+            <Icone nome="confirmar" />
+            Guardado no aparelho. Funciona sem internet.
+          </p>
+        )}
 
         {velho && atualizadoEm && <p className="dica">atualizado {quandoAtualizado(atualizadoEm)}</p>}
 
@@ -46,6 +54,10 @@ export function Ordem() {
           </div>
         ) : (
           <Vazio icone="musica">O Ministro ainda não escolheu as músicas</Vazio>
+        )}
+
+        {escala.itens.length > 0 && (
+          <p className="dica">Toque numa música para abrir a letra. A tela fica acesa enquanto o modo culto estiver aberto.</p>
         )}
       </div>
 

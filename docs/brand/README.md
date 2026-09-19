@@ -1,6 +1,6 @@
 # Marca do Renovo Music
 
-Desde 11/09/2026 o app carrega a marca do ministério de louvor, não a da igreja. As decisões (selo circular com onda sonora de cinco barras, paleta "Amanhecer", Fraunces nos títulos e Inter no corpo) estão no spec [Fundação da identidade visual](../superpowers/specs/2026-09-11-fundacao-da-identidade-design.md), seção 1.
+Desde 11/09/2026 o app carrega a marca do ministério de louvor, não a da igreja. Em 19/09/2026 a interface trocou a paleta "Amanhecer" e o par Fraunces com Inter por cinzas neutros e Geist; o selo ficou igual, e os PNGs do PWA foram regerados sobre o fundo novo. As decisões (selo circular com onda sonora de cinco barras, paleta "Amanhecer", Fraunces nos títulos e Inter no corpo) estão no spec [Fundação da identidade visual](../superpowers/specs/2026-09-11-fundacao-da-identidade-design.md), seção 1.
 
 ## Arquivos
 
@@ -11,7 +11,7 @@ Em `public/`:
 | `selo.svg` | Anéis e barras, sem texto. `currentColor` nos anéis, `var(--acento)` nas barras. É o que o componente `Marca` desenha inline. | `npm exec tsx scripts/marca.ts` |
 | `selo-completo.svg` | Selo com "RENOVO" e "MUSIC" nos arcos, já como caminhos, sem depender de fonte | idem |
 | `marca-horizontal.svg` | Selo completo à esquerda, "Renovo" e "MUSIC" à direita, altura de referência 64 | idem |
-| `icone-192.png`, `icone-512.png`, `favicon-32.png`, `apple-touch-icon.png`, `icone-mascaravel-512.png`, `abertura.png` | PNGs do PWA, selo sobre `#1F1B22`, anéis `#F3E9E1`, barras `#9FB8E6` | `npm exec tsx scripts/icones.ts` |
+| `icone-192.png`, `icone-512.png`, `favicon-32.png`, `apple-touch-icon.png`, `icone-mascaravel-512.png`, `abertura.png` | PNGs do PWA, selo sobre `#0F0F10`, anéis `#F2F2F0`, barras `#A9C0EA` | `npm exec tsx scripts/icones.ts` |
 
 A geometria fica em `src/marca/selo.ts`, que o componente e os dois scripts compartilham. Os SVGs e PNGs são commitados: o build não roda os scripts.
 

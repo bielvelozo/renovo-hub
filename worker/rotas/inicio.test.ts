@@ -78,8 +78,8 @@ describe('GET /api/inicio', () => {
     await porNaEquipe('minha', 'marcos', ['vocal'], true)
 
     expect((await pedir('julia')).minhaProxima?.pessoas).toEqual([
-      { membroId: 'marcos', nome: 'Marcos', funcoes: ['Vocal'], ministro: true },
-      { membroId: 'julia', nome: 'Júlia', funcoes: ['Guitarra'], ministro: false },
+      { membroId: 'marcos', nome: 'Marcos', funcoes: ['Vocal'], ministro: true, grupo: 'vocal' },
+      { membroId: 'julia', nome: 'Júlia', funcoes: ['Guitarra'], ministro: false, grupo: 'instrumentos' },
     ])
   })
 

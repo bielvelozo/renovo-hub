@@ -211,7 +211,12 @@ export function CorpoDoCatalogo({
 
   return (
     <>
-      <Busca valor={termo} aoMudar={escrever} placeholder="Buscar ou colar um link" rotulo="Buscar ou colar um link" />
+      <Busca
+        valor={termo}
+        aoMudar={escrever}
+        placeholder="Buscar ou colar um link do YouTube"
+        rotulo="Buscar ou colar um link"
+      />
       {acao.erro && <p className="aviso">{acao.erro}</p>}
 
       {acima}
@@ -246,6 +251,10 @@ export function CorpoDoCatalogo({
           }))}
         />
       </div>
+
+      {ver !== 'sugestoes' && (
+        <p className="dica explicacao-da-aba">{ABAS_DO_CATALOGO.find((opcao) => opcao.valor === aba)?.explicacao}</p>
+      )}
 
       {ver === 'sugestoes' && aoEscolherSugestao ? (
         <ListaDeSugestoes sugestoes={abertas} hoje={hoje} aoEscolherSugestao={aoEscolherSugestao} />

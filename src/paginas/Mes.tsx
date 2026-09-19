@@ -22,6 +22,8 @@ import {
   linhasDoMes,
   mesDaData,
   nomeDoMes,
+  passadasEProximas,
+  resumoDoMes,
   rotuloDoMes,
   selosDaEscala,
   textoDeCriarDomingos,
@@ -35,6 +37,7 @@ export function Mes() {
   const [mes, verMes] = useState(() => mesDaData(hoje))
   const [folha, abrirFolha] = useState<'nova' | 'seletor' | null>(null)
   const [explicando, explicar] = useState(false)
+  const [mostrandoPassadas, mostrarPassadas] = useState(false)
   const busca = usarBusca<{ escalas: EscalaResumida[] }>(`/api/escalas?mes=${mes}`)
   const acao = usarAcao()
 
@@ -43,6 +46,8 @@ export function Mes() {
     mes,
     escalas.map((escala) => escala.data),
   )
+  const { passadas, proximas } = passadasEProximas(linhasDoMes(escalas, mes, hoje), hoje)
+  const algumaPronta = dirige && escalas.some((escala) => escala.estado === 'agendada' && escala.pronta)
 
   function criarDomingos() {
     acao.executar(async () => {
@@ -119,16 +124,44 @@ export function Mes() {
         </Vazio>
       )}
 
+      {escalas.length > 0 && <p className="dica resumo-do-mes">{resumoDoMes(escalas)}</p>}
+
+      {passadas.length > 0 && (
+        <button
+          type="button"
+          className="cartao recolhidas"
+          aria-expanded={mostrandoPassadas}
+          onClick={() => mostrarPassadas(!mostrandoPassadas)}
+        >
+          <Icone nome="confirmar" />
+          <span className="cresce">
+            {passadas.length === 1 ? '1 escala já passou' : `${passadas.length} escalas já passaram`}
+          </span>
+          <span className="acao-de-recolher">{mostrandoPassadas ? 'Esconder' : 'Mostrar'}</span>
+        </button>
+      )}
+
+      {mostrandoPassadas && passadas.length > 0 && (
+        <ul className="lista cartao mes">
+          {passadas.map(
+            (linha) =>
+              linha.tipo === 'escala' && (
+                <LinhaDoMes key={linha.escala.id} escala={linha.escala} ehHoje={false} dirige={dirige} />
+              ),
+          )}
+        </ul>
+      )}
+
       {escalas.length > 0 && (
         <ul className="lista cartao mes">
-          {linhasDoMes(escalas, mes, hoje).map((linha) =>
+          {proximas.map((linha) =>
             linha.tipo === 'nada' ? (
               <li key="nada-hoje" className="nada-hoje">
                 <span className="dia hoje">
                   <b>{Number(linha.data.slice(8))}</b>
                   <span>{nomeDoDia(linha.data)}</span>
                 </span>
-                <span className="dica">nada hoje</span>
+                <span className="dica">Hoje não tem nada marcado</span>
               </li>
             ) : (
               <LinhaDoMes key={linha.escala.id} escala={linha.escala} ehHoje={linha.hoje} dirige={dirige} />
@@ -136,6 +169,8 @@ export function Mes() {
           )}
         </ul>
       )}
+
+      {algumaPronta && <p className="dica legenda">Pronta quer dizer equipe completa e músicas escolhidas.</p>}
 
       {dirige && escalas.length > 0 && faltam.length > 0 && (
         <Botao variante="secundario" largo disabled={acao.ocupado} onClick={criarDomingos}>
@@ -172,6 +207,7 @@ function LinhaDoMes({ escala, ehHoje, dirige }: { escala: EscalaResumida; ehHoje
             </span>
           )}
         </span>
+        <Icone nome="seta" />
       </Link>
     </li>
   )

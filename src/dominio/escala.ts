@@ -19,6 +19,7 @@ export type PessoaDaEquipe = {
   nome: string
   funcoes: string[]
   ministro: boolean
+  grupo?: Grupo | null
 }
 
 export function membroPorId(m: Ministerio, id: string): Membro {
@@ -125,6 +126,7 @@ export function pessoasDaEquipe(m: Ministerio, escala: Escala): PessoaDaEquipe[]
           nome: membroPorId(m, entrada.membroId).nome,
           funcoes: funcoes.map((funcao) => funcao.nome),
           ministro: entrada.ministro,
+          grupo: funcoes.length ? funcoes[0].grupo : null,
         },
         peso: funcoes.length ? [GRUPOS.indexOf(funcoes[0].grupo), funcoes[0].ordem] : [GRUPOS.length, 0],
       }

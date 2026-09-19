@@ -14,8 +14,8 @@ const ROTULOS: Record<Preferencia, string> = {
 }
 
 export const COR_DA_BARRA: Record<Tema, string> = {
-  escuro: '#1F1B22',
-  claro: '#EFEAEC',
+  escuro: '#0F0F10',
+  claro: '#F4F4F2',
 }
 
 export function lerPreferencia(guardado: string | null): Preferencia {

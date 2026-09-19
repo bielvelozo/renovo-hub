@@ -13,11 +13,13 @@ export function FaixaDeAlerta({ frases }: { frases: string[] }) {
   if (frases.length === 0) return null
 
   return (
-    <div className="faixa-de-alerta">
+    <div className="faixa-de-alerta" role="status">
       <Icone nome="atencao" />
       <div>
         {frases.map((frase) => (
-          <p key={frase}>{frase}</p>
+          <p key={frase} className="frase">
+            {frase}
+          </p>
         ))}
       </div>
     </div>

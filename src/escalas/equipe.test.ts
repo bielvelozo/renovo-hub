@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { FUNCOES, ministerioDeExemplo } from '../dominio'
 import type { Membro } from '../dominio'
 import {
+  equipePorGrupo,
   musicosDaFormacao,
   alternarFuncao,
   alternarMinistro,
@@ -27,6 +28,37 @@ const m = ministerioDeExemplo(HOJE)
 const secoes = () => secoesDaEquipe(m.membros, FUNCOES)
 const secao = (chave: string) => secoes().find((s) => s.chave === chave)!
 const nomes = (chave: string) => secao(chave).membros.map((linha) => linha.membro.nome)
+
+describe('equipePorGrupo', () => {
+  const pessoa = (nome: string, grupo: 'vocal' | 'instrumentos' | 'tecnica' | null, ministro = false) => ({
+    membroId: nome.toLowerCase(),
+    nome,
+    funcoes: [],
+    ministro,
+    grupo,
+  })
+
+  it('junta as pessoas por Grupo na ordem Vocal, Músicos e Som, mesmo com o Ministro músico vindo na frente', () => {
+    const grupos = equipePorGrupo([
+      pessoa('Marcos', 'instrumentos', true),
+      pessoa('Ana', 'vocal'),
+      pessoa('Pedro', 'instrumentos'),
+      pessoa('Davi', 'tecnica'),
+    ])
+
+    expect(grupos.map((grupo) => [grupo.nome, grupo.pessoas.map((p) => p.nome)])).toEqual([
+      ['Vocal', ['Ana']],
+      ['Músicos', ['Marcos', 'Pedro']],
+      ['Som', ['Davi']],
+    ])
+  })
+
+  it('deixa quem não tem Função num grupo próprio, por último, e some com grupo vazio', () => {
+    const grupos = equipePorGrupo([pessoa('Bia', null), pessoa('Ana', 'vocal')])
+
+    expect(grupos.map((grupo) => grupo.nome)).toEqual(['Vocal', 'Sem função'])
+  })
+})
 
 describe('secoesDaEquipe', () => {
   it('devolve as três seções na ordem Vocal, Músicos, Som', () => {

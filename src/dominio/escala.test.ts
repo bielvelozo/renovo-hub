@@ -67,12 +67,12 @@ describe('nomeDaEscala', () => {
 describe('pessoasDaEquipe', () => {
   it('põe os Ministros na frente e ordena o resto por Grupo e por Função', () => {
     expect(pessoasDaEquipe(m, emEscala('e0913'))).toEqual([
-      { membroId: 'isa', nome: 'Isa', funcoes: ['Vocal'], ministro: true },
-      { membroId: 'ana', nome: 'Ana', funcoes: ['Vocal'], ministro: false },
-      { membroId: 'gabriel', nome: 'Gabriel', funcoes: ['Guitarra'], ministro: false },
-      { membroId: 'pedro', nome: 'Pedro', funcoes: ['Baixo'], ministro: false },
-      { membroId: 'lucas', nome: 'Lucas', funcoes: ['Bateria'], ministro: false },
-      { membroId: 'davi', nome: 'Davi', funcoes: ['Som'], ministro: false },
+      { membroId: 'isa', nome: 'Isa', funcoes: ['Vocal'], ministro: true, grupo: 'vocal' },
+      { membroId: 'ana', nome: 'Ana', funcoes: ['Vocal'], ministro: false, grupo: 'vocal' },
+      { membroId: 'gabriel', nome: 'Gabriel', funcoes: ['Guitarra'], ministro: false, grupo: 'instrumentos' },
+      { membroId: 'pedro', nome: 'Pedro', funcoes: ['Baixo'], ministro: false, grupo: 'instrumentos' },
+      { membroId: 'lucas', nome: 'Lucas', funcoes: ['Bateria'], ministro: false, grupo: 'instrumentos' },
+      { membroId: 'davi', nome: 'Davi', funcoes: ['Som'], ministro: false, grupo: 'tecnica' },
     ])
   })
 
@@ -86,8 +86,8 @@ describe('pessoasDaEquipe', () => {
     }
 
     expect(pessoasDaEquipe(m, escala)).toEqual([
-      { membroId: 'gabriel', nome: 'Gabriel', funcoes: ['Vocal', 'Bateria'], ministro: false },
-      { membroId: 'davi', nome: 'Davi', funcoes: ['Som'], ministro: false },
+      { membroId: 'gabriel', nome: 'Gabriel', funcoes: ['Vocal', 'Bateria'], ministro: false, grupo: 'vocal' },
+      { membroId: 'davi', nome: 'Davi', funcoes: ['Som'], ministro: false, grupo: 'tecnica' },
     ])
   })
 
