@@ -474,9 +474,29 @@
   color: var(--acento-forte);
 }
 
+/* A capa do Trecho mostra 56 × 32, mas o link ocupa os 44 px de toque com 6 px transparentes em cima e embaixo. */
 .trechos-do-medley .capa {
   width: 56px;
-  height: 32px;
+  height: var(--toque);
+  padding-block: 6px;
+  border-radius: 0;
+  background: none;
+  overflow: visible;
+}
+
+.trechos-do-medley .capa img,
+.trechos-do-medley .capa .capa-vazia {
+  border-radius: 8px;
+}
+
+.trechos-do-medley .capa .play::before {
+  width: 28px;
+  height: 28px;
+}
+
+.trechos-do-medley .capa .play svg {
+  width: 16px;
+  height: 16px;
 }
 
 .trechos-do-medley .titulo {
@@ -807,6 +827,14 @@
   padding: 0 14px;
   border-radius: 10px;
   font-size: 14px;
+  white-space: nowrap;
+}
+
+/* O botão pequeno mede 36 px; a área de toque invisível completa os 44 px. */
+.botao.pequeno::before {
+  content: '';
+  position: absolute;
+  inset: -4px 0;
 }
 
 .botao.pequeno .icone {

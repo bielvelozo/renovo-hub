@@ -144,10 +144,10 @@ describe('marca «mudou» no Repertório do Início', () => {
     expect(screen.getByText('mudou')).not.toBeNull()
   })
 
-  it('nomeia o Repertório pelo dia da semana da Escala e cala quando não há música', () => {
+  it('chama a seção só de Repertório, porque a data já está no cartão de cima, e cala quando não há música', () => {
     mostrar(<RepertorioDoInicio escala={escala([])} anexosPorDono={{}} hoje={HOJE} />)
 
-    expect(screen.getByText('Repertório · domingo')).not.toBeNull()
+    expect(screen.getByRole('heading', { level: 2, name: 'Repertório' })).not.toBeNull()
     expect(screen.getByText('O Ministro ainda não escolheu as músicas.')).not.toBeNull()
     expect(screen.queryByText('Ouvir tudo')).toBeNull()
   })

@@ -477,6 +477,34 @@ nav.abas .contagem {
   font-weight: 600;
 }
 
+/* Na mesa, rótulo e valor a 900 px de distância não se leem juntos: cada fato vira uma coluna. */
+@media (min-width: 900px) {
+  .fatos {
+    flex-direction: row;
+    gap: 24px;
+    padding-top: 12px;
+  }
+
+  .fatos > div {
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 2px;
+    min-height: 0;
+  }
+
+  .fatos dd {
+    text-align: left;
+  }
+
+  .proxima-escala > .botao.largo {
+    align-self: flex-start;
+    width: auto;
+    min-width: 220px;
+  }
+}
+
 .pilha-de-iniciais {
   display: flex;
 }
@@ -811,7 +839,7 @@ nav.abas .contagem {
   border-radius: 10px;
   background: var(--superficie-alta);
   color: var(--texto-2);
-  font: 600 10px/1 var(--fonte-corpo);
+  font: 600 11px/1 var(--fonte-corpo);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -1050,6 +1078,10 @@ nav.abas .contagem {
 
 .secao > .secao-topo {
   flex-wrap: nowrap;
+}
+
+.secao-topo > .botao {
+  flex: none;
 }
 
 .secao > .secao-topo > h2 {

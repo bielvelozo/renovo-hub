@@ -17,7 +17,7 @@ import { LinhaDoItem } from '../componentes/LinhaDeMusica'
 import { Selo } from '../componentes/Selo'
 import { Vazio } from '../componentes/Vazio'
 import { VistoEm } from '../componentes/VistoEm'
-import { hojeEmBrasilia, nomeDaEscala, nomeDoDia, nomeDoDiaLongo, rotuloDoHorario } from '../dominio'
+import { hojeEmBrasilia, nomeDaEscala, nomeDoDia, rotuloDoHorario } from '../dominio'
 import { nomeDoMes } from '../escalas/mes'
 import { CHAVE_DE_VISITA_DAS_SUGESTOES } from '../escalas/sugestoes'
 import { mudouDesdeAVisita, visitaNaEscala } from '../escalas/visita'
@@ -262,7 +262,7 @@ export function RepertorioDoInicio({
   return (
     <div className="secao">
       <div className="secao-topo">
-        <h2>Repertório · {nomeDoDiaLongo(escala.data)}</h2>
+        <h2>Repertório</h2>
         {escala.itens.length > 0 && (
           <Botao variante="terciario" pequeno icone="play" onClick={() => abrirPlaylist(true)}>
             Ouvir tudo
