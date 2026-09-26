@@ -608,33 +608,6 @@ nav.abas .contagem {
   font-size: 13px;
 }
 
-.lista.situacao > li {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-height: 48px;
-  font-weight: 500;
-  font-size: 14px;
-}
-
-.lista.situacao .icone {
-  width: 18px;
-  height: 18px;
-}
-
-.lista.situacao .sucesso .icone {
-  color: var(--sucesso);
-}
-
-.lista.situacao .atencao .icone {
-  color: var(--atencao);
-}
-
-.lista.situacao .dica {
-  font-weight: 400;
-  font-size: 13px;
-}
-
 .cartao.equipe-por-grupo {
   padding: 0;
   overflow: hidden;
@@ -809,6 +782,14 @@ nav.abas .contagem {
 
 .lista .toque:hover {
   background: var(--superficie-alta);
+}
+
+.lista .toque.estatico {
+  cursor: default;
+}
+
+.lista .toque.estatico:hover {
+  background: none;
 }
 
 .lista .toque .dica {

@@ -5,7 +5,6 @@ import {
   ministrosDaEscala,
   padraoDeQuemPuxa,
   resumoDoItem,
-  situacaoDaEscala,
   textoDeQuemPuxa,
   tituloDoItem,
   videosDoRepertorio,
@@ -169,49 +168,6 @@ const escala = (mudancas: Partial<EscalaApresentada> = {}): EscalaApresentada =>
   ...mudancas,
 })
 
-describe('situacaoDaEscala', () => {
-  const gente = [
-    { membroId: 'isa', nome: 'Isa', funcoes: ['Vocal'], ministro: true },
-    { membroId: 'ana', nome: 'Ana', funcoes: ['Vocal'], ministro: false },
-  ]
-
-  it('diz equipe completa e músicas escolhidas, com as contagens ao lado', () => {
-    expect(situacaoDaEscala(escala({ pessoas: gente }), true)).toEqual([
-      { chave: 'equipe', texto: 'Equipe completa', detalhe: '2 pessoas', tom: 'sucesso' },
-      { chave: 'musicas', texto: 'Músicas escolhidas', detalhe: '1 no repertório', tom: 'sucesso' },
-    ])
-  })
-
-  it('troca a equipe completa pelo que falta nela e avisa do repertório vazio', () => {
-    const comPendencias = escala({
-      pronta: false,
-      itens: [],
-      pendencias: [
-        { chave: 'sem-ministro', texto: 'sem ministro' },
-        { chave: 'falta-funcao', texto: 'faltam 2 vocais', funcaoId: 'vocal' },
-        { chave: 'sem-musicas', texto: 'sem músicas' },
-      ],
-    })
-
-    expect(situacaoDaEscala(comPendencias, true).map((linha) => [linha.texto, linha.tom])).toEqual([
-      ['Sem ministro', 'atencao'],
-      ['Faltam 2 vocais', 'atencao'],
-      ['Sem músicas ainda', 'atencao'],
-    ])
-  })
-
-  it('não alerta de repetição recente: isso é assunto da hora de adicionar a música', () => {
-    const comRepeticao = escala({ resumoDoRepertorio: { recentes: 1, antigas: 0, nuncaTocadas: 0, total: 1 } })
-
-    expect(situacaoDaEscala(comRepeticao, true).every((linha) => linha.tom === 'sucesso')).toBe(true)
-  })
-
-  it('cala pro Membro e fora da Escala agendada', () => {
-    expect(situacaoDaEscala(escala(), false)).toEqual([])
-    expect(situacaoDaEscala(escala({ estado: 'realizada' }), true)).toEqual([])
-    expect(situacaoDaEscala(escala({ estado: 'cancelada' }), true)).toEqual([])
-  })
-})
 
 describe('quem puxa', () => {
   const isa = { membroId: 'isa', nome: 'Isa', funcoes: ['Vocal'], ministro: true }

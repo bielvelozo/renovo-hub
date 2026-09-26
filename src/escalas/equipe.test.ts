@@ -3,6 +3,7 @@ import { FUNCOES, ministerioDeExemplo } from '../dominio'
 import type { Membro } from '../dominio'
 import {
   equipePorGrupo,
+  linhaDaEquipe,
   musicosDaFormacao,
   alternarFuncao,
   alternarMinistro,
@@ -57,6 +58,37 @@ describe('equipePorGrupo', () => {
     const grupos = equipePorGrupo([pessoa('Bia', null), pessoa('Ana', 'vocal')])
 
     expect(grupos.map((grupo) => grupo.nome)).toEqual(['Vocal', 'Sem função'])
+  })
+})
+
+describe('linhaDaEquipe', () => {
+  const pessoa = (id: string, nome: string, ministro = false) => ({ membroId: id, nome, funcoes: ['Vocal'], ministro })
+
+  it('resume quem dirige e os demais numa frase, com as iniciais', () => {
+    expect(linhaDaEquipe([pessoa('marcos', 'Marcos', true), pessoa('bia', 'Bia'), pessoa('gabriel', 'Gabriel')])).toEqual({
+      total: 3,
+      iniciais: ['M', 'B', 'G'],
+      extras: 0,
+      texto: 'Marcos dirige · Bia e Gabriel',
+    })
+  })
+
+  it('junta dois Ministros e, acima de seis pessoas, mostra cinco iniciais e a conta do resto', () => {
+    const muitos = [
+      pessoa('ana', 'Ana', true),
+      pessoa('bia', 'Bia', true),
+      ...['Caio', 'Davi', 'Eva', 'Fábio', 'Gil', 'Hugo'].map((nome) => pessoa(nome.toLowerCase(), nome)),
+    ]
+
+    const linha = linhaDaEquipe(muitos)
+
+    expect(linha.texto).toBe('Ana e Bia dirigem · Caio, Davi, Eva, Fábio, Gil e Hugo')
+    expect(linha.iniciais).toEqual(['A', 'B', 'C', 'D', 'E'])
+    expect(linha.extras).toBe(3)
+  })
+
+  it('sem ninguém, não inventa frase', () => {
+    expect(linhaDaEquipe([])).toEqual({ total: 0, iniciais: [], extras: 0, texto: '' })
   })
 })
 

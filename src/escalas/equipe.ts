@@ -23,6 +23,27 @@ export type PresencaDoMembro = { ultimaVez: string | null; seguidos: number; par
 
 export type MembroComPush = Membro & { push?: number; silenciado?: boolean; presenca?: PresencaDoMembro }
 
+export type LinhaDaEquipe = { total: number; iniciais: string[]; extras: number; texto: string }
+
+const MAXIMO_DE_INICIAIS = 6
+
+export function linhaDaEquipe(pessoas: PessoaDaEquipe[]): LinhaDaEquipe {
+  const ministros = pessoas.filter((pessoa) => pessoa.ministro).map((pessoa) => pessoa.nome)
+  const outros = pessoas.filter((pessoa) => !pessoa.ministro).map((pessoa) => pessoa.nome)
+  const mostradas = pessoas.length > MAXIMO_DE_INICIAIS ? MAXIMO_DE_INICIAIS - 1 : pessoas.length
+  const partes = [
+    ministros.length ? `${juntarNomes(ministros)} ${ministros.length === 1 ? 'dirige' : 'dirigem'}` : '',
+    outros.length ? juntarNomes(outros) : '',
+  ].filter(Boolean)
+
+  return {
+    total: pessoas.length,
+    iniciais: pessoas.slice(0, mostradas).map((pessoa) => pessoa.nome.trim().charAt(0).toUpperCase()),
+    extras: pessoas.length - mostradas,
+    texto: partes.join(' · '),
+  }
+}
+
 export type SeloDoResumo = {
   chave: string
   texto: string

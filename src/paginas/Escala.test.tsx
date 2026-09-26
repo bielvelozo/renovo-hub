@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { EscalaApresentada, ItemApresentado } from '../api/tipos'
 import { ProvedorDeAvisos } from '../componentes/Avisos'
-import { Equipe, MenuDaEscala, Repertorio } from './Escala'
+import { Equipe, EquipeResumida, MenuDaEscala, Repertorio } from './Escala'
 
 const HOJE = '2026-09-13'
 
@@ -132,7 +132,7 @@ describe('Equipe na tela da Escala', () => {
 
     render(
       <MemoryRouter>
-        <Equipe escala={muita} euId="ana" dirige />
+        <Equipe escala={muita} euId="ana" />
       </MemoryRouter>,
     )
 
@@ -149,12 +149,46 @@ describe('Equipe na tela da Escala', () => {
   it('diz que ninguém está escalado e chama o Montar', () => {
     render(
       <MemoryRouter>
-        <Equipe escala={{ ...escala, pessoas: [] }} euId="ana" dirige />
+        <EquipeResumida escala={{ ...escala, pessoas: [] }} podeEditar />
       </MemoryRouter>,
     )
 
-    expect(screen.getByText('Ninguém escalado ainda.')).not.toBeNull()
+    expect(screen.getByText('Ninguém escalado ainda')).not.toBeNull()
     expect(screen.getByRole('link', { name: 'Montar' })).not.toBeNull()
+  })
+
+  it('para quem dirige, resume a Equipe numa linha e leva direto à Função que falta', () => {
+    const comFalta = {
+      ...escala,
+      pessoas: [
+        { membroId: 'isa', nome: 'Isa', funcoes: ['Vocal'], ministro: true },
+        { membroId: 'ana', nome: 'Ana', funcoes: ['Vocal'], ministro: false },
+      ],
+      pendencias: [{ chave: 'falta-funcao' as const, texto: 'falta 1 bateria', funcaoId: 'bateria' }],
+    }
+
+    render(
+      <MemoryRouter>
+        <EquipeResumida escala={comFalta} podeEditar />
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText('2 pessoas')).not.toBeNull()
+    expect(screen.getByText('Isa dirige · Ana')).not.toBeNull()
+    expect(screen.getByText('falta 1 bateria')).not.toBeNull()
+    expect(screen.getByText('2 pessoas').closest('a')?.getAttribute('href')).toBe('/escalas/e0913/equipe?funcao=bateria')
+    expect(screen.getByRole('link', { name: 'Editar' })).not.toBeNull()
+  })
+
+  it('na Escala cancelada a linha da Equipe não leva a lugar nenhum', () => {
+    render(
+      <MemoryRouter>
+        <EquipeResumida escala={{ ...escala, estado: 'cancelada', cancelada: true }} podeEditar={false} />
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText('1 pessoa').closest('a')).toBeNull()
+    expect(screen.queryByRole('link', { name: 'Editar' })).toBeNull()
   })
 })
 

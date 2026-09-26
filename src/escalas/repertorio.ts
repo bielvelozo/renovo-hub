@@ -30,50 +30,6 @@ export function videosDoRepertorio(itens: ItemApresentado[]): string[] {
   )
 }
 
-export type LinhaDaSituacao = {
-  chave: string
-  texto: string
-  detalhe: string
-  tom: 'atencao' | 'sucesso'
-}
-
-export function situacaoDaEscala(escala: EscalaApresentada, dirige: boolean): LinhaDaSituacao[] {
-  if (!dirige || escala.estado !== 'agendada') return []
-
-  const daEquipe = escala.pendencias.filter((pendencia) => pendencia.chave !== 'sem-musicas')
-
-  const equipe: LinhaDaSituacao[] = daEquipe.length
-    ? daEquipe.map((pendencia) => ({
-        chave: pendencia.chave + (pendencia.funcaoId ?? ''),
-        texto: comMaiuscula(pendencia.texto),
-        detalhe: 'na equipe',
-        tom: 'atencao',
-      }))
-    : [
-        {
-          chave: 'equipe',
-          texto: 'Equipe completa',
-          detalhe: contar(escala.pessoas.length, 'pessoa', 'pessoas'),
-          tom: 'sucesso',
-        },
-      ]
-
-  const musicas: LinhaDaSituacao = escala.itens.length
-    ? {
-        chave: 'musicas',
-        texto: 'Músicas escolhidas',
-        detalhe: `${escala.itens.length} no repertório`,
-        tom: 'sucesso',
-      }
-    : { chave: 'musicas', texto: 'Sem músicas ainda', detalhe: 'no repertório', tom: 'atencao' }
-
-  return [...equipe, musicas]
-}
-
-function comMaiuscula(texto: string): string {
-  return texto.charAt(0).toUpperCase() + texto.slice(1)
-}
-
 export function textoDeQuemPuxa(item: ItemApresentado, quantosMinistros: number): string | null {
   if (quantosMinistros < 2 || !item.ministradoPorNome) return null
 
@@ -94,6 +50,3 @@ export function padraoDeQuemPuxa(escala: EscalaApresentada): string | null {
   return ministros[0] ?? null
 }
 
-function contar(quantos: number, singular: string, plural: string): string {
-  return `${quantos} ${quantos === 1 ? singular : plural}`
-}

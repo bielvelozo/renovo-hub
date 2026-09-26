@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router'
+import { Link, useNavigate, useParams } from 'react-router'
 import { chaveDoItem, temLetraNoItem } from '../api/anexos'
 import { api, textoDoErro } from '../api/cliente'
 import type { Opcoes } from '../api/cliente'
@@ -29,9 +29,10 @@ import { usarOrdenacao } from '../componentes/usarOrdenacao'
 import { usarRemocaoPendente } from '../componentes/usarRemocaoPendente'
 import { VistoEm } from '../componentes/VistoEm'
 import { formatarDia, hojeEmBrasilia, nomeDaEscala, rotuloDoHorario } from '../dominio'
-import { equipePorGrupo } from '../escalas/equipe'
-import { ministrosDaEscala, situacaoDaEscala, textoDeQuemPuxa, tituloDoItem } from '../escalas/repertorio'
+import { equipePorGrupo, linhaDaEquipe } from '../escalas/equipe'
+import { ministrosDaEscala, textoDeQuemPuxa, tituloDoItem } from '../escalas/repertorio'
 import { marcarVisitaNaEscala, mudouDesdeAVisita, visitaNaEscala } from '../escalas/visita'
+import { destinoDaPendencia, resumoDasPendencias } from '../inicio/inicio'
 import { inicialDoNome } from '../perfil/perfil'
 import { usarEu } from '../sessao/sessao'
 
@@ -101,25 +102,14 @@ export function Escala() {
     )
   }
 
-  const situacao = situacaoDaEscala(escala, dirige)
   const podeEditar = dirige && escala.estado !== 'cancelada'
 
   return (
     <section className="pagina">
       {cabecalho}
 
-      {escala.estado !== 'cancelada' && <AtalhoDoCulto escalaId={id} dica="Letras e tons em tela cheia, sem internet" />}
-
-      {situacao.length > 0 && (
-        <ul className="lista cartao situacao" aria-label="Situação da escala">
-          {situacao.map((linha) => (
-            <li key={linha.chave} className={linha.tom}>
-              <Icone nome={linha.tom === 'sucesso' ? 'confirmar' : 'atencao'} />
-              <span className="cresce">{linha.texto}</span>
-              <span className="dica">{linha.detalhe}</span>
-            </li>
-          ))}
-        </ul>
+      {escala.estado === 'agendada' && escala.data === hoje && (
+        <AtalhoDoCulto escalaId={id} dica={`Hoje às ${rotuloDoHorario(escala.horario)} · letras e tons, sem internet`} />
       )}
 
       {acao.erro && <p className="aviso">{acao.erro}</p>}
@@ -144,8 +134,6 @@ export function Escala() {
         <p className="dica">Já aconteceu. Mudanças aqui corrigem o histórico e não avisam ninguém.</p>
       )}
 
-      <Equipe escala={escala} euId={eu.id} dirige={dirige} />
-
       <Repertorio
         escala={escala}
         dirige={dirige}
@@ -157,6 +145,8 @@ export function Escala() {
         visita={visita}
       />
 
+      {dirige ? <EquipeResumida escala={escala} podeEditar={podeEditar} /> : <Equipe escala={escala} euId={eu.id} />}
+
       {podeEditar && (
         <RodapeDeAcao
           primario={
@@ -165,9 +155,11 @@ export function Escala() {
             </BotaoLink>
           }
           secundario={
-            <Botao variante="secundario" icone="whatsapp" onClick={() => abrir('whatsapp')}>
-              WhatsApp
-            </Botao>
+            escala.estado === 'agendada' ? (
+              <Botao variante="secundario" icone="whatsapp" onClick={() => abrir('whatsapp')}>
+                WhatsApp
+              </Botao>
+            ) : undefined
           }
         />
       )}
@@ -258,19 +250,71 @@ export function MenuDaEscala({
   return <Menu rotulo="Mais" itens={itens} />
 }
 
-export function Equipe({ escala, euId, dirige }: { escala: EscalaApresentada; euId: string; dirige: boolean }) {
-  const grupos = equipePorGrupo(escala.pessoas)
+export function EquipeResumida({ escala, podeEditar }: { escala: EscalaApresentada; podeEditar: boolean }) {
+  const linha = linhaDaEquipe(escala.pessoas)
+  const pendencias = escala.pendencias.filter((pendencia) => pendencia.chave !== 'sem-musicas')
+  const destino = pendencias.length ? destinoDaPendencia(escala.id, pendencias) : `/escalas/${escala.id}/equipe`
+
+  const conteudo = (
+    <>
+      {linha.total > 0 && (
+        <span className="pilha-de-iniciais" aria-hidden="true">
+          {linha.iniciais.map((inicial, posicao) => (
+            <span key={posicao} className="inicial mini">
+              {inicial}
+            </span>
+          ))}
+          {linha.extras > 0 && <span className="inicial mini">+{linha.extras}</span>}
+        </span>
+      )}
+      <span className="cresce">
+        <span className="titulo">
+          {linha.total === 0 ? 'Ninguém escalado ainda' : linha.total === 1 ? '1 pessoa' : `${linha.total} pessoas`}
+        </span>
+        {linha.texto && <span className="dica">{linha.texto}</span>}
+        {pendencias.length > 0 && (
+          <span className="estado">
+            <Icone nome="atencao" />
+            {resumoDasPendencias(pendencias)}
+          </span>
+        )}
+      </span>
+      {podeEditar && <Icone nome="seta" />}
+    </>
+  )
 
   return (
     <div className="secao">
       <div className="secao-topo">
         <h2>Equipe</h2>
-        {dirige && (
+        {podeEditar && (
           <BotaoLink para={`/escalas/${escala.id}/equipe`} variante="terciario" pequeno>
             {escala.pessoas.length ? 'Editar' : 'Montar'}
           </BotaoLink>
         )}
       </div>
+
+      <ul className="lista cartao">
+        <li>
+          {podeEditar ? (
+            <Link to={destino} className="toque">
+              {conteudo}
+            </Link>
+          ) : (
+            <div className="toque estatico">{conteudo}</div>
+          )}
+        </li>
+      </ul>
+    </div>
+  )
+}
+
+export function Equipe({ escala, euId }: { escala: EscalaApresentada; euId: string }) {
+  const grupos = equipePorGrupo(escala.pessoas)
+
+  return (
+    <div className="secao">
+      <h2>Equipe</h2>
 
       {escala.pessoas.length ? (
         <div className="cartao equipe-por-grupo">
