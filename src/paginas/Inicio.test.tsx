@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { beforeEach, describe, expect, it } from 'vitest'
 import type { EscalaApresentada, ItemApresentado } from '../api/tipos'
+import { ProvedorDeAvisos } from '../componentes/Avisos'
 import { marcarVisitaNaEscala } from '../escalas/visita'
 import { CartaoDoCulto, CartaoPosCulto, RepertorioDoInicio } from './Inicio'
 
@@ -49,7 +50,12 @@ const escala = (itens: ItemApresentado[]): EscalaApresentada => ({
   pronta: true,
 })
 
-const mostrar = (elemento: React.ReactElement) => render(<MemoryRouter>{elemento}</MemoryRouter>)
+const mostrar = (elemento: React.ReactElement) =>
+  render(
+    <MemoryRouter>
+      <ProvedorDeAvisos>{elemento}</ProvedorDeAvisos>
+    </MemoryRouter>,
+  )
 
 beforeEach(() => localStorage.clear())
 
@@ -68,6 +74,27 @@ describe('cartão pós-culto', () => {
     mostrar(<CartaoPosCulto posCulto={posCulto} hoje={HOJE} />)
 
     expect(screen.queryByText('Hoje: 5 músicas registradas')).toBeNull()
+  })
+
+  it('fechar dá pra desfazer, e desfazer traz o cartão de volta pra sempre', () => {
+    const { unmount } = mostrar(<CartaoPosCulto posCulto={posCulto} hoje={HOJE} />)
+
+    fireEvent.click(screen.getByLabelText('Fechar'))
+    expect(screen.queryByText('Hoje: 5 músicas registradas')).toBeNull()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Desfazer' }))
+    expect(screen.getByText('Hoje: 5 músicas registradas')).not.toBeNull()
+
+    unmount()
+    mostrar(<CartaoPosCulto posCulto={posCulto} hoje={HOJE} />)
+
+    expect(screen.getByText('Hoje: 5 músicas registradas')).not.toBeNull()
+  })
+
+  it('o título do cartão é um heading, pra quem navega por cabeçalhos', () => {
+    mostrar(<CartaoPosCulto posCulto={posCulto} hoje={HOJE} />)
+
+    expect(screen.getByRole('heading', { level: 2, name: 'Hoje: 5 músicas registradas' })).not.toBeNull()
   })
 
   it('continua aparecendo nas outras Escalas', () => {

@@ -9,12 +9,14 @@ export function Capa({
   tamanho = 'pequena',
   grande,
   tocavel,
+  titulo,
   transicao,
 }: {
   musicas: MusicaResumida[]
   tamanho?: TamanhoDaCapa
   grande?: boolean
   tocavel?: string
+  titulo?: string
   transicao?: string
 }) {
   const ehGrande = grande || tamanho === 'grande'
@@ -23,8 +25,17 @@ export function Capa({
   const estilo = transicao ? { viewTransitionName: transicao } : undefined
 
   if (tocavel) {
+    const nome = titulo ?? (musicas.length === 1 ? musicas[0].titulo : null)
+
     return (
-      <a className={`${classe} tocavel`} style={estilo} href={tocavel} target="_blank" rel="noopener" aria-label="Tocar no YouTube">
+      <a
+        className={`${classe} tocavel`}
+        style={estilo}
+        href={tocavel}
+        target="_blank"
+        rel="noopener"
+        aria-label={nome ? `Tocar ${nome} no YouTube` : 'Tocar no YouTube'}
+      >
         {imagens}
         <span className="play">
           <Icone nome="play" />

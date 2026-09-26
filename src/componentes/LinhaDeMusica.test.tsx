@@ -54,7 +54,9 @@ describe('LinhaDeMusica', () => {
   it('em leitura a capa toca e a linha não navega', () => {
     montar(<LinhaDeMusica musica={resumida} modo="leitura" tom="G" link="https://youtu.be/hRJUcvsnqKs" numero={2} />)
 
-    expect(screen.getByRole('link', { name: 'Tocar no YouTube' }).getAttribute('href')).toBe('https://youtu.be/hRJUcvsnqKs')
+    expect(screen.getByRole('link', { name: 'Tocar Meia Noite (Ao Vivo) | fhop music no YouTube' }).getAttribute('href')).toBe(
+      'https://youtu.be/hRJUcvsnqKs',
+    )
     expect(screen.queryByRole('button')).toBeNull()
     expect(screen.getAllByRole('link').length).toBe(1)
     expect(screen.getByText('Tom G').className).toBe('selo tom')
@@ -208,6 +210,9 @@ describe('LinhaDeMusica', () => {
     expect(trechos.length).toBe(2)
     expect(screen.getByText('Segunda')).not.toBeNull()
     expect(screen.getByText('Tom Em').className).toBe('selo tom')
-    expect(screen.getAllByRole('link', { name: 'Tocar no YouTube' }).length).toBe(2)
+    expect(screen.getAllByRole('link', { name: /^Tocar .+ no YouTube$/ }).map((link) => link.getAttribute('aria-label'))).toEqual([
+      'Tocar Primeira no YouTube',
+      'Tocar Segunda no YouTube',
+    ])
   })
 })

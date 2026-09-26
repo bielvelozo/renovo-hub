@@ -39,12 +39,18 @@ describe('Capa', () => {
     expect(container.querySelector('.capa-vazia svg')).not.toBeNull()
   })
 
-  it('tocável vira link em nova aba com o play por cima', () => {
-    render(<Capa musicas={[musica('a')]} tocavel="https://youtu.be/va" />)
-    const link = screen.getByRole('link', { name: 'Tocar no YouTube' })
+  it('tocável vira link em nova aba com o play por cima, nomeado pela música', () => {
+    render(<Capa musicas={[musica('a', { titulo: 'Rio' })]} tocavel="https://youtu.be/va" />)
+    const link = screen.getByRole('link', { name: 'Tocar Rio no YouTube' })
     expect(link.getAttribute('target')).toBe('_blank')
     expect(link.className).toBe('capa tocavel')
     expect(link.querySelector('.play svg')).not.toBeNull()
+  })
+
+  it('usa o título limpo quando a linha passa um', () => {
+    render(<Capa musicas={[musica('a', { titulo: 'Rio (Ao Vivo) | Renovo' })]} titulo="Rio" tocavel="https://youtu.be/va" />)
+
+    expect(screen.getByRole('link', { name: 'Tocar Rio no YouTube' })).not.toBeNull()
   })
 
   it('monta mosaico de até quatro', () => {

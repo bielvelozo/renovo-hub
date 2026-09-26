@@ -25,7 +25,11 @@ export function FolhaDoWhatsapp({ escalaId, fechar }: { escalaId: string; fechar
 
   return (
     <Folha titulo="Texto pro WhatsApp" fechar={fechar}>
-      {busca.erro && <p className="aviso">{busca.erro}</p>}
+      {busca.erro && (
+        <p className="aviso" role="alert">
+          {busca.erro}
+        </p>
+      )}
       {busca.carregando && <Esqueleto forma="paragrafo" />}
 
       {busca.dados && (
@@ -60,7 +64,11 @@ export function FolhaDaPlaylist({
 
   return (
     <Folha titulo="Playlist pra ouvir" fechar={fechar}>
-      {busca.erro && <p className="aviso">{busca.erro}</p>}
+      {busca.erro && (
+        <p className="aviso" role="alert">
+          {busca.erro}
+        </p>
+      )}
 
       {!link && <Vazio icone="musica">Esta Escala ainda não tem músicas.</Vazio>}
 

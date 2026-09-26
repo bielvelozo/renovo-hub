@@ -67,6 +67,12 @@ h3,
   display: block;
 }
 
+h2.titulo {
+  letter-spacing: 0;
+  text-transform: none;
+  color: inherit;
+}
+
 .dica {
   color: var(--texto-2);
   font-size: 14px;
@@ -453,6 +459,7 @@ nav.abas .contagem {
 }
 
 .fatos dt {
+  flex: none;
   color: var(--texto-2);
   font-size: 14px;
 }
@@ -731,6 +738,11 @@ nav.abas .contagem {
   padding-inline: 14px;
 }
 
+/* A lista em cartão recorta o que sai dela; o anel de foco de 2 px fica por dentro da linha. */
+.lista.cartao .toque:focus-visible {
+  outline-offset: -3px;
+}
+
 .lista .toque {
   display: flex;
   align-items: center;
@@ -769,6 +781,12 @@ nav.abas .contagem {
   background: var(--perigo-suave);
   color: var(--perigo);
   font-size: 14px;
+}
+
+.erro-de-carga {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .selos {

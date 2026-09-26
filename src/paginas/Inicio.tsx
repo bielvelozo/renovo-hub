@@ -8,7 +8,9 @@ import { usarBusca } from '../api/usarBusca'
 import { Cabecalho } from '../casca/Cabecalho'
 import { Icone } from '../casca/Icone'
 import { Botao, BotaoLink } from '../componentes/Botao'
+import { usarAviso } from '../componentes/Avisos'
 import { Cartao } from '../componentes/Cartao'
+import { ErroDeCarga } from '../componentes/ErroDeCarga'
 import { Esqueleto } from '../componentes/Esqueleto'
 import { FolhaDaPlaylist } from '../componentes/FolhasDaEscala'
 import { LinhaDoItem } from '../componentes/LinhaDeMusica'
@@ -46,7 +48,7 @@ export function Inicio() {
     return (
       <section className="pagina">
         {cabecalho}
-        <p className="aviso">{busca.erro}</p>
+        <ErroDeCarga mensagem={busca.erro} tentarDeNovo={busca.recarregar} />
       </section>
     )
   }
@@ -86,7 +88,7 @@ export function Inicio() {
           icone="calendario"
           acao={
             dirige && dados.proximoMesVazio ? (
-              <Botao disabled={acao.ocupado} onClick={() => criarMes(dados.proximoMesVazio!)}>
+              <Botao carregando={acao.ocupado} onClick={() => criarMes(dados.proximoMesVazio!)}>
                 Criar as escalas de {nomeDoMes(dados.proximoMesVazio).toLowerCase()}
               </Botao>
             ) : undefined
@@ -96,7 +98,11 @@ export function Inicio() {
         </Vazio>
       )}
 
-      {acao.erro && <p className="aviso">{acao.erro}</p>}
+      {acao.erro && (
+        <p className="aviso" role="alert">
+          {acao.erro}
+        </p>
+      )}
 
       {escala && <CartaoDoCulto escala={escala} hoje={hoje} />}
 
@@ -132,27 +138,32 @@ export function CartaoDoCulto({ escala, hoje }: { escala: EscalaApresentada; hoj
 }
 
 export function CartaoPosCulto({ posCulto, hoje }: { posCulto: PosCultoApresentado; hoje: string }) {
-  const [fechado, fechar] = useState(() => localStorage.getItem(chaveDoPosCultoFechado(posCulto.escalaId)) !== null)
+  const chave = chaveDoPosCultoFechado(posCulto.escalaId)
+  const [fechado, fechar] = useState(() => localStorage.getItem(chave) !== null)
+  const avisar = usarAviso()
 
   if (fechado) return null
+
+  function fecharComDesfazer() {
+    localStorage.setItem(chave, new Date().toISOString())
+    fechar(true)
+    avisar('Fechado', {
+      desfazer: () => {
+        localStorage.removeItem(chave)
+        fechar(false)
+      },
+    })
+  }
 
   return (
     <Cartao className="pagina pos-culto">
       <div className="secao-topo">
         <Icone nome="confirmar" />
         <div className="cresce">
-          <div className="titulo">{textoDoPosCulto(posCulto, hoje)}</div>
+          <h2 className="titulo">{textoDoPosCulto(posCulto, hoje)}</h2>
           <div className="dica">O histórico já foi salvo. Só ajuste se alguma música ou tom mudou na hora.</div>
         </div>
-        <Botao
-          variante="icone"
-          icone="remover"
-          aria-label="Fechar"
-          onClick={() => {
-            localStorage.setItem(chaveDoPosCultoFechado(posCulto.escalaId), new Date().toISOString())
-            fechar(true)
-          }}
-        />
+        <Botao variante="icone" icone="remover" aria-label="Fechar" onClick={fecharComDesfazer} />
       </div>
       <div>
         <BotaoLink para={`/escalas/${posCulto.escalaId}`} variante="terciario" pequeno>
@@ -187,7 +198,7 @@ function ProximaEscala({
             <span>{nomeDoDia(escala.data)}</span>
           </span>
           <div className="cresce">
-            <div className="titulo-do-cartao">{nomeDaEscala(escala)}</div>
+            <h3 className="titulo-do-cartao">{nomeDaEscala(escala)}</h3>
             <div className="dica">
               {rotuloDoHorario(escala.horario)} · {quandoAcontece(escala.data, hoje)}
             </div>
@@ -329,14 +340,17 @@ export function LinhaDeSugestoes({ sugestoes }: { sugestoes: SugestaoApresentada
   if (!texto) return null
 
   return (
-    <ul className="lista cartao">
-      <li>
-        <Link to="/sugestoes" className="toque">
-          <Icone nome="lampada" />
-          <span className="cresce titulo">{texto}</span>
-          <Icone nome="seta" />
-        </Link>
-      </li>
-    </ul>
+    <div className="secao">
+      <h2>Sugestões</h2>
+      <ul className="lista cartao">
+        <li>
+          <Link to="/sugestoes" className="toque">
+            <Icone nome="lampada" />
+            <span className="cresce titulo">{texto}</span>
+            <Icone nome="seta" />
+          </Link>
+        </li>
+      </ul>
+    </div>
   )
 }

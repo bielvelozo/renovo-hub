@@ -138,7 +138,7 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
         </button>
       ) : (
         <>
-          <Capa musicas={capas} tocavel={link} transicao={transicao} />
+          <Capa musicas={capas} tocavel={link} titulo={nome.titulo} transicao={transicao} />
           {modo === 'navegacao' && !ehMedley ? (
             <Link to={`/musicas/${props.musica.id}`} className="miolo">
               {miolo}
@@ -160,7 +160,7 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
         <ol className="trechos-do-medley">
           {props.trechos.map((trecho, posicao) => (
             <li key={`${trecho.musicaId}-${posicao}`}>
-              <Capa musicas={[trecho.musica]} tocavel={trecho.link} />
+              <Capa musicas={[trecho.musica]} tocavel={trecho.link} titulo={nomeLimpo(trecho.musica).titulo} />
               {modo === 'navegacao' ? (
                 <Link to={`/musicas/${trecho.musicaId}`} className="cresce">
                   <TituloDoTrecho trecho={trecho} />
