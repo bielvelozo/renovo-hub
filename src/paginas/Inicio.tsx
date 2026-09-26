@@ -297,7 +297,7 @@ export function RepertorioDoInicio({
           {dirige && (
             <li>
               <Link to={`/escalas/${escala.id}/adicionar`} className="toque">
-                <Icone nome="mais" />
+                <Icone nome="musica" />
                 <span className="cresce titulo">Adicionar música</span>
                 <Icone nome="seta" />
               </Link>
