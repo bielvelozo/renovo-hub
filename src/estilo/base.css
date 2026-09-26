@@ -578,8 +578,18 @@ nav.abas .contagem {
   padding: 10px 14px;
   border-radius: var(--raio-g);
   background: var(--acento-suave);
+  box-shadow: var(--sombra-cartao);
   color: var(--texto);
   text-decoration: none;
+  transition: transform var(--tempo-toque) var(--mola-toque);
+}
+
+.atalho-do-culto:hover {
+  background: color-mix(in srgb, var(--acento-suave), var(--acento) 8%);
+}
+
+.atalho-do-culto:active {
+  transform: scale(0.98);
 }
 
 .atalho-do-culto > .icone {
@@ -704,7 +714,7 @@ nav.abas .contagem {
 
 .item.arrastando {
   background: var(--superficie-alta);
-  box-shadow: var(--sombra);
+  box-shadow: var(--sombra-flutuando);
 }
 
 .acao-da-formacao {

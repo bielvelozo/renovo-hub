@@ -23,7 +23,7 @@
   max-width: 720px;
   border-radius: var(--raio-g) var(--raio-g) 0 0;
   background: var(--superficie);
-  box-shadow: var(--sombra-alta);
+  box-shadow: var(--sombra-cobrindo);
   outline: none;
 }
 
@@ -189,7 +189,7 @@
   padding: 16px;
   border-radius: var(--raio-g);
   background: var(--superficie);
-  box-shadow: var(--sombra);
+  box-shadow: var(--sombra-cartao);
 }
 
 .bloco-do-esqueleto .cresce {
@@ -290,7 +290,7 @@
   padding: 6px;
   border-radius: var(--raio-g);
   background: var(--superficie-alta);
-  box-shadow: var(--sombra-alta), var(--sombra);
+  box-shadow: var(--sombra-flutuando);
   outline: none;
   transform-origin: var(--transform-origin);
   animation: abrir-o-menu var(--tempo-aviso) var(--mola-entrada);
@@ -358,7 +358,7 @@
 
 .linha-de-musica.arrastando {
   background: var(--superficie-alta);
-  box-shadow: var(--sombra);
+  box-shadow: var(--sombra-flutuando);
 }
 
 .linha-de-musica .miolo,
@@ -987,7 +987,7 @@
   width: calc((100% - 6px) / var(--total, 2));
   border-radius: calc(var(--raio) - 3px);
   background: var(--superficie);
-  box-shadow: var(--sombra), 0 1px 2px light-dark(rgb(25 25 27 / 8%), rgb(0 0 0 / 40%));
+  box-shadow: var(--sombra-curta);
   transform: translateX(calc(var(--posicao, 0) * 100%));
   transition: transform var(--tempo-folha) var(--mola-entrada);
 }
@@ -1073,7 +1073,7 @@ textarea.texto-longo {
   background: var(--superficie);
   border-radius: var(--raio-g);
   padding: 16px;
-  box-shadow: var(--sombra);
+  box-shadow: var(--sombra-cartao);
 }
 
 .cartao.cancelada {
@@ -1620,7 +1620,7 @@ textarea.texto-longo {
   height: 22px;
   border-radius: 50%;
   background: var(--superficie-alta);
-  box-shadow: var(--sombra);
+  box-shadow: var(--sombra-curta);
   transition: transform var(--tempo-folha) var(--mola-entrada);
 }
 

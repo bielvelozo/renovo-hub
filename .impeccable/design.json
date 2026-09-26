@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-26T03:12:02.800Z",
+  "generatedAt": "2026-09-26T03:29:49.532Z",
   "title": "Design System: Renovo Hub",
   "extensions": {
     "colorMeta": {
@@ -381,22 +381,22 @@
       {
         "name": "cartao-em-repouso",
         "value": "0 1px 2px light-dark(rgb(25 25 27 / 6%), rgb(0 0 0 / 35%)), 0 8px 24px light-dark(rgb(25 25 27 / 8%), rgb(0 0 0 / 45%))",
-        "purpose": "Cartões, listas em cartão e atalho do culto. Substitui o anel de 1 px atual."
+        "purpose": "Cartões, listas em cartão, esqueleto de cartão e atalho do culto. Substituiu o anel de 1 px em 26/09/2026 (token --sombra-cartao)."
       },
       {
         "name": "flutuando",
         "value": "0 12px 32px light-dark(rgb(25 25 27 / 18%), rgb(0 0 0 / 60%))",
-        "purpose": "Menu de mais opções."
+        "purpose": "Menu de mais opções e a linha sendo arrastada (token --sombra-flutuando)."
       },
       {
         "name": "cobrindo",
         "value": "0 -12px 40px light-dark(rgb(25 25 27 / 18%), rgb(0 0 0 / 60%))",
-        "purpose": "Folha que sobe do rodapé, sobre o fundo escurecido a 40 %."
+        "purpose": "Folha que sobe do rodapé, sobre o fundo escurecido a 40 % (token --sombra-cobrindo)."
       },
       {
         "name": "marcador-do-segmento",
         "value": "0 1px 2px light-dark(rgb(25 25 27 / 8%), rgb(0 0 0 / 40%))",
-        "purpose": "A versão curta, só no marcador que desliza."
+        "purpose": "A versão curta, no marcador do segmento e na bolinha do interruptor (token --sombra-curta)."
       },
       {
         "name": "recorte-de-inicial",

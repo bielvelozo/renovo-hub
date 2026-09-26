@@ -199,7 +199,7 @@ O Renovo Hub é desenhado como um instrumento premium: acabamento fosco, propor�
 
 O sistema é neutro de propósito. Cinzas quase sem matiz, uma família tipográfica só (Geist), superfícies que flutuam com sombra difusa sobre um fundo levemente mais escuro, e componentes contidos: 44 px de altura, raio de 12 px, peso 600, nada que salte. A hierarquia nasce do texto (peso, tamanho, caixa alta em rótulos) e do espaço, não de caixas coloridas. O tema escuro não é uma inversão do claro: é o palco, com superfícies um degrau mais claras que o fundo e sombras mais fundas, pensado para o celular no pedestal com pouca luz.
 
-Rejeições confirmadas pelo dono do projeto: fundos tingidos e cartões coloridos, serifa de display (a Fraunces saiu em 19/09/2026), grão ou textura de papel, e o escuro azulado da paleta anterior. Em 25/09/2026 a borda de 1 px dos cartões em repouso foi substituída, como regra, pela elevação suave descrita em Elevation & Depth; o código ainda carrega a borda até o próximo `polish`.
+Rejeições confirmadas pelo dono do projeto: fundos tingidos e cartões coloridos, serifa de display (a Fraunces saiu em 19/09/2026), grão ou textura de papel, e o escuro azulado da paleta anterior. Em 25/09/2026 a borda de 1 px dos cartões em repouso foi substituída, como regra, pela elevação suave descrita em Elevation & Depth, que entrou no código em 26/09/2026.
 
 **Key Characteristics:**
 - Cinzas neutros em pares claro/escuro, escritos uma vez com `light-dark()`.
@@ -282,12 +282,12 @@ Densidade confortável, não compacta: uma Escala por cartão, uma pessoa por li
 
 ## Elevation & Depth
 
-Elevação suave, decidida em 25/09/2026. Superfícies em repouso flutuam sobre o fundo com uma sombra difusa em duas camadas, sem borda; o que abre por cima (menu, folha) ganha uma sombra mais funda; tudo o mais é plano. No tema escuro a sombra sozinha quase não lê, então quem separa é o degrau de cinza entre Fundo e Superfície, e a sombra só reforça. A implementação atual (`--sombra: 0 0 0 1px var(--linha)` e `--sombra-alta`) ainda desenha a borda de 1 px; trocar pelos valores abaixo é trabalho de `polish`, não decisão nova.
+Elevação suave, decidida em 25/09/2026. Superfícies em repouso flutuam sobre o fundo com uma sombra difusa em duas camadas, sem borda; o que abre por cima (menu, folha) ganha uma sombra mais funda; tudo o mais é plano. No tema escuro a sombra sozinha quase não lê, então quem separa é o degrau de cinza entre Fundo e Superfície, e a sombra só reforça. Os tokens vivem em `src/estilo/tokens.css` (`--sombra-cartao`, `--sombra-curta`, `--sombra-flutuando`, `--sombra-cobrindo`); a borda de 1 px dos cartões saiu em 26/09/2026.
 
 ### Shadow Vocabulary
-- **Cartão em repouso** (`box-shadow: 0 1px 2px light-dark(rgb(25 25 27 / 6%), rgb(0 0 0 / 35%)), 0 8px 24px light-dark(rgb(25 25 27 / 8%), rgb(0 0 0 / 45%))`): cartões, listas em cartão, esqueleto de cartão, atalho do modo culto.
-- **Flutuando** (`box-shadow: 0 12px 32px light-dark(rgb(25 25 27 / 18%), rgb(0 0 0 / 60%))`): menu de mais opções, marcador do segmento (que usa a versão curta, `0 1px 2px`).
-- **Cobrindo** (`box-shadow: 0 -12px 40px light-dark(rgb(25 25 27 / 18%), rgb(0 0 0 / 60%))`): a folha que sobe do rodapé, sobre o fundo escurecido a 40 % com desfoque de 8 px.
+- **Cartão em repouso** (`--sombra-cartao`: `0 1px 2px light-dark(rgb(25 25 27 / 6%), rgb(0 0 0 / 35%)), 0 8px 24px light-dark(rgb(25 25 27 / 8%), rgb(0 0 0 / 45%))`): cartões, listas em cartão, esqueleto de cartão, atalho do modo culto.
+- **Flutuando** (`--sombra-flutuando`: `0 12px 32px light-dark(rgb(25 25 27 / 18%), rgb(0 0 0 / 60%))`): menu de mais opções e a linha que está sendo arrastada. O marcador do segmento e a bolinha do interruptor usam a versão curta (`--sombra-curta`: `0 1px 2px light-dark(rgb(25 25 27 / 8%), rgb(0 0 0 / 40%))`).
+- **Cobrindo** (`--sombra-cobrindo`: `0 -12px 40px light-dark(rgb(25 25 27 / 18%), rgb(0 0 0 / 60%))`): a folha que sobe do rodapé, sobre o fundo escurecido a 40 % com desfoque de 8 px.
 - **Inicial sobreposta** (`box-shadow: 0 0 0 2px var(--superficie)`): não é sombra, é o recorte entre iniciais empilhadas; continua como está.
 
 ### Named Rules
@@ -321,7 +321,7 @@ Contidos e precisos: a mesma altura dos campos, texto em 600, resposta ao toque 
 - **State:** selecionado vira Índigo-suave com texto Índigo e borda transparente. Função técnica selecionada usa Cinza-meio cheio com texto Superfície. Ministro é tracejado, e selecionado vira Grafite cheio com texto Fundo.
 
 ### Segmento
-Trilho em Véu com 3 px de recuo e raio 12 px; o marcador desliza com a mola de entrada (400 ms) e é a única superfície com sombra curta fora dos cartões. Botões de 44 px em 600 14px, ativo em Grafite, inativo em Cinza-meio, com a contagem em 500 13px tabular.
+Trilho em Véu com 3 px de recuo e raio 12 px; o marcador desliza com a mola de entrada (400 ms) e leva a sombra curta. Botões de 44 px em 600 14px, ativo em Grafite, inativo em Cinza-meio, com a contagem em 500 13px tabular.
 
 ### Selos
 - **Style:** 3 × 8 px de recuo, raio 6 px, 600 12px tabular, uma linha só.
@@ -330,7 +330,7 @@ Trilho em Véu com 3 px de recuo e raio 12 px; o marcador desliza com a mola de 
 ### Cards / Containers
 - **Corner Style:** 14 px.
 - **Background:** Superfície; cancelada ganha um anel interno em Perigo-suave e título em Perigo.
-- **Shadow Strategy:** "Cartão em repouso" de Elevation & Depth; hoje ainda a borda de 1 px.
+- **Shadow Strategy:** "Cartão em repouso" de Elevation & Depth (`--sombra-cartao`).
 - **Border:** nenhuma.
 - **Internal Padding:** 16 px; listas em cartão zeram o recuo e usam 14 px por linha.
 

@@ -44,8 +44,10 @@
   --raio-p: 6px;
   --raio-total: 999px;
 
-  --sombra: 0 0 0 1px var(--linha);
-  --sombra-alta: 0 -1px 0 var(--linha), 0 -12px 32px light-dark(rgb(25 25 27 / 8%), rgb(0 0 0 / 50%));
+  --sombra-cartao: 0 1px 2px light-dark(rgb(25 25 27 / 6%), rgb(0 0 0 / 35%)), 0 8px 24px light-dark(rgb(25 25 27 / 8%), rgb(0 0 0 / 45%));
+  --sombra-curta: 0 1px 2px light-dark(rgb(25 25 27 / 8%), rgb(0 0 0 / 40%));
+  --sombra-flutuando: 0 12px 32px light-dark(rgb(25 25 27 / 18%), rgb(0 0 0 / 60%));
+  --sombra-cobrindo: 0 -12px 40px light-dark(rgb(25 25 27 / 18%), rgb(0 0 0 / 60%));
 
   --mola-entrada: linear(
     0,
