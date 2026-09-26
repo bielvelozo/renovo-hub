@@ -1,0 +1,616 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-26T02:16:10.636Z",
+  "title": "Design System: Renovo Hub",
+  "extensions": {
+    "colorMeta": {
+      "acento": {
+        "role": "primary",
+        "displayName": "Índigo",
+        "canonical": "light-dark(#3a4789, #a9c0ea)",
+        "light": "oklch(42.2% 0.110 272)",
+        "dark": "oklch(80.5% 0.065 262)",
+        "tonalRamp": [
+          "oklch(15.0% 0.110 272)",
+          "oklch(26.0% 0.110 272)",
+          "oklch(37.0% 0.110 272)",
+          "oklch(48.0% 0.110 272)",
+          "oklch(60.0% 0.110 272)",
+          "oklch(72.0% 0.110 272)",
+          "oklch(84.0% 0.110 272)",
+          "oklch(95.0% 0.110 272)"
+        ]
+      },
+      "acento-forte": {
+        "role": "primary",
+        "displayName": "Índigo profundo",
+        "canonical": "light-dark(#2d386f, #c2d3f2)",
+        "light": "oklch(36.2% 0.095 272)",
+        "dark": "oklch(86.4% 0.047 263)",
+        "tonalRamp": [
+          "oklch(15.0% 0.095 272)",
+          "oklch(26.0% 0.095 272)",
+          "oklch(37.0% 0.095 272)",
+          "oklch(48.0% 0.095 272)",
+          "oklch(60.0% 0.095 272)",
+          "oklch(72.0% 0.095 272)",
+          "oklch(84.0% 0.095 272)",
+          "oklch(95.0% 0.095 272)"
+        ]
+      },
+      "acento-suave": {
+        "role": "primary",
+        "displayName": "Índigo-suave",
+        "canonical": "light-dark(#ebedf3, #2c3037)",
+        "light": "oklch(94.6% 0.008 271)",
+        "dark": "oklch(30.8% 0.014 262)",
+        "tonalRamp": [
+          "oklch(15.0% 0.008 271)",
+          "oklch(26.0% 0.008 271)",
+          "oklch(37.0% 0.008 271)",
+          "oklch(48.0% 0.008 271)",
+          "oklch(60.0% 0.008 271)",
+          "oklch(72.0% 0.008 271)",
+          "oklch(84.0% 0.008 271)",
+          "oklch(95.0% 0.008 271)"
+        ]
+      },
+      "sobre-acento": {
+        "role": "primary",
+        "displayName": "Sobre índigo",
+        "canonical": "light-dark(#ffffff, #0f131b)",
+        "light": "oklch(100.0% 0.000 0)",
+        "dark": "oklch(18.6% 0.018 264)",
+        "tonalRamp": [
+          "oklch(15.0% 0.000 0)",
+          "oklch(26.0% 0.000 0)",
+          "oklch(37.0% 0.000 0)",
+          "oklch(48.0% 0.000 0)",
+          "oklch(60.0% 0.000 0)",
+          "oklch(72.0% 0.000 0)",
+          "oklch(84.0% 0.000 0)",
+          "oklch(95.0% 0.000 0)"
+        ]
+      },
+      "realce": {
+        "role": "secondary",
+        "displayName": "Âmbar",
+        "canonical": "light-dark(#b5502d, #eba560)",
+        "light": "oklch(55.5% 0.140 39)",
+        "dark": "oklch(77.6% 0.119 64)",
+        "tonalRamp": [
+          "oklch(15.0% 0.140 39)",
+          "oklch(26.0% 0.140 39)",
+          "oklch(37.0% 0.140 39)",
+          "oklch(48.0% 0.140 39)",
+          "oklch(60.0% 0.140 39)",
+          "oklch(72.0% 0.140 39)",
+          "oklch(84.0% 0.140 39)",
+          "oklch(95.0% 0.140 39)"
+        ]
+      },
+      "atencao": {
+        "role": "semantic",
+        "displayName": "Atenção",
+        "canonical": "light-dark(#9a4f12, #eba560)",
+        "light": "oklch(51.0% 0.121 53)",
+        "dark": "oklch(77.6% 0.119 64)",
+        "tonalRamp": [
+          "oklch(15.0% 0.121 53)",
+          "oklch(26.0% 0.121 53)",
+          "oklch(37.0% 0.121 53)",
+          "oklch(48.0% 0.121 53)",
+          "oklch(60.0% 0.121 53)",
+          "oklch(72.0% 0.121 53)",
+          "oklch(84.0% 0.121 53)",
+          "oklch(95.0% 0.121 53)"
+        ]
+      },
+      "atencao-suave": {
+        "role": "semantic",
+        "displayName": "Atenção-suave",
+        "canonical": "light-dark(#f5ede7, #332a23)",
+        "light": "oklch(95.1% 0.012 60)",
+        "dark": "oklch(29.3% 0.018 60)",
+        "tonalRamp": [
+          "oklch(15.0% 0.012 60)",
+          "oklch(26.0% 0.012 60)",
+          "oklch(37.0% 0.012 60)",
+          "oklch(48.0% 0.012 60)",
+          "oklch(60.0% 0.012 60)",
+          "oklch(72.0% 0.012 60)",
+          "oklch(84.0% 0.012 60)",
+          "oklch(95.0% 0.012 60)"
+        ]
+      },
+      "perigo": {
+        "role": "semantic",
+        "displayName": "Perigo",
+        "canonical": "light-dark(#a8323e, #f08a93)",
+        "light": "oklch(49.7% 0.153 19)",
+        "dark": "oklch(74.5% 0.124 15)",
+        "tonalRamp": [
+          "oklch(15.0% 0.153 19)",
+          "oklch(26.0% 0.153 19)",
+          "oklch(37.0% 0.153 19)",
+          "oklch(48.0% 0.153 19)",
+          "oklch(60.0% 0.153 19)",
+          "oklch(72.0% 0.153 19)",
+          "oklch(84.0% 0.153 19)",
+          "oklch(95.0% 0.153 19)"
+        ]
+      },
+      "perigo-suave": {
+        "role": "semantic",
+        "displayName": "Perigo-suave",
+        "canonical": "light-dark(#f6eaec, #34272a)",
+        "light": "oklch(94.7% 0.013 6)",
+        "dark": "oklch(28.9% 0.020 3)",
+        "tonalRamp": [
+          "oklch(15.0% 0.013 6)",
+          "oklch(26.0% 0.013 6)",
+          "oklch(37.0% 0.013 6)",
+          "oklch(48.0% 0.013 6)",
+          "oklch(60.0% 0.013 6)",
+          "oklch(72.0% 0.013 6)",
+          "oklch(84.0% 0.013 6)",
+          "oklch(95.0% 0.013 6)"
+        ]
+      },
+      "sucesso": {
+        "role": "semantic",
+        "displayName": "Sucesso",
+        "canonical": "light-dark(#2c6b42, #7fc79a)",
+        "light": "oklch(47.5% 0.093 153)",
+        "dark": "oklch(77.0% 0.097 156)",
+        "tonalRamp": [
+          "oklch(15.0% 0.093 153)",
+          "oklch(26.0% 0.093 153)",
+          "oklch(37.0% 0.093 153)",
+          "oklch(48.0% 0.093 153)",
+          "oklch(60.0% 0.093 153)",
+          "oklch(72.0% 0.093 153)",
+          "oklch(84.0% 0.093 153)",
+          "oklch(95.0% 0.093 153)"
+        ]
+      },
+      "sucesso-suave": {
+        "role": "semantic",
+        "displayName": "Sucesso-suave",
+        "canonical": "light-dark(#eaf0ec, #252f2b)",
+        "light": "oklch(94.9% 0.008 157)",
+        "dark": "oklch(29.4% 0.016 169)",
+        "tonalRamp": [
+          "oklch(15.0% 0.008 157)",
+          "oklch(26.0% 0.008 157)",
+          "oklch(37.0% 0.008 157)",
+          "oklch(48.0% 0.008 157)",
+          "oklch(60.0% 0.008 157)",
+          "oklch(72.0% 0.008 157)",
+          "oklch(84.0% 0.008 157)",
+          "oklch(95.0% 0.008 157)"
+        ]
+      },
+      "ceia-texto": {
+        "role": "semantic",
+        "displayName": "Santa Ceia",
+        "canonical": "light-dark(#57407f, #c9bdea)",
+        "light": "oklch(42.7% 0.103 299)",
+        "dark": "oklch(82.3% 0.064 297)",
+        "tonalRamp": [
+          "oklch(15.0% 0.103 299)",
+          "oklch(26.0% 0.103 299)",
+          "oklch(37.0% 0.103 299)",
+          "oklch(48.0% 0.103 299)",
+          "oklch(60.0% 0.103 299)",
+          "oklch(72.0% 0.103 299)",
+          "oklch(84.0% 0.103 299)",
+          "oklch(95.0% 0.103 299)"
+        ]
+      },
+      "ceia-fundo": {
+        "role": "semantic",
+        "displayName": "Santa Ceia, fundo",
+        "canonical": "light-dark(#ece8f3, #2b2733)",
+        "light": "oklch(93.7% 0.015 303)",
+        "dark": "oklch(28.2% 0.022 300)",
+        "tonalRamp": [
+          "oklch(15.0% 0.015 303)",
+          "oklch(26.0% 0.015 303)",
+          "oklch(37.0% 0.015 303)",
+          "oklch(48.0% 0.015 303)",
+          "oklch(60.0% 0.015 303)",
+          "oklch(72.0% 0.015 303)",
+          "oklch(84.0% 0.015 303)",
+          "oklch(95.0% 0.015 303)"
+        ]
+      },
+      "fundo": {
+        "role": "neutral",
+        "displayName": "Fundo",
+        "canonical": "light-dark(#f4f4f2, #0f0f10)",
+        "light": "oklch(96.7% 0.003 106)",
+        "dark": "oklch(16.9% 0.002 286)",
+        "tonalRamp": [
+          "oklch(15.0% 0.003 106)",
+          "oklch(26.0% 0.003 106)",
+          "oklch(37.0% 0.003 106)",
+          "oklch(48.0% 0.003 106)",
+          "oklch(60.0% 0.003 106)",
+          "oklch(72.0% 0.003 106)",
+          "oklch(84.0% 0.003 106)",
+          "oklch(95.0% 0.003 106)"
+        ]
+      },
+      "superficie": {
+        "role": "neutral",
+        "displayName": "Superfície",
+        "canonical": "light-dark(#ffffff, #18181a)",
+        "light": "oklch(100.0% 0.000 0)",
+        "dark": "oklch(21.0% 0.004 286)",
+        "tonalRamp": [
+          "oklch(15.0% 0.000 0)",
+          "oklch(26.0% 0.000 0)",
+          "oklch(37.0% 0.000 0)",
+          "oklch(48.0% 0.000 0)",
+          "oklch(60.0% 0.000 0)",
+          "oklch(72.0% 0.000 0)",
+          "oklch(84.0% 0.000 0)",
+          "oklch(95.0% 0.000 0)"
+        ]
+      },
+      "superficie-alta": {
+        "role": "neutral",
+        "displayName": "Superfície alta",
+        "canonical": "light-dark(#ededeb, #222225)",
+        "light": "oklch(94.6% 0.003 106)",
+        "dark": "oklch(25.3% 0.006 286)",
+        "tonalRamp": [
+          "oklch(15.0% 0.003 106)",
+          "oklch(26.0% 0.003 106)",
+          "oklch(37.0% 0.003 106)",
+          "oklch(48.0% 0.003 106)",
+          "oklch(60.0% 0.003 106)",
+          "oklch(72.0% 0.003 106)",
+          "oklch(84.0% 0.003 106)",
+          "oklch(95.0% 0.003 106)"
+        ]
+      },
+      "linha": {
+        "role": "neutral",
+        "displayName": "Linha",
+        "canonical": "light-dark(#e2e2df, #2b2b2f)",
+        "light": "oklch(91.2% 0.004 106)",
+        "dark": "oklch(29.1% 0.007 286)",
+        "tonalRamp": [
+          "oklch(15.0% 0.004 106)",
+          "oklch(26.0% 0.004 106)",
+          "oklch(37.0% 0.004 106)",
+          "oklch(48.0% 0.004 106)",
+          "oklch(60.0% 0.004 106)",
+          "oklch(72.0% 0.004 106)",
+          "oklch(84.0% 0.004 106)",
+          "oklch(95.0% 0.004 106)"
+        ]
+      },
+      "texto": {
+        "role": "neutral",
+        "displayName": "Grafite",
+        "canonical": "light-dark(#19191b, #f2f2f0)",
+        "light": "oklch(21.4% 0.004 286)",
+        "dark": "oklch(96.1% 0.003 106)",
+        "tonalRamp": [
+          "oklch(15.0% 0.004 286)",
+          "oklch(26.0% 0.004 286)",
+          "oklch(37.0% 0.004 286)",
+          "oklch(48.0% 0.004 286)",
+          "oklch(60.0% 0.004 286)",
+          "oklch(72.0% 0.004 286)",
+          "oklch(84.0% 0.004 286)",
+          "oklch(95.0% 0.004 286)"
+        ]
+      },
+      "texto-2": {
+        "role": "neutral",
+        "displayName": "Cinza-meio",
+        "canonical": "light-dark(#5d5d64, #a3a3a8)",
+        "light": "oklch(48.1% 0.011 286)",
+        "dark": "oklch(71.7% 0.007 286)",
+        "tonalRamp": [
+          "oklch(15.0% 0.011 286)",
+          "oklch(26.0% 0.011 286)",
+          "oklch(37.0% 0.011 286)",
+          "oklch(48.0% 0.011 286)",
+          "oklch(60.0% 0.011 286)",
+          "oklch(72.0% 0.011 286)",
+          "oklch(84.0% 0.011 286)",
+          "oklch(95.0% 0.011 286)"
+        ]
+      },
+      "neutro-suave": {
+        "role": "neutral",
+        "displayName": "Véu",
+        "canonical": "light-dark(rgb(0 0 0 / 5.5%), rgb(255 255 255 / 7%))",
+        "tonalRamp": [
+          "oklch(15.0% 0.004 106)",
+          "oklch(26.0% 0.004 106)",
+          "oklch(37.0% 0.004 106)",
+          "oklch(48.0% 0.004 106)",
+          "oklch(60.0% 0.004 106)",
+          "oklch(72.0% 0.004 106)",
+          "oklch(84.0% 0.004 106)",
+          "oklch(95.0% 0.004 106)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Título de cada tela e a palavra Renovo na marca. Um por tela."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Título da folha que sobe."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Título de cartão, de subtela e o título encolhido na faixa."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "O corpo do app; linhas de lista e itens de menu sobem para 500."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "A dica em Cinza-meio que acompanha títulos e linhas."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Cabeçalho de seção e rótulo de campo, em caixa alta com +0.06em."
+      },
+      "control": {
+        "displayName": "Control",
+        "purpose": "Botões; chips e segmento descem para 14px."
+      }
+    },
+    "shadows": [
+      {
+        "name": "cartao-em-repouso",
+        "value": "0 1px 2px light-dark(rgb(25 25 27 / 6%), rgb(0 0 0 / 35%)), 0 8px 24px light-dark(rgb(25 25 27 / 8%), rgb(0 0 0 / 45%))",
+        "purpose": "Cartões, listas em cartão e atalho do culto. Substitui o anel de 1 px atual."
+      },
+      {
+        "name": "flutuando",
+        "value": "0 12px 32px light-dark(rgb(25 25 27 / 18%), rgb(0 0 0 / 60%))",
+        "purpose": "Menu de mais opções."
+      },
+      {
+        "name": "cobrindo",
+        "value": "0 -12px 40px light-dark(rgb(25 25 27 / 18%), rgb(0 0 0 / 60%))",
+        "purpose": "Folha que sobe do rodapé, sobre o fundo escurecido a 40 %."
+      },
+      {
+        "name": "marcador-do-segmento",
+        "value": "0 1px 2px light-dark(rgb(25 25 27 / 8%), rgb(0 0 0 / 40%))",
+        "purpose": "A versão curta, só no marcador que desliza."
+      },
+      {
+        "name": "recorte-de-inicial",
+        "value": "0 0 0 2px var(--superficie)",
+        "purpose": "Recorte entre iniciais empilhadas; não é elevação."
+      }
+    ],
+    "motion": [
+      {
+        "name": "mola-entrada",
+        "value": "linear(0, 0.006, 0.025 2.8%, 0.101 6.1%, 0.539 18.9%, 0.721 25.3%, 0.849 31.5%, 0.937 38.1%, 0.968 41.8%, 0.991 45.7%, 1.006 50.1%, 1.012 54.6%, 1.011 62.6%, 1.006 72.1%, 1)",
+        "purpose": "Folha subindo, marcador do segmento, salto da aba, aviso entrando, menu abrindo."
+      },
+      {
+        "name": "mola-saida",
+        "value": "cubic-bezier(0.4, 0, 1, 1)",
+        "purpose": "Folha descendo, aviso e menu saindo."
+      },
+      {
+        "name": "mola-toque",
+        "value": "linear(0, 0.4 20%, 0.9 45%, 1.02 65%, 1)",
+        "purpose": "Compressão do botão ao toque."
+      },
+      {
+        "name": "tempo-folha",
+        "value": "400ms",
+        "purpose": "Folha, marcador do segmento, bolinha do interruptor, aviso entrando."
+      },
+      {
+        "name": "tempo-aviso",
+        "value": "160ms",
+        "purpose": "Aviso saindo, menu abrindo."
+      },
+      {
+        "name": "tempo-toque",
+        "value": "120ms",
+        "purpose": "Compressão ao toque."
+      },
+      {
+        "name": "tempo-fade",
+        "value": "120ms",
+        "purpose": "Menu fechando, trilho do interruptor."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "ease-out, 80ms",
+        "purpose": "Com prefers-reduced-motion todas as molas viram ease-out de 80 ms e o esqueleto para."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "trilho",
+        "value": "900px",
+        "purpose": "Abas viram trilho lateral de 220 px; conteúdo abre para 960 px."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botão primário",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "A única ação principal da tela, em Índigo cheio.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">Salvar escala</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 20px; border: 1px solid transparent; border-radius: 12px; font: 600 15px/1 Geist, system-ui, -apple-system, 'Segoe UI', sans-serif; text-decoration: none; cursor: pointer; transition: transform 120ms linear(0, 0.4 20%, 0.9 45%, 1.02 65%, 1); background: var(--acento); color: var(--sobre-acento); } .ds-btn-primary:hover { background: var(--acento-forte); } .ds-btn-primary:active { transform: scale(0.97); } .ds-btn-primary:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }"
+    },
+    {
+      "name": "Botão secundário",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Ação de apoio: Superfície com borda fina.",
+      "html": "<button class=\"ds-btn-secondary\" type=\"button\">Equipe</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 20px; border: 1px solid transparent; border-radius: 12px; font: 600 15px/1 Geist, system-ui, -apple-system, 'Segoe UI', sans-serif; text-decoration: none; cursor: pointer; transition: transform 120ms linear(0, 0.4 20%, 0.9 45%, 1.02 65%, 1); background: var(--superficie); color: var(--texto); border-color: var(--linha); } .ds-btn-secondary:hover { background: var(--superficie-alta); } .ds-btn-secondary:active { transform: scale(0.97); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }"
+    },
+    {
+      "name": "Botão terciário",
+      "kind": "button",
+      "refersTo": "button-tertiary",
+      "description": "Ação leve, só texto em Índigo.",
+      "html": "<button class=\"ds-btn-tertiary\" type=\"button\">Ver todas</button>",
+      "css": ".ds-btn-tertiary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 20px; border: 1px solid transparent; border-radius: 12px; font: 600 15px/1 Geist, system-ui, -apple-system, 'Segoe UI', sans-serif; text-decoration: none; cursor: pointer; transition: transform 120ms linear(0, 0.4 20%, 0.9 45%, 1.02 65%, 1); padding: 0 12px; background: none; color: var(--acento); } .ds-btn-tertiary:hover { background: var(--acento-suave); } .ds-btn-tertiary:active { transform: scale(0.97); } .ds-btn-tertiary:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }"
+    },
+    {
+      "name": "Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Filtro ou Função; selecionado vira Índigo-suave.",
+      "html": "<div class=\"ds-chips\"><button class=\"ds-chip\" type=\"button\" aria-pressed=\"true\">Vocal</button><button class=\"ds-chip\" type=\"button\" aria-pressed=\"false\">Músicos</button><button class=\"ds-chip ds-chip-ministro\" type=\"button\" aria-pressed=\"false\">Ministro</button></div>",
+      "css": ".ds-chips { display: flex; gap: 6px; } .ds-chip { min-height: 36px; padding: 0 14px; border: 1px solid var(--linha); border-radius: 10px; background: var(--superficie); color: var(--texto-2); font: 600 14px/1 Geist, system-ui, -apple-system, 'Segoe UI', sans-serif; white-space: nowrap; cursor: pointer; } .ds-chip:hover { background: var(--superficie-alta); } .ds-chip[aria-pressed=\"true\"] { background: var(--acento-suave); border-color: transparent; color: var(--acento); } .ds-chip-ministro { border-style: dashed; } .ds-chip-ministro[aria-pressed=\"true\"] { background: var(--texto); border-style: solid; color: var(--fundo); } .ds-chip:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }"
+    },
+    {
+      "name": "Selos",
+      "kind": "chip",
+      "refersTo": "badge",
+      "description": "Estados em cinza por padrão; cor só quando o estado pede.",
+      "html": "<div class=\"ds-selos\"><span class=\"ds-selo ds-selo-tom\">Tom G</span><span class=\"ds-selo\">Realizada</span><span class=\"ds-selo ds-selo-acento\">nova</span><span class=\"ds-selo ds-selo-atencao\">há 12 dias · Isa</span><span class=\"ds-selo ds-selo-sucesso\">Escalado</span><span class=\"ds-selo ds-selo-perigo\">Cancelada</span><span class=\"ds-selo ds-selo-ceia\">Santa Ceia</span><span class=\"ds-selo ds-selo-ministro\">Ministro</span></div>",
+      "css": ".ds-selos { display: flex; flex-wrap: wrap; gap: 6px; } .ds-selo { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; background: var(--neutro-suave); color: var(--texto-2); font: 600 12px/1.4 Geist, system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; } .ds-selo-tom { color: var(--texto); font-size: 13px; } .ds-selo-acento { background: var(--acento-suave); color: var(--acento); } .ds-selo-atencao { background: var(--atencao-suave); color: var(--atencao); } .ds-selo-sucesso { background: var(--sucesso-suave); color: var(--sucesso); } .ds-selo-perigo { background: var(--perigo-suave); color: var(--perigo); } .ds-selo-ceia { background: var(--ceia-fundo); color: var(--ceia-texto); } .ds-selo-ministro { background: none; box-shadow: inset 0 0 0 1px var(--linha); color: var(--texto); }"
+    },
+    {
+      "name": "Cartão",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Superfície em repouso com a elevação suave decidida em 25/09/2026.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-rotulo\">Próxima escala</div><div class=\"ds-card-titulo\">Domingo, 4 de outubro</div><div class=\"ds-card-dica\">19h · Culto da noite</div><dl class=\"ds-fatos\"><div><dt>Sua função</dt><dd><b>Guitarra</b></dd></div><div><dt>Ministro</dt><dd>Isa</dd></div></dl></div>",
+      "css": ".ds-card { display: flex; flex-direction: column; gap: 4px; padding: 16px; border-radius: 14px; background: var(--superficie); color: var(--texto); box-shadow: 0 1px 2px light-dark(rgb(25 25 27 / 6%), rgb(0 0 0 / 35%)), 0 8px 24px light-dark(rgb(25 25 27 / 8%), rgb(0 0 0 / 45%)); font-family: Geist, system-ui, -apple-system, 'Segoe UI', sans-serif; } .ds-card-rotulo { margin-bottom: 8px; font: 600 12px/1.3 Geist, system-ui, -apple-system, 'Segoe UI', sans-serif; letter-spacing: 0.06em; text-transform: uppercase; color: var(--texto-2); } .ds-card-titulo { font: 600 17px/1.3 Geist, system-ui, -apple-system, 'Segoe UI', sans-serif; letter-spacing: -0.01em; } .ds-card-dica { font-size: 14px; color: var(--texto-2); } .ds-fatos { display: flex; flex-direction: column; margin: 12px 0 0; padding-top: 4px; border-top: 1px solid var(--linha); } .ds-fatos > div { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 40px; } .ds-fatos dt { font-size: 14px; color: var(--texto-2); } .ds-fatos dd { margin: 0; font-size: 15px; font-weight: 500; } .ds-fatos b { font-weight: 600; }"
+    },
+    {
+      "name": "Campo",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Rótulo em caixa alta, campo de 44 px, foco em Índigo.",
+      "html": "<label class=\"ds-campo\"><span class=\"ds-campo-rotulo\">Observação</span><input class=\"ds-input\" type=\"text\" value=\"Começar mais baixo, solo na transição\"><span class=\"ds-campo-dica\">Vai junto no texto do WhatsApp.</span></label>",
+      "css": ".ds-campo { display: flex; flex-direction: column; gap: 6px; font-family: Geist, system-ui, -apple-system, 'Segoe UI', sans-serif; color: var(--texto); } .ds-campo-rotulo { font: 600 12px/1.3 Geist, system-ui, -apple-system, 'Segoe UI', sans-serif; letter-spacing: 0.06em; text-transform: uppercase; color: var(--texto-2); } .ds-input { width: 100%; box-sizing: border-box; min-height: 44px; padding: 10px 12px; border: 1px solid var(--linha); border-radius: 12px; background: var(--superficie); color: var(--texto); font: 400 16px/1.4 Geist, system-ui, -apple-system, 'Segoe UI', sans-serif; } .ds-input:focus-visible { outline: none; border-color: var(--acento); box-shadow: 0 0 0 1px var(--acento); } .ds-campo-dica { font-size: 14px; color: var(--texto-2); }"
+    },
+    {
+      "name": "Busca",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Campo de busca com lupa e botão de limpar.",
+      "html": "<div class=\"ds-busca\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10.5 4a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13Z\"></path><path d=\"M15.3 15.3 20 20\"></path></svg><input class=\"ds-busca-input\" type=\"search\" aria-label=\"Buscar\" placeholder=\"parte do título ou do artista\"></div>",
+      "css": ".ds-busca { position: relative; display: flex; align-items: center; font-family: Geist, system-ui, -apple-system, 'Segoe UI', sans-serif; } .ds-busca > svg { position: absolute; left: 12px; color: var(--texto-2); pointer-events: none; } .ds-busca-input { width: 100%; box-sizing: border-box; height: 44px; padding: 10px 42px; border: 1px solid var(--linha); border-radius: 12px; background: var(--superficie); color: var(--texto); font: 400 16px/1.4 Geist, system-ui, -apple-system, 'Segoe UI', sans-serif; } .ds-busca-input:focus-visible { outline: none; border-color: var(--acento); box-shadow: 0 0 0 1px var(--acento); } .ds-busca-input::placeholder { color: var(--texto-2); }"
+    },
+    {
+      "name": "Abas",
+      "kind": "nav",
+      "refersTo": "button-tertiary",
+      "description": "Barra de cinco abas; a ativa em Índigo, contagem em pílula.",
+      "html": "<nav class=\"ds-abas\" aria-label=\"Seções do app\"><a href=\"#\" aria-current=\"page\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 10.6 12 3.2l9 7.4\"></path><path d=\"M5.6 9.4V19.8a1.2 1.2 0 0 0 1.2 1.2H10v-5.6h4V21h3.2a1.2 1.2 0 0 0 1.2-1.2V9.4\"></path></svg><span>Início</span></a><a href=\"#\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 5.8h16a.9.9 0 0 1 .9.9v13.4a.9.9 0 0 1-.9.9H4a.9.9 0 0 1-.9-.9V6.7a.9.9 0 0 1 .9-.9Z\"></path><path d=\"M8 3.1v5\"></path><path d=\"M16 3.1v5\"></path><path d=\"M3.1 10.7h17.8\"></path></svg><span>Mês</span></a><a href=\"#\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9.2 17.4V6.1l10-2.2v11.3\"></path><circle cx=\"6.7\" cy=\"17.4\" r=\"2.5\"></circle><circle cx=\"16.7\" cy=\"15.2\" r=\"2.5\"></circle></svg><span>Músicas</span></a><a href=\"#\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9.6 18.4h4.8\"></path><path d=\"M10.6 21h2.8\"></path><path d=\"M12 3.2a6.2 6.2 0 0 0-3.6 11.3c.6.4 1 1.1 1 1.8v.3h5.2v-.3c0-.7.4-1.4 1-1.8A6.2 6.2 0 0 0 12 3.2Z\"></path></svg><span>Sugestões</span><span class=\"ds-contagem\" aria-label=\"2 sem promover\">2</span></a><a href=\"#\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 4.4a3.7 3.7 0 1 1 0 7.4 3.7 3.7 0 0 1 0-7.4Z\"></path><path d=\"M4.6 20.6a7.4 7.4 0 0 1 14.8 0\"></path></svg><span>Perfil</span></a></nav>",
+      "css": ".ds-abas { display: flex; border-top: 1px solid var(--linha); background: var(--superficie); font-family: Geist, system-ui, -apple-system, 'Segoe UI', sans-serif; } .ds-abas a { position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 2px 10px; min-height: 44px; color: var(--texto-2); text-decoration: none; font: 500 11px/1 Geist, system-ui, -apple-system, 'Segoe UI', sans-serif; } .ds-abas a[aria-current=\"page\"] { color: var(--acento); font-weight: 600; } .ds-abas a:hover { color: var(--texto); } .ds-abas a[aria-current=\"page\"]:hover { color: var(--acento-forte); } .ds-abas a:focus-visible { outline: 2px solid var(--acento); outline-offset: -2px; } .ds-contagem { position: absolute; top: 4px; left: 50%; margin-left: 5px; min-width: 17px; padding: 0 4px; box-sizing: border-box; border-radius: 999px; background: var(--acento); color: var(--sobre-acento); font: 700 10px/17px Geist, system-ui, -apple-system, 'Segoe UI', sans-serif; text-align: center; }"
+    },
+    {
+      "name": "Linha de música",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "A assinatura do app: capa, título, artista e selos em fila.",
+      "html": "<ul class=\"ds-lista\"><li class=\"ds-linha\"><span class=\"ds-capa\"></span><a href=\"#\" class=\"ds-miolo\"><span class=\"ds-titulo\">Grande é o Senhor</span><span class=\"ds-artista\">Adhemar de Campos</span><span class=\"ds-selos\"><span class=\"ds-selo ds-selo-tom\">Tom G</span><span class=\"ds-selo\">há 3 semanas</span></span></a><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m9 5.5 6.5 6.5L9 18.5\"></path></svg></li><li class=\"ds-linha\"><span class=\"ds-capa\"></span><a href=\"#\" class=\"ds-miolo\"><span class=\"ds-titulo\">Oceanos</span><span class=\"ds-artista\">Hillsong</span><span class=\"ds-selos\"><span class=\"ds-selo ds-selo-tom\">Tom D</span><span class=\"ds-selo ds-selo-atencao\">há 12 dias · Isa</span></span></a><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m9 5.5 6.5 6.5L9 18.5\"></path></svg></li></ul>",
+      "css": ".ds-lista { list-style: none; margin: 0; padding: 0; border-radius: 14px; background: var(--superficie); color: var(--texto); box-shadow: 0 1px 2px light-dark(rgb(25 25 27 / 6%), rgb(0 0 0 / 35%)), 0 8px 24px light-dark(rgb(25 25 27 / 8%), rgb(0 0 0 / 45%)); font-family: Geist, system-ui, -apple-system, 'Segoe UI', sans-serif; overflow: hidden; } .ds-linha { display: flex; align-items: center; gap: 12px; padding: 12px 14px; } .ds-linha + .ds-linha { border-top: 1px solid var(--linha); } .ds-linha > svg { color: var(--texto-2); flex: none; } .ds-capa { flex: none; width: 84px; height: 60px; border-radius: 8px; background: var(--superficie-alta); } .ds-miolo { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; color: inherit; text-decoration: none; } .ds-miolo:hover { color: var(--acento-forte); } .ds-titulo { font: 600 15px/1.3 Geist, system-ui, -apple-system, 'Segoe UI', sans-serif; } .ds-artista { font-size: 14px; color: var(--texto-2); } .ds-selos { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; } .ds-selo { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 6px; background: var(--neutro-suave); color: var(--texto-2); font: 600 12px/1.4 Geist, system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums; } .ds-selo-tom { color: var(--texto); font-size: 13px; } .ds-selo-atencao { background: var(--atencao-suave); color: var(--atencao); }"
+    },
+    {
+      "name": "Segmento",
+      "kind": "custom",
+      "refersTo": "chip",
+      "description": "Trilho em Véu com marcador que desliza.",
+      "html": "<div class=\"ds-segmento\" role=\"group\" aria-label=\"Filtro\"><span class=\"ds-marcador\" aria-hidden=\"true\"></span><button type=\"button\" aria-pressed=\"true\">Todas <span class=\"ds-conta\">101</span></button><button type=\"button\" aria-pressed=\"false\">Novas <span class=\"ds-conta\">8</span></button></div>",
+      "css": ".ds-segmento { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 3px; border-radius: 12px; background: var(--neutro-suave); font-family: Geist, system-ui, -apple-system, 'Segoe UI', sans-serif; } .ds-marcador { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc((100% - 6px) / 2); border-radius: 9px; background: var(--superficie); box-shadow: 0 1px 2px light-dark(rgb(25 25 27 / 8%), rgb(0 0 0 / 40%)); } .ds-segmento button { position: relative; min-height: 44px; padding: 0 4px; border: 0; background: none; color: var(--texto-2); font: 600 14px/1 Geist, system-ui, -apple-system, 'Segoe UI', sans-serif; cursor: pointer; } .ds-segmento button[aria-pressed=\"true\"] { color: var(--texto); } .ds-segmento button:focus-visible { outline: 2px solid var(--acento); outline-offset: -2px; border-radius: 9px; } .ds-conta { margin-left: 5px; color: var(--texto-2); font: 500 13px/1 Geist, system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "O Instrumento Bem Feito",
+    "overview": "O Renovo Hub é desenhado como um instrumento premium: acabamento fosco, proporções exatas e um único detalhe que brilha. A beleza vem do artesanato, não do enfeite. Nenhuma cor decora; cada tom de cinza tem um papel, cada espaço tem uma razão, e o único acento (o Índigo) aparece onde há ação ou estado ativo, como o filete de madrepérola no braço de uma guitarra. O humor é refinado, preciso, premium: cada detalhe parece decidido, e o app se sente caro sem parecer esforçado.\n\nO sistema é neutro de propósito. Cinzas quase sem matiz, uma família tipográfica só (Geist), superfícies que flutuam com sombra difusa sobre um fundo levemente mais escuro, e componentes contidos: 44 px de altura, raio de 12 px, peso 600, nada que salte. A hierarquia nasce do texto (peso, tamanho, caixa alta em rótulos) e do espaço, não de caixas coloridas. O tema escuro não é uma inversão do claro: é o palco, com superfícies um degrau mais claras que o fundo e sombras mais fundas, pensado para o celular no pedestal com pouca luz.\n\nRejeições confirmadas pelo dono do projeto: fundos tingidos e cartões coloridos, serifa de display (a Fraunces saiu em 19/09/2026), grão ou textura de papel, e o escuro azulado da paleta anterior. Em 25/09/2026 a borda de 1 px dos cartões em repouso foi substituída, como regra, pela elevação suave descrita em Elevation & Depth; o código ainda carrega a borda até o próximo polish.",
+    "keyCharacteristics": [
+      "Cinzas neutros em pares claro/escuro, escritos uma vez com light-dark().",
+      "Um acento só, o Índigo, reservado a ação e estado ativo; o Âmbar aparece em dois lugares apenas.",
+      "Geist como única família; hierarquia por peso, tamanho e espaçamento, com rótulos em caixa alta.",
+      "Superfícies em repouso flutuam com sombra difusa em duas camadas; nada mais tem sombra além de menu e folha.",
+      "Componentes de 44 px, raio 12 px, borda fina onde há borda; resposta ao toque por compressão leve (scale 0.97) e molas curtas.",
+      "Selos de estado em cinza por padrão; cor só quando o estado pede atenção, cuidado, sucesso ou marca a Santa Ceia."
+    ],
+    "rules": [
+      {
+        "name": "Regra do Acento Único",
+        "body": "O Índigo aparece só onde há ação ou estado ativo. Nunca como fundo de seção, cor de título ou decoração. Se uma tela tem mais de um botão primário, está errada.",
+        "section": "colors"
+      },
+      {
+        "name": "Regra do Selo Cinza",
+        "body": "Estado que não pede nada de quem lê fica em Véu e Cinza-meio: Realizada, Legado, Trecho, Tom. Cor só para Atenção, Perigo, Sucesso e Santa Ceia.",
+        "section": "colors"
+      },
+      {
+        "name": "Regra do Par",
+        "body": "Todo token de cor nasce como light-dark(claro, escuro) em src/estilo/tokens.css. Nenhum hex solto em componente; o modo culto força o escuro trocando só o color-scheme.",
+        "section": "colors"
+      },
+      {
+        "name": "Regra da Família Única",
+        "body": "Geist é a única família. Não há serifa de display, não há segunda sans, não há monoespaçada; a Fraunces e a Inter saíram em 19/09/2026 e só sobrevivem nos SVGs gerados da marca.",
+        "section": "typography"
+      },
+      {
+        "name": "Regra dos Números Tabulares",
+        "body": "Datas, contagens, tempos relativos, minutagem e Tons usam font-variant-numeric: tabular-nums para alinhar em listas.",
+        "section": "typography"
+      },
+      {
+        "name": "Regra do Rótulo em Caixa Alta",
+        "body": "Só o papel Label sobe para caixa alta. Botões, chips, selos e títulos ficam em caixa normal.",
+        "section": "typography"
+      },
+      {
+        "name": "Regra das Três Alturas",
+        "body": "Repouso, flutuando, cobrindo. Nada mais recebe sombra: botões, chips, selos, campos, abas e o bloco do dia ficam planos e se separam por cor ou borda.",
+        "section": "elevation"
+      },
+      {
+        "name": "Regra do Escuro que Sobe",
+        "body": "No escuro, cada camada acima é um cinza mais claro (Fundo, Superfície, Superfície alta). A sombra acompanha, mas nunca substitui esse degrau.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do escrever toda cor nova como par light-dark() em tokens.css e usá-la por var().",
+      "Do reservar o Índigo a ação e estado ativo, e o Âmbar ao apoio e ao Tom original; qualquer outro uso é decisão a registrar aqui.",
+      "Do manter 44 px como altura de botões, campos, linhas e alvos, e 16px no texto de campo para o iPhone não dar zoom.",
+      "Do separar superfícies em repouso por sombra suave e degrau de cinza; menu e folha por sombra funda; nada mais por sombra.",
+      "Do usar Label em caixa alta para cabeçalhos de seção e rótulos, e só para eles.",
+      "Do manter os selos de estado em cinza salvo Atenção, Perigo, Sucesso e Santa Ceia.",
+      "Do responder ao toque com compressão (0.97, 120 ms) e às entradas com as molas --mola-entrada e --mola-saida, respeitando prefers-reduced-motion.",
+      "Do testar cada tela a 360 px antes de qualquer largura maior."
+    ],
+    "donts": [
+      "Don't reintroduzir cartões coloridos, fundos tingidos, grão de papel ou a serifa de display.",
+      "Don't usar uma segunda família, nem pesos fora de 400, 500, 600 e 700.",
+      "Don't colocar sombra em botão, chip, selo, campo ou aba; a Regra das Três Alturas vale para tudo.",
+      "Don't arredondar botão ou campo até virar pílula; pílula é só alça, contagem, interruptor e índice.",
+      "Don't usar mais de um botão primário por tela, nem Índigo como cor de título ou de fundo de seção.",
+      "Don't usar hex solto em componente; se o token não existe, ele nasce em tokens.css primeiro.",
+      "Don't mostrar alerta de repetição fora do fluxo de adicionar música; música na Escala é música decidida."
+    ]
+  }
+}
