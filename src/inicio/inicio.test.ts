@@ -4,6 +4,7 @@ import type { Pendencia, PessoaDaEquipe } from '../dominio'
 import {
   destinoDaPendencia,
   linhaDaEscala,
+  ministraAEscala,
   pendenciasVemAntes,
   quandoAcontece,
   resumoDaProximaEscala,
@@ -106,9 +107,14 @@ describe('pendências no Início', () => {
 
 describe('pendenciasVemAntes', () => {
   it('põe as pendências antes do Repertório quando alguma Escala pendente vem antes da mostrada', () => {
-    expect(pendenciasVemAntes([{ data: '2026-09-27' }], '2026-10-04')).toBe(true)
-    expect(pendenciasVemAntes([{ data: '2026-10-04' }, { data: '2026-10-11' }], '2026-10-04')).toBe(false)
-    expect(pendenciasVemAntes([], '2026-10-04')).toBe(false)
+    expect(pendenciasVemAntes([{ data: '2026-09-27' }], '2026-10-04', true)).toBe(true)
+    expect(pendenciasVemAntes([{ data: '2026-10-04' }, { data: '2026-10-11' }], '2026-10-04', true)).toBe(false)
+    expect(pendenciasVemAntes([], '2026-10-04', true)).toBe(false)
+  })
+
+  it('para quem dirige sem ser o Ministro da Escala mostrada, as pendências vêm antes do Repertório dos outros', () => {
+    expect(pendenciasVemAntes([{ data: '2026-10-11' }], '2026-10-04', false)).toBe(true)
+    expect(pendenciasVemAntes([], '2026-10-04', false)).toBe(false)
   })
 })
 
@@ -147,6 +153,12 @@ describe('resumoDaProximaEscala', () => {
     const dividida = [...equipe, pessoa('marcos', 'Marcos', ['Vocal'], true)]
 
     expect(resumoDaProximaEscala(dividida, 'gabriel').ministros).toBe('Isa e Marcos')
+  })
+
+  it('sabe se quem olha é Ministro da Escala', () => {
+    expect(ministraAEscala(equipe, 'isa')).toBe(true)
+    expect(ministraAEscala(equipe, 'gabriel')).toBe(false)
+    expect(ministraAEscala(equipe, 'ninguem')).toBe(false)
   })
 
   it('aceita pessoa sem Função e Equipe sem Ministro', () => {

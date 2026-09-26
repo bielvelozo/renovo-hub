@@ -3,6 +3,7 @@ import { MemoryRouter } from 'react-router'
 import { beforeEach, describe, expect, it } from 'vitest'
 import type { EscalaApresentada, ItemApresentado } from '../api/tipos'
 import { ProvedorDeAvisos } from '../componentes/Avisos'
+import { ProvedorDoEu } from '../sessao/sessao'
 import { marcarVisitaNaEscala } from '../escalas/visita'
 import { CartaoPosCulto, CultoDeHoje, RepertorioDoInicio } from './Inicio'
 
@@ -143,6 +144,26 @@ describe('marca «mudou» no Repertório do Início', () => {
     mostrar(<RepertorioDoInicio escala={escala([item('i1', '2026-09-12T12:00:00.000Z')])} anexosPorDono={{}} hoje={HOJE} />)
 
     expect(screen.getByText('mudou')).not.toBeNull()
+  })
+
+  it('quem dirige ganha Adicionar música no fim da lista; o Membro não', () => {
+    const eu = { id: 'marcos', nome: 'Marcos', funcoes: [], ministro: true, admin: false, inativo: false, silenciado: false }
+    const { unmount } = mostrar(
+      <ProvedorDoEu eu={eu}>
+        <RepertorioDoInicio escala={repertorio} anexosPorDono={{}} hoje={HOJE} />
+      </ProvedorDoEu>,
+    )
+
+    expect(screen.getByRole('link', { name: 'Adicionar música' }).getAttribute('href')).toBe('/escalas/e0913/adicionar')
+
+    unmount()
+    mostrar(
+      <ProvedorDoEu eu={{ ...eu, ministro: false }}>
+        <RepertorioDoInicio escala={repertorio} anexosPorDono={{}} hoje={HOJE} />
+      </ProvedorDoEu>,
+    )
+
+    expect(screen.queryByRole('link', { name: 'Adicionar música' })).toBeNull()
   })
 
   it('chama a seção só de Repertório, porque a data já está no cartão de cima, e cala quando não há música', () => {

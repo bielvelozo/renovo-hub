@@ -26,6 +26,7 @@ import { mudouDesdeAVisita, visitaNaEscala } from '../escalas/visita'
 import {
   chaveDoPosCultoFechado,
   destinoDaPendencia,
+  ministraAEscala,
   pendenciasVemAntes,
   quandoAcontece,
   resumoDaProximaEscala,
@@ -81,7 +82,8 @@ export function Inicio() {
   const dados = busca.dados
   const escala = dados.minhaProxima ?? dados.proximoCulto
   const pendencias = dados.pendencias.length > 0 && <Pendencias escalas={dados.pendencias} hoje={hoje} />
-  const pendenciasAntes = escala !== null && pendenciasVemAntes(dados.pendencias, escala.data)
+  const pendenciasAntes =
+    escala !== null && pendenciasVemAntes(dados.pendencias, escala.data, ministraAEscala(escala.pessoas, eu.id))
 
   function criarMes(mes: string) {
     acao.executar(async () => {
@@ -292,6 +294,15 @@ export function RepertorioDoInicio({
               selos={mudouDesdeAVisita(item.atualizadoEm, visita) ? <Selo variante="atencao">mudou</Selo> : undefined}
             />
           ))}
+          {dirige && (
+            <li>
+              <Link to={`/escalas/${escala.id}/adicionar`} className="toque">
+                <Icone nome="mais" />
+                <span className="cresce titulo">Adicionar música</span>
+                <Icone nome="seta" />
+              </Link>
+            </li>
+          )}
         </ul>
       ) : dirige ? (
         <p className="dica">

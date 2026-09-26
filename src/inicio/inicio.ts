@@ -63,8 +63,19 @@ export function resumoDaProximaEscala(pessoas: PessoaDaEquipe[], euId: string): 
   }
 }
 
-export function pendenciasVemAntes(pendentes: { data: string }[], dataDaMostrada: string): boolean {
+export function pendenciasVemAntes(
+  pendentes: { data: string }[],
+  dataDaMostrada: string,
+  ministraAMostrada: boolean,
+): boolean {
+  if (!pendentes.length) return false
+  if (!ministraAMostrada) return true
+
   return pendentes.some((escala) => escala.data < dataDaMostrada)
+}
+
+export function ministraAEscala(pessoas: PessoaDaEquipe[], euId: string): boolean {
+  return pessoas.some((pessoa) => pessoa.membroId === euId && pessoa.ministro)
 }
 
 export function resumoDasPendencias(pendencias: Pendencia[]): string {
