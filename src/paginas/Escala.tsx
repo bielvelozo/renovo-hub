@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import { chaveDoItem, temLetraNoItem } from '../api/anexos'
 import { api, textoDoErro } from '../api/cliente'
 import type { Opcoes } from '../api/cliente'
@@ -10,6 +10,7 @@ import { usarBusca } from '../api/usarBusca'
 import { Cabecalho } from '../casca/Cabecalho'
 import { Icone } from '../casca/Icone'
 import { Alca } from '../componentes/Alca'
+import { AtalhoDoCulto } from '../componentes/AtalhoDoCulto'
 import { usarAviso } from '../componentes/Avisos'
 import { Botao, BotaoLink } from '../componentes/Botao'
 import { Campo } from '../componentes/Campo'
@@ -107,16 +108,7 @@ export function Escala() {
     <section className="pagina">
       {cabecalho}
 
-      {escala.estado !== 'cancelada' && (
-        <Link to={`/culto/${id}`} className="atalho-do-culto">
-          <Icone nome="documento" />
-          <span className="cresce">
-            <span className="titulo">Abrir o modo culto</span>
-            <span className="dica">Letras e tons em tela cheia, sem internet</span>
-          </span>
-          <Icone nome="seta" />
-        </Link>
-      )}
+      {escala.estado !== 'cancelada' && <AtalhoDoCulto escalaId={id} dica="Letras e tons em tela cheia, sem internet" />}
 
       {situacao.length > 0 && (
         <ul className="lista cartao situacao" aria-label="Situação da escala">

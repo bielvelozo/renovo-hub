@@ -8,6 +8,7 @@ import { usarBusca } from '../api/usarBusca'
 import { Cabecalho } from '../casca/Cabecalho'
 import { Icone } from '../casca/Icone'
 import { Botao, BotaoLink } from '../componentes/Botao'
+import { AtalhoDoCulto } from '../componentes/AtalhoDoCulto'
 import { usarAviso } from '../componentes/Avisos'
 import { Cartao } from '../componentes/Cartao'
 import { ErroDeCarga } from '../componentes/ErroDeCarga'
@@ -17,11 +18,18 @@ import { LinhaDoItem } from '../componentes/LinhaDeMusica'
 import { Selo } from '../componentes/Selo'
 import { Vazio } from '../componentes/Vazio'
 import { VistoEm } from '../componentes/VistoEm'
-import { hojeEmBrasilia, nomeDaEscala, nomeDoDia, rotuloDoHorario } from '../dominio'
+import { formatarDia, hojeEmBrasilia, nomeDaEscala, nomeDoDia, rotuloDoHorario } from '../dominio'
 import { nomeDoMes } from '../escalas/mes'
 import { CHAVE_DE_VISITA_DAS_SUGESTOES } from '../escalas/sugestoes'
 import { mudouDesdeAVisita, visitaNaEscala } from '../escalas/visita'
-import { chaveDoPosCultoFechado, quandoAcontece, resumoDaProximaEscala, textoDeSugestoesNovas, textoDoPosCulto } from '../inicio/inicio'
+import {
+  chaveDoPosCultoFechado,
+  quandoAcontece,
+  resumoDaProximaEscala,
+  textoDeSugestoesNovas,
+  textoDoPosCulto,
+  tituloDasPendencias,
+} from '../inicio/inicio'
 import { usarEu, usarEuTalvez } from '../sessao/sessao'
 
 export function Inicio() {
@@ -81,6 +89,8 @@ export function Inicio() {
 
       {dados.posCulto && <CartaoPosCulto key={dados.posCulto.escalaId} posCulto={dados.posCulto} hoje={hoje} />}
 
+      {escala && <CultoDeHoje escala={escala} hoje={hoje} />}
+
       {escala ? (
         <ProximaEscala escala={escala} minha={dados.minhaProxima !== null} euId={eu.id} hoje={hoje} />
       ) : (
@@ -91,10 +101,14 @@ export function Inicio() {
               <Botao carregando={acao.ocupado} onClick={() => criarMes(dados.proximoMesVazio!)}>
                 Criar as escalas de {nomeDoMes(dados.proximoMesVazio).toLowerCase()}
               </Botao>
+            ) : dirige ? (
+              <BotaoLink para="/mes" variante="secundario">
+                Abrir o mês
+              </BotaoLink>
             ) : undefined
           }
         >
-          Nenhuma escala marcada
+          {dirige ? 'Nenhuma escala marcada.' : 'Nenhuma escala marcada. Quando o Ministro montar o mês, a sua aparece aqui.'}
         </Vazio>
       )}
 
@@ -104,37 +118,19 @@ export function Inicio() {
         </p>
       )}
 
-      {escala && <CartaoDoCulto escala={escala} hoje={hoje} />}
-
       {escala && <RepertorioDoInicio escala={escala} anexosPorDono={dados.anexosPorDono} hoje={hoje} />}
 
-      {dados.pendencias.length > 0 && <Pendencias escalas={dados.pendencias} />}
+      {dados.pendencias.length > 0 && <Pendencias escalas={dados.pendencias} hoje={hoje} />}
 
       <LinhaDeSugestoes sugestoes={sugestoes.dados?.sugestoes ?? []} />
     </section>
   )
 }
 
-export function CartaoDoCulto({ escala, hoje }: { escala: EscalaApresentada; hoje: string }) {
+export function CultoDeHoje({ escala, hoje }: { escala: EscalaApresentada; hoje: string }) {
   if (escala.data !== hoje) return null
 
-  const musicas = escala.itens.length === 1 ? '1 música' : escala.itens.length + ' músicas'
-
-  return (
-    <Cartao className="pagina cartao-do-culto">
-      <div className="secao-topo">
-        <div className="cresce">
-          <div className="titulo">Culto de hoje</div>
-          <div className="dica">
-            {musicas} · {rotuloDoHorario(escala.horario)}
-          </div>
-        </div>
-        <BotaoLink para={`/culto/${escala.id}`} pequeno>
-          Modo culto
-        </BotaoLink>
-      </div>
-    </Cartao>
-  )
+  return <AtalhoDoCulto escalaId={escala.id} dica={`Hoje às ${rotuloDoHorario(escala.horario)} · letras e tons, sem internet`} />
 }
 
 export function CartaoPosCulto({ posCulto, hoje }: { posCulto: PosCultoApresentado; hoje: string }) {
@@ -186,6 +182,7 @@ function ProximaEscala({
   hoje: string
 }) {
   const resumo = resumoDaProximaEscala(escala.pessoas, minha ? euId : '')
+  const ehHoje = escala.data === hoje
 
   return (
     <div className="secao">
@@ -237,7 +234,12 @@ function ProximaEscala({
           </div>
         </dl>
 
-        <BotaoLink para={`/escalas/${escala.id}`} largo>
+        <BotaoLink
+          para={`/escalas/${escala.id}`}
+          variante={ehHoje ? 'secundario' : 'primario'}
+          largo
+          aria-label={`Abrir escala de ${formatarDia(escala.data, hoje)}`}
+        >
           Abrir escala
         </BotaoLink>
       </Cartao>
@@ -300,12 +302,12 @@ export function RepertorioDoInicio({
   )
 }
 
-function Pendencias({ escalas }: { escalas: EscalaResumida[] }) {
+function Pendencias({ escalas, hoje }: { escalas: EscalaResumida[]; hoje: string }) {
   return (
     <div className="secao">
       <div className="secao-topo">
-        <h2>Precisa de atenção · 4 semanas</h2>
-        <BotaoLink para="/mes" variante="terciario" pequeno>
+        <h2>{tituloDasPendencias(hoje)}</h2>
+        <BotaoLink para="/mes" variante="terciario" pequeno aria-label="Mês: todas as escalas">
           Mês <Icone nome="seta" />
         </BotaoLink>
       </div>

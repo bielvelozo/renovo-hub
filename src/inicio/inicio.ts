@@ -1,6 +1,6 @@
 import type { EscalaApresentada, PosCultoApresentado, SugestaoApresentada } from '../api/tipos'
 import type { PessoaDaEquipe } from '../dominio'
-import { diasEntre, formatarDia, rotuloDoHorario } from '../dominio'
+import { DIAS_DAS_PENDENCIAS, diasEntre, formatarDia, formatarDiaEMes, rotuloDoHorario, somarDias } from '../dominio'
 import { novasDesde } from '../escalas/sugestoes'
 
 export type ResumoDaProximaEscala = {
@@ -18,9 +18,13 @@ export function chaveDoPosCultoFechado(escalaId: string): string {
 
 export function textoDoPosCulto(posCulto: PosCultoApresentado, hoje: string): string {
   const quando = posCulto.data === hoje ? 'Hoje' : 'Ontem'
-  const musicas = posCulto.itens === 1 ? '1 música registrada' : `${posCulto.itens} músicas registradas`
+  const musicas = posCulto.itens === 1 ? '1 música' : `${posCulto.itens} músicas`
 
-  return `${quando}: ${musicas}`
+  return `${quando}: ${musicas} no histórico`
+}
+
+export function tituloDasPendencias(hoje: string): string {
+  return `Precisa de atenção · até ${formatarDiaEMes(somarDias(hoje, DIAS_DAS_PENDENCIAS))}`
 }
 
 export function quandoAcontece(data: string, hoje: string): string {

@@ -107,6 +107,11 @@ export function formatarDiaNumerico(data: string): string {
   return dia + '/' + mes
 }
 
+export function formatarDiaEMes(data: string): string {
+  const [, mes, dia] = partesDaData(data)
+  return `${dia} ${MESES[mes - 1]}`
+}
+
 export function formatarDia(data: string, hoje = hojeEmBrasilia()): string {
   const [ano, mes, dia] = partesDaData(data)
   return `${DIAS[diaDaSemana(data)]}, ${dia} de ${MESES[mes - 1]}${sufixoDoAno(ano, hoje)}`

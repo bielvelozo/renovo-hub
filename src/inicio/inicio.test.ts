@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import type { SugestaoApresentada } from '../api/tipos'
 import type { PessoaDaEquipe } from '../dominio'
-import { linhaDaEscala, quandoAcontece, resumoDaProximaEscala, textoDeSugestoesNovas, textoDoPosCulto } from './inicio'
+import {
+  linhaDaEscala,
+  quandoAcontece,
+  resumoDaProximaEscala,
+  textoDeSugestoesNovas,
+  textoDoPosCulto,
+  tituloDasPendencias,
+} from './inicio'
 
 const HOJE = '2026-09-13'
 
@@ -54,14 +61,20 @@ describe('textoDoPosCulto', () => {
   it('diz Hoje no dia da Escala e Ontem no dia seguinte', () => {
     const posCulto = { escalaId: 'e1', titulo: 'Culto de Domingo 18h', data: HOJE, itens: 5 }
 
-    expect(textoDoPosCulto(posCulto, HOJE)).toBe('Hoje: 5 músicas registradas')
-    expect(textoDoPosCulto(posCulto, '2026-09-14')).toBe('Ontem: 5 músicas registradas')
+    expect(textoDoPosCulto(posCulto, HOJE)).toBe('Hoje: 5 músicas no histórico')
+    expect(textoDoPosCulto(posCulto, '2026-09-14')).toBe('Ontem: 5 músicas no histórico')
   })
 
   it('concorda o singular', () => {
     expect(textoDoPosCulto({ escalaId: 'e1', titulo: 'Culto', data: HOJE, itens: 1 }, HOJE)).toBe(
-      'Hoje: 1 música registrada',
+      'Hoje: 1 música no histórico',
     )
+  })
+})
+
+describe('tituloDasPendencias', () => {
+  it('diz até que dia a lista olha, em vez do número de semanas da regra', () => {
+    expect(tituloDasPendencias('2026-09-25')).toBe('Precisa de atenção · até 23 out')
   })
 })
 
