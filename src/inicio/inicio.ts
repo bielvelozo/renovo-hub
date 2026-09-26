@@ -23,6 +23,12 @@ export function textoDoPosCulto(posCulto: PosCultoApresentado, hoje: string): st
   return `${quando}: ${musicas} no histórico`
 }
 
+export function tituloDoInicio(data: string, hoje: string): string {
+  const texto = formatarDia(data, hoje)
+
+  return texto.charAt(0).toUpperCase() + texto.slice(1)
+}
+
 export function tituloDasPendencias(hoje: string): string {
   return `Precisa de atenção · até ${formatarDiaEMes(somarDias(hoje, DIAS_DAS_PENDENCIAS))}`
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 import { temLetraNoItem } from '../api/anexos'
 import { api } from '../api/cliente'
@@ -29,6 +30,7 @@ import {
   textoDeSugestoesNovas,
   textoDoPosCulto,
   tituloDasPendencias,
+  tituloDoInicio,
 } from '../inicio/inicio'
 import { usarEu, usarEuTalvez } from '../sessao/sessao'
 
@@ -40,10 +42,11 @@ export function Inicio() {
   const sugestoes = usarBusca<{ sugestoes: SugestaoApresentada[] }>('/api/sugestoes')
   const acao = usarAcao()
 
-  const cabecalho = (
+  const cabecalho = (tituloRico?: ReactNode) => (
     <Cabecalho
       raiz
       titulo={`Oi, ${eu.nome}`}
+      tituloRico={tituloRico}
       acao={
         eu.admin ? (
           <BotaoLink variante="icone" icone="engrenagem" para="/admin" aria-label="Administração" />
@@ -55,7 +58,7 @@ export function Inicio() {
   if (busca.erro) {
     return (
       <section className="pagina">
-        {cabecalho}
+        {cabecalho()}
         <ErroDeCarga mensagem={busca.erro} tentarDeNovo={busca.recarregar} />
       </section>
     )
@@ -64,7 +67,7 @@ export function Inicio() {
   if (!busca.dados) {
     return (
       <section className="pagina">
-        {cabecalho}
+        {cabecalho(<span className="osso osso-do-titulo" role="img" aria-label="Carregando" />)}
         <VistoEm hora={busca.vistoEm} />
         <Esqueleto forma="cartao" />
         <Esqueleto forma="linha-de-musica" quantidade={3} />
@@ -84,7 +87,7 @@ export function Inicio() {
 
   return (
     <section className="pagina">
-      {cabecalho}
+      {cabecalho(escala ? tituloDoInicio(escala.data, hoje) : undefined)}
       <VistoEm hora={busca.vistoEm} />
 
       {dados.posCulto && <CartaoPosCulto key={dados.posCulto.escalaId} posCulto={dados.posCulto} hoje={hoje} />}
@@ -281,6 +284,7 @@ export function RepertorioDoInicio({
               modo="leitura"
               numero={indice + 1}
               hoje={hoje}
+              posicaoDoTom="direita"
               letraEm={
                 temLetraNoItem(item, anexosPorDono) ? `/escalas/${escala.id}/itens/${item.id}/letra` : undefined
               }

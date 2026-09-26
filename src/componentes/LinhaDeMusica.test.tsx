@@ -51,6 +51,32 @@ function montar(ui: React.ReactNode) {
 }
 
 describe('LinhaDeMusica', () => {
+  it('com o Tom à direita, a nota fica na coluna e o selo some, inclusive nos Trechos do Medley', () => {
+    const { container } = montar(
+      <>
+        <LinhaDeMusica musica={resumida} modo="leitura" tom="G" posicaoDoTom="direita" />
+        <LinhaDeMusica
+          modo="leitura"
+          posicaoDoTom="direita"
+          trechos={[
+            { musicaId: 'a', tom: 'Em', inicio: '0:00', fim: '1:00', musica: { ...resumida, id: 'a', titulo: 'Primeira' }, link: 'https://youtu.be/a', memoria: SEM_MEMORIA },
+          ]}
+        />
+      </>,
+    )
+
+    expect(container.querySelector('.selo.tom')).toBeNull()
+    const colunas = Array.from(container.querySelectorAll('.tempo.tom'))
+    expect(colunas.map((coluna) => coluna.querySelector('b')?.textContent)).toEqual(['G', 'Em'])
+    expect(colunas.map((coluna) => coluna.getAttribute('aria-label'))).toEqual(['Tom G', 'Tom Em'])
+  })
+
+  it('com o Tom à direita, o tom original vira texto e não nota', () => {
+    const { container } = montar(<LinhaDeMusica musica={resumida} modo="leitura" tom="original" posicaoDoTom="direita" />)
+
+    expect(container.querySelector('.tempo.tom')?.textContent).toBe('originaltom')
+  })
+
   it('em leitura a capa toca e a linha não navega', () => {
     montar(<LinhaDeMusica musica={resumida} modo="leitura" tom="G" link="https://youtu.be/hRJUcvsnqKs" numero={2} />)
 

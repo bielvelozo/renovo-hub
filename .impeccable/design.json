@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-26T02:16:10.636Z",
+  "generatedAt": "2026-09-26T03:12:02.800Z",
   "title": "Design System: Renovo Hub",
   "extensions": {
     "colorMeta": {
@@ -363,6 +363,10 @@
       "caption": {
         "displayName": "Caption",
         "purpose": "A dica em Cinza-meio que acompanha títulos e linhas."
+      },
+      "dense": {
+        "displayName": "Dense",
+        "purpose": "O degrau abaixo da Caption para o que se lê de relance dentro de uma linha: observação, legenda, visto às, situação da Escala. Nunca desce de 13px."
       },
       "label": {
         "displayName": "Label",

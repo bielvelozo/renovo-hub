@@ -1,7 +1,7 @@
 import type { ReactNode, Ref } from 'react'
 import { Link } from 'react-router'
 import type { ItemApresentado, MusicaNaLista, MusicaResumida, TrechoApresentado } from '../api/tipos'
-import { formatarDia, hojeEmBrasilia, limparTitulo, tempoRelativo } from '../dominio'
+import { TOM_ORIGINAL, formatarDia, hojeEmBrasilia, limparTitulo, tempoRelativo } from '../dominio'
 import { Icone } from '../casca/Icone'
 import { Capa } from './Capa'
 import { Selo } from './Selo'
@@ -9,6 +9,8 @@ import { Selo } from './Selo'
 export type ModoDaLinha = 'leitura' | 'navegacao' | 'escolha'
 
 export type PosicaoDoTempo = 'selo' | 'direita'
+
+export type PosicaoDoTom = 'selo' | 'direita'
 
 export type MusicaDaLinha = MusicaResumida &
   Partial<
@@ -35,6 +37,7 @@ type Comum = {
   arrastando?: boolean
   desligado?: boolean
   tempo?: PosicaoDoTempo
+  posicaoDoTom?: PosicaoDoTom
 }
 
 export type PropriedadesDaLinha = Comum &
@@ -54,6 +57,7 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
     arrastando,
     desligado,
     tempo = 'selo',
+    posicaoDoTom = 'selo',
   } = props
   const ehMedley = props.trechos !== undefined
   const nome = ehMedley ? { titulo: 'Medley', artista: '' } : nomeLimpo(props.musica)
@@ -64,6 +68,7 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
   const ultima = ehMedley ? undefined : props.musica.ultimaExecucao
   const temTempo = ultima !== undefined
   const tempoADireita = temTempo && tempo === 'direita'
+  const tomADireita = posicaoDoTom === 'direita'
   const recente = !ehMedley && !!props.musica.recente && !!ultima
   const planejadas = ehMedley ? [] : (props.musica.planejadaEm ?? [])
 
@@ -75,7 +80,7 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
       </span>
       {nome.artista && <span className="dica">{nome.artista}</span>}
       <span className="selos">
-        {tom && <Selo variante="tom">Tom {tom}</Selo>}
+        {tom && !tomADireita && <Selo variante="tom">Tom {tom}</Selo>}
         {temTempo && !tempoADireita && <Selo>{ultima ? tempoRelativo(ultima.data, hoje) : 'nunca tocada no app'}</Selo>}
         {!ehMedley && props.trecho && (
           <Selo variante="trecho">
@@ -111,7 +116,7 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
     </>
   )
 
-  const coluna = tempoADireita && (
+  const coluna = tempoADireita ? (
     <span className={`tempo${recente ? ' atencao' : ''}`}>
       {ultima ? (
         <b>{tempoCurto(tempoRelativo(ultima.data, hoje))}</b>
@@ -122,6 +127,8 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
         </>
       )}
     </span>
+  ) : (
+    tomADireita && tom && <ColunaDoTom tom={tom} />
   )
 
   // A alça e o que vem em `direita` ficam fora do botão: arrastar a linha pra
@@ -170,12 +177,21 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
                   <TituloDoTrecho trecho={trecho} />
                 </span>
               )}
-              <Selo variante="tom">Tom {trecho.tom}</Selo>
+              {tomADireita ? <ColunaDoTom tom={trecho.tom} /> : <Selo variante="tom">Tom {trecho.tom}</Selo>}
             </li>
           ))}
         </ol>
       )}
     </li>
+  )
+}
+
+function ColunaDoTom({ tom }: { tom: string }) {
+  return (
+    <span className={`tempo tom${tom === TOM_ORIGINAL ? ' original' : ''}`} aria-label={`Tom ${tom}`}>
+      <b>{tom}</b>
+      <span>tom</span>
+    </span>
   )
 }
 

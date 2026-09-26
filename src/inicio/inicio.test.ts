@@ -8,6 +8,7 @@ import {
   textoDeSugestoesNovas,
   textoDoPosCulto,
   tituloDasPendencias,
+  tituloDoInicio,
 } from './inicio'
 
 const HOJE = '2026-09-13'
@@ -69,6 +70,13 @@ describe('textoDoPosCulto', () => {
     expect(textoDoPosCulto({ escalaId: 'e1', titulo: 'Culto', data: HOJE, itens: 1 }, HOJE)).toBe(
       'Hoje: 1 música no histórico',
     )
+  })
+})
+
+describe('tituloDoInicio', () => {
+  it('é a data da próxima Escala com inicial maiúscula, pra servir de h1', () => {
+    expect(tituloDoInicio('2026-09-16', HOJE)).toBe('Qua, 16 de set')
+    expect(tituloDoInicio('2027-01-03', HOJE)).toBe('Dom, 3 de jan de 2027')
   })
 })
 

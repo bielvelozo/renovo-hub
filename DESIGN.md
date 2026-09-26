@@ -53,6 +53,12 @@ typography:
     fontWeight: 400
     lineHeight: 1.45
     letterSpacing: "normal"
+  dense:
+    fontFamily: "Geist, system-ui, -apple-system, 'Segoe UI', sans-serif"
+    fontSize: "13px"
+    fontWeight: 400
+    lineHeight: 1.4
+    letterSpacing: "normal"
   label:
     fontFamily: "Geist, system-ui, -apple-system, 'Segoe UI', sans-serif"
     fontSize: "12px"
@@ -250,7 +256,9 @@ Uma paleta de cinzas quase sem matiz, um acento índigo que muda de peso entre o
 - **Headline** (600, 18px, 1.25, -0.01em): título da folha que sobe.
 - **Title** (600, 17px, 1.3, -0.01em): título de cartão, título de subtela e o título encolhido que aparece na faixa ao rolar. O título de Música usa 700 em 19px.
 - **Body** (400, 15px, 1.45): o corpo do app, definido no `body`. Linhas de lista e itens de menu sobem para 500.
-- **Caption** (400, 14px, Cinza-meio): a "dica" que acompanha títulos e linhas; 13px dentro de linhas densas, observações e legendas.
+- **Caption** (400, 14px, Cinza-meio): a "dica" que acompanha títulos e linhas.
+- **Dense** (400, 13px, 1.4, Cinza-meio): o degrau abaixo da Caption para o que se lê de relance dentro de uma linha: observação do Ministro, legenda, "visto às", situação da Escala, dica do atalho do culto, pretas do teclado. Sobe para 500 ou 600 quando é estado ("falta 1 bateria") e nunca desce de 13px.
+- **Tom na lista** (700, 17px, tabular, Grafite): a nota do Tom na coluna direita das linhas de leitura do Repertório, com o rótulo "tom" em Label embaixo. É a resposta à pergunta número um do Membro, por isso é o maior texto da linha; o selo de Tom fica só onde não há coluna (linhas de edição).
 - **Label** (600, 12px, 1.3, +0.06em, caixa alta, Cinza-meio): `h2` de seção, rótulo de campo, nome de Grupo na Equipe, mês no bloco do dia, marcador na letra. Nunca em corpo de texto.
 - **Control** (600, 15px, 1): botões. Chips, segmento e botão pequeno descem para 14px; abas usam 500 em 11px.
 - **Tom no culto**: `clamp(26px, 7.5vw, 30px)` com altura de linha 1, e `clamp(28px, 8vw, 34px)` no bloco grande. É o maior texto do app e existe para ser lido a um metro.
@@ -317,7 +325,7 @@ Trilho em Véu com 3 px de recuo e raio 12 px; o marcador desliza com a mola de 
 
 ### Selos
 - **Style:** 3 × 8 px de recuo, raio 6 px, 600 12px tabular, uma linha só.
-- **Variants:** neutro (Véu sobre Cinza-meio) para Realizada, Legado, Trecho e "nunca tocada"; Tom em Véu sobre Grafite a 13px; acento e "nova" em Índigo-suave; atenção, sucesso, perigo e cancelada nos pares semânticos; Santa Ceia em lilás; Ministro só com contorno de 1 px em Linha.
+- **Variants:** neutro (Véu sobre Cinza-meio) para Realizada, Legado, Trecho e "nunca tocada"; Tom em Véu sobre Grafite a 13px onde a linha não tem coluna da direita; acento e "nova" em Índigo-suave; atenção, sucesso, perigo e cancelada nos pares semânticos; Santa Ceia em lilás; Ministro só com contorno de 1 px em Linha.
 
 ### Cards / Containers
 - **Corner Style:** 14 px.
@@ -346,7 +354,7 @@ Sobe do rodapé com a mola de entrada em 400 ms e desce com a mola de saída; al
 Grafite cheio com texto Fundo, 48 px, raio 12 px, sobe 24 px com a mola de entrada e some em 160 ms; "Desfazer" em Índigo-suave dentro dele. Fica 12 px acima das abas.
 
 ### Linha de música
-A assinatura do app: capa de 84 a 108 px por 60 px com cantos de 8 px, título em 600 15px com no máximo duas linhas, artista em Caption, selos em fila (Tom primeiro, depois tempo, trecho, atenção, Legado, nova, letra). Variantes leitura, navegação (hover em Índigo profundo) e escolha (a linha inteira é botão). Medley abre uma lista recuada com Linha de 2 px à esquerda. Arrastar destaca a linha em Superfície alta.
+A assinatura do app: capa de 84 a 108 px por 60 px com cantos de 8 px, título em 600 15px com no máximo duas linhas, artista em Caption, selos em fila (tempo, trecho, atenção, Legado, nova, letra). Em leitura o Tom vai para a coluna da direita ("Tom na lista"), inclusive nos Trechos do Medley; em edição continua como primeiro selo. Variantes leitura, navegação (hover em Índigo profundo) e escolha (a linha inteira é botão). Medley abre uma lista recuada com Linha de 2 px à esquerda. Arrastar destaca a linha em Superfície alta.
 
 ### Teclado de Tom
 Sete teclas brancas e cinco pretas numa grade de 14 colunas: brancas de 44 px em Superfície com borda Linha e 700 15px; pretas de 38 px em Superfície alta com Cinza-meio 13px. Ponto de 6 px no canto: Índigo à direita para o Tom sugerido, Âmbar à esquerda para o Tom original. Tecla escolhida em Índigo cheio.

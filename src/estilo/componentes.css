@@ -227,6 +227,12 @@
   border-radius: var(--raio-total);
 }
 
+.osso.osso-do-titulo {
+  width: 9ch;
+  height: 0.9em;
+  margin-block: 0.125em;
+}
+
 @keyframes brilho-do-esqueleto {
   from {
     background-position: 200% 0;
@@ -442,6 +448,34 @@
 
 .linha-de-musica .tempo.atencao {
   color: var(--atencao);
+}
+
+/* O Tom é a pergunta número um de quem lê a lista: nota grande à direita, rótulo em Label embaixo. */
+.linha-de-musica .tempo.tom {
+  align-self: center;
+  margin-top: 0;
+  color: var(--texto);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.linha-de-musica .tempo.tom b {
+  font-size: 17px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.linha-de-musica .tempo.tom > span {
+  color: var(--texto-2);
+}
+
+.linha-de-musica .tempo.tom.original b {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.trechos-do-medley .tempo.tom {
+  margin-left: auto;
 }
 
 .linha-de-musica .toque-da-linha .tempo {
