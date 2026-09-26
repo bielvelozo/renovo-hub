@@ -18,6 +18,18 @@ describe('Cabecalho', () => {
     expect(screen.getByRole('button', { name: 'engrenagem' })).not.toBeNull()
   })
 
+  it('no modo raiz a legenda fica no bloco do título, logo abaixo do h1', () => {
+    const { container } = render(
+      <MemoryRouter>
+        <Cabecalho raiz titulo="Oi, Gabriel" legenda={<p className="dica visto-em">visto às 10:32</p>} />
+      </MemoryRouter>,
+    )
+
+    const bloco = container.querySelector('.bloco-do-titulo')!
+    expect(bloco.querySelector('h1')?.textContent).toBe('Oi, Gabriel')
+    expect(bloco.lastElementChild?.textContent).toBe('visto às 10:32')
+  })
+
   it('no modo raiz troca o título por um rico e põe a navegação ao lado', () => {
     const { container } = render(
       <MemoryRouter>

@@ -1,8 +1,17 @@
 export type FormaDoEsqueleto = 'linha-de-musica' | 'cartao' | 'paragrafo'
 
-export function Esqueleto({ forma, quantidade = 1 }: { forma: FormaDoEsqueleto; quantidade?: number }) {
+export function Esqueleto({
+  forma,
+  quantidade = 1,
+  rotulo = false,
+}: {
+  forma: FormaDoEsqueleto
+  quantidade?: number
+  rotulo?: boolean
+}) {
   return (
     <div className="esqueleto" role="status" aria-label="Carregando" aria-busy="true">
+      {rotulo && <span className="osso rotulo" />}
       {Array.from({ length: quantidade }, (_, i) => (
         <Bloco key={i} forma={forma} />
       ))}

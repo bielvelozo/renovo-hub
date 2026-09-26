@@ -266,6 +266,16 @@ a {
   font-size: 13px;
 }
 
+.bloco-do-titulo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bloco-do-titulo .visto-em {
+  margin-top: 0;
+}
+
 .titulo-da-subtela {
   font: 600 17px/1.25 var(--fonte-corpo);
   font-variation-settings: normal;
@@ -542,8 +552,12 @@ nav.abas .contagem {
 }
 
 .cartao.pos-culto {
-  gap: 4px;
-  padding: 12px 8px 8px 14px;
+  gap: 8px;
+}
+
+/* O botão de fechar tem 44 px; a margem negativa devolve o X ao canto sem furar os 16 px do cartão. */
+.cartao.pos-culto .botao.icone {
+  margin: -12px -12px 0 0;
 }
 
 .cartao.pos-culto > div:last-child {

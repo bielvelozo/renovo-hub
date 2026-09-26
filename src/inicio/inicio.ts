@@ -63,6 +63,10 @@ export function resumoDaProximaEscala(pessoas: PessoaDaEquipe[], euId: string): 
   }
 }
 
+export function pendenciasVemAntes(pendentes: { data: string }[], dataDaMostrada: string): boolean {
+  return pendentes.some((escala) => escala.data < dataDaMostrada)
+}
+
 export function resumoDasPendencias(pendencias: Pendencia[]): string {
   const ordenadas = pendenciasOrdenadas(pendencias)
   const mostradas = ordenadas.slice(0, MAXIMO_DE_PENDENCIAS).map((pendencia) => pendencia.texto)

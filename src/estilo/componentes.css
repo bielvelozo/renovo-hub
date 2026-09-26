@@ -233,6 +233,14 @@
   margin-block: 0.125em;
 }
 
+/* Ocupa a linha do h2 de seção (32 px mais os 8 px do ritmo da seção) pra tela não pular quando o dado chega. */
+.osso.rotulo {
+  width: 38%;
+  height: 12px;
+  margin: 10px 4px 6px;
+  border-radius: var(--raio-p);
+}
+
 @keyframes brilho-do-esqueleto {
   from {
     background-position: 200% 0;

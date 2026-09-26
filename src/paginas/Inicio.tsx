@@ -26,6 +26,7 @@ import { mudouDesdeAVisita, visitaNaEscala } from '../escalas/visita'
 import {
   chaveDoPosCultoFechado,
   destinoDaPendencia,
+  pendenciasVemAntes,
   quandoAcontece,
   resumoDaProximaEscala,
   resumoDasPendencias,
@@ -49,6 +50,7 @@ export function Inicio() {
       raiz
       titulo={`Oi, ${eu.nome}`}
       tituloRico={tituloRico}
+      legenda={<VistoEm hora={busca.vistoEm} />}
       acao={
         eu.admin ? (
           <BotaoLink variante="icone" icone="engrenagem" para="/admin" aria-label="Administração" />
@@ -70,15 +72,16 @@ export function Inicio() {
     return (
       <section className="pagina">
         {cabecalho(<span className="osso osso-do-titulo" role="img" aria-label="Carregando" />)}
-        <VistoEm hora={busca.vistoEm} />
-        <Esqueleto forma="cartao" />
-        <Esqueleto forma="linha-de-musica" quantidade={3} />
+        <Esqueleto forma="cartao" rotulo />
+        <Esqueleto forma="linha-de-musica" quantidade={3} rotulo />
       </section>
     )
   }
 
   const dados = busca.dados
   const escala = dados.minhaProxima ?? dados.proximoCulto
+  const pendencias = dados.pendencias.length > 0 && <Pendencias escalas={dados.pendencias} hoje={hoje} />
+  const pendenciasAntes = escala !== null && pendenciasVemAntes(dados.pendencias, escala.data)
 
   function criarMes(mes: string) {
     acao.executar(async () => {
@@ -90,7 +93,6 @@ export function Inicio() {
   return (
     <section className="pagina">
       {cabecalho(escala ? tituloDoInicio(escala.data, hoje) : undefined)}
-      <VistoEm hora={busca.vistoEm} />
 
       {dados.posCulto && <CartaoPosCulto key={dados.posCulto.escalaId} posCulto={dados.posCulto} hoje={hoje} />}
 
@@ -123,9 +125,11 @@ export function Inicio() {
         </p>
       )}
 
+      {pendenciasAntes && pendencias}
+
       {escala && <RepertorioDoInicio escala={escala} anexosPorDono={dados.anexosPorDono} hoje={hoje} />}
 
-      {dados.pendencias.length > 0 && <Pendencias escalas={dados.pendencias} hoje={hoje} />}
+      {!pendenciasAntes && pendencias}
 
       <LinhaDeSugestoes sugestoes={sugestoes.dados?.sugestoes ?? []} />
     </section>

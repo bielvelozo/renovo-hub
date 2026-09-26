@@ -4,6 +4,7 @@ import type { Pendencia, PessoaDaEquipe } from '../dominio'
 import {
   destinoDaPendencia,
   linhaDaEscala,
+  pendenciasVemAntes,
   quandoAcontece,
   resumoDaProximaEscala,
   resumoDasPendencias,
@@ -100,6 +101,14 @@ describe('pendências no Início', () => {
     expect(destinoDaPendencia('e1', [pendencias[0]])).toBe('/escalas/e1/equipe?funcao=bateria')
     expect(destinoDaPendencia('e1', [pendencias[1]])).toBe('/escalas/e1/adicionar')
     expect(destinoDaPendencia('e1', [])).toBe('/escalas/e1')
+  })
+})
+
+describe('pendenciasVemAntes', () => {
+  it('põe as pendências antes do Repertório quando alguma Escala pendente vem antes da mostrada', () => {
+    expect(pendenciasVemAntes([{ data: '2026-09-27' }], '2026-10-04')).toBe(true)
+    expect(pendenciasVemAntes([{ data: '2026-10-04' }, { data: '2026-10-11' }], '2026-10-04')).toBe(false)
+    expect(pendenciasVemAntes([], '2026-10-04')).toBe(false)
   })
 })
 
