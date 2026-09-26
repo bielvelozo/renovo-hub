@@ -25,8 +25,10 @@ import { CHAVE_DE_VISITA_DAS_SUGESTOES } from '../escalas/sugestoes'
 import { mudouDesdeAVisita, visitaNaEscala } from '../escalas/visita'
 import {
   chaveDoPosCultoFechado,
+  destinoDaPendencia,
   quandoAcontece,
   resumoDaProximaEscala,
+  resumoDasPendencias,
   textoDeSugestoesNovas,
   textoDoPosCulto,
   tituloDasPendencias,
@@ -193,15 +195,9 @@ function ProximaEscala({
 
       <Cartao className="proxima-escala">
         <div className="topo-da-proxima">
-          <span className="dia destaque">
-            <b>{Number(escala.data.slice(8))}</b>
-            <span>{nomeDoDia(escala.data)}</span>
-          </span>
-          <div className="cresce">
-            <h3 className="titulo-do-cartao">{nomeDaEscala(escala)}</h3>
-            <div className="dica">
-              {rotuloDoHorario(escala.horario)} · {quandoAcontece(escala.data, hoje)}
-            </div>
+          <h3 className="titulo-do-cartao">{nomeDaEscala(escala)}</h3>
+          <div className="dica">
+            {rotuloDoHorario(escala.horario)} · {quandoAcontece(escala.data, hoje)}
           </div>
         </div>
 
@@ -227,6 +223,7 @@ function ProximaEscala({
                         {inicial}
                       </span>
                     ))}
+                    {resumo.extras > 0 && <span className="inicial mini">+{resumo.extras}</span>}
                   </span>
                   <span className="dica">{resumo.total === 1 ? '1 pessoa' : `${resumo.total} pessoas`}</span>
                 </>
@@ -319,16 +316,16 @@ function Pendencias({ escalas, hoje }: { escalas: EscalaResumida[]; hoje: string
       <ul className="lista cartao">
         {escalas.map((escala) => (
           <li key={escala.id}>
-            <Link to={`/escalas/${escala.id}`} className="toque">
+            <Link to={destinoDaPendencia(escala.id, escala.pendencias)} className="toque">
               <span className="dia">
                 <b>{Number(escala.data.slice(8))}</b>
                 <span>{nomeDoDia(escala.data)}</span>
               </span>
               <span className="cresce">
                 <span className="titulo">{nomeDaEscala(escala)}</span>
-                <span className="estado atencao">
+                <span className="estado">
                   <Icone nome="atencao" />
-                  {escala.pendencias.map((pendencia) => pendencia.texto).join(' · ')}
+                  {resumoDasPendencias(escala.pendencias)}
                 </span>
               </span>
               <Icone nome="seta" />

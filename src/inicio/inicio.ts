@@ -1,5 +1,5 @@
 import type { EscalaApresentada, PosCultoApresentado, SugestaoApresentada } from '../api/tipos'
-import type { PessoaDaEquipe } from '../dominio'
+import type { ChaveDePendencia, Pendencia, PessoaDaEquipe } from '../dominio'
 import { DIAS_DAS_PENDENCIAS, diasEntre, formatarDia, formatarDiaEMes, rotuloDoHorario, somarDias } from '../dominio'
 import { novasDesde } from '../escalas/sugestoes'
 
@@ -8,9 +8,12 @@ export type ResumoDaProximaEscala = {
   ministros: string | null
   iniciais: string[]
   total: number
+  extras: number
 }
 
 const MAXIMO_DE_INICIAIS = 6
+const MAXIMO_DE_PENDENCIAS = 2
+const ORDEM_DAS_PENDENCIAS: Record<ChaveDePendencia, number> = { 'sem-ministro': 0, 'falta-funcao': 1, 'sem-musicas': 2 }
 
 export function chaveDoPosCultoFechado(escalaId: string): string {
   return `renovo:pos-culto-fechado:${escalaId}`
@@ -49,13 +52,37 @@ export function linhaDaEscala(escala: Pick<EscalaApresentada, 'data' | 'horario'
 export function resumoDaProximaEscala(pessoas: PessoaDaEquipe[], euId: string): ResumoDaProximaEscala {
   const eu = pessoas.find((pessoa) => pessoa.membroId === euId)
   const ministros = pessoas.filter((pessoa) => pessoa.ministro).map((pessoa) => pessoa.nome)
+  const mostradas = pessoas.length > MAXIMO_DE_INICIAIS ? MAXIMO_DE_INICIAIS - 1 : pessoas.length
 
   return {
     suaFuncao: eu ? funcaoDeQuemOlha(eu) : null,
     ministros: ministros.length ? emLista(ministros) : null,
-    iniciais: pessoas.slice(0, MAXIMO_DE_INICIAIS).map((pessoa) => pessoa.nome.trim().charAt(0).toUpperCase()),
+    iniciais: pessoas.slice(0, mostradas).map((pessoa) => pessoa.nome.trim().charAt(0).toUpperCase()),
     total: pessoas.length,
+    extras: pessoas.length - mostradas,
   }
+}
+
+export function resumoDasPendencias(pendencias: Pendencia[]): string {
+  const ordenadas = pendenciasOrdenadas(pendencias)
+  const mostradas = ordenadas.slice(0, MAXIMO_DE_PENDENCIAS).map((pendencia) => pendencia.texto)
+  const resto = ordenadas.length - mostradas.length
+
+  return resto > 0 ? `${mostradas.join(' · ')} · mais ${resto}` : mostradas.join(' · ')
+}
+
+export function destinoDaPendencia(escalaId: string, pendencias: Pendencia[]): string {
+  const primeira = pendenciasOrdenadas(pendencias)[0]
+  if (!primeira) return `/escalas/${escalaId}`
+  if (primeira.chave === 'sem-musicas') return `/escalas/${escalaId}/adicionar`
+
+  const foco = primeira.funcaoId ? `?funcao=${encodeURIComponent(primeira.funcaoId)}` : ''
+
+  return `/escalas/${escalaId}/equipe${foco}`
+}
+
+function pendenciasOrdenadas(pendencias: Pendencia[]): Pendencia[] {
+  return [...pendencias].sort((a, b) => ORDEM_DAS_PENDENCIAS[a.chave] - ORDEM_DAS_PENDENCIAS[b.chave])
 }
 
 function funcaoDeQuemOlha(eu: PessoaDaEquipe): string {

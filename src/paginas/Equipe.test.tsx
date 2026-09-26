@@ -50,7 +50,7 @@ const escala: EscalaApresentada = {
 
 const acao = { ocupado: false, erro: null, executar: vi.fn(), limpar: vi.fn() }
 
-function Tela() {
+function Tela({ funcaoEmFoco }: { funcaoEmFoco?: string }) {
   const [atual, definir] = useState(escala)
 
   return (
@@ -62,20 +62,29 @@ function Tela() {
       formacoes={[]}
       acao={acao}
       recarregarFormacoes={vi.fn()}
+      funcaoEmFoco={funcaoEmFoco}
       hoje={HOJE}
     />
   )
 }
 
-function mostrar() {
+function mostrar(funcaoEmFoco?: string) {
   render(
     <MemoryRouter>
       <ProvedorDeAvisos>
-        <Tela />
+        <Tela funcaoEmFoco={funcaoEmFoco} />
       </ProvedorDeAvisos>
     </MemoryRouter>,
   )
 }
+
+describe('Função em foco', () => {
+  it('leva o foco ao Grupo da Função que a pendência apontou', () => {
+    mostrar('baixo')
+
+    expect(document.activeElement).toBe(screen.getByRole('heading', { level: 2, name: 'Músicos' }))
+  })
+})
 
 describe('resumo da Equipe', () => {
   it('recalcula a cada toque', () => {

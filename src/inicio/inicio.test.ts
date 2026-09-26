@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import type { SugestaoApresentada } from '../api/tipos'
-import type { PessoaDaEquipe } from '../dominio'
+import type { Pendencia, PessoaDaEquipe } from '../dominio'
 import {
+  destinoDaPendencia,
   linhaDaEscala,
   quandoAcontece,
   resumoDaProximaEscala,
+  resumoDasPendencias,
   textoDeSugestoesNovas,
   textoDoPosCulto,
   tituloDasPendencias,
@@ -80,6 +82,27 @@ describe('tituloDoInicio', () => {
   })
 })
 
+describe('pendências no Início', () => {
+  const pendencias: Pendencia[] = [
+    { chave: 'falta-funcao', texto: 'falta 1 bateria', funcaoId: 'bateria' },
+    { chave: 'sem-musicas', texto: 'sem músicas' },
+    { chave: 'falta-funcao', texto: 'faltam 2 vocais', funcaoId: 'vocal' },
+    { chave: 'sem-ministro', texto: 'sem ministro' },
+  ]
+
+  it('resume em duas, com sem ministro na frente e o resto contado', () => {
+    expect(resumoDasPendencias(pendencias)).toBe('sem ministro · falta 1 bateria · mais 2')
+    expect(resumoDasPendencias(pendencias.slice(0, 2))).toBe('falta 1 bateria · sem músicas')
+  })
+
+  it('leva à Equipe com a Função em foco, ou a adicionar música quando só falta o Repertório', () => {
+    expect(destinoDaPendencia('e1', pendencias)).toBe('/escalas/e1/equipe')
+    expect(destinoDaPendencia('e1', [pendencias[0]])).toBe('/escalas/e1/equipe?funcao=bateria')
+    expect(destinoDaPendencia('e1', [pendencias[1]])).toBe('/escalas/e1/adicionar')
+    expect(destinoDaPendencia('e1', [])).toBe('/escalas/e1')
+  })
+})
+
 describe('tituloDasPendencias', () => {
   it('diz até que dia a lista olha, em vez do número de semanas da regra', () => {
     expect(tituloDasPendencias('2026-09-25')).toBe('Precisa de atenção · até 23 out')
@@ -99,6 +122,7 @@ describe('resumoDaProximaEscala', () => {
       ministros: 'Isa',
       iniciais: ['I', 'A', 'G'],
       total: 3,
+      extras: 0,
     })
   })
 
@@ -119,16 +143,26 @@ describe('resumoDaProximaEscala', () => {
   it('aceita pessoa sem Função e Equipe sem Ministro', () => {
     const sozinha = [pessoa('davi', 'Davi', [])]
 
-    expect(resumoDaProximaEscala(sozinha, 'davi')).toEqual({ suaFuncao: 'Escalado', ministros: null, iniciais: ['D'], total: 1 })
+    expect(resumoDaProximaEscala(sozinha, 'davi')).toEqual({
+      suaFuncao: 'Escalado',
+      ministros: null,
+      iniciais: ['D'],
+      total: 1,
+      extras: 0,
+    })
   })
 
-  it('corta as iniciais em seis sem perder a contagem', () => {
-    const grande = Array.from({ length: 9 }, (_, n) => pessoa('m' + n, 'Membro ' + n, ['Vocal']))
+  it('mostra até seis iniciais; acima disso, cinco e a conta do que sobrou', () => {
+    const equipeDe = (quantas: number) => Array.from({ length: quantas }, (_, n) => pessoa('m' + n, 'Membro ' + n, ['Vocal']))
 
-    const resumo = resumoDaProximaEscala(grande, 'ninguem')
+    const seis = resumoDaProximaEscala(equipeDe(6), 'ninguem')
+    expect(seis.iniciais).toHaveLength(6)
+    expect(seis.extras).toBe(0)
 
-    expect(resumo.iniciais).toHaveLength(6)
-    expect(resumo.total).toBe(9)
+    const nove = resumoDaProximaEscala(equipeDe(9), 'ninguem')
+    expect(nove.iniciais).toHaveLength(5)
+    expect(nove.extras).toBe(4)
+    expect(nove.total).toBe(9)
   })
 })
 

@@ -438,8 +438,8 @@ nav.abas .contagem {
 
 .topo-da-proxima {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .fatos {
@@ -513,24 +513,20 @@ nav.abas .contagem {
   margin-left: -8px;
 }
 
+/* A pendência é lida, não gritada: só o ícone leva a cor de Atenção. */
 .estado {
   display: flex;
   align-items: center;
   gap: 5px;
-  font: 600 13px/1.3 var(--fonte-corpo);
+  color: var(--texto-2);
+  font: 500 13px/1.3 var(--fonte-corpo);
 }
 
 .estado .icone {
+  flex: none;
   width: 14px;
   height: 14px;
-}
-
-.estado.atencao {
   color: var(--atencao);
-}
-
-.estado.sucesso {
-  color: var(--sucesso);
 }
 
 .cartao.pos-culto > .secao-topo {

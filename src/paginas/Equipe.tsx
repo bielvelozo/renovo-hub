@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
-import { Navigate, useParams } from 'react-router'
+import { Navigate, useParams, useSearchParams } from 'react-router'
 import { api, textoDoErro } from '../api/cliente'
 import type { EscalaApresentada, Formacao } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
@@ -46,6 +46,7 @@ const AVISO_DO_SINO = 'não vai receber aviso pelo app; combine pelo WhatsApp'
 
 export function Equipe() {
   const { id = '' } = useParams()
+  const [parametros] = useSearchParams()
   const eu = usarEu()
   const escala = usarBusca<EscalaApresentada>(`/api/escalas/${id}`)
   const pessoas = usarBusca<{ membros: MembroComPush[] }>('/api/membros')
@@ -101,6 +102,7 @@ export function Equipe() {
         formacoes={formacoes.dados.formacoes}
         acao={acao}
         recarregarFormacoes={formacoes.recarregar}
+        funcaoEmFoco={parametros.get('funcao')}
       />
     </section>
   )
@@ -114,6 +116,7 @@ export function CorpoDaEquipe({
   formacoes,
   acao,
   recarregarFormacoes,
+  funcaoEmFoco = null,
   hoje = hojeEmBrasilia(),
 }: {
   escala: EscalaApresentada
@@ -123,6 +126,7 @@ export function CorpoDaEquipe({
   formacoes: Formacao[]
   acao: Acao
   recarregarFormacoes: () => void
+  funcaoEmFoco?: string | null
   hoje?: string
 }) {
   const avisar = usarAviso()
@@ -130,6 +134,7 @@ export function CorpoDaEquipe({
   const [explicando, explicar] = useState(false)
 
   const secoes = secoesDaEquipe(membros, funcoes)
+  const grupoEmFoco = funcoes.find((funcao) => funcao.id === funcaoEmFoco)?.grupo ?? null
   const resumo = resumoDaEquipe(funcoes, escala.equipe, membros)
   const mudos = semNotificacao(membros, escala.equipe)
   const lembrete = textoDeSemNotificacao(mudos)
@@ -202,6 +207,7 @@ export function CorpoDaEquipe({
           acao={acao}
           gravar={gravar}
           hoje={hoje}
+          emFoco={secao.grupo === grupoEmFoco}
           titulo={
             secao.chave === 'musicos' ? (
               <span className="acao-da-formacao">
@@ -274,6 +280,7 @@ function Secao({
   hoje,
   titulo,
   rodape,
+  emFoco = false,
 }: {
   secao: SecaoDaEquipe
   equipe: EscalaApresentada['equipe']
@@ -282,8 +289,16 @@ function Secao({
   hoje: string
   titulo: ReactNode
   rodape: ReactNode
+  emFoco?: boolean
 }) {
   const [termo, buscar] = useState('')
+  const cabecalho = useRef<HTMLHeadingElement>(null)
+
+  useEffect(() => {
+    if (!emFoco || !cabecalho.current) return
+    cabecalho.current.scrollIntoView?.({ block: 'start' })
+    cabecalho.current.focus({ preventScroll: true })
+  }, [emFoco])
 
   const ordenadas = ordenarPorEscalados(secao.membros, equipe)
   const busca = normalizarTexto(termo)
@@ -292,7 +307,9 @@ function Secao({
   return (
     <div className="secao">
       <div className="secao-topo">
-        <h2>{secao.nome}</h2>
+        <h2 ref={cabecalho} tabIndex={emFoco ? -1 : undefined}>
+          {secao.nome}
+        </h2>
         {titulo}
       </div>
 
