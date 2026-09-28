@@ -71,6 +71,8 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
   const tomADireita = posicaoDoTom === 'direita'
   const recente = !ehMedley && !!props.musica.recente && !!ultima
   const planejadas = ehMedley ? [] : (props.musica.planejadaEm ?? [])
+  // Dentro de um link ou botão, a letra vira selo: o caminho é a Música ou a folha do Item.
+  const mioloInterativo = modo === 'navegacao' || (modo === 'leitura' && !!aoEscolher)
 
   const miolo = (
     <>
@@ -106,12 +108,16 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
         )}
         {!ehMedley && props.musica.legado && tempo === 'selo' && <Selo variante="legado">Legado</Selo>}
         {!ehMedley && props.musica.nova && tempo === 'selo' && <Selo>nova</Selo>}
-        {letraEm && modo !== 'escolha' && (
-          <Link className="selo neutro" to={letraEm} onClick={(evento) => evento.stopPropagation()}>
-            <Icone nome="documento" />
-            letra
-          </Link>
-        )}
+        {letraEm &&
+          modo !== 'escolha' &&
+          (mioloInterativo ? (
+            <Selo icone="documento">letra</Selo>
+          ) : (
+            <Link className="selo neutro" to={letraEm}>
+              <Icone nome="documento" />
+              letra
+            </Link>
+          ))}
         {selos}
       </span>
     </>

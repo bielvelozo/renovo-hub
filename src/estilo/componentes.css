@@ -426,6 +426,32 @@
   text-align: left;
 }
 
+.linha-de-musica .selos .selo.trecho {
+  white-space: nowrap;
+}
+
+.linha-de-musica .miolo > .dica {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Com a alça à direita sobram 300 px na linha a 360 px; a capa encolhe para o título caber. */
+.linha-de-musica:has(> .direita) .capa {
+  width: 64px;
+  height: 36px;
+}
+
+.linha-de-musica:has(> .direita) .capa .play::before {
+  width: 28px;
+  height: 28px;
+}
+
+.linha-de-musica:has(> .direita) .capa .play svg {
+  width: 16px;
+  height: 16px;
+}
+
 .linha-de-musica .direita {
   display: flex;
   align-items: center;
