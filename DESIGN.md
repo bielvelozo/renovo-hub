@@ -242,7 +242,7 @@ Uma paleta de cinzas quase sem matiz, um acento índigo que muda de peso entre o
 
 **Regra do Selo Cinza.** Estado que não pede nada de quem lê fica em Véu e Cinza-meio: Realizada, Legado, Trecho, Tom. Cor só para Atenção, Perigo, Sucesso e Santa Ceia.
 
-**Regra do Par.** Todo token de cor nasce como `light-dark(claro, escuro)` em `src/estilo/tokens.css`. Nenhum hex solto em componente; o modo culto força o escuro trocando só o `color-scheme`.
+**Regra do Par.** Todo token de cor nasce como `light-dark(claro, escuro)` em `src/estilo/tokens.css`, declarado em `:root, .culto`. Nenhum hex solto em componente. O modo culto força o escuro trocando só o `color-scheme` da sua subárvore, e é por isso que os tokens precisam estar declarados também em `.culto`: o `light-dark()` é resolvido onde a custom property é declarada, não onde é usada (descoberto em 28/09/2026, quando o modo culto renderizava claro no tema claro).
 
 ## Typography
 
