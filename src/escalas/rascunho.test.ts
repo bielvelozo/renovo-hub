@@ -270,6 +270,15 @@ describe('textos', () => {
     )
   })
 
+  it('na folha de um Item que já tem Tom, a dica não contradiz o teclado', () => {
+    expect(textoDoTomSugerido(null, HOJE, 'D')).toBe('Tom desta escala: D.')
+    expect(textoDoTomSugerido(sugerido(), HOJE, 'C')).toBe('Último Tom: C, tocado em dom, 16 de ago com Marcos. Já selecionado.')
+    expect(textoDoTomSugerido(sugerido(), HOJE, 'D')).toBe(
+      'Tom desta escala: D. Último Tom: C, tocado em dom, 16 de ago com Marcos.',
+    )
+    expect(textoDoTomSugerido(null, HOJE, 'original')).toBe('Tom desta escala: o original da gravação.')
+  })
+
   it('o histórico sai em uma linha', () => {
     expect(textoDoHistorico([execucao(), execucao({ data: '2026-08-30', tom: 'D', parcial: true })], HOJE)).toBe(
       'C em dom, 16 de ago (Marcos) · D em dom, 30 de ago (Marcos), trecho',

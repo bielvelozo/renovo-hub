@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { api } from '../api/cliente'
 import type { AchadoNoCifraClub, ExecucaoApresentada, TomSugeridoApresentado } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
-import { TOM_ORIGINAL } from '../dominio'
+import { TOM_ORIGINAL, hojeEmBrasilia } from '../dominio'
 import { textoDoHistorico, textoDoTomSugerido } from '../escalas/rascunho'
 import { Botao, classesDoBotao } from './Botao'
 import { SeletorDeTom } from './SeletorDeTom'
@@ -28,7 +28,7 @@ export function BlocoDeTom({
   return (
     <div className="secao">
       <h2>Tom</h2>
-      <p className="dica">{textoDoTomSugerido(sugerido)}</p>
+      <p className="dica">{textoDoTomSugerido(sugerido, hojeEmBrasilia(), tom)}</p>
 
       <button
         type="button"

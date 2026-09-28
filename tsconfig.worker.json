@@ -20,6 +20,7 @@
     "src/componentes/ordenacao.ts",
     "src/culto/culto.ts",
     "src/culto/pacote.ts",
+    "src/escalas/cabecalho.ts",
     "src/escalas/equipe.ts",
     "src/escalas/mes.ts",
     "src/escalas/rascunho.ts",

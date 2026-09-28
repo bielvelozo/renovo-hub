@@ -296,6 +296,11 @@ a {
   font-size: 13px;
 }
 
+.faixa.subtela .dica .selo {
+  margin-left: 8px;
+  vertical-align: 1px;
+}
+
 nav.abas {
   flex: none;
   display: flex;

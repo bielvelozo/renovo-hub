@@ -30,6 +30,7 @@ import { usarOrdenacao } from '../componentes/usarOrdenacao'
 import { usarRemocaoPendente } from '../componentes/usarRemocaoPendente'
 import { VistoEm } from '../componentes/VistoEm'
 import { formatarDia, hojeEmBrasilia, nomeDaEscala, rotuloDoHorario } from '../dominio'
+import { subtituloDaEscala } from '../escalas/cabecalho'
 import { equipePorGrupo, linhaDaEquipe } from '../escalas/equipe'
 import { ministrosDaEscala, textoDeQuemPuxa, tituloDoItem } from '../escalas/repertorio'
 import { marcarVisitaNaEscala, mudouDesdeAVisita, visitaNaEscala } from '../escalas/visita'
@@ -77,7 +78,15 @@ export function Escala() {
     <>
       <Cabecalho
         titulo={escala ? nomeDaEscala(escala) : 'Escala'}
-        sub={escala && formatarDia(escala.data, hoje) + ' · ' + rotuloDoHorario(escala.horario)}
+        sub={
+          escala && (
+            <>
+              {subtituloDaEscala(escala, hoje)}
+              {escala.estado === 'realizada' && <Selo variante="realizada">realizada</Selo>}
+              {escala.estado === 'cancelada' && <Selo variante="cancelada">cancelada</Selo>}
+            </>
+          )
+        }
         voltarPara="/mes"
         acao={escala ? <MenuDaEscala escala={escala} dirige={dirige} abrir={abrir} mudar={mudar} /> : undefined}
       />
@@ -419,6 +428,7 @@ export function Repertorio({
                 modo={podeEditar ? 'leitura' : 'navegacao'}
                 numero={indice + 1}
                 hoje={hoje}
+                posicaoDoTom="direita"
                 letraEm={
                   temLetraNoItem(item, porDono) ? `/escalas/${escala.id}/itens/${item.id}/letra` : undefined
                 }
@@ -455,7 +465,7 @@ export function Repertorio({
           recarregar={() => mudar(`/api/escalas/${escala.id}`, {})}
           fechar={() => abrirItem(null)}
           salvar={(corpo) =>
-            mudar(`/api/escalas/${escala.id}/itens/${aberto.id}`, { metodo: 'PATCH', corpo }, 'Item salvo')
+            mudar(`/api/escalas/${escala.id}/itens/${aberto.id}`, { metodo: 'PATCH', corpo }, 'Salvo')
           }
           remover={() => remover(aberto)}
         />
@@ -489,6 +499,8 @@ function FolhaDaData({
       <Campo rotulo="Horário">
         <input type="time" value={horario} onChange={(e) => escreverHorario(e.target.value)} />
       </Campo>
+
+      {escala.estado === 'agendada' && <p className="dica">Quem está na Equipe recebe um aviso da nova data.</p>}
 
       <Botao largo disabled={ocupado} onClick={() => salvar({ data, horario })}>
         Salvar

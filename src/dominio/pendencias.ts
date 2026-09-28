@@ -68,21 +68,27 @@ export function resumoDosGrupos(todas: Funcao[], equipe: EntradaEquipe[]): Resum
       entrada.funcoes.some((funcaoId) => funcoes.some((funcao) => funcao.id === funcaoId)),
     ).length
     const minimo = funcoes.reduce((soma, funcao) => soma + funcao.minimo, 0)
+    const preenchidas = funcoes.reduce(
+      (soma, funcao) => soma + Math.min(escaladosNaFuncao(equipe, funcao.id), funcao.minimo),
+      0,
+    )
     const faltam = funcoes
       .filter((funcao) => funcao.minimo > 0 && escaladosNaFuncao(equipe, funcao.id) < funcao.minimo)
       .map((funcao) => funcao.nome.toLowerCase())
 
-    return { grupo, escalados, minimo, faltam, texto: textoDoGrupo(grupo, escalados, minimo, faltam) }
+    return { grupo, escalados, minimo, faltam, texto: textoDoGrupo(grupo, escalados, preenchidas, minimo, faltam) }
   })
 }
 
-function textoDoGrupo(grupo: Grupo, escalados: number, minimo: number, faltam: string[]): string {
+// "2 de 3" conta as vagas mínimas preenchidas, não pessoas: quem toca dois instrumentos
+// preenche duas vagas, e a conta nunca diz "3 de 3" com uma Função em falta.
+function textoDoGrupo(grupo: Grupo, escalados: number, preenchidas: number, minimo: number, faltam: string[]): string {
   const nome = NOME_DO_GRUPO[grupo].toLowerCase()
   if (!minimo) return `${nome} ${escalados}`
 
   const falta = faltam.length ? ` · ${faltam.length === 1 ? 'falta' : 'faltam'} ${faltam.join(', ')}` : ''
 
-  return `${nome} ${escalados} de ${minimo}${falta}`
+  return `${nome} ${preenchidas} de ${minimo}${falta}`
 }
 
 function escaladosNaFuncao(equipe: EntradaEquipe[], funcaoId: string): number {
