@@ -10,6 +10,7 @@ import { Botao } from '../componentes/Botao'
 import { CamposDoItem } from '../componentes/CamposDoItem'
 import { Capa } from '../componentes/Capa'
 import { Catalogo } from '../componentes/Catalogo'
+import { ErroDeCarga } from '../componentes/ErroDeCarga'
 import { Esqueleto } from '../componentes/Esqueleto'
 import { FaixaDeAlerta, frasesDeAlerta } from '../componentes/FaixaDeAlerta'
 import { RodapeDeAcao } from '../componentes/RodapeDeAcao'
@@ -42,7 +43,9 @@ export function Adicionar() {
   if (!eu.ministro && !eu.admin) return <Navigate to={`/escalas/${id}`} replace />
 
   if (sugestaoId) {
-    if (sugestao.erro) return <Problema texto={sugestao.erro} aoVoltar={() => navegar('/sugestoes')} />
+    if (sugestao.erro) {
+      return <Problema texto={sugestao.erro} tentarDeNovo={sugestao.recarregar} aoVoltar={() => navegar('/sugestoes')} />
+    }
     if (!sugestao.dados) return <Esqueleto forma="paragrafo" />
 
     return (
@@ -57,7 +60,9 @@ export function Adicionar() {
   }
 
   if (musicaId) {
-    if (musica.erro) return <Problema texto={musica.erro} aoVoltar={() => navegar(`/escalas/${id}`)} />
+    if (musica.erro) {
+      return <Problema texto={musica.erro} tentarDeNovo={musica.recarregar} aoVoltar={() => navegar(`/escalas/${id}`)} />
+    }
     if (!musica.dados) return <Esqueleto forma="paragrafo" />
 
     return (
@@ -131,8 +136,8 @@ function Detalhes({
     !jaBuscada && escolha.musicaId ? `/api/musicas/${escolha.musicaId}?escalaId=${escalaId}` : null,
   )
 
-  if (detalhe.erro) return <Problema texto={detalhe.erro} aoVoltar={aoVoltar} />
-  if (escala.erro) return <Problema texto={escala.erro} aoVoltar={aoVoltar} />
+  if (detalhe.erro) return <Problema texto={detalhe.erro} tentarDeNovo={detalhe.recarregar} aoVoltar={aoVoltar} />
+  if (escala.erro) return <Problema texto={escala.erro} tentarDeNovo={escala.recarregar} aoVoltar={aoVoltar} />
   if (detalhe.carregando || !escala.dados) return <Esqueleto forma="paragrafo" />
 
   return (
@@ -240,11 +245,11 @@ function Formulario({
   )
 }
 
-function Problema({ texto, aoVoltar }: { texto: string; aoVoltar: () => void }) {
+function Problema({ texto, tentarDeNovo, aoVoltar }: { texto: string; tentarDeNovo: () => void; aoVoltar: () => void }) {
   return (
     <section className="pagina">
       <Cabecalho titulo="Adicionar música" aoVoltar={aoVoltar} />
-      <p className="aviso">{texto}</p>
+      <ErroDeCarga mensagem={texto} tentarDeNovo={tentarDeNovo} />
     </section>
   )
 }

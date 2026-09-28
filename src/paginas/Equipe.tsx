@@ -11,6 +11,7 @@ import { Icone } from '../casca/Icone'
 import { usarAviso } from '../componentes/Avisos'
 import { Botao, BotaoLink } from '../componentes/Botao'
 import { Busca } from '../componentes/Busca'
+import { ErroDeCarga } from '../componentes/ErroDeCarga'
 import { Esqueleto } from '../componentes/Esqueleto'
 import { Folha } from '../componentes/Folha'
 import { Menu } from '../componentes/Menu'
@@ -76,7 +77,15 @@ export function Equipe() {
     return (
       <section className="pagina">
         {cabecalho}
-        <p className="aviso">{erro}</p>
+        <ErroDeCarga
+          mensagem={erro}
+          tentarDeNovo={() => {
+            escala.recarregar()
+            pessoas.recarregar()
+            papeis.recarregar()
+            formacoes.recarregar()
+          }}
+        />
       </section>
     )
   }
@@ -89,6 +98,8 @@ export function Equipe() {
       </section>
     )
   }
+
+  if (atual.estado === 'cancelada') return <Navigate to={`/escalas/${id}`} replace />
 
   return (
     <section className="pagina">
@@ -362,7 +373,9 @@ function Pessoa({
       </span>
 
       <span className="cresce grupo">
-        <span className="titulo">{membro.nome}</span>
+        <span className="titulo" id={`pessoa-${membro.id}`}>
+          {membro.nome}
+        </span>
         <span className="memoria">
           <span className="dica">{memoria.texto}</span>
           {memoria.alerta && <Selo variante="atencao">{memoria.alerta}</Selo>}
@@ -379,7 +392,7 @@ function Pessoa({
         />
       )}
 
-      <span className="chips">
+      <span className="chips" role="group" aria-labelledby={`pessoa-${membro.id}`}>
         {funcoes.map((funcao) => {
           const jaTinha = entrada?.funcoes.includes(funcao.id) ?? false
           const proximo = alternarFuncao(entrada, funcao.id)

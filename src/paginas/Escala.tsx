@@ -15,6 +15,7 @@ import { usarAviso } from '../componentes/Avisos'
 import { Botao, BotaoLink } from '../componentes/Botao'
 import { Campo } from '../componentes/Campo'
 import { Cartao } from '../componentes/Cartao'
+import { ErroDeCarga } from '../componentes/ErroDeCarga'
 import { Esqueleto } from '../componentes/Esqueleto'
 import { Folha } from '../componentes/Folha'
 import { FolhaDaPlaylist, FolhaDoWhatsapp } from '../componentes/FolhasDaEscala'
@@ -88,7 +89,7 @@ export function Escala() {
     return (
       <section className="pagina">
         {cabecalho}
-        <p className="aviso">{busca.erro}</p>
+        <ErroDeCarga mensagem={busca.erro} tentarDeNovo={busca.recarregar} />
       </section>
     )
   }

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
 import { Drawer } from 'vaul'
 import { Botao } from './Botao'
@@ -13,6 +14,12 @@ export function Folha({
   aberta?: boolean
   children: ReactNode
 }) {
+  const painel = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    painel.current?.focus({ preventScroll: true })
+  }, [])
+
   return (
     <Drawer.Root
       open={aberta}
@@ -24,7 +31,7 @@ export function Folha({
         <Drawer.Overlay className="folha-fundo" />
         <Drawer.Content className="folha" aria-describedby={undefined}>
           <Drawer.Handle className="alca-da-folha" />
-          <div className="painel">
+          <div className="painel" ref={painel} tabIndex={-1}>
             <Drawer.Title className="titulo-da-folha">{titulo}</Drawer.Title>
             {children}
             <Botao variante="secundario" largo onClick={fechar}>

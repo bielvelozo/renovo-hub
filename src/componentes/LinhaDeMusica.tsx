@@ -172,6 +172,10 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
                 <Link to={`/musicas/${trecho.musicaId}`} className="cresce">
                   <TituloDoTrecho trecho={trecho} />
                 </Link>
+              ) : tocavelNaLeitura ? (
+                <button type="button" className="toque-do-trecho cresce" disabled={desligado} onClick={aoEscolher}>
+                  <TituloDoTrecho trecho={trecho} />
+                </button>
               ) : (
                 <span className="cresce">
                   <TituloDoTrecho trecho={trecho} />

@@ -89,6 +89,11 @@ a {
   color: var(--acento);
 }
 
+::placeholder {
+  color: var(--texto-2);
+  opacity: 1;
+}
+
 :focus-visible {
   outline: 2px solid var(--acento);
   outline-offset: 2px;
@@ -169,6 +174,7 @@ a {
 
 .conteudo:has(.rodape-de-acao) {
   padding-bottom: 104px;
+  scroll-padding-bottom: 104px;
 }
 
 /* A faixa cobre o padding de `.conteudo` com margem negativa, pra nada aparecer
@@ -971,12 +977,12 @@ nav.abas .contagem {
   flex: none;
   flex-basis: 100%;
   flex-wrap: wrap;
+  row-gap: 8px;
   overflow: visible;
   padding: 0 0 0 46px;
 }
 
 .pessoa .chip {
-  min-height: 32px;
   padding: 0 12px;
 }
 
