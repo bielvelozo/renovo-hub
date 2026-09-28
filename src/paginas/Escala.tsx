@@ -36,6 +36,7 @@ import { equipePorGrupo, linhaDaEquipe } from '../escalas/equipe'
 import { ministrosDaEscala, textoDeQuemPuxa, tituloDoItem } from '../escalas/repertorio'
 import { marcarVisitaNaEscala, mudouDesdeAVisita, visitaNaEscala } from '../escalas/visita'
 import { destinoDaPendencia, resumoDasPendencias } from '../inicio/inicio'
+import { marcarTarefa } from '../guia/andamento'
 import { usarEu } from '../sessao/sessao'
 
 type Aberta = 'editar' | 'cancelar' | 'whatsapp' | null
@@ -59,7 +60,9 @@ export function Escala() {
   // A marca «mudou» compara com a visita anterior, então a desta abertura só é
   // gravada depois de a tela renderizar com os selos.
   useEffect(() => {
-    if (escala) marcarVisitaNaEscala(id)
+    if (!escala) return
+    marcarVisitaNaEscala(id)
+    marcarTarefa('conferir-escala')
   }, [escala, id])
 
   const mudar: Mudanca = (caminho, opcoes, aviso) => {
@@ -162,7 +165,7 @@ export function Escala() {
       {podeEditar && (
         <RodapeDeAcao
           primario={
-            <BotaoLink para={`/escalas/${id}/adicionar`} largo>
+            <BotaoLink para={`/escalas/${id}/adicionar`} largo data-guia="adicionar-musica">
               Adicionar música
             </BotaoLink>
           }
@@ -294,7 +297,7 @@ export function EquipeResumida({ escala, podeEditar }: { escala: EscalaApresenta
   )
 
   return (
-    <div className="secao">
+    <div className="secao" data-guia="equipe">
       <div className="secao-topo">
         <h2>Equipe</h2>
         {podeEditar && (
@@ -323,7 +326,7 @@ export function Equipe({ escala, euId }: { escala: EscalaApresentada; euId: stri
   const grupos = equipePorGrupo(escala.pessoas)
 
   return (
-    <div className="secao">
+    <div className="secao" data-guia="equipe">
       <h2>Equipe</h2>
 
       {escala.pessoas.length ? (
@@ -405,7 +408,7 @@ export function Repertorio({
   const aberto = itens.find((item) => item.id === itemAberto) ?? null
 
   return (
-    <div className="secao">
+    <div className="secao" data-guia="repertorio">
       <div className="secao-topo">
         <h2>Repertório{contagem}</h2>
         {itens.length > 0 && (

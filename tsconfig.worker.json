@@ -26,6 +26,7 @@
     "src/escalas/rascunho.ts",
     "src/escalas/repertorio.ts",
     "src/escalas/sugestoes.ts",
+    "src/guia/tarefas.ts",
     "src/inicio/inicio.ts",
     "src/letra/docx.ts",
     "src/letra/docxSintetico.ts",
@@ -35,6 +36,7 @@
     "src/perfil/perfil.ts",
     "src/push/base64.ts",
     "src/push/push.ts",
+    "src/instalacao/instalacao.ts",
     "src/instalacao/plataforma.ts",
     "src/tema/tema.ts",
     "src/**/*.test.ts"

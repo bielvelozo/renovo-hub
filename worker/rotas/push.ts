@@ -75,7 +75,7 @@ push.post('/api/push/teste', exigirMembro, async (c) => {
       tipo: 'escalado',
       escalaId: null,
       aviso: {
-        titulo: 'Renovo Hub',
+        titulo: 'Renovo Music',
         corpo: 'Deu certo: é assim que os avisos da Escala vão chegar.',
         url: '/perfil',
       },

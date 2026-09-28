@@ -300,12 +300,12 @@ describe('Escala criada uma a uma, e edição', () => {
   it('cria a Escala com data, horário e rótulo livres', async () => {
     const resposta = await pedir('/api/escalas', 'marcos', {
       method: 'POST',
-      body: JSON.stringify({ data: '2026-09-19', horario: '20:00', rotulo: 'Ensaio geral' }),
+      body: JSON.stringify({ data: FUTURO, horario: '20:00', rotulo: 'Ensaio geral' }),
     })
 
     expect(resposta.status).toBe(201)
     expect(await resposta.json()).toMatchObject({
-      data: '2026-09-19',
+      data: FUTURO,
       horario: '20:00',
       rotulo: 'Ensaio geral',
       titulo: 'Ensaio geral 20h',

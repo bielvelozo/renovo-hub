@@ -1,5 +1,5 @@
 ---
-name: Renovo Hub
+name: Renovo Music
 description: Escalas, repertório e Tons do Renovo Music em cinzas neutros, um acento índigo e a Geist como única voz.
 colors:
   fundo: "light-dark(#f4f4f2, #0f0f10)"
@@ -189,13 +189,13 @@ components:
     size: "64px"
 ---
 
-# Design System: Renovo Hub
+# Design System: Renovo Music
 
 ## Overview
 
 **Creative North Star: "O Instrumento Bem Feito"**
 
-O Renovo Hub é desenhado como um instrumento premium: acabamento fosco, proporções exatas e um único detalhe que brilha. A beleza vem do artesanato, não do enfeite. Nenhuma cor decora; cada tom de cinza tem um papel, cada espaço tem uma razão, e o único acento (o Índigo) aparece onde há ação ou estado ativo, como o filete de madrepérola no braço de uma guitarra. O humor é **refinado, preciso, premium**: cada detalhe parece decidido, e o app se sente caro sem parecer esforçado.
+O Renovo Music é desenhado como um instrumento premium: acabamento fosco, proporções exatas e um único detalhe que brilha. A beleza vem do artesanato, não do enfeite. Nenhuma cor decora; cada tom de cinza tem um papel, cada espaço tem uma razão, e o único acento (o Índigo) aparece onde há ação ou estado ativo, como o filete de madrepérola no braço de uma guitarra. O humor é **refinado, preciso, premium**: cada detalhe parece decidido, e o app se sente caro sem parecer esforçado.
 
 O sistema é neutro de propósito. Cinzas quase sem matiz, uma família tipográfica só (Geist), superfícies que flutuam com sombra difusa sobre um fundo levemente mais escuro, e componentes contidos: 44 px de altura, raio de 12 px, peso 600, nada que salte. A hierarquia nasce do texto (peso, tamanho, caixa alta em rótulos) e do espaço, não de caixas coloridas. O tema escuro não é uma inversão do claro: é o palco, com superfícies um degrau mais claras que o fundo e sombras mais fundas, pensado para o celular no pedestal com pouca luz.
 

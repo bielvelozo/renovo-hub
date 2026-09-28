@@ -26,7 +26,7 @@ export function BlocoDeTom({
   aoAcharOriginal: (tom: string) => void
 }) {
   return (
-    <div className="secao">
+    <div className="secao" data-guia="tom">
       <h2>Tom</h2>
       <p className="dica">{textoDoTomSugerido(sugerido, hojeEmBrasilia(), tom)}</p>
 

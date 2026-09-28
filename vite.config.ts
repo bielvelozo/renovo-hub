@@ -10,7 +10,7 @@ export default defineConfig({
       includeAssets: ['favicon-32.png', 'apple-touch-icon.png', 'abertura.png'],
       manifest: {
         id: '/',
-        name: 'Renovo Hub',
+        name: 'Renovo Music',
         short_name: 'Renovo',
         description: 'Escalas, repertório e Tons do ministério de louvor Renovo Music.',
         lang: 'pt-BR',

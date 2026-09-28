@@ -34,6 +34,7 @@ import {
   textoDeQuemSugeriu,
   textoDeRecusada,
 } from '../escalas/sugestoes'
+import { marcarTarefa } from '../guia/andamento'
 import { usarEu } from '../sessao/sessao'
 
 type Aba = 'abertas' | 'guardadas' | 'aceitas'
@@ -148,7 +149,7 @@ export function Sugestoes() {
       raiz
       titulo="Sugestões"
       acao={
-        <Botao variante="terciario" pequeno onClick={() => sugerir('escolhendo')}>
+        <Botao variante="terciario" pequeno onClick={() => sugerir('escolhendo')} data-guia="sugerir">
           + Sugerir
         </Botao>
       }
@@ -354,7 +355,9 @@ export function Sugestoes() {
       {listaDaAba.length === 0 ? (
         <Vazio icone="lampada">{vazioDaAba[aba]}</Vazio>
       ) : (
-        <ul className="lista cartao">{listaDaAba.map(linha)}</ul>
+        <ul className="lista cartao" data-guia="sugestao">
+          {listaDaAba.map(linha)}
+        </ul>
       )}
 
       {aba === 'aceitas' && recusadas.length > 0 && (
@@ -393,7 +396,7 @@ export function Sugestoes() {
             )}
             {dirige && (folhaDe.estado === 'aberta' || folhaDe.estado === 'guardada') && (
               <li>
-                <button type="button" className="toque" onClick={() => promover(folhaDe)}>
+                <button type="button" className="toque" onClick={() => promover(folhaDe)} data-guia="promover">
                   <span className="cresce">
                     <span className="titulo">Promover pra uma escala</span>
                   </span>
@@ -518,6 +521,7 @@ function Envio({
     acao.executar(async () => {
       try {
         await api('/api/sugestoes', { metodo: 'POST', corpo: corpoDaSugestao(escolha, observacao) })
+        marcarTarefa('sugerir')
         aoEnviar()
       } catch (problema) {
         if (problema instanceof ErroDaApi && problema.status === 409 && ehSugestaoRepetida(problema.corpo)) {
@@ -566,7 +570,7 @@ function Envio({
               Apoiar a sugestão
             </Botao>
           ) : (
-            <Botao largo disabled={acao.ocupado} onClick={enviar}>
+            <Botao largo disabled={acao.ocupado} onClick={enviar} data-guia="enviar-sugestao">
               Enviar sugestão
             </Botao>
           )

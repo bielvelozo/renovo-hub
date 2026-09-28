@@ -1,4 +1,4 @@
-# Renovo Hub
+# Renovo Music
 
 App interno do ministério de louvor Renovo Music: escalas, repertório, histórico de execuções e notificações. PWA em PT-BR, tema escuro e claro, custo zero.
 

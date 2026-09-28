@@ -38,6 +38,7 @@ import {
   textoDeSemNotificacao,
 } from '../escalas/equipe'
 import type { EstadoNaEquipe, MembroComPush, SecaoDaEquipe } from '../escalas/equipe'
+import { marcarTarefa } from '../guia/andamento'
 import { usarEu } from '../sessao/sessao'
 
 const EXPLICACAO_DA_FORMACAO =
@@ -66,7 +67,7 @@ export function Equipe() {
       sub={atual ? formatarDia(atual.data) : undefined}
       voltarPara={`/escalas/${id}`}
       acao={
-        <BotaoLink para={`/escalas/${id}`} pequeno>
+        <BotaoLink para={`/escalas/${id}`} pequeno data-guia="pronto-equipe">
           Pronto
         </BotaoLink>
       }
@@ -162,6 +163,7 @@ export function CorpoDaEquipe({
           : await api<EscalaApresentada>(caminho, { metodo: 'PUT', corpo: proximo })
 
         definir(resposta)
+        marcarTarefa('montar-equipe')
       } catch (problema) {
         definir(escala)
         avisar(textoDoErro(problema))
@@ -178,6 +180,7 @@ export function CorpoDaEquipe({
         }),
       )
       avisar(`${formacao.nome} escalada: ${formacao.entradas.length} pessoas`)
+      marcarTarefa('montar-equipe')
     })
 
   const copiarNomes = async () => {
@@ -221,7 +224,7 @@ export function CorpoDaEquipe({
           emFoco={secao.grupo === grupoEmFoco}
           titulo={
             secao.chave === 'musicos' ? (
-              <span className="acao-da-formacao">
+              <span className="acao-da-formacao" data-guia="formacao">
                 {formacoes.length === 0 ? null : formacoes.length === 1 ? (
                   <Botao variante="secundario" pequeno disabled={acao.ocupado} onClick={() => aplicar(formacoes[0])}>
                     Escalar a {formacoes[0].nome}
@@ -390,7 +393,7 @@ function Pessoa({
         />
       )}
 
-      <span className="chips" role="group" aria-labelledby={`pessoa-${membro.id}`}>
+      <span className="chips" role="group" aria-labelledby={`pessoa-${membro.id}`} data-guia="funcao">
         {funcoes.map((funcao) => {
           const jaTinha = entrada?.funcoes.includes(funcao.id) ?? false
           const proximo = alternarFuncao(entrada, funcao.id)

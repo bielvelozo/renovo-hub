@@ -6,7 +6,7 @@ export function NaoEncontrada() {
     <section className="pagina">
       <h1>Página não encontrada</h1>
       <Vazio icone="busca" acao={<BotaoLink para="/">Ir pro Início</BotaoLink>}>
-        O endereço que você abriu não existe no Renovo Hub.
+        O endereço que você abriu não existe no Renovo Music.
       </Vazio>
     </section>
   )

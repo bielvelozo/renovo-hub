@@ -17,14 +17,16 @@ export function Menu({
   itens,
   rotulo = 'Mais',
   gatilho,
+  guia,
 }: {
   itens: ItemDoMenu[]
   rotulo?: string
   gatilho?: ReactElement
+  guia?: string
 }) {
   return (
     <MenuBase.Root>
-      <MenuBase.Trigger render={gatilho ?? <Botao variante="icone" icone="mais" aria-label={rotulo} />} />
+      <MenuBase.Trigger data-guia={guia} render={gatilho ?? <Botao variante="icone" icone="mais" aria-label={rotulo} />} />
       <MenuBase.Portal>
         <MenuBase.Positioner className="posicao-do-menu" side="bottom" align="end" sideOffset={6}>
           <MenuBase.Popup className="menu">

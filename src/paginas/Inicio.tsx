@@ -37,6 +37,8 @@ import {
   tituloDasPendencias,
   tituloDoInicio,
 } from '../inicio/inicio'
+import { PrimeirosPassos } from '../guia/PrimeirosPassos'
+import { marcarTarefa } from '../guia/andamento'
 import { usarEu, usarEuTalvez } from '../sessao/sessao'
 
 export function Inicio() {
@@ -89,6 +91,7 @@ export function Inicio() {
   function criarMes(mes: string) {
     acao.executar(async () => {
       await api('/api/escalas/mes', { metodo: 'POST', corpo: { mes } })
+      marcarTarefa('criar-escalas')
       busca.recarregar()
     })
   }
@@ -121,6 +124,8 @@ export function Inicio() {
           {dirige ? 'Nenhuma escala marcada.' : 'Nenhuma escala marcada. Quando o Ministro montar o mês, a sua aparece aqui.'}
         </Vazio>
       )}
+
+      <PrimeirosPassos dirige={dirige} />
 
       {acao.erro && (
         <p className="aviso" role="alert">

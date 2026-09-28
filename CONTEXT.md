@@ -1,4 +1,4 @@
-# Renovo Hub
+# Renovo Music
 
 App interno do ministério de louvor Renovo Music para montar escalas, registrar o repertório tocado e lembrar o que já foi ensaiado, em que tom e por quem.
 

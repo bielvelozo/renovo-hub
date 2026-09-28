@@ -3,10 +3,13 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router'
 import { registerSW } from 'virtual:pwa-register'
 import { App } from './App'
+import { ouvirInstalacao } from './instalacao/prompt'
 import './estilo/tokens.css'
 import './estilo/base.css'
 import './estilo/componentes.css'
 import './estilo/culto.css'
+
+ouvirInstalacao()
 
 registerSW({
   immediate: true,

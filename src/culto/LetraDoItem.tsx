@@ -91,7 +91,7 @@ export function LetraDoItem() {
           </Botao>
         }
         primario={
-          <Botao disabled={!seguinte} onClick={() => abrir(seguinte)}>
+          <Botao disabled={!seguinte} onClick={() => abrir(seguinte)} data-guia="culto-navegar">
             {seguinte ? `${tituloDoItem(seguinte)} ›` : 'Fim ›'}
           </Botao>
         }

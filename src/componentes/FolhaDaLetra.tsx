@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { dataDoEnvio, recusaDoArquivo, tamanhoLegivel } from '../admin/admin'
 import { enviarArquivo } from '../api/cliente'
+import { marcarTarefa } from '../guia/andamento'
 import type { Anexo } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
 import { Icone } from '../casca/Icone'
@@ -41,6 +42,7 @@ export function FolhaDaLetra({
     acao.executar(async () => {
       const { letra, ...anexo } = await enviarArquivo<Anexo & { letra: Letra }>(caminhoDoDono(dono), arquivo)
       guardarLida(letra)
+      marcarTarefa('letra')
       aoEnviar(anexo, letra)
     })
   }

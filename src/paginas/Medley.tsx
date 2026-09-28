@@ -28,6 +28,7 @@ import {
   trechoPronto,
   trechosComMusica,
 } from '../escalas/rascunho'
+import { marcarTarefa } from '../guia/andamento'
 import { usarEu } from '../sessao/sessao'
 
 type Passo = 'montar' | 'escolher' | 'trecho'
@@ -61,6 +62,8 @@ export function Medley() {
         metodo: 'POST',
         corpo: corpoDoMedley(trechosComMusica(trechos, idPorLink), observacao),
       })
+
+      marcarTarefa('medley')
 
       navegar(`/escalas/${id}`)
     })
@@ -150,7 +153,7 @@ export function Medley() {
         </>
       )}
 
-      <Botao variante="secundario" largo onClick={() => irPara('escolher')}>
+      <Botao variante="secundario" largo onClick={() => irPara('escolher')} data-guia="trecho">
         + Trecho
       </Botao>
 
@@ -166,7 +169,7 @@ export function Medley() {
 
       <RodapeDeAcao
         primario={
-          <Botao largo disabled={acao.ocupado || !medleyPronto(trechos)} onClick={confirmar}>
+          <Botao largo disabled={acao.ocupado || !medleyPronto(trechos)} onClick={confirmar} data-guia="adicionar-medley">
             Adicionar Medley ao Repertório
           </Botao>
         }
@@ -247,7 +250,7 @@ function Campos({
 
       <RodapeDeAcao
         primario={
-          <Botao largo disabled={!trechoPronto(trecho)} onClick={() => aoConfirmar(trecho)}>
+          <Botao largo disabled={!trechoPronto(trecho)} onClick={() => aoConfirmar(trecho)} data-guia="ok-trecho">
             OK, próximo
           </Botao>
         }

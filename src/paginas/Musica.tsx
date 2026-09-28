@@ -67,7 +67,7 @@ export function Musica() {
       titulo={nome?.titulo ?? 'Música'}
       sub={nome?.artista}
       voltarPara="/musicas"
-      acao={itensDoMenu.length > 0 && <Menu itens={itensDoMenu} />}
+      acao={itensDoMenu.length > 0 && <Menu itens={itensDoMenu} guia="mais-da-musica" />}
     />
   )
 
@@ -129,7 +129,7 @@ export function Musica() {
           Cifra Club
         </a>
         {musica.letra ? (
-          <BotaoLink para={`/musicas/${musica.id}/letra`} variante="secundario">
+          <BotaoLink para={`/musicas/${musica.id}/letra`} variante="secundario" data-guia="letra">
             Letra
           </BotaoLink>
         ) : (

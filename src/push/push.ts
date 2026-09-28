@@ -72,10 +72,10 @@ export function dadosDaInscricao(inscricao: InscricaoBruta): DadosDaInscricao {
 const TEXTOS: Record<SituacaoDoPush, string> = {
   'sem-suporte': 'Este navegador não recebe notificação. No iPhone, use o Safari e adicione à tela inicial.',
   'precisa-instalar':
-    'Primeiro adicione o Renovo Hub à tela inicial e abra por lá: no iPhone, notificação só funciona no app instalado.',
+    'Primeiro adicione o Renovo Music à tela inicial e abra por lá: no iPhone, notificação só funciona no app instalado.',
   'pode-ativar': 'Ative pra receber aviso de Escala nova, mudança no Repertório e o lembrete da véspera.',
   negada:
-    'A notificação está bloqueada neste aparelho. Libere em Ajustes › Notificações › Renovo Hub e volte aqui.',
-  ligado: 'Este aparelho recebe as notificações do Renovo Hub.',
+    'A notificação está bloqueada neste aparelho. Libere em Ajustes › Notificações › Renovo Music e volte aqui.',
+  ligado: 'Este aparelho recebe as notificações do Renovo Music.',
   silenciado: 'Este aparelho está inscrito, mas você silenciou tudo. Ninguém vai te avisar até religar.',
 }

@@ -813,6 +813,70 @@ nav.abas .contagem {
   display: block;
 }
 
+.pagina.centrada.boas-vindas {
+  justify-content: flex-start;
+  gap: 20px;
+}
+
+.topo-das-boas-vindas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-top: 12px;
+  text-align: center;
+}
+
+.topo-das-boas-vindas .selo-da-marca {
+  width: 64px;
+  height: 64px;
+}
+
+.topo-das-boas-vindas .dica {
+  max-width: 300px;
+  font-size: 15px;
+}
+
+.cartao-de-instalar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.linha-de-instalar {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.linha-de-instalar .titulo {
+  font-size: 17px;
+  letter-spacing: -0.01em;
+}
+
+.linha-de-instalar .dica {
+  display: block;
+  margin-top: 2px;
+}
+
+.icone-de-instalar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--raio);
+  background: var(--acento-suave);
+  color: var(--acento);
+}
+
+.botao.terciario.seguir-no-navegador {
+  align-self: center;
+  color: var(--texto-2);
+  font-weight: 500;
+}
+
 .passos {
   margin: 0;
   padding-left: 22px;

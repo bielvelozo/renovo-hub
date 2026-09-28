@@ -67,7 +67,7 @@ Conforme os ADRs e o README do projeto:
 
 ## Brand Commitments
 
-- Nome do produto: **Renovo Hub**. Marca carregada: a do ministério **Renovo Music**, não a da igreja (decisão de 11/09/2026). O material da Igreja Missão Renovo em `docs/brand/` é referência histórica e não entra no app.
+- Nome do produto: **Renovo Music**, o mesmo do ministério (decisão de 28/09/2026; até então o app se chamava Renovo Hub). A marca carregada é a do ministério, não a da igreja (decisão de 11/09/2026). O Worker, o banco e o endereço publicado continuam com `renovo-hub` no nome. O material da Igreja Missão Renovo em `docs/brand/` é referência histórica e não entra no app.
 - Selo circular com anéis e onda sonora de cinco barras, geometria em `src/marca/selo.ts`, SVGs e PNGs do PWA em `public/`. O selo não muda.
 - Decisão vinculante de 19/09/2026, aprovada pelo dono do projeto: cinzas neutros (fundo escuro `#0F0F10`, claro `#F4F4F2`), um acento só (o Índigo, em botão primário, link e aba ativa), **Geist como única família**, sem grão de papel. Não reintroduzir cartões coloridos, Fraunces nem alertas de repetição fora do fluxo de adicionar.
 - Em 25/09/2026 o dono do projeto trocou a borda de 1 px dos cartões pela **elevação suave** (sombra difusa em repouso, mais funda em menu e folha) e manteve os componentes refinados e contidos. A regra está em `DESIGN.md` e entrou no código em 26/09/2026.
