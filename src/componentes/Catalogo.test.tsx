@@ -98,7 +98,7 @@ describe('Catalogo', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /Recentes/ }))
     expect(screen.getByText('Últimas 4 semanas').className).toContain('atencao')
-    expect(screen.getByText('há 7 dias · Isa').className).toBe('selo atencao')
+    expect(screen.getByText('com Isa').className).toBe('selo atencao')
     expect(screen.getByText('há 7 dias').tagName).toBe('B')
   })
 

@@ -163,7 +163,7 @@ export function CartaoPosCulto({ posCulto, hoje }: { posCulto: PosCultoApresenta
   }
 
   return (
-    <Cartao className="pagina pos-culto">
+    <Cartao className="pos-culto">
       <div className="secao-topo">
         <Icone nome="confirmar" />
         <div className="cresce">

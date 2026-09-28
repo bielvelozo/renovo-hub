@@ -88,10 +88,11 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
           </Selo>
         )}
         {!ehMedley && !props.trecho && ultima?.parcial && <Selo variante="trecho">trecho</Selo>}
-        {recente && ultima && (
+        {recente && ultima && (!tempoADireita || ultima.ministradoPorNome) && (
           <Selo variante="atencao">
-            {tempoRelativo(ultima.data, hoje)}
-            {ultima.ministradoPorNome ? ` · ${ultima.ministradoPorNome}` : ''}
+            {tempoADireita
+              ? `com ${ultima.ministradoPorNome}`
+              : tempoRelativo(ultima.data, hoje) + (ultima.ministradoPorNome ? ` · ${ultima.ministradoPorNome}` : '')}
           </Selo>
         )}
         {planejadas.slice(0, MAXIMO_DE_PLANEJADAS).map((planejada) => (

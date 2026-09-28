@@ -183,7 +183,7 @@ describe('LinhaDeMusica', () => {
       />,
     )
 
-    expect(screen.getByText('há 12 dias · Isa').className).toBe('selo atencao')
+    expect(screen.getByText('com Isa').className).toBe('selo atencao')
     expect(screen.getByText('há 12 dias').parentElement?.className).toBe('tempo atencao')
     expect(screen.getByText('no Repertório de dom, 20 de set · Marcos').className).toBe('selo atencao')
     expect(screen.getByText('no Repertório de dom, 27 de set')).not.toBeNull()
