@@ -1,4 +1,4 @@
-export const SEM_CONEXAO = 'Sem conexão com o Renovo Hub. Verifique a internet e tente de novo.'
+export const SEM_CONEXAO = 'Sem conexão com o Renovo Music. Verifique a internet e tente de novo.'
 
 const POR_STATUS: Record<number, string> = {
   0: SEM_CONEXAO,

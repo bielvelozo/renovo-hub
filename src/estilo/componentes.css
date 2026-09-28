@@ -890,7 +890,10 @@
   filter: brightness(0.94);
 }
 
+/* O botão de ícone também leva a classe .icone, e a regra do desenho do ícone (mais abaixo)
+   o faria inline-block: num link isso tira o ícone do centro. */
 .botao.icone {
+  display: inline-flex;
   min-width: var(--toque);
   padding: 0;
   background: none;
