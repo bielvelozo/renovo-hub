@@ -5,6 +5,7 @@ import { anexos } from './rotas/anexos'
 import { culto } from './rotas/culto'
 import { escalas } from './rotas/escalas'
 import { formacoes } from './rotas/formacoes'
+import { guia } from './rotas/guia'
 import { inicio } from './rotas/inicio'
 import { itens } from './rotas/itens'
 import { musicas } from './rotas/musicas'
@@ -30,6 +31,7 @@ app.route('/', sugestoes)
 app.route('/', perfil)
 app.route('/', push)
 app.route('/', admin)
+app.route('/', guia)
 
 app.notFound((c) => c.json({ erro: 'Rota não encontrada.' }, 404))
 

@@ -9,6 +9,7 @@ import { Icone } from '../casca/Icone'
 import { combinaBusca, hojeEmBrasilia, videoIdDoLink } from '../dominio'
 import type { Escolha } from '../escalas/rascunho'
 import { escolhaDaMusica, escolhaDaSugestao, escolhaDoLink } from '../escalas/rascunho'
+import { marcarTarefa } from '../guia/andamento'
 import { ABAS_DO_CATALOGO, agruparCatalogo, aplicarVer, contagemPorAba, VISOES } from '../musicas/catalogo'
 import type { AbaDoCatalogo, SecaoDoCatalogo, Ver } from '../musicas/catalogo'
 import { usarEu } from '../sessao/sessao'
@@ -216,12 +217,13 @@ export function CorpoDoCatalogo({
         aoMudar={escrever}
         placeholder="Buscar ou colar um link do YouTube"
         rotulo="Buscar ou colar um link"
+        guia="busca"
       />
       {acao.erro && <p className="aviso">{acao.erro}</p>}
 
       {acima}
 
-      <div className="topo-do-catalogo">
+      <div className="topo-do-catalogo" data-guia="abas-do-catalogo">
         <Segmento
           rotulo="Aba do catálogo"
           opcoes={ABAS_DO_CATALOGO.map((opcao) => ({
@@ -234,12 +236,15 @@ export function CorpoDoCatalogo({
             ),
           }))}
           valor={aba}
-          aoMudar={trocarAba}
+          aoMudar={(nova) => {
+            trocarAba(nova)
+            if (modo === 'navegacao') marcarTarefa('catalogo')
+          }}
         />
         <Menu
           rotulo="Ver"
           gatilho={
-            <button type="button" className="chip chip-do-ver" aria-pressed={ver !== 'todas'}>
+            <button type="button" className="chip chip-do-ver" aria-pressed={ver !== 'todas'} data-guia="ver">
               <Icone nome="lista" />
               {ver === 'todas' ? 'Ver' : visaoAtual.rotulo}
             </button>
@@ -247,7 +252,10 @@ export function CorpoDoCatalogo({
           itens={visoes.map((visao) => ({
             rotulo: visao.rotulo,
             marcado: visao.valor === ver,
-            aoEscolher: () => mudarVer(visao.valor),
+            aoEscolher: () => {
+              mudarVer(visao.valor)
+              if (modo === 'navegacao') marcarTarefa('catalogo')
+            },
           }))}
         />
       </div>
@@ -294,7 +302,7 @@ function Secoes({
   if (secoes.length === 0) return <Vazio icone="musica">{vazio}</Vazio>
 
   return (
-    <div className={`secoes-do-catalogo${aba === 'todas' ? ' com-indice' : ''}`}>
+    <div className={`secoes-do-catalogo${aba === 'todas' ? ' com-indice' : ''}`} data-guia="catalogo-lista">
       {secoes.map((secao) => {
         const recolhida = secao.chave === 'nunca' && !nuncaAberta && secao.musicas.length > PRIMEIRAS_DA_SECAO_NUNCA
         const mostradas = recolhida ? secao.musicas.slice(0, PRIMEIRAS_DA_SECAO_NUNCA) : secao.musicas

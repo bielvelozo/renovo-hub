@@ -25,6 +25,7 @@
     "src/escalas/rascunho.ts",
     "src/escalas/repertorio.ts",
     "src/escalas/sugestoes.ts",
+    "src/guia/tarefas.ts",
     "src/inicio/inicio.ts",
     "src/letra/docx.ts",
     "src/letra/docxSintetico.ts",

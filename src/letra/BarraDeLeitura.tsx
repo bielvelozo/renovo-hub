@@ -44,7 +44,7 @@ export function BarraDeLeitura({ rolagem }: { rolagem?: RefObject<HTMLElement | 
   }
 
   return (
-    <div className="barra-de-leitura" ref={propria}>
+    <div className="barra-de-leitura" ref={propria} data-guia="barra-de-leitura">
       <Botao
         variante="secundario"
         pequeno

@@ -38,7 +38,7 @@ export function Ordem() {
         )}
 
         {escala.itens.length ? (
-          <div className="ordem">
+          <div className="ordem" data-guia="culto-ordem">
             {escala.itens.map((item, indice) => (
               <Cartao key={item.id} className="item-do-culto">
                 <Link to={`/culto/${escala.id}/item/${item.id}`} className="toque-do-culto">

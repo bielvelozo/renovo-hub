@@ -43,7 +43,7 @@ export function CamposDoItem({
       />
 
       {como && (
-        <div className="secao">
+        <div className="secao" data-guia="como">
           <h2>Como</h2>
           <Segmento
             rotulo="Como"

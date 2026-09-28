@@ -17,6 +17,7 @@ import { Painel } from './paginas/admin/Painel'
 import { Sequencias } from './paginas/admin/Sequencias'
 import { Entrar } from './paginas/Entrar'
 import { Equipe } from './paginas/Equipe'
+import { Guia } from './paginas/Guia'
 import { Escala } from './paginas/Escala'
 import { Esqueci } from './paginas/Esqueci'
 import { Inicio } from './paginas/Inicio'
@@ -30,6 +31,7 @@ import { Musicas } from './paginas/Musicas'
 import { NaoEncontrada } from './paginas/NaoEncontrada'
 import { Perfil } from './paginas/Perfil'
 import { Sugestoes } from './paginas/Sugestoes'
+import { BalaoDoGuia } from './guia/BalaoDoGuia'
 import { ProvedorDeTema } from './tema/ProvedorDeTema'
 
 export function App() {
@@ -58,6 +60,7 @@ export function App() {
           <Route path="musicas/:id/letra" element={<LetraNaCasca />} />
           <Route path="sugestoes" element={<Sugestoes />} />
           <Route path="perfil" element={<Perfil />} />
+          <Route path="perfil/guia" element={<Guia />} />
           <Route path="admin" element={<Admin />}>
             <Route index element={<Painel />} />
             <Route path="membros" element={<Membros />} />
@@ -71,6 +74,7 @@ export function App() {
           <Route path="*" element={<NaoEncontrada />} />
         </Route>
       </Routes>
+      <BalaoDoGuia />
     </ProvedorDeTema>
   )
 }

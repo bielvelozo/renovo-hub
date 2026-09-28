@@ -25,6 +25,7 @@ import {
   textoDaCobertura,
 } from '../escalas/rascunho'
 import { ministrosDaEscala, padraoDeQuemPuxa } from '../escalas/repertorio'
+import { marcarTarefa } from '../guia/andamento'
 import { usarEu } from '../sessao/sessao'
 
 export function Adicionar() {
@@ -193,6 +194,8 @@ function Formulario({
         await api(`/api/escalas/${escalaId}/itens`, { metodo: 'POST', corpo: corpoDoItem(rascunho, musicaId) })
       }
 
+      marcarTarefa(promoverDe ? 'promover' : 'adicionar-musica')
+
       navegar(`/escalas/${escalaId}`)
     })
   }
@@ -231,7 +234,7 @@ function Formulario({
 
       <RodapeDeAcao
         primario={
-          <Botao largo disabled={acao.ocupado || !rascunhoPronto(rascunho)} onClick={confirmar}>
+          <Botao largo disabled={acao.ocupado || !rascunhoPronto(rascunho)} onClick={confirmar} data-guia="confirmar-item">
             {rotulo}
           </Botao>
         }

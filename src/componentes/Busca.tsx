@@ -6,15 +6,17 @@ export function Busca({
   placeholder = 'parte do título ou do artista',
   rotulo = 'Buscar',
   autoFoco,
+  guia,
 }: {
   valor: string
   aoMudar: (valor: string) => void
   placeholder?: string
   rotulo?: string
   autoFoco?: boolean
+  guia?: string
 }) {
   return (
-    <div className="busca">
+    <div className="busca" data-guia={guia}>
       <Icone nome="busca" />
       <input
         type="search"

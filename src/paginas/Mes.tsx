@@ -28,6 +28,7 @@ import {
   selosDaEscala,
   textoDeCriarDomingos,
 } from '../escalas/mes'
+import { marcarTarefa } from '../guia/andamento'
 import { usarEu } from '../sessao/sessao'
 
 export function Mes() {
@@ -52,6 +53,7 @@ export function Mes() {
   function criarDomingos() {
     acao.executar(async () => {
       await api('/api/escalas/mes', { metodo: 'POST', corpo: { mes } })
+      marcarTarefa('criar-escalas')
       busca.recarregar()
     })
   }
@@ -81,7 +83,7 @@ export function Mes() {
         }
         acao={
           dirige ? (
-            <Botao variante="secundario" pequeno icone="mais" onClick={() => abrirFolha('nova')}>
+            <Botao variante="secundario" pequeno icone="mais" onClick={() => abrirFolha('nova')} data-guia="nova-escala">
               Nova escala
             </Botao>
           ) : undefined
@@ -101,7 +103,7 @@ export function Mes() {
             dirige && faltam.length > 0 ? (
               <>
                 <span className="criar-domingos">
-                  <Botao disabled={acao.ocupado} onClick={criarDomingos}>
+                  <Botao disabled={acao.ocupado} onClick={criarDomingos} data-guia="criar-domingos">
                     {textoDeCriarDomingos(faltam.length, true)}
                   </Botao>
                   <Botao
@@ -173,7 +175,7 @@ export function Mes() {
       {algumaPronta && <p className="dica legenda">Pronta quer dizer equipe completa e músicas escolhidas.</p>}
 
       {dirige && escalas.length > 0 && faltam.length > 0 && (
-        <Botao variante="secundario" largo disabled={acao.ocupado} onClick={criarDomingos}>
+        <Botao variante="secundario" largo disabled={acao.ocupado} onClick={criarDomingos} data-guia="criar-domingos">
           {textoDeCriarDomingos(faltam.length, false)}
         </Botao>
       )}
@@ -226,6 +228,7 @@ function FolhaDaNovaEscala({ mes, fechar }: { mes: string; fechar: () => void })
         metodo: 'POST',
         corpo: { data, horario, rotulo: rotulo.trim() || 'Evento' },
       })
+      marcarTarefa('criar-escalas')
       navegar(`/escalas/${escala.id}`)
     })
   }

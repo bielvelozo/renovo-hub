@@ -5,6 +5,7 @@ import type { EscalaDoCulto, MusicaDoCulto } from '../api/tipos'
 import { Botao, BotaoLink } from '../componentes/Botao'
 import { Esqueleto } from '../componentes/Esqueleto'
 import { Vazio } from '../componentes/Vazio'
+import { marcarTarefa } from '../guia/andamento'
 import { DIAS_PARA_PACOTE_VELHO, idadeDoPacote } from './pacote'
 import { usarPacote } from './usarPacote'
 
@@ -28,6 +29,7 @@ export function ModoCulto() {
   usarTelaAcesa()
 
   useEffect(() => baixar(), [baixar])
+  useEffect(() => marcarTarefa('modo-culto'), [])
 
   useEffect(() => {
     if (semSessao) navegar('/esqueci', { replace: true })
@@ -85,7 +87,7 @@ export function TopoDoCulto({ fecharPara, children }: { fecharPara: string; chil
   return (
     <div className="topo-do-culto">
       {children}
-      <BotaoLink para={fecharPara} variante="icone" icone="remover" aria-label="Sair do modo culto" />
+      <BotaoLink para={fecharPara} variante="icone" icone="remover" aria-label="Sair do modo culto" data-guia="culto-sair" />
     </div>
   )
 }

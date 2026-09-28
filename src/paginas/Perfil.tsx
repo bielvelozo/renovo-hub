@@ -121,6 +121,14 @@ export function Perfil() {
       <ul className="lista cartao">
         <NotificacoesCompactas silenciado={eu.silenciado} />
         <li>
+          <Link to="/perfil/guia" className="toque">
+            <span className="cresce">
+              <span className="titulo">Guia do app</span>
+            </span>
+            <Icone nome="seta" />
+          </Link>
+        </li>
+        <li>
           <Link to="/instalar" className="toque">
             <span className="cresce">
               <span className="titulo">Instalar na tela inicial</span>
