@@ -4,6 +4,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html,
 body,
 #raiz {
@@ -1050,6 +1054,12 @@ nav.abas .contagem {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.capa-e-cobertura {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .cobertura {

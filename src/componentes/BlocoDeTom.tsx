@@ -43,7 +43,7 @@ export function BlocoDeTom({
 
       <BuscaNoCifraClub musica={musica} aoUsar={aoAcharOriginal} rotulo="Descobrir o tom no Cifra Club" />
 
-      {historico.length > 0 && <p className="dica">Histórico: {textoDoHistorico(historico)}</p>}
+      {historico.length > 1 && <p className="dica">Histórico: {textoDoHistorico(historico)}</p>}
     </div>
   )
 }

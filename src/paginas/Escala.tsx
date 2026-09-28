@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import { chaveDoItem, temLetraNoItem } from '../api/anexos'
 import { api, textoDoErro } from '../api/cliente'
 import type { Opcoes } from '../api/cliente'
@@ -52,6 +52,7 @@ export function Escala() {
   const avisar = usarAviso()
   const [aberta, abrir] = useState<Aberta>(null)
   const [visita] = useState(() => visitaNaEscala(id))
+  const chegada = useLocation().state as { itemNovo?: boolean } | null
 
   const escala = busca.dados
 
@@ -153,6 +154,7 @@ export function Escala() {
         definir={busca.definir}
         hoje={hoje}
         visita={visita}
+        irAoUltimo={chegada?.itemNovo === true}
       />
 
       {dirige ? <EquipeResumida escala={escala} podeEditar={podeEditar} /> : <Equipe escala={escala} euId={eu.id} />}
@@ -365,6 +367,7 @@ export function Repertorio({
   definir,
   hoje,
   visita,
+  irAoUltimo = false,
 }: {
   escala: EscalaApresentada
   dirige: boolean
@@ -374,9 +377,15 @@ export function Repertorio({
   definir: (escala: EscalaApresentada) => void
   hoje: string
   visita: string | null
+  irAoUltimo?: boolean
 }) {
   const avisar = usarAviso()
   const pendente = usarRemocaoPendente()
+  const lista = useRef<HTMLUListElement>(null)
+
+  useEffect(() => {
+    if (irAoUltimo) lista.current?.lastElementChild?.scrollIntoView?.({ block: 'center' })
+  }, [irAoUltimo])
   const [playlist, abrirPlaylist] = useState(false)
   const [itemAberto, abrirItem] = useState<string | null>(null)
 
@@ -411,7 +420,7 @@ export function Repertorio({
       </div>
 
       {itens.length ? (
-        <ul className="lista cartao">
+        <ul className="lista cartao" ref={lista}>
           {ordenacao.ordem.map((original, indice) => {
             const item = itens[original]
 
