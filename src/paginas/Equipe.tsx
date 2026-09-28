@@ -11,9 +11,11 @@ import { Icone } from '../casca/Icone'
 import { usarAviso } from '../componentes/Avisos'
 import { Botao, BotaoLink } from '../componentes/Botao'
 import { Busca } from '../componentes/Busca'
+import { ErroDeCarga } from '../componentes/ErroDeCarga'
 import { Esqueleto } from '../componentes/Esqueleto'
 import { Folha } from '../componentes/Folha'
 import { Menu } from '../componentes/Menu'
+import { Rosto } from '../componentes/Rosto'
 import { Selo } from '../componentes/Selo'
 import type { Funcao } from '../dominio'
 import { formatarDia, hojeEmBrasilia, normalizarTexto } from '../dominio'
@@ -36,7 +38,6 @@ import {
   textoDeSemNotificacao,
 } from '../escalas/equipe'
 import type { EstadoNaEquipe, MembroComPush, SecaoDaEquipe } from '../escalas/equipe'
-import { inicialDoNome } from '../perfil/perfil'
 import { marcarTarefa } from '../guia/andamento'
 import { usarEu } from '../sessao/sessao'
 
@@ -77,7 +78,15 @@ export function Equipe() {
     return (
       <section className="pagina">
         {cabecalho}
-        <p className="aviso">{erro}</p>
+        <ErroDeCarga
+          mensagem={erro}
+          tentarDeNovo={() => {
+            escala.recarregar()
+            pessoas.recarregar()
+            papeis.recarregar()
+            formacoes.recarregar()
+          }}
+        />
       </section>
     )
   }
@@ -90,6 +99,8 @@ export function Equipe() {
       </section>
     )
   }
+
+  if (atual.estado === 'cancelada') return <Navigate to={`/escalas/${id}`} replace />
 
   return (
     <section className="pagina">
@@ -360,12 +371,12 @@ function Pessoa({
 
   return (
     <li className="pessoa">
-      <span className="inicial pequena" aria-hidden="true">
-        {inicialDoNome(membro.nome)}
-      </span>
+      <Rosto membroId={membro.id} nome={membro.nome} foto={membro.foto} tamanho="pequena" />
 
       <span className="cresce grupo">
-        <span className="titulo">{membro.nome}</span>
+        <span className="titulo" id={`pessoa-${membro.id}`}>
+          {membro.nome}
+        </span>
         <span className="memoria">
           <span className="dica">{memoria.texto}</span>
           {memoria.alerta && <Selo variante="atencao">{memoria.alerta}</Selo>}
@@ -382,7 +393,7 @@ function Pessoa({
         />
       )}
 
-      <span className="chips" data-guia="funcao">
+      <span className="chips" role="group" aria-labelledby={`pessoa-${membro.id}`} data-guia="funcao">
         {funcoes.map((funcao) => {
           const jaTinha = entrada?.funcoes.includes(funcao.id) ?? false
           const proximo = alternarFuncao(entrada, funcao.id)

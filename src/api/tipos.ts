@@ -297,6 +297,7 @@ export type MembroDetalhado = {
   ministro: boolean
   admin: boolean
   inativo: boolean
+  foto: string | null
 }
 
 export type MembroComAcesso = Membro & {

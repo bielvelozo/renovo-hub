@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import { chaveDoItem, temLetraNoItem } from '../api/anexos'
 import { api, textoDoErro } from '../api/cliente'
 import type { Opcoes } from '../api/cliente'
@@ -15,6 +15,7 @@ import { usarAviso } from '../componentes/Avisos'
 import { Botao, BotaoLink } from '../componentes/Botao'
 import { Campo } from '../componentes/Campo'
 import { Cartao } from '../componentes/Cartao'
+import { ErroDeCarga } from '../componentes/ErroDeCarga'
 import { Esqueleto } from '../componentes/Esqueleto'
 import { Folha } from '../componentes/Folha'
 import { FolhaDaPlaylist, FolhaDoWhatsapp } from '../componentes/FolhasDaEscala'
@@ -23,17 +24,18 @@ import { LinhaDoItem } from '../componentes/LinhaDeMusica'
 import { Menu } from '../componentes/Menu'
 import type { ItemDoMenu } from '../componentes/Menu'
 import { RodapeDeAcao } from '../componentes/RodapeDeAcao'
+import { Rosto } from '../componentes/Rosto'
 import { Selo } from '../componentes/Selo'
 import { mover } from '../componentes/ordenacao'
 import { usarOrdenacao } from '../componentes/usarOrdenacao'
 import { usarRemocaoPendente } from '../componentes/usarRemocaoPendente'
 import { VistoEm } from '../componentes/VistoEm'
 import { formatarDia, hojeEmBrasilia, nomeDaEscala, rotuloDoHorario } from '../dominio'
+import { subtituloDaEscala } from '../escalas/cabecalho'
 import { equipePorGrupo, linhaDaEquipe } from '../escalas/equipe'
 import { ministrosDaEscala, textoDeQuemPuxa, tituloDoItem } from '../escalas/repertorio'
 import { marcarVisitaNaEscala, mudouDesdeAVisita, visitaNaEscala } from '../escalas/visita'
 import { destinoDaPendencia, resumoDasPendencias } from '../inicio/inicio'
-import { inicialDoNome } from '../perfil/perfil'
 import { marcarTarefa } from '../guia/andamento'
 import { usarEu } from '../sessao/sessao'
 
@@ -51,6 +53,7 @@ export function Escala() {
   const avisar = usarAviso()
   const [aberta, abrir] = useState<Aberta>(null)
   const [visita] = useState(() => visitaNaEscala(id))
+  const chegada = useLocation().state as { itemNovo?: boolean } | null
 
   const escala = busca.dados
 
@@ -79,7 +82,15 @@ export function Escala() {
     <>
       <Cabecalho
         titulo={escala ? nomeDaEscala(escala) : 'Escala'}
-        sub={escala && formatarDia(escala.data, hoje) + ' · ' + rotuloDoHorario(escala.horario)}
+        sub={
+          escala && (
+            <>
+              {subtituloDaEscala(escala, hoje)}
+              {escala.estado === 'realizada' && <Selo variante="realizada">realizada</Selo>}
+              {escala.estado === 'cancelada' && <Selo variante="cancelada">cancelada</Selo>}
+            </>
+          )
+        }
         voltarPara="/mes"
         acao={escala ? <MenuDaEscala escala={escala} dirige={dirige} abrir={abrir} mudar={mudar} /> : undefined}
       />
@@ -91,7 +102,7 @@ export function Escala() {
     return (
       <section className="pagina">
         {cabecalho}
-        <p className="aviso">{busca.erro}</p>
+        <ErroDeCarga mensagem={busca.erro} tentarDeNovo={busca.recarregar} />
       </section>
     )
   }
@@ -146,6 +157,7 @@ export function Escala() {
         definir={busca.definir}
         hoje={hoje}
         visita={visita}
+        irAoUltimo={chegada?.itemNovo === true}
       />
 
       {dirige ? <EquipeResumida escala={escala} podeEditar={podeEditar} /> : <Equipe escala={escala} euId={eu.id} />}
@@ -262,10 +274,8 @@ export function EquipeResumida({ escala, podeEditar }: { escala: EscalaApresenta
     <>
       {linha.total > 0 && (
         <span className="pilha-de-iniciais" aria-hidden="true">
-          {linha.iniciais.map((inicial, posicao) => (
-            <span key={posicao} className="inicial mini">
-              {inicial}
-            </span>
+          {linha.rostos.map((rosto) => (
+            <Rosto key={rosto.membroId} {...rosto} tamanho="mini" />
           ))}
           {linha.extras > 0 && <span className="inicial mini">+{linha.extras}</span>}
         </span>
@@ -327,9 +337,7 @@ export function Equipe({ escala, euId }: { escala: EscalaApresentada; euId: stri
               <ul className="lista">
                 {grupo.pessoas.map((pessoa) => (
                   <li key={pessoa.membroId} className="pessoa">
-                    <span className="inicial pequena" aria-hidden="true">
-                      {inicialDoNome(pessoa.nome)}
-                    </span>
+                    <Rosto membroId={pessoa.membroId} nome={pessoa.nome} foto={pessoa.foto} tamanho="pequena" />
                     <span className="cresce nome-da-pessoa">
                       <span className="titulo">{pessoa.nome}</span>
                       {pessoa.ministro && <Selo variante="ministro">ministro</Selo>}
@@ -358,6 +366,7 @@ export function Repertorio({
   definir,
   hoje,
   visita,
+  irAoUltimo = false,
 }: {
   escala: EscalaApresentada
   dirige: boolean
@@ -367,9 +376,15 @@ export function Repertorio({
   definir: (escala: EscalaApresentada) => void
   hoje: string
   visita: string | null
+  irAoUltimo?: boolean
 }) {
   const avisar = usarAviso()
   const pendente = usarRemocaoPendente()
+  const lista = useRef<HTMLUListElement>(null)
+
+  useEffect(() => {
+    if (irAoUltimo) lista.current?.lastElementChild?.scrollIntoView?.({ block: 'center' })
+  }, [irAoUltimo])
   const [playlist, abrirPlaylist] = useState(false)
   const [itemAberto, abrirItem] = useState<string | null>(null)
 
@@ -404,7 +419,7 @@ export function Repertorio({
       </div>
 
       {itens.length ? (
-        <ul className="lista cartao">
+        <ul className="lista cartao" ref={lista}>
           {ordenacao.ordem.map((original, indice) => {
             const item = itens[original]
 
@@ -421,6 +436,7 @@ export function Repertorio({
                 modo={podeEditar ? 'leitura' : 'navegacao'}
                 numero={indice + 1}
                 hoje={hoje}
+                posicaoDoTom="direita"
                 letraEm={
                   temLetraNoItem(item, porDono) ? `/escalas/${escala.id}/itens/${item.id}/letra` : undefined
                 }
@@ -457,7 +473,7 @@ export function Repertorio({
           recarregar={() => mudar(`/api/escalas/${escala.id}`, {})}
           fechar={() => abrirItem(null)}
           salvar={(corpo) =>
-            mudar(`/api/escalas/${escala.id}/itens/${aberto.id}`, { metodo: 'PATCH', corpo }, 'Item salvo')
+            mudar(`/api/escalas/${escala.id}/itens/${aberto.id}`, { metodo: 'PATCH', corpo }, 'Salvo')
           }
           remover={() => remover(aberto)}
         />
@@ -491,6 +507,8 @@ function FolhaDaData({
       <Campo rotulo="Horário">
         <input type="time" value={horario} onChange={(e) => escreverHorario(e.target.value)} />
       </Campo>
+
+      {escala.estado === 'agendada' && <p className="dica">Quem está na Equipe recebe um aviso da nova data.</p>}
 
       <Botao largo disabled={ocupado} onClick={() => salvar({ data, horario })}>
         Salvar

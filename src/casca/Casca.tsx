@@ -38,10 +38,10 @@ export function Casca() {
     )
   }
 
-  return <Dentro eu={sessao.eu} />
+  return <Dentro eu={sessao.eu} trocarEu={sessao.trocarEu} />
 }
 
-function Dentro({ eu }: { eu: Eu }) {
+function Dentro({ eu, trocarEu }: { eu: Eu; trocarEu: (eu: Eu) => void }) {
   const sugestoes = usarContagemDeSugestoes()
 
   // O pacote do culto é melhor esforço: quem avisa da falha é o modo culto, não o app inteiro.
@@ -50,7 +50,7 @@ function Dentro({ eu }: { eu: Eu }) {
   }, [])
 
   return (
-    <ProvedorDoEu eu={eu}>
+    <ProvedorDoEu eu={eu} trocar={trocarEu}>
       <ProvedorDeAvisos>
         <div className="casca">
           <main className="conteudo">

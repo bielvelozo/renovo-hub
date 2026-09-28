@@ -10,6 +10,7 @@ export type Eu = {
   ministro: boolean
   admin: boolean
   inativo: boolean
+  foto: string | null
   silenciado: boolean
 }
 
@@ -20,9 +21,22 @@ export type Situacao =
   | { situacao: 'erro'; mensagem: string }
 
 const ContextoDoEu = createContext<Eu | null>(null)
+const ContextoDaTrocaDoEu = createContext<((eu: Eu) => void) | null>(null)
 
-export function ProvedorDoEu({ eu, children }: { eu: Eu; children: ReactNode }) {
-  return <ContextoDoEu value={eu}>{children}</ContextoDoEu>
+export function ProvedorDoEu({
+  eu,
+  trocar = () => {},
+  children,
+}: {
+  eu: Eu
+  trocar?: (eu: Eu) => void
+  children: ReactNode
+}) {
+  return (
+    <ContextoDoEu value={eu}>
+      <ContextoDaTrocaDoEu value={trocar}>{children}</ContextoDaTrocaDoEu>
+    </ContextoDoEu>
+  )
 }
 
 export function usarEu(): Eu {
@@ -35,7 +49,13 @@ export function usarEuTalvez(): Eu | null {
   return useContext(ContextoDoEu)
 }
 
-export function usarSessao(): Situacao & { recarregar: () => void } {
+export function usarTrocaDoEu(): (eu: Eu) => void {
+  const trocar = useContext(ContextoDaTrocaDoEu)
+  if (!trocar) throw new Error('usarTrocaDoEu precisa do ProvedorDoEu por cima.')
+  return trocar
+}
+
+export function usarSessao(): Situacao & { recarregar: () => void; trocarEu: (eu: Eu) => void } {
   const [situacao, guardar] = useState<Situacao>({ situacao: 'carregando' })
   const [tentativa, tentarDeNovo] = useState(0)
 
@@ -54,6 +74,7 @@ export function usarSessao(): Situacao & { recarregar: () => void } {
   }, [tentativa])
 
   const recarregar = useCallback(() => tentarDeNovo((n) => n + 1), [])
+  const trocarEu = useCallback((eu: Eu) => guardar({ situacao: 'dentro', eu }), [])
 
-  return { ...situacao, recarregar }
+  return { ...situacao, recarregar, trocarEu }
 }

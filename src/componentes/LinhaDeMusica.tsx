@@ -71,6 +71,8 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
   const tomADireita = posicaoDoTom === 'direita'
   const recente = !ehMedley && !!props.musica.recente && !!ultima
   const planejadas = ehMedley ? [] : (props.musica.planejadaEm ?? [])
+  // Dentro de um link ou botão, a letra vira selo: o caminho é a Música ou a folha do Item.
+  const mioloInterativo = modo === 'navegacao' || (modo === 'leitura' && !!aoEscolher)
 
   const miolo = (
     <>
@@ -88,10 +90,11 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
           </Selo>
         )}
         {!ehMedley && !props.trecho && ultima?.parcial && <Selo variante="trecho">trecho</Selo>}
-        {recente && ultima && (
+        {recente && ultima && (!tempoADireita || ultima.ministradoPorNome) && (
           <Selo variante="atencao">
-            {tempoRelativo(ultima.data, hoje)}
-            {ultima.ministradoPorNome ? ` · ${ultima.ministradoPorNome}` : ''}
+            {tempoADireita
+              ? `com ${ultima.ministradoPorNome}`
+              : tempoRelativo(ultima.data, hoje) + (ultima.ministradoPorNome ? ` · ${ultima.ministradoPorNome}` : '')}
           </Selo>
         )}
         {planejadas.slice(0, MAXIMO_DE_PLANEJADAS).map((planejada) => (
@@ -105,12 +108,16 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
         )}
         {!ehMedley && props.musica.legado && tempo === 'selo' && <Selo variante="legado">Legado</Selo>}
         {!ehMedley && props.musica.nova && tempo === 'selo' && <Selo>nova</Selo>}
-        {letraEm && modo !== 'escolha' && (
-          <Link className="selo neutro" to={letraEm} onClick={(evento) => evento.stopPropagation()}>
-            <Icone nome="documento" />
-            letra
-          </Link>
-        )}
+        {letraEm &&
+          modo !== 'escolha' &&
+          (mioloInterativo ? (
+            <Selo icone="documento">letra</Selo>
+          ) : (
+            <Link className="selo neutro" to={letraEm}>
+              <Icone nome="documento" />
+              letra
+            </Link>
+          ))}
         {selos}
       </span>
     </>
@@ -172,6 +179,10 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
                 <Link to={`/musicas/${trecho.musicaId}`} className="cresce">
                   <TituloDoTrecho trecho={trecho} />
                 </Link>
+              ) : tocavelNaLeitura ? (
+                <button type="button" className="toque-do-trecho cresce" disabled={desligado} onClick={aoEscolher}>
+                  <TituloDoTrecho trecho={trecho} />
+                </button>
               ) : (
                 <span className="cresce">
                   <TituloDoTrecho trecho={trecho} />

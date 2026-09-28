@@ -64,16 +64,20 @@ describe('equipePorGrupo', () => {
 describe('linhaDaEquipe', () => {
   const pessoa = (id: string, nome: string, ministro = false) => ({ membroId: id, nome, funcoes: ['Vocal'], ministro })
 
-  it('resume quem dirige e os demais numa frase, com as iniciais', () => {
+  it('resume quem dirige e os demais numa frase, com os rostos', () => {
     expect(linhaDaEquipe([pessoa('marcos', 'Marcos', true), pessoa('bia', 'Bia'), pessoa('gabriel', 'Gabriel')])).toEqual({
       total: 3,
-      iniciais: ['M', 'B', 'G'],
+      rostos: [
+        { membroId: 'marcos', nome: 'Marcos', foto: null },
+        { membroId: 'bia', nome: 'Bia', foto: null },
+        { membroId: 'gabriel', nome: 'Gabriel', foto: null },
+      ],
       extras: 0,
       texto: 'Marcos dirige · Bia e Gabriel',
     })
   })
 
-  it('junta dois Ministros e, acima de seis pessoas, mostra cinco iniciais e a conta do resto', () => {
+  it('junta dois Ministros e, acima de seis pessoas, mostra cinco rostos e a conta do resto', () => {
     const muitos = [
       pessoa('ana', 'Ana', true),
       pessoa('bia', 'Bia', true),
@@ -83,12 +87,12 @@ describe('linhaDaEquipe', () => {
     const linha = linhaDaEquipe(muitos)
 
     expect(linha.texto).toBe('Ana e Bia dirigem · Caio, Davi, Eva, Fábio, Gil e Hugo')
-    expect(linha.iniciais).toEqual(['A', 'B', 'C', 'D', 'E'])
+    expect(linha.rostos.map((rosto) => rosto.nome)).toEqual(['Ana', 'Bia', 'Caio', 'Davi', 'Eva'])
     expect(linha.extras).toBe(3)
   })
 
   it('sem ninguém, não inventa frase', () => {
-    expect(linhaDaEquipe([])).toEqual({ total: 0, iniciais: [], extras: 0, texto: '' })
+    expect(linhaDaEquipe([])).toEqual({ total: 0, rostos: [], extras: 0, texto: '' })
   })
 })
 
@@ -112,7 +116,7 @@ describe('secoesDaEquipe', () => {
   })
 
   it('deixa de fora quem não tem nenhuma Função', () => {
-    const semFuncao: Membro = { id: 'novo', nome: 'Novo', funcoes: [], ministro: false, admin: false, inativo: false }
+    const semFuncao: Membro = { id: 'novo', nome: 'Novo', funcoes: [], ministro: false, admin: false, inativo: false, foto: null }
     const todos = secoesDaEquipe([...m.membros, semFuncao], FUNCOES).flatMap((s) => s.membros)
     expect(todos.some((linha) => linha.membro.id === 'novo')).toBe(false)
   })

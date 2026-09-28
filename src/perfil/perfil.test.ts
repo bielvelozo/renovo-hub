@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { EscalaResumida } from '../api/tipos'
 import {
   inicialDoNome,
+  recorteQuadrado,
   rotuloDeEscalasEmAno,
   rotuloDeServidos,
   textoDaProximaEscala,
@@ -66,5 +67,19 @@ describe('inicialDoNome', () => {
     expect(inicialDoNome('gabriel')).toBe('G')
     expect(inicialDoNome('Érica')).toBe('É')
     expect(inicialDoNome('  ')).toBe('?')
+  })
+})
+
+describe('recorteQuadrado', () => {
+  it('corta o centro de uma foto deitada', () => {
+    expect(recorteQuadrado(4000, 3000)).toEqual({ x: 500, y: 0, lado: 3000 })
+  })
+
+  it('corta o centro de uma foto em pé', () => {
+    expect(recorteQuadrado(1080, 1920)).toEqual({ x: 0, y: 420, lado: 1080 })
+  })
+
+  it('deixa a foto quadrada como está', () => {
+    expect(recorteQuadrado(512, 512)).toEqual({ x: 0, y: 0, lado: 512 })
   })
 })

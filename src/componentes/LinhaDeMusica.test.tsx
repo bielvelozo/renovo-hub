@@ -51,6 +51,22 @@ function montar(ui: React.ReactNode) {
 }
 
 describe('LinhaDeMusica', () => {
+  it('em leitura tocável, cada Trecho do Medley abre a mesma folha do Item', () => {
+    const aoEscolher = vi.fn()
+    montar(
+      <LinhaDeMusica
+        modo="leitura"
+        aoEscolher={aoEscolher}
+        trechos={[
+          { musicaId: 'a', tom: 'Em', inicio: '0:00', fim: '1:00', musica: { ...resumida, id: 'a', titulo: 'Primeira' }, link: 'https://youtu.be/a', memoria: SEM_MEMORIA },
+        ]}
+      />,
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: /Primeira/ }))
+    expect(aoEscolher).toHaveBeenCalledTimes(1)
+  })
+
   it('com o Tom à direita, a nota fica na coluna e o selo some, inclusive nos Trechos do Medley', () => {
     const { container } = montar(
       <>
@@ -167,7 +183,7 @@ describe('LinhaDeMusica', () => {
       />,
     )
 
-    expect(screen.getByText('há 12 dias · Isa').className).toBe('selo atencao')
+    expect(screen.getByText('com Isa').className).toBe('selo atencao')
     expect(screen.getByText('há 12 dias').parentElement?.className).toBe('tempo atencao')
     expect(screen.getByText('no Repertório de dom, 20 de set · Marcos').className).toBe('selo atencao')
     expect(screen.getByText('no Repertório de dom, 27 de set')).not.toBeNull()

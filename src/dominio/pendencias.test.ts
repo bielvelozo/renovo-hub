@@ -129,6 +129,19 @@ describe('resumo dos Grupos a partir de Funções e Equipe', () => {
     expect(resumoDosGrupos(m.funcoes, escala.equipe)).toEqual(resumoPorGrupo(m, escala))
   })
 
+  it('conta vagas preenchidas, não pessoas: quem toca dois instrumentos preenche duas', () => {
+    const funcoes = [
+      { id: 'baixo', nome: 'Baixo', grupo: 'instrumentos' as const, ordem: 1, minimo: 1 },
+      { id: 'teclado', nome: 'Teclado', grupo: 'instrumentos' as const, ordem: 2, minimo: 1 },
+      { id: 'bateria', nome: 'Bateria', grupo: 'instrumentos' as const, ordem: 3, minimo: 1 },
+    ]
+
+    const musicos = resumoDosGrupos(funcoes, [{ membroId: 'rafa', funcoes: ['baixo', 'teclado'], ministro: false }])[1]
+
+    expect(musicos.escalados).toBe(1)
+    expect(musicos.texto).toBe('músicos 2 de 3 · falta bateria')
+  })
+
   it('acompanha a Equipe que a tela tem na mão, sem Escala nenhuma', () => {
     const m = ministerioDeExemplo(HOJE)
 

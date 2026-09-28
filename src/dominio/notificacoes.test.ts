@@ -38,9 +38,9 @@ const escala: Escala = {
 const m: Ministerio = {
   hoje: '2026-09-05',
   membros: [
-    { id: 'gabriel', nome: 'Gabriel', funcoes: ['baixo'], ministro: false, admin: true, inativo: false },
-    { id: 'julia', nome: 'Júlia', funcoes: ['guitarra', 'vocal'], ministro: false, admin: false, inativo: false },
-    { id: 'davi', nome: 'Davi', funcoes: [], ministro: true, admin: false, inativo: false },
+    { id: 'gabriel', nome: 'Gabriel', funcoes: ['baixo'], ministro: false, admin: true, inativo: false, foto: null },
+    { id: 'julia', nome: 'Júlia', funcoes: ['guitarra', 'vocal'], ministro: false, admin: false, inativo: false, foto: null },
+    { id: 'davi', nome: 'Davi', funcoes: [], ministro: true, admin: false, inativo: false, foto: null },
   ],
   funcoes: [
     { id: 'baixo', nome: 'Baixo', grupo: 'instrumentos', ordem: 1, minimo: 0 },

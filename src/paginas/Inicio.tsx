@@ -16,6 +16,7 @@ import { ErroDeCarga } from '../componentes/ErroDeCarga'
 import { Esqueleto } from '../componentes/Esqueleto'
 import { FolhaDaPlaylist } from '../componentes/FolhasDaEscala'
 import { LinhaDoItem } from '../componentes/LinhaDeMusica'
+import { Rosto } from '../componentes/Rosto'
 import { Selo } from '../componentes/Selo'
 import { Vazio } from '../componentes/Vazio'
 import { VistoEm } from '../componentes/VistoEm'
@@ -168,7 +169,7 @@ export function CartaoPosCulto({ posCulto, hoje }: { posCulto: PosCultoApresenta
   }
 
   return (
-    <Cartao className="pagina pos-culto">
+    <Cartao className="pos-culto">
       <div className="secao-topo">
         <Icone nome="confirmar" />
         <div className="cresce">
@@ -229,10 +230,8 @@ function ProximaEscala({
               {resumo.total ? (
                 <>
                   <span className="pilha-de-iniciais" aria-hidden="true">
-                    {resumo.iniciais.map((inicial, posicao) => (
-                      <span key={posicao} className="inicial mini">
-                        {inicial}
-                      </span>
+                    {resumo.rostos.map((rosto) => (
+                      <Rosto key={rosto.membroId} {...rosto} tamanho="mini" />
                     ))}
                     {resumo.extras > 0 && <span className="inicial mini">+{resumo.extras}</span>}
                   </span>

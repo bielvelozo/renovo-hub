@@ -1,0 +1,7 @@
+ALTER TABLE membros ADD COLUMN foto_em TEXT;
+
+CREATE TABLE fotos (
+  membro_id TEXT PRIMARY KEY REFERENCES membros(id) ON DELETE CASCADE,
+  mime TEXT NOT NULL,
+  conteudo BLOB NOT NULL
+);

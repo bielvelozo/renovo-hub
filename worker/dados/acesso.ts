@@ -8,11 +8,12 @@ type LinhaDeMembro = {
   admin: number
   ministro: number
   inativo: number
+  foto_em: string | null
 }
 
 export async function membroPorId(db: D1Database, id: string): Promise<Membro | null> {
   const linha = await db
-    .prepare('select id, nome, admin, ministro, inativo from membros where id = ?')
+    .prepare('select id, nome, admin, ministro, inativo, foto_em from membros where id = ?')
     .bind(id)
     .first<LinhaDeMembro>()
 
@@ -22,7 +23,7 @@ export async function membroPorId(db: D1Database, id: string): Promise<Membro | 
 export async function membroPorSessao(db: D1Database, token: string): Promise<Membro | null> {
   const linha = await db
     .prepare(
-      'select m.id, m.nome, m.admin, m.ministro, m.inativo from sessoes s join membros m on m.id = s.membro_id where s.token = ? and m.inativo = 0',
+      'select m.id, m.nome, m.admin, m.ministro, m.inativo, m.foto_em from sessoes s join membros m on m.id = s.membro_id where s.token = ? and m.inativo = 0',
     )
     .bind(token)
     .first<LinhaDeMembro>()
@@ -136,6 +137,7 @@ async function comFuncoes(db: D1Database, linha: LinhaDeMembro): Promise<Membro>
     admin: linha.admin === 1,
     ministro: linha.ministro === 1,
     inativo: linha.inativo === 1,
+    foto: linha.foto_em,
     funcoes: results.map((funcao) => funcao.id),
   }
 }

@@ -6,14 +6,16 @@ import { usarAcao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
 import { Cabecalho } from '../casca/Cabecalho'
 import { Icone } from '../casca/Icone'
+import { usarAviso } from '../componentes/Avisos'
 import { Botao } from '../componentes/Botao'
 import { CamposDoItem } from '../componentes/CamposDoItem'
 import { Capa } from '../componentes/Capa'
 import { Catalogo } from '../componentes/Catalogo'
+import { ErroDeCarga } from '../componentes/ErroDeCarga'
 import { Esqueleto } from '../componentes/Esqueleto'
 import { FaixaDeAlerta, frasesDeAlerta } from '../componentes/FaixaDeAlerta'
 import { RodapeDeAcao } from '../componentes/RodapeDeAcao'
-import { buscaNoCifraClub, hojeEmBrasilia } from '../dominio'
+import { TOM_ORIGINAL, hojeEmBrasilia } from '../dominio'
 import type { Escolha, Rascunho } from '../escalas/rascunho'
 import {
   corpoDaPromocao,
@@ -43,7 +45,9 @@ export function Adicionar() {
   if (!eu.ministro && !eu.admin) return <Navigate to={`/escalas/${id}`} replace />
 
   if (sugestaoId) {
-    if (sugestao.erro) return <Problema texto={sugestao.erro} aoVoltar={() => navegar('/sugestoes')} />
+    if (sugestao.erro) {
+      return <Problema texto={sugestao.erro} tentarDeNovo={sugestao.recarregar} aoVoltar={() => navegar('/sugestoes')} />
+    }
     if (!sugestao.dados) return <Esqueleto forma="paragrafo" />
 
     return (
@@ -58,7 +62,9 @@ export function Adicionar() {
   }
 
   if (musicaId) {
-    if (musica.erro) return <Problema texto={musica.erro} aoVoltar={() => navegar(`/escalas/${id}`)} />
+    if (musica.erro) {
+      return <Problema texto={musica.erro} tentarDeNovo={musica.recarregar} aoVoltar={() => navegar(`/escalas/${id}`)} />
+    }
     if (!musica.dados) return <Esqueleto forma="paragrafo" />
 
     return (
@@ -73,9 +79,11 @@ export function Adicionar() {
     )
   }
 
-  if (!escolha) {
-    return (
-      <section className="pagina">
+  // O catálogo fica montado, só escondido, enquanto o formulário aparece: voltar
+  // encontra a busca e a aba onde estavam.
+  return (
+    <>
+      <section className="pagina" hidden={escolha !== null}>
         <Catalogo
           modo="escolha"
           escalaId={id}
@@ -98,17 +106,17 @@ export function Adicionar() {
           }
         />
       </section>
-    )
-  }
 
-  return (
-    <Detalhes
-      escalaId={id}
-      escolha={escolha}
-      promoverDe={null}
-      rotulo="Adicionar ao Repertório"
-      aoVoltar={() => escolher(null)}
-    />
+      {escolha && (
+        <Detalhes
+          escalaId={id}
+          escolha={escolha}
+          promoverDe={null}
+          rotulo="Adicionar ao Repertório"
+          aoVoltar={() => escolher(null)}
+        />
+      )}
+    </>
   )
 }
 
@@ -132,8 +140,8 @@ function Detalhes({
     !jaBuscada && escolha.musicaId ? `/api/musicas/${escolha.musicaId}?escalaId=${escalaId}` : null,
   )
 
-  if (detalhe.erro) return <Problema texto={detalhe.erro} aoVoltar={aoVoltar} />
-  if (escala.erro) return <Problema texto={escala.erro} aoVoltar={aoVoltar} />
+  if (detalhe.erro) return <Problema texto={detalhe.erro} tentarDeNovo={detalhe.recarregar} aoVoltar={aoVoltar} />
+  if (escala.erro) return <Problema texto={escala.erro} tentarDeNovo={escala.recarregar} aoVoltar={aoVoltar} />
   if (detalhe.carregando || !escala.dados) return <Esqueleto forma="paragrafo" />
 
   return (
@@ -168,6 +176,7 @@ function Formulario({
 }) {
   const navegar = useNavigate()
   const acao = usarAcao()
+  const avisar = usarAviso()
   const [rascunho, escrever] = useState<Rascunho>(() =>
     rascunhoDe(escolha, musica?.tomSugerido ?? null, padraoDeQuemPuxa(escala)),
   )
@@ -195,8 +204,8 @@ function Formulario({
       }
 
       marcarTarefa(promoverDe ? 'promover' : 'adicionar-musica')
-
-      navegar(`/escalas/${escalaId}`)
+      avisar(textoDaAdicao(escolha.resumo.titulo, rascunho.tom))
+      navegar(`/escalas/${escalaId}`, { state: { itemNovo: true } })
     })
   }
 
@@ -214,23 +223,14 @@ function Formulario({
 
       {acao.erro && <p className="aviso">{acao.erro}</p>}
 
-      <div className="cabecalho-da-musica">
-        <Capa musicas={[escolha.resumo]} grande />
+      <div className="capa-e-cobertura">
+        <Capa musicas={[escolha.resumo]} />
+        <p className="dica cresce">{cobertura ?? 'Ninguém da equipe tocou esta música ainda.'}</p>
       </div>
 
       <FaixaDeAlerta frases={frases} />
 
-      {cobertura ? (
-        <p className="cobertura">{cobertura}</p>
-      ) : (
-        <p className="dica">Ninguém da equipe tocou esta música ainda.</p>
-      )}
-
       <CamposDoItem rascunho={rascunho} mudar={mudar} musica={musica} ministros={ministrosDaEscala(escala.pessoas)} />
-
-      <a className="dica" href={musica?.cifraClub ?? buscaNoCifraClub(escolha.resumo)} target="_blank" rel="noopener">
-        Conferir no Cifra Club
-      </a>
 
       <RodapeDeAcao
         primario={
@@ -243,11 +243,17 @@ function Formulario({
   )
 }
 
-function Problema({ texto, aoVoltar }: { texto: string; aoVoltar: () => void }) {
+export function textoDaAdicao(titulo: string, tom: string | null): string {
+  if (!tom) return `Adicionada: ${titulo}`
+
+  return `Adicionada: ${titulo} em ${tom === TOM_ORIGINAL ? 'tom original' : tom}`
+}
+
+function Problema({ texto, tentarDeNovo, aoVoltar }: { texto: string; tentarDeNovo: () => void; aoVoltar: () => void }) {
   return (
     <section className="pagina">
       <Cabecalho titulo="Adicionar música" aoVoltar={aoVoltar} />
-      <p className="aviso">{texto}</p>
+      <ErroDeCarga mensagem={texto} tentarDeNovo={tentarDeNovo} />
     </section>
   )
 }

@@ -36,6 +36,17 @@ export default defineConfig({
         // /api/* e /entrar/* são do Worker; servir o index em cima deles quebraria o convite.
         navigateFallbackDenylist: [/^\/api\//, /^\/entrar\//],
         runtimeCaching: [
+          // A URL da foto leva a versão, então servir do cache nunca mostra foto velha.
+          {
+            urlPattern: ({ url, request }) =>
+              request.method === 'GET' && url.pathname.startsWith('/api/membros/') && url.pathname.endsWith('/foto'),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'fotos',
+              expiration: { maxEntries: 60, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              cacheableResponse: { statuses: [200] },
+            },
+          },
           {
             urlPattern: ({ url, request }) => url.pathname.startsWith('/api/') && request.method === 'GET',
             handler: 'NetworkFirst',

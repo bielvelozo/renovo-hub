@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { api } from '../api/cliente'
 import type { AchadoNoCifraClub, ExecucaoApresentada, TomSugeridoApresentado } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
-import { TOM_ORIGINAL } from '../dominio'
+import { TOM_ORIGINAL, hojeEmBrasilia } from '../dominio'
 import { textoDoHistorico, textoDoTomSugerido } from '../escalas/rascunho'
 import { Botao, classesDoBotao } from './Botao'
 import { SeletorDeTom } from './SeletorDeTom'
@@ -28,7 +28,7 @@ export function BlocoDeTom({
   return (
     <div className="secao" data-guia="tom">
       <h2>Tom</h2>
-      <p className="dica">{textoDoTomSugerido(sugerido)}</p>
+      <p className="dica">{textoDoTomSugerido(sugerido, hojeEmBrasilia(), tom)}</p>
 
       <button
         type="button"
@@ -43,7 +43,7 @@ export function BlocoDeTom({
 
       <BuscaNoCifraClub musica={musica} aoUsar={aoAcharOriginal} rotulo="Descobrir o tom no Cifra Club" />
 
-      {historico.length > 0 && <p className="dica">Histórico: {textoDoHistorico(historico)}</p>}
+      {historico.length > 1 && <p className="dica">Histórico: {textoDoHistorico(historico)}</p>}
     </div>
   )
 }

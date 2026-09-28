@@ -4,6 +4,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html,
 body,
 #raiz {
@@ -89,6 +93,11 @@ a {
   color: var(--acento);
 }
 
+::placeholder {
+  color: var(--texto-2);
+  opacity: 1;
+}
+
 :focus-visible {
   outline: 2px solid var(--acento);
   outline-offset: 2px;
@@ -169,6 +178,7 @@ a {
 
 .conteudo:has(.rodape-de-acao) {
   padding-bottom: 104px;
+  scroll-padding-bottom: 104px;
 }
 
 /* A faixa cobre o padding de `.conteudo` com margem negativa, pra nada aparecer
@@ -288,6 +298,11 @@ a {
 
 .faixa.subtela .dica {
   font-size: 13px;
+}
+
+.faixa.subtela .dica .selo {
+  margin-left: 8px;
+  vertical-align: 1px;
 }
 
 nav.abas {
@@ -552,6 +567,8 @@ nav.abas .contagem {
 }
 
 .cartao.pos-culto {
+  display: flex;
+  flex-direction: column;
   gap: 8px;
 }
 
@@ -589,7 +606,7 @@ nav.abas .contagem {
 }
 
 .atalho-do-culto:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
 .atalho-do-culto > .icone {
@@ -617,7 +634,7 @@ nav.abas .contagem {
   padding: 10px 14px 6px;
   background: var(--neutro-suave);
   color: var(--texto-2);
-  font: 600 11px/1.3 var(--fonte-corpo);
+  font: 600 12px/1.3 var(--fonte-corpo);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -1035,12 +1052,12 @@ nav.abas .contagem {
   flex: none;
   flex-basis: 100%;
   flex-wrap: wrap;
+  row-gap: 8px;
   overflow: visible;
   padding: 0 0 0 46px;
 }
 
 .pessoa .chip {
-  min-height: 32px;
   padding: 0 12px;
 }
 
@@ -1103,6 +1120,12 @@ nav.abas .contagem {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.capa-e-cobertura {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .cobertura {

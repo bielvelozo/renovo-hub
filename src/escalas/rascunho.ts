@@ -8,7 +8,7 @@ import type {
   SugestaoApresentada,
   TomSugeridoApresentado,
 } from '../api/tipos'
-import { capaAlternativa, capaDaMusica, formatarDia, hojeEmBrasilia, normalizarMinutagem, videoIdDoLink } from '../dominio'
+import { TOM_ORIGINAL, capaAlternativa, capaDaMusica, formatarDia, hojeEmBrasilia, normalizarMinutagem, videoIdDoLink } from '../dominio'
 import { textoDoUltimoTom } from '../musicas/catalogo'
 
 export type ModoDoItem = 'inteira' | 'trecho'
@@ -234,10 +234,19 @@ export function corpoDoMedley(trechos: TrechoPronto[], observacao: string) {
   return { tipo: 'medley', trechos, observacao: observacao.trim() }
 }
 
-export function textoDoTomSugerido(sugerido: TomSugeridoApresentado | null, hoje = hojeEmBrasilia()): string {
-  if (!sugerido) return 'Sem tom de partida: escolha.'
+export function textoDoTomSugerido(
+  sugerido: TomSugeridoApresentado | null,
+  hoje = hojeEmBrasilia(),
+  tom: string | null = null,
+): string {
+  const atual = tom ? `Tom desta escala: ${tom === TOM_ORIGINAL ? 'o original da gravação' : tom}.` : null
 
-  return textoDoUltimoTom(sugerido, hoje) + ' Já selecionado.'
+  if (!sugerido) return atual ?? 'Sem tom de partida: escolha.'
+
+  const ultimo = textoDoUltimoTom(sugerido, hoje)
+  if (atual && tom !== sugerido.tom) return `${atual} ${ultimo}`
+
+  return ultimo + ' Já selecionado.'
 }
 
 export function textoDoHistorico(historico: ExecucaoApresentada[], hoje = hojeEmBrasilia()): string {
