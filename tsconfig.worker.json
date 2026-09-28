@@ -34,6 +34,7 @@
     "src/perfil/perfil.ts",
     "src/push/base64.ts",
     "src/push/push.ts",
+    "src/instalacao/instalacao.ts",
     "src/instalacao/plataforma.ts",
     "src/tema/tema.ts",
     "src/**/*.test.ts"

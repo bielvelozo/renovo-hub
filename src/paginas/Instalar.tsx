@@ -1,51 +1,128 @@
 import { useState } from 'react'
+import { Link } from 'react-router'
+import type { PerfilApresentado } from '../api/tipos'
+import { usarBusca } from '../api/usarBusca'
+import { Icone } from '../casca/Icone'
 import { SeloDaMarca } from '../casca/Marca'
 import { ProvedorDeAvisos } from '../componentes/Avisos'
-import { BotaoLink } from '../componentes/Botao'
-import { Notificacoes } from '../componentes/Notificacoes'
-import { RodapeDeAcao } from '../componentes/RodapeDeAcao'
+import { Botao, BotaoLink } from '../componentes/Botao'
+import { Folha } from '../componentes/Folha'
+import { NotificacoesCompactas } from '../componentes/NotificacoesCompactas'
 import { Segmento } from '../componentes/Segmento'
 import { IconeDoPasso } from '../instalacao/IconeDoPasso'
 import { PLATAFORMAS, passosDeInstalacao, plataformaDoAgente } from '../instalacao/plataforma'
 import type { Plataforma } from '../instalacao/plataforma'
+import { usarInstalacao } from '../instalacao/prompt'
+import { textoDaProximaEscala } from '../perfil/perfil'
 import { usarSessao } from '../sessao/sessao'
+import type { Eu } from '../sessao/sessao'
+
+const POR_QUE_INSTALAR: Record<Plataforma, string> = {
+  ios: 'Abre direto do ícone, e é só assim que o iPhone avisa quando você for escalado.',
+  android: 'Abre direto do ícone, como qualquer app, sem procurar o link no WhatsApp.',
+  outra: 'Abre numa janela própria, sem procurar a aba no navegador.',
+}
 
 export function Instalar() {
   const sessao = usarSessao()
+  const instalacao = usarInstalacao()
   const [plataforma, escolher] = useState<Plataforma>(() =>
     plataformaDoAgente(navigator.userAgent, navigator.maxTouchPoints > 1),
   )
+  const [passosAbertos, abrirPassos] = useState(false)
+  const [instalando, marcarInstalando] = useState(false)
+  const peloIcone = abertoPeloIcone()
+  const eu = sessao.situacao === 'dentro' ? sessao.eu : null
   const instrucao = passosDeInstalacao(plataforma)
-  const instalado = jaInstalado()
+
+  async function instalar() {
+    if (!instalacao.disponivel) {
+      abrirPassos(true)
+      return
+    }
+
+    marcarInstalando(true)
+    const resultado = await instalacao.instalar()
+    marcarInstalando(false)
+    if (resultado === 'indisponivel') abrirPassos(true)
+  }
 
   return (
     <ProvedorDeAvisos>
-      <section className="pagina centrada sem-abas">
-        <span className="selo-centrado">
-          <SeloDaMarca />
-        </span>
+      <section className="pagina centrada sem-abas boas-vindas">
+        <div className="topo-das-boas-vindas">
+          <span className="selo-centrado">
+            <SeloDaMarca />
+          </span>
+          <h1>{eu ? `Oi, ${eu.nome}` : 'Boas-vindas ao Renovo Music'}</h1>
+          <p className="dica">
+            {eu ? 'Você entrou no Renovo Music. ' : ''}Escala, Repertório e Tom de cada música ficam aqui.
+          </p>
+        </div>
 
-        <h1>{sessao.situacao === 'dentro' ? `Oi, ${sessao.eu.nome}` : 'Bem-vindo ao Renovo Hub'}</h1>
-        <p className="dica">
-          O Renovo Hub é o app das Escalas do Renovo Music. Deixe ele na tela inicial do seu celular: é assim que ele
-          abre rápido e pode avisar você quando entrar numa Escala.
-        </p>
+        {eu && <ProximaEscala eu={eu} />}
 
-        {instalado ? (
-          <div className="cartao">
-            <h2>Pronto, já está instalado</h2>
-            <p className="dica">Você está usando o Renovo Hub pelo ícone da tela inicial. É daqui que ele notifica você.</p>
-          </div>
+        <div className="secao">
+          <h2>Neste aparelho</h2>
+
+          {peloIcone || instalacao.instalado ? (
+            <div className="cartao cartao-de-instalar">
+              <div className="linha-de-instalar">
+                <span className="icone-de-instalar" aria-hidden="true">
+                  <Icone nome="confirmar" />
+                </span>
+                <span className="cresce">
+                  <span className="titulo">{peloIcone ? 'Pronto, já está instalado' : 'Instalado'}</span>
+                  <span className="dica">
+                    {peloIcone
+                      ? 'Você está usando o app pelo ícone da tela inicial. É daqui que ele avisa você.'
+                      : 'Abra o Renovo pelo ícone da tela inicial: é de lá que ele avisa você.'}
+                  </span>
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className="cartao cartao-de-instalar">
+              <div className="linha-de-instalar">
+                <span className="icone-de-instalar" aria-hidden="true">
+                  <Icone nome="celular" />
+                </span>
+                <span className="cresce">
+                  <span className="titulo">Coloque o app na tela inicial</span>
+                  <span className="dica">{POR_QUE_INSTALAR[plataforma]}</span>
+                </span>
+              </div>
+              <Botao largo icone="instalar" carregando={instalando} onClick={instalar}>
+                Instalar na tela inicial
+              </Botao>
+            </div>
+          )}
+
+          {eu && (peloIcone || plataforma !== 'ios') && (
+            <ul className="lista cartao">
+              <NotificacoesCompactas silenciado={eu.silenciado} />
+            </ul>
+          )}
+        </div>
+
+        {peloIcone ? (
+          <BotaoLink para="/" largo>
+            Continuar
+          </BotaoLink>
         ) : (
-          <div className="cartao pagina">
+          <BotaoLink para="/" variante="terciario" className="seguir-no-navegador">
+            {instalacao.instalado ? 'Continuar no navegador' : 'Agora não, usar no navegador'}
+          </BotaoLink>
+        )}
+
+        {passosAbertos && (
+          <Folha titulo={instrucao.titulo} fechar={() => abrirPassos(false)}>
             <Segmento
               rotulo="Onde você está"
               opcoes={PLATAFORMAS.map((opcao) => ({ valor: opcao, rotulo: passosDeInstalacao(opcao).aba }))}
               valor={plataforma}
               aoMudar={escolher}
             />
-
-            <h2>{instrucao.titulo}</h2>
             <ol className="passos">
               {instrucao.passos.map((passo) => (
                 <li key={passo.texto}>
@@ -54,18 +131,37 @@ export function Instalar() {
                 </li>
               ))}
             </ol>
-          </div>
+          </Folha>
         )}
-
-        <Notificacoes silenciado={sessao.situacao === 'dentro' && sessao.eu.silenciado} />
-
-        <RodapeDeAcao primario={<BotaoLink para="/" largo>Pronto</BotaoLink>} />
       </section>
     </ProvedorDeAvisos>
   )
 }
 
-function jaInstalado(): boolean {
+function ProximaEscala({ eu }: { eu: Eu }) {
+  const proxima = usarBusca<PerfilApresentado>(`/api/perfil/${eu.id}`).dados?.proximaEscala
+
+  if (!proxima) return null
+
+  return (
+    <div className="secao">
+      <h2>Sua próxima escala</h2>
+      <ul className="lista cartao">
+        <li>
+          <Link to={`/escalas/${proxima.id}`} className="toque">
+            <span className="cresce">
+              <span className="titulo">{proxima.titulo}</span>
+              <span className="dica">{textoDaProximaEscala(proxima)}</span>
+            </span>
+            <Icone nome="seta" />
+          </Link>
+        </li>
+      </ul>
+    </div>
+  )
+}
+
+function abertoPeloIcone(): boolean {
   if (window.matchMedia('(display-mode: standalone)').matches) return true
   return (navigator as Navigator & { standalone?: boolean }).standalone === true
 }

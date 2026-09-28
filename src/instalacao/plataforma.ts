@@ -20,8 +20,8 @@ const INSTRUCOES: Record<Plataforma, Instrucao> = {
     aba: 'iPhone',
     titulo: 'No iPhone ou iPad',
     passos: [
-      { texto: 'Abra este link no Safari (não funciona no Chrome do iPhone).' },
-      { texto: 'Toque no botão Compartilhar, na barra de baixo do Safari:', icone: 'compartilhar' },
+      { texto: 'Abra este link no Safari ou no Chrome.' },
+      { texto: 'Toque no botão Compartilhar do navegador (no Safari fica embaixo; no Chrome, no alto):', icone: 'compartilhar' },
       { texto: 'Role a lista e toque em Adicionar à Tela de Início, com este ícone:', icone: 'adicionar' },
       { texto: 'Toque em Adicionar. O Renovo Hub vira um ícone na sua tela.' },
       { texto: 'Abra o app pelo ícone. Só assim ele pode notificar você.' },
