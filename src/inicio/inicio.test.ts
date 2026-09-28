@@ -131,11 +131,15 @@ describe('resumoDaProximaEscala', () => {
     pessoa('gabriel', 'Gabriel', ['Guitarra']),
   ]
 
-  it('diz a Função de quem olha, quem ministra e as iniciais na ordem recebida', () => {
+  it('diz a Função de quem olha, quem ministra e os rostos na ordem recebida', () => {
     expect(resumoDaProximaEscala(equipe, 'gabriel')).toEqual({
       suaFuncao: 'Guitarra',
       ministros: 'Isa',
-      iniciais: ['I', 'A', 'G'],
+      rostos: [
+        { membroId: 'isa', nome: 'Isa', foto: null },
+        { membroId: 'ana', nome: 'Ana', foto: null },
+        { membroId: 'gabriel', nome: 'Gabriel', foto: null },
+      ],
       total: 3,
       extras: 0,
     })
@@ -167,21 +171,21 @@ describe('resumoDaProximaEscala', () => {
     expect(resumoDaProximaEscala(sozinha, 'davi')).toEqual({
       suaFuncao: 'Escalado',
       ministros: null,
-      iniciais: ['D'],
+      rostos: [{ membroId: 'davi', nome: 'Davi', foto: null }],
       total: 1,
       extras: 0,
     })
   })
 
-  it('mostra até seis iniciais; acima disso, cinco e a conta do que sobrou', () => {
+  it('mostra até seis rostos; acima disso, cinco e a conta do que sobrou', () => {
     const equipeDe = (quantas: number) => Array.from({ length: quantas }, (_, n) => pessoa('m' + n, 'Membro ' + n, ['Vocal']))
 
     const seis = resumoDaProximaEscala(equipeDe(6), 'ninguem')
-    expect(seis.iniciais).toHaveLength(6)
+    expect(seis.rostos).toHaveLength(6)
     expect(seis.extras).toBe(0)
 
     const nove = resumoDaProximaEscala(equipeDe(9), 'ninguem')
-    expect(nove.iniciais).toHaveLength(5)
+    expect(nove.rostos).toHaveLength(5)
     expect(nove.extras).toBe(4)
     expect(nove.total).toBe(9)
   })

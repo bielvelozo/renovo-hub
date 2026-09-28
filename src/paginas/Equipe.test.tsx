@@ -17,6 +17,7 @@ const membro = (id: string, nome: string, funcoes: string[], extra: Partial<Memb
   ministro: false,
   admin: false,
   inativo: false,
+  foto: null,
   push: 1,
   silenciado: false,
   presenca: { ultimaVez: null, seguidos: 0, paradaHaMeses: null },

@@ -19,6 +19,7 @@ export type Membro = {
   ministro: boolean
   admin: boolean
   inativo: boolean
+  foto: string | null
 }
 
 export type Musica = {

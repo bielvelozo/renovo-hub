@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import type { ChangeEvent } from 'react'
 import { Link } from 'react-router'
-import { api } from '../api/cliente'
+import { api, enviarArquivo } from '../api/cliente'
 import type { PerfilApresentado } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
 import { usarBusca } from '../api/usarBusca'
@@ -12,19 +13,20 @@ import { Cartao } from '../componentes/Cartao'
 import { Esqueleto } from '../componentes/Esqueleto'
 import { Folha } from '../componentes/Folha'
 import { NotificacoesCompactas } from '../componentes/NotificacoesCompactas'
+import { Rosto } from '../componentes/Rosto'
 import { Segmento } from '../componentes/Segmento'
 import { Selo } from '../componentes/Selo'
 import { VistoEm } from '../componentes/VistoEm'
 import { hojeEmBrasilia } from '../dominio'
 import {
-  inicialDoNome,
   rotuloDeEscalasEmAno,
   rotuloDeServidos,
   textoDaProximaEscala,
   textoDaUltimaEscala,
   textoDeServidos,
 } from '../perfil/perfil'
-import { usarEu } from '../sessao/sessao'
+import { reduzirFoto } from '../perfil/reduzirFoto'
+import { usarEu, usarTrocaDoEu } from '../sessao/sessao'
 import { usarTema } from '../tema/ProvedorDeTema'
 import type { Preferencia } from '../tema/tema'
 import { PREFERENCIAS, rotuloDaPreferencia } from '../tema/tema'
@@ -59,9 +61,7 @@ export function Perfil() {
       <VistoEm hora={busca.vistoEm} />
 
       <div className="cabecalho-do-perfil">
-        <span className="inicial" aria-hidden="true">
-          {inicialDoNome(eu.nome)}
-        </span>
+        <FotoDoPerfil />
         <div className="cresce">
           <h1 className="titulo-de-tela display">{eu.nome}</h1>
           <div className="selos">
@@ -177,4 +177,83 @@ function LinhaDeEscala({ rotulo, texto, para }: { rotulo: string; texto: string;
   }
 
   return <div className="toque sem-acao">{miolo}</div>
+}
+
+const FOTO_ILEGIVEL = 'Não consegui abrir essa imagem. Tente outra foto.'
+
+function FotoDoPerfil() {
+  const eu = usarEu()
+  const trocarEu = usarTrocaDoEu()
+  const acao = usarAcao()
+  const avisar = usarAviso()
+  const seletor = useRef<HTMLInputElement>(null)
+  const [opcoesAbertas, abrirOpcoes] = useState(false)
+  const [ilegivel, marcarIlegivel] = useState(false)
+
+  const escolher = () => seletor.current?.click()
+
+  const enviar = (evento: ChangeEvent<HTMLInputElement>) => {
+    const arquivo = evento.target.files?.[0]
+    evento.target.value = ''
+    if (!arquivo) return
+
+    abrirOpcoes(false)
+    acao.limpar()
+    marcarIlegivel(false)
+    acao.executar(async () => {
+      const reduzida = await reduzirFoto(arquivo).catch(() => null)
+      if (!reduzida) return marcarIlegivel(true)
+
+      const { foto } = await enviarArquivo<{ foto: string }>(`/api/membros/${eu.id}/foto`, reduzida)
+      trocarEu({ ...eu, foto })
+      avisar('Foto atualizada')
+    })
+  }
+
+  const remover = () => {
+    acao.limpar()
+    acao.executar(async () => {
+      await api(`/api/membros/${eu.id}/foto`, { metodo: 'DELETE' })
+      trocarEu({ ...eu, foto: null })
+      abrirOpcoes(false)
+      avisar('Foto removida')
+    })
+  }
+
+  const erro = ilegivel ? FOTO_ILEGIVEL : acao.erro
+
+  return (
+    <>
+      <button
+        type="button"
+        className={acao.ocupado ? 'toque-da-foto carregando' : 'toque-da-foto'}
+        aria-label={eu.foto ? 'Trocar ou remover sua foto' : 'Pôr uma foto sua'}
+        disabled={acao.ocupado}
+        onClick={eu.foto ? () => abrirOpcoes(true) : escolher}
+      >
+        <Rosto membroId={eu.id} nome={eu.nome} foto={eu.foto} />
+        <span className="selo-da-camera" aria-hidden="true">
+          <Icone nome="camera" />
+        </span>
+      </button>
+      <input ref={seletor} type="file" accept="image/*" hidden onChange={enviar} />
+      {erro && !opcoesAbertas && (
+        <p className="aviso" role="alert">
+          {erro}
+        </p>
+      )}
+
+      {opcoesAbertas && (
+        <Folha titulo="Sua foto" fechar={() => abrirOpcoes(false)}>
+          {erro && <p className="aviso">{erro}</p>}
+          <Botao largo disabled={acao.ocupado} onClick={escolher}>
+            Escolher outra foto
+          </Botao>
+          <Botao largo variante="terciario" className="perigo" disabled={acao.ocupado} onClick={remover}>
+            Remover foto
+          </Botao>
+        </Folha>
+      )}
+    </>
+  )
 }
