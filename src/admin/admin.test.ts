@@ -27,6 +27,7 @@ function membro(campos: Partial<MembroComAcesso> = {}): MembroComAcesso {
     ministro: false,
     admin: true,
     inativo: false,
+    foto: null,
     sessoes: 0,
     convites: 0,
     convitesUsados: 0,
@@ -108,8 +109,8 @@ describe('remoção de Membro', () => {
 
 describe('resumoDaFormacao', () => {
   const membros: Membro[] = [
-    { id: 'gabriel', nome: 'Gabriel', funcoes: ['guitarra'], ministro: false, admin: true, inativo: false },
-    { id: 'pedro', nome: 'Pedro', funcoes: ['baixo'], ministro: false, admin: false, inativo: false },
+    { id: 'gabriel', nome: 'Gabriel', funcoes: ['guitarra'], ministro: false, admin: true, inativo: false, foto: null },
+    { id: 'pedro', nome: 'Pedro', funcoes: ['baixo'], ministro: false, admin: false, inativo: false, foto: null },
   ]
 
   it('lista quem está dentro com as Funções entre parênteses', () => {

@@ -14,6 +14,7 @@ import { Busca } from '../componentes/Busca'
 import { Esqueleto } from '../componentes/Esqueleto'
 import { Folha } from '../componentes/Folha'
 import { Menu } from '../componentes/Menu'
+import { Rosto } from '../componentes/Rosto'
 import { Selo } from '../componentes/Selo'
 import type { Funcao } from '../dominio'
 import { formatarDia, hojeEmBrasilia, normalizarTexto } from '../dominio'
@@ -36,7 +37,6 @@ import {
   textoDeSemNotificacao,
 } from '../escalas/equipe'
 import type { EstadoNaEquipe, MembroComPush, SecaoDaEquipe } from '../escalas/equipe'
-import { inicialDoNome } from '../perfil/perfil'
 import { usarEu } from '../sessao/sessao'
 
 const EXPLICACAO_DA_FORMACAO =
@@ -357,9 +357,7 @@ function Pessoa({
 
   return (
     <li className="pessoa">
-      <span className="inicial pequena" aria-hidden="true">
-        {inicialDoNome(membro.nome)}
-      </span>
+      <Rosto membroId={membro.id} nome={membro.nome} foto={membro.foto} tamanho="pequena" />
 
       <span className="cresce grupo">
         <span className="titulo">{membro.nome}</span>

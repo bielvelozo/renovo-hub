@@ -5,6 +5,7 @@ import { anexos } from './rotas/anexos'
 import { culto } from './rotas/culto'
 import { escalas } from './rotas/escalas'
 import { formacoes } from './rotas/formacoes'
+import { fotos } from './rotas/fotos'
 import { inicio } from './rotas/inicio'
 import { itens } from './rotas/itens'
 import { musicas } from './rotas/musicas'
@@ -28,6 +29,7 @@ app.route('/', anexos)
 app.route('/', culto)
 app.route('/', sugestoes)
 app.route('/', perfil)
+app.route('/', fotos)
 app.route('/', push)
 app.route('/', admin)
 

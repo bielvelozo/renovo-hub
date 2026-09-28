@@ -1,5 +1,7 @@
 import { GRUPOS, resumoDosGrupos, tempoRelativo } from '../dominio'
 import type { EntradaEquipe, Funcao, Membro, Grupo, PessoaDaEquipe } from '../dominio'
+import { rostoDaPessoa } from '../perfil/perfil'
+import type { Rosto } from '../perfil/perfil'
 
 export type GrupoDePessoas = { chave: Grupo | 'sem-funcao'; nome: string; pessoas: PessoaDaEquipe[] }
 
@@ -23,7 +25,7 @@ export type PresencaDoMembro = { ultimaVez: string | null; seguidos: number; par
 
 export type MembroComPush = Membro & { push?: number; silenciado?: boolean; presenca?: PresencaDoMembro }
 
-export type LinhaDaEquipe = { total: number; iniciais: string[]; extras: number; texto: string }
+export type LinhaDaEquipe = { total: number; rostos: Rosto[]; extras: number; texto: string }
 
 const MAXIMO_DE_INICIAIS = 6
 
@@ -38,7 +40,7 @@ export function linhaDaEquipe(pessoas: PessoaDaEquipe[]): LinhaDaEquipe {
 
   return {
     total: pessoas.length,
-    iniciais: pessoas.slice(0, mostradas).map((pessoa) => pessoa.nome.trim().charAt(0).toUpperCase()),
+    rostos: pessoas.slice(0, mostradas).map(rostoDaPessoa),
     extras: pessoas.length - mostradas,
     texto: partes.join(' · '),
   }

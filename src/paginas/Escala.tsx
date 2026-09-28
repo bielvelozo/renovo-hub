@@ -23,6 +23,7 @@ import { LinhaDoItem } from '../componentes/LinhaDeMusica'
 import { Menu } from '../componentes/Menu'
 import type { ItemDoMenu } from '../componentes/Menu'
 import { RodapeDeAcao } from '../componentes/RodapeDeAcao'
+import { Rosto } from '../componentes/Rosto'
 import { Selo } from '../componentes/Selo'
 import { mover } from '../componentes/ordenacao'
 import { usarOrdenacao } from '../componentes/usarOrdenacao'
@@ -33,7 +34,6 @@ import { equipePorGrupo, linhaDaEquipe } from '../escalas/equipe'
 import { ministrosDaEscala, textoDeQuemPuxa, tituloDoItem } from '../escalas/repertorio'
 import { marcarVisitaNaEscala, mudouDesdeAVisita, visitaNaEscala } from '../escalas/visita'
 import { destinoDaPendencia, resumoDasPendencias } from '../inicio/inicio'
-import { inicialDoNome } from '../perfil/perfil'
 import { usarEu } from '../sessao/sessao'
 
 type Aberta = 'editar' | 'cancelar' | 'whatsapp' | null
@@ -259,10 +259,8 @@ export function EquipeResumida({ escala, podeEditar }: { escala: EscalaApresenta
     <>
       {linha.total > 0 && (
         <span className="pilha-de-iniciais" aria-hidden="true">
-          {linha.iniciais.map((inicial, posicao) => (
-            <span key={posicao} className="inicial mini">
-              {inicial}
-            </span>
+          {linha.rostos.map((rosto) => (
+            <Rosto key={rosto.membroId} {...rosto} tamanho="mini" />
           ))}
           {linha.extras > 0 && <span className="inicial mini">+{linha.extras}</span>}
         </span>
@@ -324,9 +322,7 @@ export function Equipe({ escala, euId }: { escala: EscalaApresentada; euId: stri
               <ul className="lista">
                 {grupo.pessoas.map((pessoa) => (
                   <li key={pessoa.membroId} className="pessoa">
-                    <span className="inicial pequena" aria-hidden="true">
-                      {inicialDoNome(pessoa.nome)}
-                    </span>
+                    <Rosto membroId={pessoa.membroId} nome={pessoa.nome} foto={pessoa.foto} tamanho="pequena" />
                     <span className="cresce nome-da-pessoa">
                       <span className="titulo">{pessoa.nome}</span>
                       {pessoa.ministro && <Selo variante="ministro">ministro</Selo>}

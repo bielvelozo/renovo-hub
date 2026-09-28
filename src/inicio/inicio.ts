@@ -2,11 +2,13 @@ import type { EscalaApresentada, PosCultoApresentado, SugestaoApresentada } from
 import type { ChaveDePendencia, Pendencia, PessoaDaEquipe } from '../dominio'
 import { DIAS_DAS_PENDENCIAS, diasEntre, formatarDia, formatarDiaEMes, rotuloDoHorario, somarDias } from '../dominio'
 import { novasDesde } from '../escalas/sugestoes'
+import { rostoDaPessoa } from '../perfil/perfil'
+import type { Rosto } from '../perfil/perfil'
 
 export type ResumoDaProximaEscala = {
   suaFuncao: string | null
   ministros: string | null
-  iniciais: string[]
+  rostos: Rosto[]
   total: number
   extras: number
 }
@@ -57,7 +59,7 @@ export function resumoDaProximaEscala(pessoas: PessoaDaEquipe[], euId: string): 
   return {
     suaFuncao: eu ? funcaoDeQuemOlha(eu) : null,
     ministros: ministros.length ? emLista(ministros) : null,
-    iniciais: pessoas.slice(0, mostradas).map((pessoa) => pessoa.nome.trim().charAt(0).toUpperCase()),
+    rostos: pessoas.slice(0, mostradas).map(rostoDaPessoa),
     total: pessoas.length,
     extras: pessoas.length - mostradas,
   }

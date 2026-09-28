@@ -147,7 +147,7 @@ describe('marca «mudou» no Repertório do Início', () => {
   })
 
   it('quem dirige ganha Adicionar música no fim da lista; o Membro não', () => {
-    const eu = { id: 'marcos', nome: 'Marcos', funcoes: [], ministro: true, admin: false, inativo: false, silenciado: false }
+    const eu = { id: 'marcos', nome: 'Marcos', funcoes: [], ministro: true, admin: false, inativo: false, foto: null, silenciado: false }
     const { unmount } = mostrar(
       <ProvedorDoEu eu={eu}>
         <RepertorioDoInicio escala={repertorio} anexosPorDono={{}} hoje={HOJE} />
