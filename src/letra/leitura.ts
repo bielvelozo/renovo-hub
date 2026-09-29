@@ -4,10 +4,20 @@ export type Deposito = {
 }
 
 export const CHAVE_DO_TAMANHO = 'renovo:letra:tamanho'
+export const CHAVE_DO_TAMANHO_NO_PALCO = 'renovo:letra:tamanho-no-palco'
 export const CHAVE_DA_VELOCIDADE = 'renovo:letra:velocidade'
 
 export const TAMANHOS_DA_LETRA: readonly number[] = [15, 17, 19, 21, 23, 26, 30, 34]
 export const PASSO_PADRAO = 1
+// A um metro do pedestal a letra de sofá não serve: o palco nasce em 26 px e guarda o seu tamanho à parte.
+export const PASSO_PADRAO_NO_PALCO = 5
+
+export type Lugar = 'casca' | 'palco'
+
+const LUGARES: Record<Lugar, { chave: string; padrao: number }> = {
+  casca: { chave: CHAVE_DO_TAMANHO, padrao: PASSO_PADRAO },
+  palco: { chave: CHAVE_DO_TAMANHO_NO_PALCO, padrao: PASSO_PADRAO_NO_PALCO },
+}
 
 export const VELOCIDADE_MINIMA = 1
 export const VELOCIDADE_MAXIMA = 5
@@ -42,12 +52,13 @@ export function pxPorSegundo(velocidade: number): number {
   return dentroDaFaixa(velocidade, VELOCIDADE_MINIMA, VELOCIDADE_MAXIMA) * PX_POR_SEGUNDO_NO_PASSO
 }
 
-export function lerPassoDaLetra(deposito = doAparelho()): number {
-  return guardado(deposito, CHAVE_DO_TAMANHO, 0, TAMANHOS_DA_LETRA.length - 1) ?? PASSO_PADRAO
+export function lerPassoDaLetra(deposito = doAparelho(), lugar: Lugar = 'casca'): number {
+  const { chave, padrao } = LUGARES[lugar]
+  return guardado(deposito, chave, 0, TAMANHOS_DA_LETRA.length - 1) ?? padrao
 }
 
-export function guardarPassoDaLetra(passo: number, deposito = doAparelho()): void {
-  gravar(deposito, CHAVE_DO_TAMANHO, passo)
+export function guardarPassoDaLetra(passo: number, deposito = doAparelho(), lugar: Lugar = 'casca'): void {
+  gravar(deposito, LUGARES[lugar].chave, passo)
 }
 
 export function lerVelocidade(deposito = doAparelho()): number {

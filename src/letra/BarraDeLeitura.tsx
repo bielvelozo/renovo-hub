@@ -15,10 +15,17 @@ import {
   proximoPasso,
   tamanhoDoPasso,
 } from './leitura'
+import type { Lugar } from './leitura'
 import { containerDeRolagem, usarRolagemAutomatica } from './usarRolagemAutomatica'
 
-export function BarraDeLeitura({ rolagem }: { rolagem?: RefObject<HTMLElement | null> }) {
-  const [passo, definirPasso] = useState(lerPassoDaLetra)
+export function BarraDeLeitura({
+  rolagem,
+  lugar = 'casca',
+}: {
+  rolagem?: RefObject<HTMLElement | null>
+  lugar?: Lugar
+}) {
+  const [passo, definirPasso] = useState(() => lerPassoDaLetra(undefined, lugar))
   const [velocidade, definirVelocidade] = useState(lerVelocidade)
   const [rolando, definirRolando] = useState(false)
   const propria = useRef<HTMLDivElement>(null)
@@ -38,7 +45,7 @@ export function BarraDeLeitura({ rolagem }: { rolagem?: RefObject<HTMLElement | 
 
   const mudarPasso = (novo: number) => {
     definirPasso(novo)
-    guardarPassoDaLetra(novo)
+    guardarPassoDaLetra(novo, undefined, lugar)
   }
 
   const mudarVelocidade = (nova: number) => {

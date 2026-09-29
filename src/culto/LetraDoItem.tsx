@@ -83,7 +83,7 @@ export function LetraDoItem() {
         {item.observacao && <p className="observacao-do-culto">{item.observacao}</p>}
       </div>
 
-      {letra && <BarraDeLeitura key={itemId} rolagem={corpo} />}
+      {letra && <BarraDeLeitura key={itemId} rolagem={corpo} lugar="palco" />}
 
       <div
         className={letra ? 'rolagem' : 'rolagem culto-parado'}

@@ -46,7 +46,7 @@ export function LetraDaMusica() {
         </div>
       </div>
 
-      {musica.letra && <BarraDeLeitura key={musicaId} rolagem={corpo} />}
+      {musica.letra && <BarraDeLeitura key={musicaId} rolagem={corpo} lugar="palco" />}
 
       <div className={musica.letra ? 'rolagem' : 'rolagem culto-parado'} ref={corpo}>
         {musica.letra ? (

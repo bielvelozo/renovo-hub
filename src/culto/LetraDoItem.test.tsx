@@ -103,6 +103,7 @@ describe('letra do Item no modo culto', () => {
     expect(screen.getByText('E me mostrou um rio')).not.toBeNull()
     expect(document.querySelector('.bloco-do-tom .nota.grande')?.textContent).toBe('D')
     expect(document.querySelector('.nota.palco')).toBeNull()
+    expect(document.documentElement.style.getPropertyValue('--tamanho-da-letra')).toBe('26px')
   })
 
   it('sem letra, o Tom toma o palco em vez do bloco do cabeçalho', () => {

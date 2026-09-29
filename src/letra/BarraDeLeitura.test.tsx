@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { BarraDeLeitura } from './BarraDeLeitura'
-import { CHAVE_DA_VELOCIDADE, CHAVE_DO_TAMANHO } from './leitura'
+import { CHAVE_DA_VELOCIDADE, CHAVE_DO_TAMANHO, CHAVE_DO_TAMANHO_NO_PALCO } from './leitura'
 
 function tamanhoAplicado(): string {
   return document.documentElement.style.getPropertyValue('--tamanho-da-letra')
@@ -38,6 +38,18 @@ describe('tamanho da letra na barra de leitura', () => {
     fireEvent.click(botao('Diminuir a letra'))
 
     expect(tamanhoAplicado()).toBe('15px')
+  })
+
+  it('no palco começa nos 26 px e guarda separado da casca', () => {
+    render(<BarraDeLeitura lugar="palco" />)
+
+    expect(tamanhoAplicado()).toBe('26px')
+
+    fireEvent.click(botao('Aumentar a letra'))
+
+    expect(tamanhoAplicado()).toBe('30px')
+    expect(localStorage.getItem(CHAVE_DO_TAMANHO_NO_PALCO)).toBe('6')
+    expect(localStorage.getItem(CHAVE_DO_TAMANHO)).toBeNull()
   })
 
   it('volta com o tamanho guardado', () => {
