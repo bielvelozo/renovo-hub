@@ -120,15 +120,16 @@ describe('GET /api/culto/pacote', () => {
     expect((await SELF.fetch(`${RAIZ}/api/culto/pacote`)).status).toBe(401)
   })
 
-  it('traz as Escalas de hoje até trinta dias, com geradoEm', async () => {
+  it('traz as Escalas de ontem (a vigília que passou da meia-noite) até trinta dias adiante, com geradoEm', async () => {
     await criarEscala({ id: 'hoje', data: hoje })
     await criarEscala({ id: 'no-limite', data: somarDias(hoje, 30) })
     await criarEscala({ id: 'longe', data: somarDias(hoje, 31) })
     await criarEscala({ id: 'ontem', data: somarDias(hoje, -1) })
+    await criarEscala({ id: 'anteontem', data: somarDias(hoje, -2) })
 
     const pacote = await pedir()
 
-    expect(pacote.escalas.map((escala) => escala.id)).toEqual(['hoje', 'no-limite'])
+    expect(pacote.escalas.map((escala) => escala.id)).toEqual(['ontem', 'hoje', 'no-limite'])
     expect(pacote.geradoEm).toMatch(/^\d{4}-\d{2}-\d{2}T/)
   })
 

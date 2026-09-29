@@ -1,4 +1,4 @@
-import type { EscalaDoCulto, ItemDoCulto, MusicaDoCulto, TomDoCulto } from '../api/tipos'
+import type { EscalaDoCulto, ItemDoCulto, MusicaDoCulto, Pacote, TomDoCulto } from '../api/tipos'
 import type { Letra } from '../dominio'
 import {
   TOM_ORIGINAL,
@@ -27,6 +27,15 @@ export function itemAnterior(itens: ItemDoCulto[], itemId: string): ItemDoCulto 
 
 export function itemSeguinte(itens: ItemDoCulto[], itemId: string): ItemDoCulto | null {
   return vizinho(itens, itemId, 1)
+}
+
+// Um pacote novo pode chegar sem a Escala que está aberta (a vigília cruzou a meia-noite): ela segue de pé.
+export function escalaDoPacote(
+  pacote: Pick<Pacote, 'escalas'>,
+  escalaId: string,
+  aberta: EscalaDoCulto | null,
+): EscalaDoCulto | null {
+  return pacote.escalas.find((escala) => escala.id === escalaId) ?? (aberta?.id === escalaId ? aberta : null)
 }
 
 export function musicaDoCatalogo(catalogo: MusicaDoCulto[], musicaId: string): MusicaDoCulto | null {

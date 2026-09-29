@@ -26,9 +26,11 @@ culto.get('/api/culto/pacote', exigirMembro, async (c) => {
   const [m, letras] = await Promise.all([carregarMinisterio(c.env.DB), letrasMaisNovas(c.env.DB)])
 
   const hoje = hojeEmBrasilia()
+  // A de ontem entra por causa da vigília que passa da meia-noite: o palco não pode perder a Escala aberta.
+  const desde = somarDias(hoje, -1)
   const ate = somarDias(hoje, DIAS_DO_PACOTE)
   const escalas = m.escalas
-    .filter((escala) => !escala.cancelada && escala.data >= hoje && escala.data <= ate)
+    .filter((escala) => !escala.cancelada && escala.data >= desde && escala.data <= ate)
     .sort((a, b) => a.data.localeCompare(b.data))
 
   const emEscala = new Set(escalas.flatMap((escala) => escala.itens.flatMap(musicasDoItem)))

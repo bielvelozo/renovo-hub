@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Outlet, useNavigate, useOutletContext, useParams } from 'react-router'
 import type { EscalaDoCulto, MusicaDoCulto } from '../api/tipos'
@@ -7,6 +7,7 @@ import { Esqueleto } from '../componentes/Esqueleto'
 import { Vazio } from '../componentes/Vazio'
 import { marcarTarefa } from '../guia/andamento'
 import { escurecerABarra } from './barraDoSistema'
+import { escalaDoPacote } from './culto'
 import { DIAS_PARA_PACOTE_VELHO, idadeDoPacote } from './pacote'
 import { usarPacote } from './usarPacote'
 
@@ -29,6 +30,7 @@ export function ModoCulto() {
   const { escalaId = '' } = useParams()
   const navegar = useNavigate()
   const { pacote, atualizadoEm, baixando, erro, semSessao, baixar } = usarPacote()
+  const aberta = useRef<EscalaDoCulto | null>(null)
 
   const telaAcesa = usarTelaAcesa()
 
@@ -65,7 +67,7 @@ export function ModoCulto() {
       return <Esperando />
     }
 
-    const escala = pacote.escalas.find((candidata) => candidata.id === escalaId)
+    const escala = escalaDoPacote(pacote, escalaId, aberta.current)
 
     if (!escala) {
       if (baixando) return <Esperando />
@@ -86,6 +88,8 @@ export function ModoCulto() {
         </Fora>
       )
     }
+
+    aberta.current = escala
 
     const culto: Culto = {
       escala,

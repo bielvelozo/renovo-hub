@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import type { EscalaDoCulto, ItemDoCulto, MusicaDoCulto } from '../api/tipos'
+import type { EscalaDoCulto, ItemDoCulto, MusicaDoCulto, Pacote } from '../api/tipos'
 import type { Letra } from '../dominio'
 import {
   acaoDaTecla,
   buscarNoCatalogo,
   dicaDoItem,
+  escalaDoPacote,
   estadoDoPacote,
   itemAnterior,
   itemSeguinte,
@@ -198,6 +199,23 @@ describe('título e dica do Item', () => {
         ]),
       ),
     ).toBe('D · orig.')
+  })
+})
+
+describe('escala do pacote', () => {
+  const escala: EscalaDoCulto = { id: 'e1', data: '2026-09-20', horario: '18:00', titulo: 'Culto', itens: [] }
+  const pacoteCom = (escalas: EscalaDoCulto[]): Pacote => ({ geradoEm: '2026-09-20T20:00:00.000Z', escalas, catalogo: [] })
+
+  it('acha a Escala no pacote', () => {
+    expect(escalaDoPacote(pacoteCom([escala]), 'e1', null)).toBe(escala)
+  })
+
+  it('segura a Escala aberta quando o pacote novo chega sem ela, como na vigília depois da meia-noite', () => {
+    expect(escalaDoPacote(pacoteCom([]), 'e1', escala)).toBe(escala)
+  })
+
+  it('não reaproveita a Escala aberta para outro id', () => {
+    expect(escalaDoPacote(pacoteCom([]), 'e2', escala)).toBeNull()
   })
 })
 
