@@ -19,6 +19,7 @@ import {
 } from './culto'
 import { TopoDoCulto, usarCulto } from './ModoCulto'
 import { NotaDoTom, TomNoPalco } from './NotaDoTom'
+import { usarTeclasDoPalco } from './usarTeclasDoPalco'
 
 const DESLIZE_MINIMO = 60
 
@@ -30,15 +31,18 @@ export function LetraDoItem() {
   const corpo = useRef<HTMLDivElement>(null)
 
   const item = escala.itens.find((candidato) => candidato.id === itemId)
-  if (!item) return <Navigate to={`/culto/${escala.id}`} replace />
-
   const anterior = itemAnterior(escala.itens, itemId)
   const seguinte = itemSeguinte(escala.itens, itemId)
-  const letra = letrasDoMedley(item, catalogo)
 
   const abrir = (alvo: ItemDoCulto | null) => {
     if (alvo) navegar(`/culto/${escala.id}/item/${alvo.id}`, { replace: true })
   }
+
+  usarTeclasDoPalco(corpo, (lado) => abrir(lado === 'anterior' ? anterior : seguinte))
+
+  if (!item) return <Navigate to={`/culto/${escala.id}`} replace />
+
+  const letra = letrasDoMedley(item, catalogo)
 
   const comecarODeslize = (evento: React.TouchEvent) => {
     const toque = evento.touches[0] ?? evento.changedTouches[0]

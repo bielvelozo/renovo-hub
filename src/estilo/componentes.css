@@ -638,6 +638,13 @@
   cursor: pointer;
 }
 
+/* O botão de limpar mede 36 px; a área de toque invisível completa os 44 px. */
+.busca .limpar::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+}
+
 .busca .limpar:hover {
   color: var(--texto);
 }

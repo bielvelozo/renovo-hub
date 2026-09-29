@@ -25,7 +25,7 @@ export function Pesquisar() {
       </TopoDoCulto>
 
       <div className="busca-do-culto">
-        <Busca valor={termo} aoMudar={escrever} rotulo="Pesquisar música" autoFoco />
+        <Busca valor={termo} aoMudar={escrever} rotulo="Pesquisar música" />
       </div>
 
       <div className="rolagem">

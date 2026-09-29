@@ -122,6 +122,26 @@ export function ultimoTomTocado(tom: TomDoCulto | null): string | null {
   return `último: ${tom.valor} · ${quem}${formatarDiaNumerico(tom.data)}`
 }
 
+export type AcaoDaTecla = 'anterior' | 'seguinte' | 'descer' | 'subir'
+
+// Um pedal Bluetooth manda setas, PageDown/PageUp ou Espaço: no palco a mão está ocupada.
+export function acaoDaTecla(tecla: string, shift = false): AcaoDaTecla | null {
+  switch (tecla) {
+    case 'ArrowRight':
+      return 'seguinte'
+    case 'ArrowLeft':
+      return 'anterior'
+    case 'PageDown':
+      return 'descer'
+    case 'PageUp':
+      return 'subir'
+    case ' ':
+      return shift ? 'subir' : 'descer'
+    default:
+      return null
+  }
+}
+
 function vizinho(itens: ItemDoCulto[], itemId: string, passo: number): ItemDoCulto | null {
   const onde = itens.findIndex((item) => item.id === itemId)
   if (onde < 0) return null

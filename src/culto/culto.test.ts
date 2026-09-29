@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { EscalaDoCulto, ItemDoCulto, MusicaDoCulto } from '../api/tipos'
 import type { Letra } from '../dominio'
 import {
+  acaoDaTecla,
   buscarNoCatalogo,
   dicaDoItem,
   estadoDoPacote,
@@ -185,6 +186,18 @@ describe('título e dica do Item', () => {
         ]),
       ),
     ).toBe('D · orig.')
+  })
+})
+
+describe('teclas do palco, do teclado ou de um pedal', () => {
+  it('setas trocam de música; PageDown, PageUp e Espaço rolam a letra', () => {
+    expect(acaoDaTecla('ArrowRight')).toBe('seguinte')
+    expect(acaoDaTecla('ArrowLeft')).toBe('anterior')
+    expect(acaoDaTecla('PageDown')).toBe('descer')
+    expect(acaoDaTecla('PageUp')).toBe('subir')
+    expect(acaoDaTecla(' ')).toBe('descer')
+    expect(acaoDaTecla(' ', true)).toBe('subir')
+    expect(acaoDaTecla('Enter')).toBeNull()
   })
 })
 

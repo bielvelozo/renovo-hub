@@ -6,11 +6,14 @@ import { CorpoDaLetra } from '../letra/CorpoDaLetra'
 import { musicaDoCatalogo } from './culto'
 import { TopoDoCulto, usarCulto } from './ModoCulto'
 import { TomDaMusica, TomNoPalco } from './NotaDoTom'
+import { usarTeclasDoPalco } from './usarTeclasDoPalco'
 
 export function LetraDaMusica() {
   const { escala, catalogo } = usarCulto()
   const { musicaId = '' } = useParams()
   const corpo = useRef<HTMLDivElement>(null)
+
+  usarTeclasDoPalco(corpo)
 
   const musica = musicaDoCatalogo(catalogo, musicaId)
   if (!musica) return <Navigate to={`/culto/${escala.id}/pesquisar`} replace />

@@ -159,6 +159,24 @@ describe('letra do Item no modo culto', () => {
     expect(screen.getByText('1 de 3')).not.toBeNull()
   })
 
+  it('setas do teclado, como num pedal, trocam de música', () => {
+    mostrar('i1')
+
+    fireEvent.keyDown(document, { key: 'ArrowRight' })
+    expect(screen.getByText('2 de 3')).not.toBeNull()
+
+    fireEvent.keyDown(document, { key: 'ArrowLeft' })
+    expect(screen.getByText('1 de 3')).not.toBeNull()
+  })
+
+  it('as teclas não valem com o foco num botão', () => {
+    mostrar('i1')
+
+    fireEvent.keyDown(screen.getByText('Primeira').closest('button')!, { key: 'ArrowRight' })
+
+    expect(screen.getByText('1 de 3')).not.toBeNull()
+  })
+
   it('não sai da última ao deslizar pra frente', () => {
     mostrar('i3')
 
