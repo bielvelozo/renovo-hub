@@ -262,6 +262,7 @@ export type TrechoDoCulto = {
   titulo: string
   artista: string
   tom: string
+  original: boolean
   inicio: string
   fim: string
 }
@@ -274,6 +275,7 @@ export type ItemDoCulto =
       titulo: string
       artista: string
       tom: string
+      original: boolean
       inicio: string | null
       fim: string | null
       observacao: string

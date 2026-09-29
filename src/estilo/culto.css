@@ -145,6 +145,20 @@
   font-size: clamp(96px, 28vw, 128px);
 }
 
+.nota-em-texto {
+  font: 600 22px/1.1 var(--fonte-corpo);
+  letter-spacing: -0.01em;
+  color: var(--texto);
+  text-align: center;
+}
+
+.nota-com-selo {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
 .culto .notas {
   font-size: clamp(22px, 6vw, 24px);
   line-height: 1;

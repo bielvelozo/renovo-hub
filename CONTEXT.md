@@ -110,7 +110,7 @@ Tela inteira, escura e sem internet, para o dia da Escala: a ordem dos Itens com
 _Avoid_: modo palco, apresentação
 
 **Pacote do culto**:
-Cópia guardada no aparelho das Escalas dos próximos 30 dias e do catálogo inteiro com Tom e Sequência, baixada em segundo plano toda vez que o app abre com internet. É o que o Modo culto usa; sem pacote e sem internet, o Modo culto pede para abrir o app com internet antes.
+Cópia guardada no aparelho das Escalas dos próximos 30 dias e do catálogo inteiro com Tom e Sequência, baixada em segundo plano toda vez que o app abre com internet. É o que o Modo culto usa; sem pacote e sem internet, o Modo culto pede para abrir o app com internet antes. Quando o Item pede o tom original, o Pacote já leva a nota da gravação registrada na Música e marca o Item como original; só fica «original» se ninguém registrou a nota.
 _Avoid_: cache, sincronização
 
 **Sugestão**:

@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import {
+  TOM_ORIGINAL,
   hojeEmBrasilia,
   limparTitulo,
   musicaPorId,
@@ -59,7 +60,7 @@ function itemDoCulto(m: Ministerio, item: Item, porItem: Record<string, Letra>):
       trechos: item.trechos.map((trecho) => ({
         musicaId: trecho.musicaId,
         ...nomeDaMusica(musicaPorId(m, trecho.musicaId)),
-        tom: trecho.tom,
+        ...tomResolvido(musicaPorId(m, trecho.musicaId), trecho.tom),
         inicio: trecho.inicio,
         fim: trecho.fim,
       })),
@@ -73,7 +74,7 @@ function itemDoCulto(m: Ministerio, item: Item, porItem: Record<string, Letra>):
     tipo: item.tipo,
     musicaId: item.musicaId,
     ...nomeDaMusica(musicaPorId(m, item.musicaId)),
-    tom: item.tom,
+    ...tomResolvido(musicaPorId(m, item.musicaId), item.tom),
     inicio: item.tipo === 'trecho' ? item.inicio : null,
     fim: item.tipo === 'trecho' ? item.fim : null,
     observacao: item.observacao,
@@ -102,6 +103,13 @@ function tomDoCulto(m: Ministerio, musicaId: string): TomDoCulto | null {
     data: sugerido.data,
     ministradoPorNome: nomeDe(m, sugerido.ministradoPor ?? null),
   }
+}
+
+// No palco o Tom precisa ser lido a um metro: «original» vira a nota da gravação quando a Música a
+// registra, e o Item fica marcado para o selo. Só sobra o texto quando ninguém registrou a nota.
+function tomResolvido(musica: Musica, tom: string): { tom: string; original: boolean } {
+  if (tom !== TOM_ORIGINAL) return { tom, original: false }
+  return { tom: musica.tomOriginal ?? TOM_ORIGINAL, original: true }
 }
 
 function nomeDaMusica(musica: Musica): { titulo: string; artista: string } {

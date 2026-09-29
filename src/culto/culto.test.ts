@@ -29,7 +29,18 @@ function musica(id: string, titulo: string, extras: Partial<MusicaDoCulto> = {})
 }
 
 function inteira(id: string, musicaId: string, titulo: string, tom = 'G'): ItemDoCulto {
-  return { id, tipo: 'inteira', musicaId, titulo, artista: 'Renovo', tom, inicio: null, fim: null, observacao: '' }
+  return {
+    id,
+    tipo: 'inteira',
+    musicaId,
+    titulo,
+    artista: 'Renovo',
+    tom,
+    original: tom === 'original',
+    inicio: null,
+    fim: null,
+    observacao: '',
+  }
 }
 
 function medley(trechos: [string, string][], letra: Letra | null = null): ItemDoCulto {
@@ -41,6 +52,7 @@ function medley(trechos: [string, string][], letra: Letra | null = null): ItemDo
       titulo: musicaId === 'rio' ? 'Rio' : 'Sublime',
       artista: 'Renovo',
       tom,
+      original: tom === 'original',
       inicio: '0:00',
       fim: '2:30',
     })),

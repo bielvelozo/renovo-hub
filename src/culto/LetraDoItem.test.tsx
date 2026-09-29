@@ -26,6 +26,7 @@ const ITENS: ItemDoCulto[] = [
     titulo: 'Rio',
     artista: 'Nívea Soares',
     tom: 'D',
+    original: false,
     inicio: null,
     fim: null,
     observacao: 'Começar mais baixo, só piano',
@@ -37,6 +38,7 @@ const ITENS: ItemDoCulto[] = [
     titulo: 'Dono do Mundo',
     artista: 'Renovo',
     tom: 'G',
+    original: false,
     inicio: null,
     fim: null,
     observacao: '',
@@ -46,7 +48,9 @@ const ITENS: ItemDoCulto[] = [
     tipo: 'medley',
     observacao: '',
     letra: null,
-    trechos: [{ musicaId: 'rio', titulo: 'Rio', artista: 'Nívea Soares', tom: 'E', inicio: '0:00', fim: '2:30' }],
+    trechos: [
+      { musicaId: 'rio', titulo: 'Rio', artista: 'Nívea Soares', tom: 'E', original: false, inicio: '0:00', fim: '2:30' },
+    ],
   },
 ]
 

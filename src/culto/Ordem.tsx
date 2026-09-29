@@ -74,5 +74,5 @@ export function Ordem() {
 function TomDoItem({ item }: { item: ItemDoCulto }) {
   if (item.tipo === 'medley') return <span className="notas display">{tonsDoMedley(item)}</span>
 
-  return <NotaDoTom tom={item.tom} />
+  return <NotaDoTom tom={item.tom} original={item.original} />
 }

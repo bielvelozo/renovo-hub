@@ -27,6 +27,7 @@ const ITENS: ItemDoCulto[] = [
     titulo: 'Rio',
     artista: 'Nívea Soares',
     tom: 'D',
+    original: false,
     inicio: null,
     fim: null,
     observacao: '',
@@ -37,7 +38,8 @@ const ITENS: ItemDoCulto[] = [
     musicaId: 'dono',
     titulo: 'Dono do Mundo',
     artista: 'Renovo',
-    tom: 'original',
+    tom: 'G',
+    original: true,
     inicio: null,
     fim: null,
     observacao: '',
@@ -48,8 +50,16 @@ const ITENS: ItemDoCulto[] = [
     observacao: '',
     letra: null,
     trechos: [
-      { musicaId: 'rio', titulo: 'Rio', artista: 'Nívea Soares', tom: 'D', inicio: '0:00', fim: '2:30' },
-      { musicaId: 'sublime', titulo: 'Sublime', artista: 'fhop music', tom: 'original', inicio: '1:10', fim: '3:05' },
+      { musicaId: 'rio', titulo: 'Rio', artista: 'Nívea Soares', tom: 'D', original: false, inicio: '0:00', fim: '2:30' },
+      {
+        musicaId: 'sublime',
+        titulo: 'Sublime',
+        artista: 'fhop music',
+        tom: 'original',
+        original: true,
+        inicio: '1:10',
+        fim: '3:05',
+      },
     ],
   },
 ]
@@ -92,11 +102,12 @@ describe('ordem do culto', () => {
     expect(screen.getByText('Nívea Soares · letra')).not.toBeNull()
   })
 
-  it('troca a nota grande por selo quando o tom é o original', () => {
+  it('mostra a nota resolvida do tom original em grande, com o selo «original» embaixo', () => {
     mostrar(escalaCom(ITENS))
 
-    expect(screen.getByText('tom original')).not.toBeNull()
-    expect(screen.queryByText('original')).toBeNull()
+    expect(document.querySelector('.nota-com-selo .nota')?.textContent).toBe('G')
+    expect(screen.getByText('original').className).toContain('selo')
+    expect(screen.queryByText('tom original')).toBeNull()
   })
 
   it('junta os trechos do Medley com os tons abreviados', () => {

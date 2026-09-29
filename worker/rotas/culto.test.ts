@@ -29,7 +29,15 @@ type MusicaDoCulto = {
   letra: Letra | null
 }
 
-type TrechoDoCulto = { musicaId: string; titulo: string; artista: string; tom: string; inicio: string; fim: string }
+type TrechoDoCulto = {
+  musicaId: string
+  titulo: string
+  artista: string
+  tom: string
+  original: boolean
+  inicio: string
+  fim: string
+}
 
 type ItemDoCulto = {
   id: string
@@ -38,6 +46,7 @@ type ItemDoCulto = {
   titulo?: string
   artista?: string
   tom?: string
+  original?: boolean
   inicio?: string | null
   fim?: string | null
   observacao: string
@@ -146,6 +155,7 @@ describe('GET /api/culto/pacote', () => {
         titulo: 'Rio',
         artista: 'Canal',
         tom: 'D',
+        original: false,
         inicio: null,
         fim: null,
         observacao: 'Começar mais baixo',
@@ -165,8 +175,8 @@ describe('GET /api/culto/pacote', () => {
 
     expect(item).toMatchObject({ id: 'i2', tipo: 'medley', observacao: 'Emendar sem parar' })
     expect(item.trechos).toEqual([
-      { musicaId: 'rio', titulo: 'Rio', artista: 'Canal', tom: 'D', inicio: '0:00', fim: '2:30' },
-      { musicaId: 'sublime', titulo: 'Sublime', artista: 'Canal', tom: 'A', inicio: '0:00', fim: '2:30' },
+      { musicaId: 'rio', titulo: 'Rio', artista: 'Canal', tom: 'D', original: false, inicio: '0:00', fim: '2:30' },
+      { musicaId: 'sublime', titulo: 'Sublime', artista: 'Canal', tom: 'A', original: false, inicio: '0:00', fim: '2:30' },
     ])
     expect(item.letra).toEqual(letraDe('Maranata, maranata'))
   })
@@ -234,5 +244,35 @@ describe('GET /api/culto/pacote', () => {
     expect(doCatalogo(pacote, 'dono')?.tom).toEqual({ valor: 'original', origem: 'original' })
     expect(doCatalogo(pacote, 'sublime')?.tom).toBeNull()
     expect(doCatalogo(pacote, 'sublime')?.vezesTocada).toBe(0)
+  })
+
+  it('resolve o tom original do Item para a nota da Música e marca o Item; sem nota registrada, deixa «original»', async () => {
+    await ajustarMusica('rio', { tom_original: 'G' })
+    await criarEscala({ id: 'hoje', data: hoje })
+    await criarItemInteira('i1', 'hoje', 'rio', 'original', 0)
+    await criarItemInteira('i2', 'hoje', 'dono', 'original', 1)
+    await criarItemInteira('i3', 'hoje', 'sublime', 'D', 2)
+    await criarMedley(
+      'i4',
+      'hoje',
+      [
+        ['rio', 'original'],
+        ['dono', 'C'],
+      ],
+      3,
+    )
+
+    const itens = (await pedir()).escalas[0].itens
+
+    expect(itens.map((item) => [item.tom, item.original])).toEqual([
+      ['G', true],
+      ['original', true],
+      ['D', false],
+      [undefined, undefined],
+    ])
+    expect(itens[3].trechos?.map((trecho) => [trecho.tom, trecho.original])).toEqual([
+      ['G', true],
+      ['C', false],
+    ])
   })
 })
