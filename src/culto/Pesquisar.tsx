@@ -24,6 +24,8 @@ export function Pesquisar() {
         <span className="cresce" />
       </TopoDoCulto>
 
+      <h1 className="visualmente-oculto">Pesquisar música</h1>
+
       <div className="busca-do-culto">
         <Busca valor={termo} aoMudar={escrever} rotulo="Pesquisar música" />
       </div>

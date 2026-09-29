@@ -39,7 +39,7 @@ export function ModoCulto() {
     if (semSessao && !pacote) navegar('/esqueci', { replace: true })
   }, [semSessao, pacote, navegar])
 
-  return <section className="culto">{dentro()}</section>
+  return <main className="culto">{dentro()}</main>
 
   function dentro(): ReactNode {
     if (!pacote) {

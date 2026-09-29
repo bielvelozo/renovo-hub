@@ -23,7 +23,10 @@ export function usarTeclasDoPalco(
       }
 
       const caixa = corpo.current
-      caixa?.scrollBy?.({ top: (acao === 'descer' ? 1 : -1) * caixa.clientHeight * PASSO_DA_ROLAGEM, behavior: 'smooth' })
+      caixa?.scrollBy?.({
+        top: (acao === 'descer' ? 1 : -1) * caixa.clientHeight * PASSO_DA_ROLAGEM,
+        behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      })
     }
 
     document.addEventListener('keydown', aoTeclar)
