@@ -568,7 +568,7 @@
       },
       {
         "name": "Regra do Par",
-        "body": "Todo token de cor nasce como light-dark(claro, escuro) em src/estilo/tokens.css. Nenhum hex solto em componente; o modo culto força o escuro trocando só o color-scheme.",
+        "body": "Todo token de cor nasce como light-dark(claro, escuro) em src/estilo/tokens.css, declarado em :root, .culto. Nenhum hex solto em componente. O modo culto força o escuro trocando só o color-scheme da sua subárvore, e é por isso que os tokens precisam estar declarados também em .culto: o light-dark() é resolvido onde a custom property é declarada, não onde é usada (descoberto em 28/09/2026, quando o modo culto renderizava claro no tema claro).",
         "section": "colors"
       },
       {
