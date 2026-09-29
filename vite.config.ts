@@ -48,7 +48,10 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: ({ url, request }) => url.pathname.startsWith('/api/') && request.method === 'GET',
+            // O pacote do culto fica fora: ele já tem o próprio guardado no aparelho, e uma resposta
+            // velha do cache passaria por atualização bem-sucedida na Ordem.
+            urlPattern: ({ url, request }) =>
+              url.pathname.startsWith('/api/') && request.method === 'GET' && url.pathname !== '/api/culto/pacote',
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api',

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { Link } from 'react-router'
 import type { ItemDoCulto } from '../api/tipos'
 import { Icone } from '../casca/Icone'
@@ -6,7 +7,15 @@ import { Cartao } from '../componentes/Cartao'
 import { RodapeDeAcao } from '../componentes/RodapeDeAcao'
 import { Vazio } from '../componentes/Vazio'
 import { hojeEmBrasilia } from '../dominio'
-import { dicaDoItem, estadoDoPacote, tituloDaOrdem, tituloDoCulto, tituloDoItem, tonsDoMedley } from './culto'
+import {
+  dicaDoItem,
+  estadoDoPacote,
+  ordemMudou,
+  tituloDaOrdem,
+  tituloDoCulto,
+  tituloDoItem,
+  tonsDoMedley,
+} from './culto'
 import { usarCulto } from './ModoCulto'
 import { TopoDoCulto } from './ModoCulto'
 import { NotaDoTom } from './NotaDoTom'
@@ -15,6 +24,10 @@ export function Ordem() {
   const { escala, catalogo, atualizadoEm, velho, erroAoAtualizar, baixando, atualizar, telaAcesa } = usarCulto()
   const hoje = hojeEmBrasilia()
   const pacote = estadoDoPacote(atualizadoEm, velho, erroAoAtualizar)
+  const ordemAoAbrir = useRef(escala.itens)
+  const mudou = ordemMudou(ordemAoAbrir.current, escala.itens)
+
+  useEffect(() => atualizar(), [atualizar])
 
   return (
     <>
@@ -26,12 +39,18 @@ export function Ordem() {
         <h1 className="titulo-da-ordem">{tituloDaOrdem(escala, hoje)}</h1>
 
         <p className={pacote.alerta ? 'aviso estado-do-pacote' : 'dica estado-do-pacote'}>
-          {!pacote.alerta && <Icone nome="confirmar" />}
+          {!pacote.alerta && !erroAoAtualizar && <Icone nome="confirmar" />}
           {pacote.texto}
           <Botao variante="terciario" pequeno onClick={atualizar} carregando={baixando}>
             Atualizar
           </Botao>
         </p>
+
+        {mudou && (
+          <p className="dica ordem-atualizada" role="status">
+            Ordem atualizada agora
+          </p>
+        )}
 
         {escala.itens.length ? (
           <div className="ordem" data-guia="culto-ordem">

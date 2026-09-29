@@ -11,6 +11,7 @@ import {
   itemSeguinte,
   letrasDoMedley,
   maisTocadas,
+  ordemMudou,
   posicaoDoItem,
   quandoAtualizado,
   tituloDaOrdem,
@@ -202,6 +203,20 @@ describe('título e dica do Item', () => {
   })
 })
 
+describe('mudança na ordem', () => {
+  const antes = [inteira('i1', 'rio', 'Rio', 'D'), inteira('i2', 'dono', 'Dono do Mundo', 'G')]
+
+  it('cala quando os Itens e os tons são os mesmos', () => {
+    expect(ordemMudou(antes, [inteira('i1', 'rio', 'Rio', 'D'), inteira('i2', 'dono', 'Dono do Mundo', 'G')])).toBe(false)
+  })
+
+  it('avisa quando a ordem, um tom ou a lista mudou', () => {
+    expect(ordemMudou(antes, [antes[1], antes[0]])).toBe(true)
+    expect(ordemMudou(antes, [inteira('i1', 'rio', 'Rio', 'E'), antes[1]])).toBe(true)
+    expect(ordemMudou(antes, [antes[0]])).toBe(true)
+  })
+})
+
 describe('escala do pacote', () => {
   const escala: EscalaDoCulto = { id: 'e1', data: '2026-09-20', horario: '18:00', titulo: 'Culto', itens: [] }
   const pacoteCom = (escalas: EscalaDoCulto[]): Pacote => ({ geradoEm: '2026-09-20T20:00:00.000Z', escalas, catalogo: [] })
@@ -273,8 +288,9 @@ describe('textos do modo culto', () => {
     expect(tituloDaOrdem(escala, '2026-09-16')).toBe('Ordem de dom, 20 de set')
   })
 
-  it('diz quando o pacote foi atualizado', () => {
+  it('diz quando o pacote foi atualizado, com os minutos quando não é hora cheia', () => {
     expect(quandoAtualizado('2026-09-12T17:00:00.000Z')).toBe('sáb, 14h')
+    expect(quandoAtualizado('2026-09-12T17:40:00.000Z')).toBe('sáb, 14:40')
   })
 
   it('descreve o pacote guardado e só alerta quando está velho e não deu pra atualizar', () => {
@@ -282,8 +298,11 @@ describe('textos do modo culto', () => {
     const tranquilo = { texto: 'Guardado no aparelho · atualizado sáb, 14h', alerta: false }
 
     expect(estadoDoPacote(geradoEm, false, null)).toEqual(tranquilo)
-    expect(estadoDoPacote(geradoEm, false, 'Sem conexão')).toEqual(tranquilo)
     expect(estadoDoPacote(geradoEm, true, null)).toEqual(tranquilo)
+    expect(estadoDoPacote(geradoEm, false, 'Sem conexão')).toEqual({
+      texto: 'Não deu para atualizar agora · mostrando o de sáb, 14h',
+      alerta: false,
+    })
     expect(estadoDoPacote(geradoEm, true, 'Sem conexão')).toEqual({
       texto: 'Não consegui atualizar; mostrando o de sáb, 14h',
       alerta: true,

@@ -187,6 +187,11 @@
   margin-left: auto;
 }
 
+.culto .ordem-atualizada {
+  color: var(--sucesso);
+  font-weight: 600;
+}
+
 .topo-da-letra {
   display: flex;
   align-items: center;

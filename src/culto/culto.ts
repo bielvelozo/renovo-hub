@@ -6,7 +6,7 @@ import {
   formatarDia,
   formatarDiaNumerico,
   hojeEmBrasilia,
-  horaEmBrasilia,
+  minutosEmBrasilia,
   nomeDoDia,
   normalizarTexto,
   rotuloDoHorario,
@@ -109,7 +109,10 @@ export function tituloDaOrdem(escala: Pick<EscalaDoCulto, 'data'>, hoje: string)
 
 export function quandoAtualizado(geradoEm: string): string {
   const momento = new Date(geradoEm)
-  return `${nomeDoDia(hojeEmBrasilia(momento))}, ${horaEmBrasilia(momento)}h`
+  const minutos = minutosEmBrasilia(momento)
+  const horario = `${String(Math.floor(minutos / 60)).padStart(2, '0')}:${String(minutos % 60).padStart(2, '0')}`
+
+  return `${nomeDoDia(hojeEmBrasilia(momento))}, ${rotuloDoHorario(horario)}`
 }
 
 export type EstadoDoPacote = { texto: string; alerta: boolean }
@@ -120,8 +123,14 @@ export function estadoDoPacote(atualizadoEm: string | null, velho: boolean, erro
 
   const quando = quandoAtualizado(atualizadoEm)
   if (velho && erroAoAtualizar) return { texto: `Não consegui atualizar; mostrando o de ${quando}`, alerta: true }
+  if (erroAoAtualizar) return { texto: `Não deu para atualizar agora · mostrando o de ${quando}`, alerta: false }
 
   return { texto: `Guardado no aparelho · atualizado ${quando}`, alerta: false }
+}
+
+export function ordemMudou(antes: ItemDoCulto[], depois: ItemDoCulto[]): boolean {
+  const assinatura = (itens: ItemDoCulto[]) => itens.map((item) => `${item.id}:${tomNoRodape(item)}`).join('|')
+  return assinatura(antes) !== assinatura(depois)
 }
 
 export function ultimoTomTocado(tom: TomDoCulto | null): string | null {

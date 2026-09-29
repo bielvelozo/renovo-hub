@@ -68,8 +68,8 @@ function escalaCom(itens: ItemDoCulto[], data = hojeEmBrasilia()): EscalaDoCulto
   return { id: 'e1', data, horario: '18:00', titulo: 'Culto de Domingo 18h', itens }
 }
 
-function mostrar(escala: EscalaDoCulto, extras: Partial<Culto> = {}) {
-  const culto: Culto = {
+function cultoDe(escala: EscalaDoCulto, extras: Partial<Culto> = {}): Culto {
+  return {
     escala,
     catalogo: CATALOGO,
     atualizadoEm: null,
@@ -80,16 +80,22 @@ function mostrar(escala: EscalaDoCulto, extras: Partial<Culto> = {}) {
     telaAcesa: false,
     ...extras,
   }
+}
 
-  return render(
+function arvore(culto: Culto) {
+  return (
     <MemoryRouter initialEntries={['/culto/e1']}>
       <Routes>
         <Route path="/culto/:escalaId" element={<Outlet context={culto} />}>
           <Route index element={<Ordem />} />
         </Route>
       </Routes>
-    </MemoryRouter>,
+    </MemoryRouter>
   )
+}
+
+function mostrar(escala: EscalaDoCulto, extras: Partial<Culto> = {}) {
+  return render(arvore(cultoDe(escala, extras)))
 }
 
 describe('ordem do culto', () => {
@@ -131,10 +137,17 @@ describe('ordem do culto', () => {
     expect(screen.getByText('Pesquisar música')).not.toBeNull()
   })
 
-  it('sem internet e com pacote recente, segue tranquilo: guardado no aparelho e a hora da atualização', () => {
-    mostrar(escalaCom(ITENS), { atualizadoEm: '2026-09-12T17:00:00.000Z', erroAoAtualizar: 'Sem conexão' })
+  it('com pacote recente, diz guardado no aparelho e a hora da atualização', () => {
+    mostrar(escalaCom(ITENS), { atualizadoEm: '2026-09-12T17:00:00.000Z' })
 
     expect(screen.getByText('Guardado no aparelho · atualizado sáb, 14h')).not.toBeNull()
+  })
+
+  it('sem conseguir atualizar um pacote recente, conta sem virar alerta', () => {
+    mostrar(escalaCom(ITENS), { atualizadoEm: '2026-09-12T17:00:00.000Z', erroAoAtualizar: 'Sem conexão' })
+
+    const linha = screen.getByText('Não deu para atualizar agora · mostrando o de sáb, 14h')
+    expect(linha.className).not.toContain('aviso')
     expect(screen.queryByText(/Não consegui atualizar/)).toBeNull()
   })
 
@@ -149,13 +162,27 @@ describe('ordem do culto', () => {
     expect(screen.queryByText(/Guardado no aparelho/)).toBeNull()
   })
 
-  it('deixa atualizar o pacote na hora', () => {
+  it('atualiza o pacote ao abrir a Ordem e de novo pelo botão', () => {
     const atualizar = vi.fn()
     mostrar(escalaCom(ITENS), { atualizadoEm: '2026-09-12T17:00:00.000Z', atualizar })
 
+    expect(atualizar).toHaveBeenCalledTimes(1)
+
     fireEvent.click(screen.getByText('Atualizar'))
 
-    expect(atualizar).toHaveBeenCalledOnce()
+    expect(atualizar).toHaveBeenCalledTimes(2)
+  })
+
+  it('avisa quando um pacote novo muda a ordem, e cala quando nada mudou', () => {
+    const tela = mostrar(escalaCom(ITENS))
+
+    expect(screen.queryByRole('status')).toBeNull()
+
+    tela.rerender(arvore(cultoDe(escalaCom(ITENS))))
+    expect(screen.queryByRole('status')).toBeNull()
+
+    tela.rerender(arvore(cultoDe(escalaCom([...ITENS].reverse()))))
+    expect(screen.getByRole('status').textContent).toBe('Ordem atualizada agora')
   })
 
   it('explica o deslize e só promete a tela acesa quando segura a trava', () => {
