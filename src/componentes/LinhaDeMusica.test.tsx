@@ -90,7 +90,7 @@ describe('LinhaDeMusica', () => {
   it('com o Tom à direita, o tom original vira texto e não nota', () => {
     const { container } = montar(<LinhaDeMusica musica={resumida} modo="leitura" tom="original" posicaoDoTom="direita" />)
 
-    expect(container.querySelector('.tempo.tom')?.textContent).toBe('originaltom')
+    expect(container.querySelector('.tempo.tom')?.textContent).toBe('tomoriginal')
   })
 
   it('em leitura a capa toca e a linha não navega', () => {

@@ -198,8 +198,15 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
 }
 
 function ColunaDoTom({ tom }: { tom: string }) {
+  if (tom === TOM_ORIGINAL)
+    return (
+      <span className="tempo tom original" aria-label="Tom original">
+        <span>tom</span>
+        <b>original</b>
+      </span>
+    )
   return (
-    <span className={`tempo tom${tom === TOM_ORIGINAL ? ' original' : ''}`} aria-label={`Tom ${tom}`}>
+    <span className="tempo tom" aria-label={`Tom ${tom}`}>
       <b>{tom}</b>
       <span>tom</span>
     </span>
