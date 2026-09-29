@@ -5,7 +5,7 @@ import { BarraDeLeitura } from '../letra/BarraDeLeitura'
 import { CorpoDaLetra } from '../letra/CorpoDaLetra'
 import { musicaDoCatalogo } from './culto'
 import { TopoDoCulto, usarCulto } from './ModoCulto'
-import { TomDaMusica } from './NotaDoTom'
+import { TomDaMusica, TomNoPalco } from './NotaDoTom'
 
 export function LetraDaMusica() {
   const { escala, catalogo } = usarCulto()
@@ -14,6 +14,8 @@ export function LetraDaMusica() {
 
   const musica = musicaDoCatalogo(catalogo, musicaId)
   if (!musica) return <Navigate to={`/culto/${escala.id}/pesquisar`} replace />
+
+  const tomDoPalco = musica.letra ? null : musica.tom
 
   return (
     <>
@@ -27,15 +29,24 @@ export function LetraDaMusica() {
       <div className="cabecalho-da-letra">
         <h1 className="display">{musica.titulo}</h1>
         <p className="dica">{musica.artista}</p>
-        <p className="tom-grande">
-          <TomDaMusica tom={musica.tom} grande />
-        </p>
+        {!tomDoPalco && (
+          <p className="tom-grande">
+            <TomDaMusica tom={musica.tom} tamanho="grande" />
+          </p>
+        )}
       </div>
 
       {musica.letra && <BarraDeLeitura key={musicaId} rolagem={corpo} />}
 
-      <div className="rolagem" ref={corpo}>
-        {musica.letra ? <CorpoDaLetra letra={musica.letra} /> : <Vazio icone="documento">Sem letra ainda</Vazio>}
+      <div className={musica.letra ? 'rolagem' : 'rolagem culto-parado'} ref={corpo}>
+        {musica.letra ? (
+          <CorpoDaLetra letra={musica.letra} />
+        ) : (
+          <>
+            {tomDoPalco && <TomNoPalco tom={tomDoPalco.valor} />}
+            <Vazio icone="documento">Sem letra ainda</Vazio>
+          </>
+        )}
       </div>
     </>
   )

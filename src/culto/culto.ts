@@ -57,6 +57,11 @@ export function tonsDoMedley(item: ItemDoCulto): string {
   return item.trechos.map((trecho) => (trecho.tom === TOM_ORIGINAL ? 'orig.' : trecho.tom)).join(' · ')
 }
 
+export function tomNoRodape(item: ItemDoCulto): string {
+  if (item.tipo === 'medley') return tonsDoMedley(item)
+  return item.tom === TOM_ORIGINAL ? 'orig.' : item.tom
+}
+
 export function letrasDoMedley(item: ItemDoCulto, catalogo: MusicaDoCulto[]): Letra | null {
   if (item.tipo !== 'medley') return musicaDoCatalogo(catalogo, item.musicaId)?.letra ?? null
   if (item.letra) return item.letra

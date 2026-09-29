@@ -14,10 +14,11 @@ import {
   musicaDoCatalogo,
   posicaoDoItem,
   tituloDoItem,
+  tomNoRodape,
   ultimoTomTocado,
 } from './culto'
 import { TopoDoCulto, usarCulto } from './ModoCulto'
-import { NotaDoTom } from './NotaDoTom'
+import { NotaDoTom, TomNoPalco } from './NotaDoTom'
 
 const DESLIZE_MINIMO = 60
 
@@ -72,7 +73,7 @@ export function LetraDoItem() {
         {item.tipo === 'medley' ? (
           <MedleyNoTopo item={item} />
         ) : (
-          <MusicaNoTopo item={item} musica={musicaDoCatalogo(catalogo, item.musicaId)} />
+          <MusicaNoTopo item={item} musica={musicaDoCatalogo(catalogo, item.musicaId)} tomNoPalco={!letra} />
         )}
 
         {item.observacao && <p className="observacao-do-culto">{item.observacao}</p>}
@@ -80,19 +81,31 @@ export function LetraDoItem() {
 
       {letra && <BarraDeLeitura key={itemId} rolagem={corpo} />}
 
-      <div className="rolagem" ref={corpo} onTouchStart={comecarODeslize} onTouchEnd={terminarODeslize}>
-        {letra ? <CorpoDaLetra letra={letra} /> : <Vazio icone="documento">Sem letra ainda</Vazio>}
+      <div
+        className={letra ? 'rolagem' : 'rolagem culto-parado'}
+        ref={corpo}
+        onTouchStart={comecarODeslize}
+        onTouchEnd={terminarODeslize}
+      >
+        {letra ? (
+          <CorpoDaLetra letra={letra} />
+        ) : (
+          <>
+            {item.tipo !== 'medley' && <TomNoPalco tom={item.tom} />}
+            <Vazio icone="documento">Sem letra ainda</Vazio>
+          </>
+        )}
       </div>
 
       <RodapeDeAcao
         secundario={
           <Botao variante="secundario" disabled={!anterior} onClick={() => abrir(anterior)}>
-            {anterior ? `‹ ${tituloDoItem(anterior)}` : '‹ Início'}
+            {anterior ? <Vizinho item={anterior} lado="anterior" /> : '‹ Início'}
           </Botao>
         }
         primario={
           <Botao disabled={!seguinte} onClick={() => abrir(seguinte)} data-guia="culto-navegar">
-            {seguinte ? `${tituloDoItem(seguinte)} ›` : 'Fim ›'}
+            {seguinte ? <Vizinho item={seguinte} lado="seguinte" /> : 'Fim ›'}
           </Botao>
         }
       />
@@ -100,7 +113,26 @@ export function LetraDoItem() {
   )
 }
 
-function MusicaNoTopo({ item, musica }: { item: ItemDoCulto; musica: MusicaDoCulto | null }) {
+function Vizinho({ item, lado }: { item: ItemDoCulto; lado: 'anterior' | 'seguinte' }) {
+  const titulo = tituloDoItem(item)
+
+  return (
+    <span className="vizinho">
+      <span className="titulo-do-vizinho">{lado === 'anterior' ? `‹ ${titulo}` : `${titulo} ›`}</span>
+      <span className="nota-do-vizinho">{tomNoRodape(item)}</span>
+    </span>
+  )
+}
+
+function MusicaNoTopo({
+  item,
+  musica,
+  tomNoPalco,
+}: {
+  item: ItemDoCulto
+  musica: MusicaDoCulto | null
+  tomNoPalco: boolean
+}) {
   if (item.tipo === 'medley') return null
 
   const minutagem = item.tipo === 'trecho' ? ` · ${item.inicio}–${item.fim}` : ''
@@ -116,10 +148,12 @@ function MusicaNoTopo({ item, musica }: { item: ItemDoCulto; musica: MusicaDoCul
         </p>
         {ultimo && <p className="dica">{ultimo}</p>}
       </div>
-      <p className="bloco-do-tom">
-        {item.tom !== TOM_ORIGINAL && <span className="rotulo-do-tom">Tom</span>}
-        <NotaDoTom tom={item.tom} grande />
-      </p>
+      {!tomNoPalco && (
+        <p className="bloco-do-tom">
+          {item.tom !== TOM_ORIGINAL && <span className="rotulo-do-tom">Tom</span>}
+          <NotaDoTom tom={item.tom} tamanho="grande" />
+        </p>
+      )}
     </div>
   )
 }

@@ -45,6 +45,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 15px;
+  font-weight: 500;
 }
 
 .topo-do-culto .centro {
@@ -60,6 +62,11 @@
   font-size: 14px;
   text-decoration: none;
   white-space: nowrap;
+}
+
+.titulo-da-ordem {
+  font: 600 18px/1.25 var(--fonte-corpo);
+  letter-spacing: -0.01em;
 }
 
 .ordem {
@@ -107,17 +114,22 @@
 }
 
 .culto .nota {
-  font-size: clamp(26px, 7.5vw, 30px);
+  font-size: clamp(36px, 10vw, 40px);
   line-height: 1;
   color: var(--texto);
+  font-variant-numeric: tabular-nums;
 }
 
 .culto .nota.grande {
-  font-size: clamp(28px, 8vw, 34px);
+  font-size: clamp(48px, 13vw, 56px);
+}
+
+.culto .nota.palco {
+  font-size: clamp(96px, 28vw, 128px);
 }
 
 .culto .notas {
-  font-size: clamp(16px, 4.5vw, 20px);
+  font-size: clamp(22px, 6vw, 24px);
   line-height: 1;
   color: var(--texto);
 }
@@ -157,14 +169,14 @@
 
 .rotulo-do-tom {
   color: var(--acento);
-  font: 600 10px/1 var(--fonte-corpo);
+  font: 600 12px/1 var(--fonte-corpo);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .culto .selo {
-  font-size: 11px;
-  padding: 2px 8px;
+  font-size: 13px;
+  padding: 3px 10px;
 }
 
 .cabecalho-da-letra {
@@ -183,6 +195,18 @@
   align-items: baseline;
   gap: 10px;
   margin-top: 4px;
+}
+
+.tom-no-palco {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.tom-no-palco .selo {
+  font-size: 15px;
+  padding: 6px 14px;
 }
 
 .trecho-do-culto {
@@ -219,6 +243,8 @@
   flex: 1 1 0;
   min-width: 0;
   min-height: 52px;
+  padding-block: 6px;
+  font-size: 15px;
 }
 
 .culto .rodape-interno .conteudo-do-botao {
@@ -228,6 +254,28 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.vizinho {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.titulo-do-vizinho {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+
+.nota-do-vizinho {
+  font: 700 22px/1 var(--fonte-display);
+  font-variation-settings: var(--display-eixos);
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
 }
 
 .barra-de-leitura {
@@ -268,10 +316,12 @@
   margin: 0 0 12px;
 }
 
+/* O marcador cresce com a letra: fixo em 12 px, some ao lado de uma letra de 34 px no pedestal. */
 .letra .marcador {
   margin: 16px 0 6px;
   color: var(--texto-2);
   font: 600 12px/1.4 var(--fonte-corpo);
+  font-size: max(12px, 0.7em);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }

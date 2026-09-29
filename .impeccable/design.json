@@ -375,6 +375,14 @@
       "control": {
         "displayName": "Control",
         "purpose": "Botões; chips e segmento descem para 14px."
+      },
+      "tomNoCulto": {
+        "displayName": "Tom no culto",
+        "purpose": "700 tabular, altura de linha 1: clamp(36px, 10vw, 40px) nas listas do culto, clamp(48px, 13vw, 56px) no cabeçalho da letra, clamp(96px, 28vw, 128px) no palco sem letra, clamp(22px, 6vw, 24px) nos tons juntos do Medley, 22px no rodapé. Nada no palco passa dele."
+      },
+      "letra": {
+        "displayName": "Letra",
+        "purpose": "400 em 1.45; 17px por padrão em oito passos de 15 a 34, guardados no aparelho. O marcador é Label que cresce com a letra: max(12px, 0.7em)."
       }
     },
     "shadows": [
@@ -584,6 +592,11 @@
       {
         "name": "Regra do Rótulo em Caixa Alta",
         "body": "Só o papel Label sobe para caixa alta. Botões, chips, selos e títulos ficam em caixa normal.",
+        "section": "typography"
+      },
+      {
+        "name": "Regra do Herói do Palco",
+        "body": "No modo culto o Tom é o maior texto da tela, sempre: o título da Ordem, o nome da Música e a orientação ficam abaixo dele. Quando a Música não tem letra, a nota ocupa o palco no lugar do vazio.",
         "section": "typography"
       },
       {

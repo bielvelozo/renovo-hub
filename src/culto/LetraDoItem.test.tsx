@@ -94,12 +94,26 @@ describe('letra do Item no modo culto', () => {
     expect(screen.getByText('último: G · Isa, 24/08')).not.toBeNull()
     expect(screen.getByText('Começar mais baixo, só piano')).not.toBeNull()
     expect(screen.getByText('E me mostrou um rio')).not.toBeNull()
+    expect(document.querySelector('.bloco-do-tom .nota.grande')?.textContent).toBe('D')
+    expect(document.querySelector('.nota.palco')).toBeNull()
   })
 
-  it('avisa quando a Música ainda não tem letra', () => {
+  it('sem letra, o Tom toma o palco em vez do bloco do cabeçalho', () => {
     mostrar('i2')
 
     expect(screen.getByText('Sem letra ainda')).not.toBeNull()
+    expect(document.querySelector('.rolagem .nota.palco')?.textContent).toBe('G')
+    expect(document.querySelector('.bloco-do-tom')).toBeNull()
+  })
+
+  it('o rodapé carrega o título e o Tom das vizinhas', () => {
+    mostrar('i2')
+
+    const anterior = screen.getByText('‹ Rio').closest('button')
+    const seguinte = screen.getByText('Medley: Rio ›').closest('button')
+
+    expect(anterior?.querySelector('.nota-do-vizinho')?.textContent).toBe('D')
+    expect(seguinte?.querySelector('.nota-do-vizinho')?.textContent).toBe('E')
   })
 
   it('desabilita os botões nas pontas da ordem', () => {

@@ -22,7 +22,7 @@ export function Ordem() {
       </TopoDoCulto>
 
       <div className="rolagem">
-        <h1 className="display">{tituloDaOrdem(escala, hoje)}</h1>
+        <h1 className="titulo-da-ordem">{tituloDaOrdem(escala, hoje)}</h1>
 
         {!erroAoAtualizar && (
           <p className="dica guardado-no-aparelho">

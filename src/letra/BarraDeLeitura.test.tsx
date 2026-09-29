@@ -56,7 +56,7 @@ describe('tamanho da letra na barra de leitura', () => {
     expect(botao('Aumentar a letra').disabled).toBe(false)
 
     menor.unmount()
-    localStorage.setItem(CHAVE_DO_TAMANHO, '5')
+    localStorage.setItem(CHAVE_DO_TAMANHO, '7')
     render(<BarraDeLeitura />)
 
     expect(botao('Aumentar a letra').disabled).toBe(true)

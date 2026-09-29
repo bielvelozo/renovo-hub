@@ -13,6 +13,7 @@ import {
   tituloDaOrdem,
   tituloDoCulto,
   tituloDoItem,
+  tomNoRodape,
   tonsDoMedley,
   ultimoTomTocado,
 } from './culto'
@@ -164,6 +165,19 @@ describe('título e dica do Item', () => {
   it('abrevia o tom original entre os tons do Medley', () => {
     expect(
       tonsDoMedley(
+        medley([
+          ['rio', 'D'],
+          ['sublime', 'original'],
+        ]),
+      ),
+    ).toBe('D · orig.')
+  })
+
+  it('no rodapé, abrevia o tom original e junta os tons do Medley', () => {
+    expect(tomNoRodape(inteira('i1', 'rio', 'Rio', 'G'))).toBe('G')
+    expect(tomNoRodape(inteira('i1', 'rio', 'Rio', 'original'))).toBe('orig.')
+    expect(
+      tomNoRodape(
         medley([
           ['rio', 'D'],
           ['sublime', 'original'],

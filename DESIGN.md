@@ -261,7 +261,8 @@ Uma paleta de cinzas quase sem matiz, um acento índigo que muda de peso entre o
 - **Tom na lista** (700, 17px, tabular, Grafite): a nota do Tom na coluna direita das linhas de leitura do Repertório, com o rótulo "tom" em Label embaixo. É a resposta à pergunta número um do Membro, por isso é o maior texto da linha; o selo de Tom fica só onde não há coluna (linhas de edição).
 - **Label** (600, 12px, 1.3, +0.06em, caixa alta, Cinza-meio): `h2` de seção, rótulo de campo, nome de Grupo na Equipe, mês no bloco do dia, marcador na letra. Nunca em corpo de texto.
 - **Control** (600, 15px, 1): botões. Chips, segmento e botão pequeno descem para 14px; abas usam 500 em 11px.
-- **Tom no culto**: `clamp(26px, 7.5vw, 30px)` com altura de linha 1, e `clamp(28px, 8vw, 34px)` no bloco grande. É o maior texto do app e existe para ser lido a um metro.
+- **Tom no culto** (700, tabular, altura de linha 1, Grafite): `clamp(36px, 10vw, 40px)` na Ordem, na Pesquisa e nos Trechos do Medley; `clamp(48px, 13vw, 56px)` no bloco do cabeçalho da letra; `clamp(96px, 28vw, 128px)` no palco, quando a Música não tem letra e a nota toma o lugar dela; os tons juntos do Medley em `clamp(22px, 6vw, 24px)`; 22px no rodapé, sob o título da vizinha em 15px 500. É o maior texto do app e existe para ser lido a um metro: nada no palco passa dele, e o título da Ordem desce para Headline. O rótulo "Tom" acima da nota é Label em Índigo; os selos do culto ("tom original", "sem tom") ficam em 13px, e em 15px quando estão no palco.
+- **Letra** (400, 1.45): 17px por padrão, em oito passos (15, 17, 19, 21, 23, 26, 30, 34) guardados no aparelho; os dois últimos são para o pedestal. O marcador ("Refrão") é Label que cresce com a letra, em `max(12px, 0.7em)`.
 
 ### Named Rules
 **Regra da Família Única.** Geist é a única família. Não há serifa de display, não há segunda sans, não há monoespaçada; a Fraunces e a Inter saíram em 19/09/2026 e só sobrevivem nos SVGs gerados da marca.
@@ -269,6 +270,8 @@ Uma paleta de cinzas quase sem matiz, um acento índigo que muda de peso entre o
 **Regra dos Números Tabulares.** Datas, contagens, tempos relativos, minutagem e Tons usam `font-variant-numeric: tabular-nums` para alinhar em listas.
 
 **Regra do Rótulo em Caixa Alta.** Só o papel Label sobe para caixa alta. Botões, chips, selos e títulos ficam em caixa normal.
+
+**Regra do Herói do Palco.** No modo culto o Tom é o maior texto da tela, sempre: o título da Ordem, o nome da Música e a orientação ("1 de 4", "Culto de Domingo · 18h") ficam abaixo dele. Quando a Música não tem letra, a nota ocupa o palco no lugar do vazio.
 
 ## Layout
 
@@ -360,7 +363,7 @@ A assinatura do app: capa de 84 a 108 px por 60 px com cantos de 8 px (64 × 36 
 Sete teclas brancas e cinco pretas numa grade de 14 colunas: brancas de 44 px em Superfície com borda Linha e 700 15px; pretas de 38 px em Superfície alta com Cinza-meio 13px. Ponto de 6 px no canto: Índigo à direita para o Tom sugerido, Âmbar à esquerda para o Tom original. Tecla escolhida em Índigo cheio.
 
 ### Modo culto
-Sempre escuro pelo `color-scheme`, sem abas. Itens de 76 px com número em 22px Cinza-meio tabular e título 18px; o Tom em bloco de 64 px em Índigo-suave com rótulo Label em Índigo; letra em 17px por padrão (ajustável), marcadores em Label, negrito em Grafite; observação do Ministro em Atenção-suave.
+Sempre escuro pelo `color-scheme`, sem abas. Orientação no topo ("Culto de Domingo · 18h", "1 de 4") em 15px 500 Cinza-meio; título da Ordem em Headline. Itens de 76 px com número em 22px Cinza-meio tabular, título 18px e o Tom em `clamp(36px, 10vw, 40px)` na coluna da direita. No cabeçalho da letra o Tom fica num bloco de 64 px em Índigo-suave com rótulo Label em Índigo; sem letra, ele toma o palco em `clamp(96px, 28vw, 128px)`, centrado, com "Sem letra ainda" embaixo. Letra em 17px por padrão (até 34), marcadores em Label que crescem com ela, negrito em Grafite; observação do Ministro em Atenção-suave. Rodapé com o título da vizinha em 15px e o Tom dela em 22px embaixo.
 
 ### Esqueleto e vazio
 Ossos em gradiente entre Linha e Superfície alta, brilho de 1.6 s (desligado com `prefers-reduced-motion`); estado vazio centrado com ícone de 32 px e texto de até 28em em Cinza-meio.

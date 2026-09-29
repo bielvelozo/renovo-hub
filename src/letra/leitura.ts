@@ -6,7 +6,7 @@ export type Deposito = {
 export const CHAVE_DO_TAMANHO = 'renovo:letra:tamanho'
 export const CHAVE_DA_VELOCIDADE = 'renovo:letra:velocidade'
 
-export const TAMANHOS_DA_LETRA: readonly number[] = [15, 17, 19, 21, 23, 26]
+export const TAMANHOS_DA_LETRA: readonly number[] = [15, 17, 19, 21, 23, 26, 30, 34]
 export const PASSO_PADRAO = 1
 
 export const VELOCIDADE_MINIMA = 1

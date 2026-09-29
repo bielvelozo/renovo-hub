@@ -41,8 +41,8 @@ function depositoQuebrado(): Deposito {
 }
 
 describe('tamanho da letra', () => {
-  it('tem seis passos e começa nos 17 px de hoje', () => {
-    expect(TAMANHOS_DA_LETRA).toEqual([15, 17, 19, 21, 23, 26])
+  it('tem oito passos, até os 34 px do pedestal, e começa nos 17 px de hoje', () => {
+    expect(TAMANHOS_DA_LETRA).toEqual([15, 17, 19, 21, 23, 26, 30, 34])
     expect(tamanhoDoPasso(PASSO_PADRAO)).toBe(17)
   })
 
@@ -59,7 +59,8 @@ describe('tamanho da letra', () => {
   it('devolve o tamanho do passo, mesmo fora da faixa', () => {
     expect(tamanhoDoPasso(0)).toBe(15)
     expect(tamanhoDoPasso(5)).toBe(26)
-    expect(tamanhoDoPasso(9)).toBe(26)
+    expect(tamanhoDoPasso(7)).toBe(34)
+    expect(tamanhoDoPasso(9)).toBe(34)
     expect(tamanhoDoPasso(-2)).toBe(15)
   })
 })
