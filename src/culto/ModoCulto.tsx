@@ -6,6 +6,7 @@ import { Botao, BotaoLink } from '../componentes/Botao'
 import { Esqueleto } from '../componentes/Esqueleto'
 import { Vazio } from '../componentes/Vazio'
 import { marcarTarefa } from '../guia/andamento'
+import { escurecerABarra } from './barraDoSistema'
 import { DIAS_PARA_PACOTE_VELHO, idadeDoPacote } from './pacote'
 import { usarPacote } from './usarPacote'
 
@@ -33,6 +34,7 @@ export function ModoCulto() {
 
   useEffect(() => baixar(), [baixar])
   useEffect(() => marcarTarefa('modo-culto'), [])
+  useEffect(() => escurecerABarra(), [])
 
   // Sessão expirada não tira o palco de quem já tem o pacote guardado; sem pacote, só entrando de novo.
   useEffect(() => {
@@ -112,6 +114,7 @@ export function TopoDoCulto({ fecharPara, children }: { fecharPara: string; chil
 function Fora({ children }: { children: ReactNode }) {
   return (
     <div className="rolagem culto-parado">
+      <h1 className="visualmente-oculto">Modo culto</h1>
       {children}
       <BotaoLink para="/" variante="secundario">
         Sair
@@ -123,6 +126,7 @@ function Fora({ children }: { children: ReactNode }) {
 function Esperando() {
   return (
     <div className="rolagem">
+      <h1 className="visualmente-oculto">Modo culto</h1>
       <Esqueleto forma="cartao" quantidade={3} />
     </div>
   )

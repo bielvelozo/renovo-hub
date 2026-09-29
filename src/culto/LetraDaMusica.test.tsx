@@ -61,6 +61,7 @@ describe('letra da Música pesquisada no culto', () => {
     mostrar('rio')
 
     expect(document.querySelector('.cabecalho-da-letra .nota.grande')?.textContent).toBe('G')
+    expect(document.querySelector('.bloco-do-tom .rotulo-do-tom')?.textContent).toBe('Tom')
     expect(screen.getByText('E me mostrou um rio')).not.toBeNull()
     expect(document.querySelector('.nota.palco')).toBeNull()
   })

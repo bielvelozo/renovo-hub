@@ -169,12 +169,17 @@ describe('letra do Item no modo culto', () => {
     expect(screen.getByText('1 de 3')).not.toBeNull()
   })
 
-  it('as teclas não valem com o foco num botão', () => {
+  it('as setas valem mesmo com o foco no rodapé; num campo de texto, não', () => {
     mostrar('i1')
 
     fireEvent.keyDown(screen.getByText('Primeira').closest('button')!, { key: 'ArrowRight' })
+    expect(screen.getByText('2 de 3')).not.toBeNull()
 
-    expect(screen.getByText('1 de 3')).not.toBeNull()
+    const campo = document.createElement('input')
+    document.body.append(campo)
+    fireEvent.keyDown(campo, { key: 'ArrowLeft' })
+    expect(screen.getByText('2 de 3')).not.toBeNull()
+    campo.remove()
   })
 
   it('não sai da última ao deslizar pra frente', () => {

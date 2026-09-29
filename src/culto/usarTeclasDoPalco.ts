@@ -10,10 +10,15 @@ export function usarTeclasDoPalco(
 ): void {
   useEffect(() => {
     const aoTeclar = (evento: KeyboardEvent) => {
-      if (evento.target instanceof Element && evento.target.closest('button, a, input, textarea, select')) return
+      const alvo = evento.target instanceof Element ? evento.target : null
+      if (alvo?.closest('input, textarea, select, [contenteditable]')) return
 
       const acao = acaoDaTecla(evento.key, evento.shiftKey)
       if (!acao) return
+
+      // O botão do rodapé fica com foco depois do toque; as setas e o PageDown do pedal precisam
+      // continuar valendo ali. Só o Espaço fica com o botão, porque nele é clique.
+      if (evento.key === ' ' && alvo?.closest('button, a')) return
 
       evento.preventDefault()
 
