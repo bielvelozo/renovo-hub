@@ -1,6 +1,6 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import type { EscalaDoCulto, ItemDoCulto, MusicaDoCulto } from '../api/tipos'
 import { hojeEmBrasilia } from '../dominio'
 import type { Culto } from './ModoCulto'
@@ -65,6 +65,9 @@ function mostrar(escala: EscalaDoCulto, extras: Partial<Culto> = {}) {
     atualizadoEm: null,
     velho: false,
     erroAoAtualizar: null,
+    baixando: false,
+    atualizar: () => {},
+    telaAcesa: false,
     ...extras,
   }
 
@@ -117,14 +120,43 @@ describe('ordem do culto', () => {
     expect(screen.getByText('Pesquisar música')).not.toBeNull()
   })
 
-  it('conta que o pacote está velho e que não deu pra atualizar', () => {
+  it('sem internet e com pacote recente, segue tranquilo: guardado no aparelho e a hora da atualização', () => {
+    mostrar(escalaCom(ITENS), { atualizadoEm: '2026-09-12T17:00:00.000Z', erroAoAtualizar: 'Sem conexão' })
+
+    expect(screen.getByText('Guardado no aparelho · atualizado sáb, 14h')).not.toBeNull()
+    expect(screen.queryByText(/Não consegui atualizar/)).toBeNull()
+  })
+
+  it('só alerta quando o pacote está velho e não deu pra atualizar', () => {
     mostrar(escalaCom(ITENS), {
       atualizadoEm: '2026-09-12T17:00:00.000Z',
       velho: true,
       erroAoAtualizar: 'Sem conexão',
     })
 
-    expect(screen.getByText('atualizado sáb, 14h')).not.toBeNull()
     expect(screen.getByText('Não consegui atualizar; mostrando o de sáb, 14h')).not.toBeNull()
+    expect(screen.queryByText(/Guardado no aparelho/)).toBeNull()
+  })
+
+  it('deixa atualizar o pacote na hora', () => {
+    const atualizar = vi.fn()
+    mostrar(escalaCom(ITENS), { atualizadoEm: '2026-09-12T17:00:00.000Z', atualizar })
+
+    fireEvent.click(screen.getByText('Atualizar'))
+
+    expect(atualizar).toHaveBeenCalledOnce()
+  })
+
+  it('explica o deslize e só promete a tela acesa quando segura a trava', () => {
+    const acesa = mostrar(escalaCom(ITENS), { telaAcesa: true })
+
+    expect(screen.getByText(/deslize para o lado/)).not.toBeNull()
+    expect(screen.getByText(/A tela fica acesa/)).not.toBeNull()
+
+    acesa.unmount()
+    mostrar(escalaCom(ITENS))
+
+    expect(screen.getByText(/deslize para o lado/)).not.toBeNull()
+    expect(screen.queryByText(/A tela fica acesa/)).toBeNull()
   })
 })

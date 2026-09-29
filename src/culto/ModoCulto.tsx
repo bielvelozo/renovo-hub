@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Outlet, useNavigate, useOutletContext, useParams } from 'react-router'
 import type { EscalaDoCulto, MusicaDoCulto } from '../api/tipos'
@@ -15,6 +15,9 @@ export type Culto = {
   atualizadoEm: string | null
   velho: boolean
   erroAoAtualizar: string | null
+  baixando: boolean
+  atualizar: () => void
+  telaAcesa: boolean
 }
 
 export function usarCulto(): Culto {
@@ -26,14 +29,15 @@ export function ModoCulto() {
   const navegar = useNavigate()
   const { pacote, atualizadoEm, baixando, erro, semSessao, baixar } = usarPacote()
 
-  usarTelaAcesa()
+  const telaAcesa = usarTelaAcesa()
 
   useEffect(() => baixar(), [baixar])
   useEffect(() => marcarTarefa('modo-culto'), [])
 
+  // Sessão expirada não tira o palco de quem já tem o pacote guardado; sem pacote, só entrando de novo.
   useEffect(() => {
-    if (semSessao) navegar('/esqueci', { replace: true })
-  }, [semSessao, navegar])
+    if (semSessao && !pacote) navegar('/esqueci', { replace: true })
+  }, [semSessao, pacote, navegar])
 
   return <section className="culto">{dentro()}</section>
 
@@ -66,7 +70,17 @@ export function ModoCulto() {
 
       return (
         <Fora>
-          <Vazio icone="calendario">Essa escala não está no pacote de hoje</Vazio>
+          <Vazio
+            icone="calendario"
+            acao={
+              <Botao onClick={baixar} carregando={baixando}>
+                Atualizar
+              </Botao>
+            }
+          >
+            Essa escala não está guardada no aparelho. O modo culto guarda as escalas dos próximos 30 dias; com
+            internet, atualize para buscá-la.
+          </Vazio>
         </Fora>
       )
     }
@@ -77,6 +91,9 @@ export function ModoCulto() {
       atualizadoEm,
       velho: idadeDoPacote(pacote, new Date()) > DIAS_PARA_PACOTE_VELHO,
       erroAoAtualizar: erro,
+      baixando,
+      atualizar: baixar,
+      telaAcesa,
     }
 
     return <Outlet context={culto} />
@@ -111,24 +128,32 @@ function Esperando() {
   )
 }
 
-function usarTelaAcesa(): void {
+function usarTelaAcesa(): boolean {
+  const [acesa, marcarAcesa] = useState(false)
+
   useEffect(() => {
     let trava: WakeLockSentinel | null = null
     let saiu = false
 
-    // Aparelho sem a API, navegador que nega ou aba em segundo plano: o culto segue sem travar a tela.
+    // Aparelho sem a API, navegador que nega ou aba em segundo plano: o culto segue sem travar a tela,
+    // e a Ordem só promete a tela acesa enquanto a trava está de fato na mão.
     const pedir = async () => {
       try {
         trava = (await navigator.wakeLock?.request('screen')) ?? null
-        if (saiu) soltar()
+        if (saiu) return soltar()
+
+        trava?.addEventListener('release', () => marcarAcesa(false))
+        marcarAcesa(!!trava)
       } catch {
         trava = null
+        marcarAcesa(false)
       }
     }
 
     const soltar = () => {
       trava?.release().catch(() => {})
       trava = null
+      marcarAcesa(false)
     }
 
     const aoVoltar = () => {
@@ -144,4 +169,6 @@ function usarTelaAcesa(): void {
       soltar()
     }
   }, [])
+
+  return acesa
 }

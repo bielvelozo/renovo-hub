@@ -134,17 +134,26 @@
   color: var(--texto);
 }
 
-.guardado-no-aparelho {
+.estado-do-pacote {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: 2px 6px;
   margin-top: -4px;
 }
 
-.guardado-no-aparelho .icone {
+.estado-do-pacote.aviso {
+  margin-top: 0;
+}
+
+.estado-do-pacote .icone {
   width: 16px;
   height: 16px;
   color: var(--sucesso);
+}
+
+.estado-do-pacote .botao {
+  margin-left: auto;
 }
 
 .topo-da-letra {

@@ -65,6 +65,9 @@ function mostrar(itemId: string) {
     atualizadoEm: null,
     velho: false,
     erroAoAtualizar: null,
+    baixando: false,
+    atualizar: () => {},
+    telaAcesa: false,
   }
 
   return render(
@@ -119,13 +122,13 @@ describe('letra do Item no modo culto', () => {
   it('desabilita os botões nas pontas da ordem', () => {
     const { unmount } = mostrar('i1')
 
-    expect(screen.getByText('‹ Início').closest('button')?.disabled).toBe(true)
+    expect(screen.getByText('Primeira').closest('button')?.disabled).toBe(true)
     expect(screen.getByText('Dono do Mundo ›').closest('button')?.disabled).toBe(false)
 
     unmount()
     mostrar('i3')
 
-    expect(screen.getByText('Fim ›').closest('button')?.disabled).toBe(true)
+    expect(screen.getByText('Última').closest('button')?.disabled).toBe(true)
   })
 
   it('troca de música pelo rodapé', () => {

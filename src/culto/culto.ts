@@ -103,6 +103,18 @@ export function quandoAtualizado(geradoEm: string): string {
   return `${nomeDoDia(hojeEmBrasilia(momento))}, ${horaEmBrasilia(momento)}h`
 }
 
+export type EstadoDoPacote = { texto: string; alerta: boolean }
+
+// Sem internet é o normal do palco: só vira alerta quando o pacote passou da validade e não deu pra trocar.
+export function estadoDoPacote(atualizadoEm: string | null, velho: boolean, erroAoAtualizar: string | null): EstadoDoPacote {
+  if (!atualizadoEm) return { texto: 'Guardado no aparelho. Funciona sem internet.', alerta: false }
+
+  const quando = quandoAtualizado(atualizadoEm)
+  if (velho && erroAoAtualizar) return { texto: `Não consegui atualizar; mostrando o de ${quando}`, alerta: true }
+
+  return { texto: `Guardado no aparelho · atualizado ${quando}`, alerta: false }
+}
+
 export function ultimoTomTocado(tom: TomDoCulto | null): string | null {
   if (!tom || tom.origem !== 'execucao' || !tom.data) return null
 

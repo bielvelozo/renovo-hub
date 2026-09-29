@@ -40,6 +40,9 @@ function mostrar(musicaId: string) {
     atualizadoEm: null,
     velho: false,
     erroAoAtualizar: null,
+    baixando: false,
+    atualizar: () => {},
+    telaAcesa: false,
   }
 
   return render(

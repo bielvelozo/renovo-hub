@@ -100,12 +100,12 @@ export function LetraDoItem() {
       <RodapeDeAcao
         secundario={
           <Botao variante="secundario" disabled={!anterior} onClick={() => abrir(anterior)}>
-            {anterior ? <Vizinho item={anterior} lado="anterior" /> : '‹ Início'}
+            {anterior ? <Vizinho item={anterior} lado="anterior" /> : 'Primeira'}
           </Botao>
         }
         primario={
           <Botao disabled={!seguinte} onClick={() => abrir(seguinte)} data-guia="culto-navegar">
-            {seguinte ? <Vizinho item={seguinte} lado="seguinte" /> : 'Fim ›'}
+            {seguinte ? <Vizinho item={seguinte} lado="seguinte" /> : 'Última'}
           </Botao>
         }
       />

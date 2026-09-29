@@ -1,19 +1,20 @@
 import { Link } from 'react-router'
 import type { ItemDoCulto } from '../api/tipos'
 import { Icone } from '../casca/Icone'
-import { BotaoLink } from '../componentes/Botao'
+import { Botao, BotaoLink } from '../componentes/Botao'
 import { Cartao } from '../componentes/Cartao'
 import { RodapeDeAcao } from '../componentes/RodapeDeAcao'
 import { Vazio } from '../componentes/Vazio'
 import { hojeEmBrasilia } from '../dominio'
-import { dicaDoItem, quandoAtualizado, tituloDaOrdem, tituloDoCulto, tituloDoItem, tonsDoMedley } from './culto'
+import { dicaDoItem, estadoDoPacote, tituloDaOrdem, tituloDoCulto, tituloDoItem, tonsDoMedley } from './culto'
 import { usarCulto } from './ModoCulto'
 import { TopoDoCulto } from './ModoCulto'
 import { NotaDoTom } from './NotaDoTom'
 
 export function Ordem() {
-  const { escala, catalogo, atualizadoEm, velho, erroAoAtualizar } = usarCulto()
+  const { escala, catalogo, atualizadoEm, velho, erroAoAtualizar, baixando, atualizar, telaAcesa } = usarCulto()
   const hoje = hojeEmBrasilia()
+  const pacote = estadoDoPacote(atualizadoEm, velho, erroAoAtualizar)
 
   return (
     <>
@@ -24,18 +25,13 @@ export function Ordem() {
       <div className="rolagem">
         <h1 className="titulo-da-ordem">{tituloDaOrdem(escala, hoje)}</h1>
 
-        {!erroAoAtualizar && (
-          <p className="dica guardado-no-aparelho">
-            <Icone nome="confirmar" />
-            Guardado no aparelho. Funciona sem internet.
-          </p>
-        )}
-
-        {velho && atualizadoEm && <p className="dica">atualizado {quandoAtualizado(atualizadoEm)}</p>}
-
-        {erroAoAtualizar && atualizadoEm && (
-          <p className="aviso">Não consegui atualizar; mostrando o de {quandoAtualizado(atualizadoEm)}</p>
-        )}
+        <p className={pacote.alerta ? 'aviso estado-do-pacote' : 'dica estado-do-pacote'}>
+          {!pacote.alerta && <Icone nome="confirmar" />}
+          {pacote.texto}
+          <Botao variante="terciario" pequeno onClick={atualizar} carregando={baixando}>
+            Atualizar
+          </Botao>
+        </p>
 
         {escala.itens.length ? (
           <div className="ordem" data-guia="culto-ordem">
@@ -57,7 +53,10 @@ export function Ordem() {
         )}
 
         {escala.itens.length > 0 && (
-          <p className="dica">Toque numa música para abrir a letra. A tela fica acesa enquanto o modo culto estiver aberto.</p>
+          <p className="dica">
+            Na letra, deslize para o lado para trocar de música.
+            {telaAcesa && ' A tela fica acesa enquanto o modo culto estiver aberto.'}
+          </p>
         )}
       </div>
 
