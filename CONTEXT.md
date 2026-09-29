@@ -102,7 +102,7 @@ Música com Execuções que saiu de uso. Fora das buscas e de "adicionar Item", 
 _Avoid_: excluída, deletada, inativa
 
 **Sequência**:
-Documento com a letra da Música na ordem em que é cantada, repetições por extenso e gancho em destaque. É um arquivo Word anexado à Música ou a um Medley (um Word único para o Medley inteiro, que vale no lugar das letras das Músicas dele), com versões. O app lê o texto na hora do envio e o mostra como está no Word: linha colorida ou começada por `//` ou `*` é marcador, negrito é destaque; nada é interpretado. Enviada por Ministro ou Admin.
+Documento com a letra da Música na ordem em que é cantada, repetições por extenso e gancho em destaque. É um arquivo Word anexado à Música ou a um Medley (um Word único para o Medley inteiro, que vale no lugar das letras das Músicas dele), com versões. O app lê o texto na hora do envio e o mostra como está no Word: linha colorida ou começada por `//` ou `*` é marcador, negrito é destaque; nada é interpretado. Na tela o marcador aparece sem os símbolos `//` e `*`. Enviada por Ministro ou Admin.
 _Avoid_: arranjo, cifra, estrutura
 
 **Modo culto**:

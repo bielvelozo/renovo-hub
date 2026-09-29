@@ -40,7 +40,7 @@ export function Pesquisar() {
                     <span className="titulo">{musica.titulo}</span>
                     <span className="dica">{dicaDaMusica(musica)}</span>
                   </span>
-                  <TomDaMusica tom={musica.tom} />
+                  {musica.tom && <TomDaMusica tom={musica.tom} />}
                 </Link>
               </Cartao>
             ))}

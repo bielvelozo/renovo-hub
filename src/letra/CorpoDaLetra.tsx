@@ -1,5 +1,6 @@
 import { Fragment } from 'react'
 import type { Bloco, Letra } from '../dominio'
+import { textoDoMarcador } from './letra'
 
 export function CorpoDaLetra({ letra }: { letra: Letra }) {
   return (
@@ -12,7 +13,10 @@ export function CorpoDaLetra({ letra }: { letra: Letra }) {
 }
 
 function BlocoDaLetra({ bloco }: { bloco: Bloco }) {
-  if (bloco.tipo === 'marcador') return <p className="marcador">{bloco.texto}</p>
+  if (bloco.tipo === 'marcador') {
+    const texto = textoDoMarcador(bloco.texto)
+    return texto ? <p className="marcador">{texto}</p> : null
+  }
 
   return (
     <p>

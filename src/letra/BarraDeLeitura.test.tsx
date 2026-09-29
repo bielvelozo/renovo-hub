@@ -81,8 +81,39 @@ describe('rolagem automática na barra de leitura', () => {
     expect(screen.getByText('Rolar')).toBeTruthy()
   })
 
+  it('a velocidade só aparece enquanto rola', () => {
+    render(<BarraDeLeitura />)
+
+    expect(screen.queryByLabelText('Velocidade da rolagem')).toBeNull()
+
+    fireEvent.click(screen.getByText('Rolar'))
+    expect(screen.getByLabelText('Velocidade da rolagem')).not.toBeNull()
+
+    fireEvent.click(screen.getByText('Parar'))
+    expect(screen.queryByLabelText('Velocidade da rolagem')).toBeNull()
+  })
+
+  it('esconde Rolar quando a letra cabe na tela, e mostra quando sobra', () => {
+    const caixa = document.createElement('div')
+    caixa.style.overflowY = 'auto'
+    Object.defineProperty(caixa, 'clientHeight', { value: 800, configurable: true })
+    Object.defineProperty(caixa, 'scrollHeight', { value: 500, configurable: true })
+    document.body.append(caixa)
+
+    const cabe = render(<BarraDeLeitura rolagem={{ current: caixa }} />)
+    expect(screen.queryByText('Rolar')).toBeNull()
+    expect(screen.getByLabelText('Aumentar a letra')).not.toBeNull()
+    cabe.unmount()
+
+    Object.defineProperty(caixa, 'scrollHeight', { value: 2000, configurable: true })
+    render(<BarraDeLeitura rolagem={{ current: caixa }} />)
+    expect(screen.getByText('Rolar')).not.toBeNull()
+    caixa.remove()
+  })
+
   it('começa na velocidade 2 e muda com os botões', () => {
     render(<BarraDeLeitura />)
+    fireEvent.click(screen.getByText('Rolar'))
 
     expect(screen.getByLabelText('Velocidade da rolagem').textContent).toBe('2')
 
@@ -99,6 +130,7 @@ describe('rolagem automática na barra de leitura', () => {
   it('volta com a velocidade guardada e desabilita nos limites', () => {
     localStorage.setItem(CHAVE_DA_VELOCIDADE, '5')
     const rapida = render(<BarraDeLeitura />)
+    fireEvent.click(screen.getByText('Rolar'))
 
     expect(screen.getByLabelText('Velocidade da rolagem').textContent).toBe('5')
     expect(botao('Mais rápido').disabled).toBe(true)
@@ -107,6 +139,7 @@ describe('rolagem automática na barra de leitura', () => {
     rapida.unmount()
     localStorage.setItem(CHAVE_DA_VELOCIDADE, '1')
     render(<BarraDeLeitura />)
+    fireEvent.click(screen.getByText('Rolar'))
 
     expect(botao('Mais devagar').disabled).toBe(true)
     expect(botao('Mais rápido').disabled).toBe(false)

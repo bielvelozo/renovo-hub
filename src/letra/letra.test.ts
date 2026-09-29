@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Letra } from '../dominio'
-import { contarLinhas, juntarLetras } from './letra'
+import { contarLinhas, juntarLetras, textoDoMarcador } from './letra'
 
 const rio: Letra = {
   cabecalho: ['Rio – Renovo'],
@@ -20,6 +20,17 @@ const sublime: Letra = {
   cabecalho: [],
   blocos: [{ tipo: 'estrofe', linhas: [{ texto: 'Quem é como Tu?', forte: true }] }],
 }
+
+describe('textoDoMarcador', () => {
+  it('tira as barras e os asteriscos que o Word usa para marcar a seção', () => {
+    expect(textoDoMarcador('//VERSO-1')).toBe('VERSO-1')
+    expect(textoDoMarcador('// INTRO')).toBe('INTRO')
+    expect(textoDoMarcador('*Refrão: 2 vezes*')).toBe('Refrão: 2 vezes')
+    expect(textoDoMarcador('*Final')).toBe('Final')
+    expect(textoDoMarcador('Ponte')).toBe('Ponte')
+    expect(textoDoMarcador('//')).toBe('')
+  })
+})
 
 describe('contarLinhas', () => {
   it('conta marcadores e linhas de estrofe', () => {

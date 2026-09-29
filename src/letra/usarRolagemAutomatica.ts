@@ -51,7 +51,7 @@ export function usarRolagemAutomatica(alvo: RefObject<HTMLElement | null>, { ati
   }, [ativa, velocidade, alvo])
 }
 
-function containerDeRolagem(desde: HTMLElement | null): HTMLElement | null {
+export function containerDeRolagem(desde: HTMLElement | null): HTMLElement | null {
   for (let no = desde; no; no = no.parentElement) {
     if (/auto|scroll/.test(getComputedStyle(no).overflowY)) return no
   }
