@@ -1,7 +1,6 @@
-/* O modo culto nasce escuro, seja qual for o tema da pessoa: o color-scheme aqui
-   faz todo light-dark() dos tokens resolver no valor escuro dentro desta subárvore. */
+/* O modo culto segue o tema da pessoa (claro, escuro ou do sistema, escolhido no Perfil):
+   não há color-scheme próprio aqui, então os tokens resolvem como no resto do app. */
 .culto {
-  color-scheme: dark;
   --altura-das-abas: 0px;
 
   display: flex;

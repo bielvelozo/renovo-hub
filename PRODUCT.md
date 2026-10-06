@@ -58,7 +58,7 @@ Conforme os ADRs e o README do projeto:
 - Estados da Escala: Agendada, Realizada, Cancelada. Sem rascunho: toda Escala é visível a todos desde a criação.
 - Música: Nova, Legado (importada da playlist, sem Execução), Arquivada (fora das buscas, presente no histórico). Tom pode ser `original`.
 - Membro removido que já serviu vira inativo em vez de apagado, para não reescrever o histórico.
-- Temas claro, escuro e "do sistema", escolhidos no Perfil; o modo culto é sempre escuro.
+- Temas claro, escuro e "do sistema", escolhidos no Perfil; o modo culto segue o tema escolhido (desde 04/10/2026; antes era sempre escuro).
 - PT-BR em toda a interface. Vocabulário e termos a evitar em `CONTEXT.md`: Membro (não usuário), Função (não instrumento), Equipe (não time), Repertório (não setlist), Execução (não play), Sugestão (não pedido nem voto), Tom (não key).
 - Textos sem gênero deduzido pelo nome ("Isa · ministro"): não há campo de gênero em Membro. **Em aberto**: se um dia houver "ministra", precisa de campo novo ou regra, nunca dedução.
 - Stack fixa: Vite + React + TypeScript no front, CSS próprio com tokens em `src/estilo/`, Hono no Worker, D1, Vitest no runtime dos Workers, `vaul` e Base UI como únicos primitivos de comportamento. Sem biblioteca visual.
@@ -92,4 +92,4 @@ Conforme os ADRs e o README do projeto:
 
 ## Accessibility & Inclusion
 
-Necessidade confirmada: **leitura no palco com pouca luz**. Tom e letra precisam ser lidos à distância de um pedestal, no escuro, com o modo culto sempre em tema escuro e tipografia grande. Nenhuma outra necessidade específica foi estabelecida além de contraste e tamanho razoáveis nos dois temas.
+Necessidade confirmada: **leitura no palco com pouca luz**. Tom e letra precisam ser lidos à distância de um pedestal, no escuro, com tipografia grande; o modo culto segue o tema escolhido no Perfil, para quem toca de manhã ou num salão claro poder ler no claro. Nenhuma outra necessidade específica foi estabelecida além de contraste e tamanho razoáveis nos dois temas.

@@ -16,7 +16,7 @@ The vocabulary and rules live in [CONTEXT.md](./CONTEXT.md) and [docs/dominio/es
 - **Keys**: a twelve-note keyboard with major/minor; the suggested key is the last Execution, then the hand-filled last known key, then the original key, which can be confirmed from Cifra Club.
 - **Catalogue**: songs added by pasting a YouTube link (oEmbed) or by searching by name (YouTube Data API); a legacy import from the ministry's playlist; archive instead of delete when a song has history; title clean-up for review.
 - **Lyrics (Sequência)**: a Word document attached to a song or to a medley item, parsed in the Worker (markers, emphasis, versions) and shown as written.
-- **Service mode (Modo culto)**: a full-screen, dark, offline view for the day of the Schedule, fed by a bundle downloaded in the background; swipe, arrow keys or a foot pedal to move between items.
+- **Service mode (Modo culto)**: a full-screen, offline view for the day of the Schedule that follows the chosen theme, fed by a bundle downloaded in the background; swipe, arrow keys or a foot pedal to move between items.
 - **Suggestions**: any member proposes a song; others support it; the leader promotes it into a Schedule, keeps it or declines it.
 - **Member view**: home with the next Schedule, song list with filters, profile with photo, Schedules in the year and consecutive weekends; a WhatsApp-ready text and a YouTube playlist per Schedule.
 - **Access**: no passwords. Members enter by invite link; the Admin generates one link per member and a "forgot" page lists members who changed phones.
