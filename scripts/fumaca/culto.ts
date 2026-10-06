@@ -1,3 +1,4 @@
+import { somarDias } from '../../src/dominio'
 import { docxDe } from '../../src/letra/docxSintetico'
 import { VIDEOS, exigir, hojeDoAmbiente } from './cenario'
 import type { Cenario } from './cenario'
@@ -44,9 +45,15 @@ export async function fluxosDoCulto(prova: Prova, cenario: Cenario): Promise<voi
   const meiaNoite = pacote.catalogo.find((m: any) => m.id === cenario.musicas.get(VIDEOS.meiaNoite))
 
   prova.conferir('o pacote diz quando foi gerado', typeof pacote.geradoEm === 'string' && pacote.geradoEm > hoje)
+  const ontem = somarDias(hoje, -1)
   prova.conferir(
-    'o pacote só leva escalas de hoje em diante e não canceladas',
-    pacote.escalas.every((e: any) => e.data >= hoje && e.cancelada === undefined),
+    'o pacote só leva escalas de ontem em diante, pela vigília que passa da meia-noite, e não canceladas',
+    pacote.escalas.every((e: any) => e.data >= ontem && e.cancelada === undefined),
+    pacote.escalas.map((e: any) => e.data).join(', '),
+  )
+  prova.conferir(
+    'a Escala de ontem viaja no pacote',
+    pacote.escalas.some((e: any) => e.data === ontem),
     pacote.escalas.map((e: any) => e.data).join(', '),
   )
   prova.conferir('a Sequência enviada pelo Admin viaja no catálogo do pacote', !!meiaNoite?.letra?.blocos?.length)
