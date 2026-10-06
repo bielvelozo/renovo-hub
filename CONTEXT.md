@@ -106,7 +106,7 @@ Documento com a letra da Música na ordem em que é cantada, repetições por ex
 _Avoid_: arranjo, cifra, estrutura
 
 **Modo culto**:
-Tela inteira, escura e sem internet, para o dia da Escala: a ordem dos Itens com o Tom em letra grande, a Sequência de cada um a um toque, troca por deslize, pelas setas do teclado ou por um pedal, e busca de qualquer Música do catálogo. Lê só do Pacote do culto.
+Tela inteira, sem abas e sem internet, no tema escolhido no Perfil, para o dia da Escala: a ordem dos Itens com o Tom em letra grande, a Sequência de cada um a um toque, troca por deslize, pelas setas do teclado ou por um pedal, e busca de qualquer Música do catálogo. Lê só do Pacote do culto.
 _Avoid_: modo palco, apresentação
 
 **Pacote do culto**:

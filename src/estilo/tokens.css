@@ -2,8 +2,7 @@
   color-scheme: light dark;
 }
 
-:root,
-.culto {
+:root {
   --fundo: light-dark(#f4f4f2, #0f0f10);
   --superficie: light-dark(#ffffff, #18181a);
   --superficie-alta: light-dark(#ededeb, #222225);
