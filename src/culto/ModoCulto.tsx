@@ -6,7 +6,6 @@ import { Botao, BotaoLink } from '../componentes/Botao'
 import { Esqueleto } from '../componentes/Esqueleto'
 import { Vazio } from '../componentes/Vazio'
 import { marcarTarefa } from '../guia/andamento'
-import { escurecerABarra } from './barraDoSistema'
 import { escalaDoPacote } from './culto'
 import { DIAS_PARA_PACOTE_VELHO, idadeDoPacote } from './pacote'
 import { usarPacote } from './usarPacote'
@@ -36,7 +35,6 @@ export function ModoCulto() {
 
   useEffect(() => baixar(), [baixar])
   useEffect(() => marcarTarefa('modo-culto'), [])
-  useEffect(() => escurecerABarra(), [])
 
   useEffect(() => {
     if (semSessao && !pacote) navegar('/esqueci', { replace: true })
