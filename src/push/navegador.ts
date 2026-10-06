@@ -26,8 +26,6 @@ export async function inscricaoAtual(): Promise<PushSubscription | null> {
   return registro.pushManager.getSubscription()
 }
 
-// Reenvia a inscrição a cada abertura: a Apple não documenta quando o sistema a
-// troca sozinha, e o endpoint velho só some do banco quando o push volta 410.
 export async function reenviarInscricao(): Promise<boolean> {
   const inscricao = await inscricaoAtual()
   if (!inscricao) return false

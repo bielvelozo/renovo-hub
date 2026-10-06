@@ -2,10 +2,6 @@
   color-scheme: light dark;
 }
 
-/* Cada token traz o par claro/escuro em light-dark(); quem troca o tema é o color-scheme,
-   então a paleta é escrita uma vez só. O light-dark() é resolvido onde a custom property é
-   DECLARADA, não onde é usada: por isso os tokens também são declarados em .culto, que força
-   o esquema escuro só ali. Sem isso o modo culto fica claro no celular em tema claro. */
 :root,
 .culto {
   --fundo: light-dark(#f4f4f2, #0f0f10);

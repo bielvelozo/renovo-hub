@@ -141,7 +141,6 @@ export async function letrasMaisNovas(
   return { porMusica, porItem }
 }
 
-// O D1 devolve BLOB como array de bytes, não como ArrayBuffer.
 export async function lerConteudo(db: D1Database, id: string): Promise<Uint8Array | null> {
   const linha = await db
     .prepare('select conteudo from anexos where id = ?')

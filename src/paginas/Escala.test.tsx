@@ -108,7 +108,6 @@ describe('Repertório da Escala', () => {
     expect(screen.getByRole('button', { name: 'Desfazer' })).not.toBeNull()
     expect(mudar).not.toHaveBeenCalled()
 
-    // A linha sai da vista mas fica no DOM: a ordenação mede as linhas por posição.
     expect(document.querySelectorAll('.lista li')).toHaveLength(3)
 
     fireEvent.click(screen.getByRole('button', { name: 'Desfazer' }))

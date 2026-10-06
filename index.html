@@ -27,8 +27,6 @@
     />
 
     <script>
-      // Aplica o tema antes da primeira pintura, pra tela não piscar clara e depois escura.
-      // A chave repete a CHAVE_DO_TEMA de src/tema/tema.ts: aqui não dá pra importar módulo.
       ;(function () {
         try {
           var escolhido = localStorage.getItem('renovo:tema')
@@ -37,9 +35,7 @@
             escolhido === 'escuro' ||
             (escolhido !== 'claro' && window.matchMedia('(prefers-color-scheme: dark)').matches)
           document.querySelector('meta[name="theme-color"]').content = escuro ? '#0F0F10' : '#F4F4F2'
-        } catch (erro) {
-          /* armazenamento bloqueado: fica no tema do sistema */
-        }
+        } catch (erro) {}
       })()
     </script>
   </head>

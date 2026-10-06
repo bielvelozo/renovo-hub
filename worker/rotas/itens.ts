@@ -226,7 +226,6 @@ function mesmasMusicas(atuais: Trecho[], novos: TrechoNovo[]): boolean {
   )
 }
 
-// Reordenar não é mudança de Repertório pra quem recebe o aviso.
 function mexeuNaMusica(corpo: Record<string, unknown>): boolean {
   return ['tipo', 'tom', 'inicio', 'fim', 'observacao', 'trechos', 'ministradoPor'].some(
     (campo) => corpo[campo] !== undefined,

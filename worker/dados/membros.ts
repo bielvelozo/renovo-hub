@@ -70,8 +70,6 @@ export async function apagarMembro(db: D1Database, id: string): Promise<void> {
   await db.prepare('delete from membros where id = ?').bind(id).run()
 }
 
-// Revogar sem apagar: as Execuções passadas são derivadas da Equipe, então tirar
-// o Membro das Escalas já Realizadas reescreveria o histórico (ADR 0001).
 export async function desativarMembro(db: D1Database, id: string, hoje: string): Promise<void> {
   await db.batch([
     db.prepare('update membros set inativo = 1 where id = ?').bind(id),

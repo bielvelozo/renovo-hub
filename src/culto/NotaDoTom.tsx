@@ -6,8 +6,6 @@ export type TamanhoDaNota = 'lista' | 'grande' | 'palco'
 
 type Nota = { tom: string; original?: boolean; tamanho?: TamanhoDaNota }
 
-// O pacote resolve «original» para a nota da gravação quando a Música a registra; o texto só
-// aparece quando ninguém registrou a nota, e aí em 22 px para ainda ser lido no palco.
 export function NotaDoTom({ tom, original = false, tamanho = 'lista' }: Nota) {
   if (tom === TOM_ORIGINAL) return <span className="nota-em-texto">Tom original</span>
 

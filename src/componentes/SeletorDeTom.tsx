@@ -17,8 +17,6 @@ export function SeletorDeTom({
   const escolhido = partesDoTom(tom ?? '')
   const [preferida, definirPreferida] = useState(partesDoTom(sugerido ?? '').menor)
 
-  // Enquanto há nota escolhida, quem manda é ela: o Tom pode ter vindo de fora
-  // (do chip de Tom original, do Cifra Club) e o botão tem que acompanhar.
   const menor = escolhido.nota ? escolhido.menor : preferida
 
   const trocarQualidade = (cada: boolean) => {

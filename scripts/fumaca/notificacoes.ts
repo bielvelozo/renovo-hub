@@ -37,7 +37,6 @@ export async function fluxosDeNotificacao(prova: Prova, cenario: Cenario): Promi
   try {
     const aparelho = await gerarAparelho()
 
-    // O despacho manda a fila inteira, então a fila precisa estar vazia pra o teste contar só o próprio push.
     limparFila(raiz)
 
     exigir(
@@ -285,7 +284,6 @@ async function jwtConfere(autorizacao: string): Promise<boolean> {
   )
 }
 
-// Abertura de aes128gcm pela ótica do aparelho, como manda a RFC 8291.
 async function decifrar(corpo: Bytes, aparelho: Aparelho): Promise<string> {
   const sal = corpo.subarray(0, 16)
   const doServidor = corpo.subarray(21, 21 + corpo[20])

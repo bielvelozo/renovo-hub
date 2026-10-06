@@ -9,7 +9,6 @@ export function contarLinhas(letra: Letra): number {
   )
 }
 
-// O Word marca a seção com barras ou asteriscos; na tela fica só o nome dela.
 export function textoDoMarcador(texto: string): string {
   return texto
     .replace(/^\/+/, '')

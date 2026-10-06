@@ -277,7 +277,6 @@ export async function fluxosDoAdmin(prova: Prova, cenario: Cenario): Promise<voi
   prova.conferir('a configuração recusa valor que não é sim ou não', valorTorto.status === 422, valorTorto.corpo?.erro)
 }
 
-// A rota lê a letra do Word na hora do envio, então o smoke manda um .docx de verdade.
 function wordDaLetra(): Uint8Array {
   return docxDe([
     { runs: [{ texto: 'Meia Noite – fhop music', negrito: true }] },

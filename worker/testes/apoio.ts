@@ -11,9 +11,6 @@ export type MembroDeTeste = {
 
 const AGORA = '2026-09-05T12:00:00.000Z'
 
-// O pool não isola o D1 entre testes. Apaga em ordem inversa à de criação: como
-// as migrations criam pai antes de filho, o inverso apaga filho antes de pai e
-// nenhuma chave estrangeira quebra no meio do batch.
 export async function limparBanco(): Promise<void> {
   const { results } = await env.DB.prepare(
     "select name from sqlite_master where type = 'table' and name not like 'sqlite_%' and name not like '_cf_%' and name != 'd1_migrations' order by rowid desc",

@@ -1,16 +1,12 @@
 import { contarFalhas, linhaDaConferencia, relatorio } from '../../src/fumaca/relatorio'
 import type { Conferencia } from '../../src/fumaca/relatorio'
 
-// PORTA_DO_SMOKE existe pra o smoke não brigar com um wrangler dev já de pé em 8787,
-// como acontece quando duas sessões mexem no mesmo repositório em worktrees diferentes.
 export const PORTA = Number(process.env.PORTA_DO_SMOKE ?? 8787)
 
 export const RAIZ = `http://127.0.0.1:${PORTA}`
 
 export type Resposta = { status: number; corpo: any; texto: string; cabecalhos: Headers }
 
-// O Worker fecha o keep-alive enquanto um spawnSync bloqueia o event loop; o undici
-// reaproveita o socket morto e falha com ECONNRESET antes de o pedido chegar ao servidor.
 export async function buscar(url: string, init?: RequestInit): Promise<Response> {
   for (let tentativa = 0; ; tentativa += 1) {
     try {

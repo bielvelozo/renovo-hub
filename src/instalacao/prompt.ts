@@ -10,7 +10,6 @@ const SEM_NAVEGADOR: Instalacao = {
 
 let doApp: Instalacao = SEM_NAVEGADOR
 
-// Precisa rodar antes do React montar: o Chrome dispara beforeinstallprompt cedo, uma vez por carregamento.
 export function ouvirInstalacao(alvo: EventTarget = window): void {
   doApp = criarInstalacao(alvo)
 }

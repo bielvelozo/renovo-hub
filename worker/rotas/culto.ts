@@ -26,7 +26,6 @@ culto.get('/api/culto/pacote', exigirMembro, async (c) => {
   const [m, letras] = await Promise.all([carregarMinisterio(c.env.DB), letrasMaisNovas(c.env.DB)])
 
   const hoje = hojeEmBrasilia()
-  // A de ontem entra por causa da vigília que passa da meia-noite: o palco não pode perder a Escala aberta.
   const desde = somarDias(hoje, -1)
   const ate = somarDias(hoje, DIAS_DO_PACOTE)
   const escalas = m.escalas
@@ -107,8 +106,6 @@ function tomDoCulto(m: Ministerio, musicaId: string): TomDoCulto | null {
   }
 }
 
-// No palco o Tom precisa ser lido a um metro: «original» vira a nota da gravação quando a Música a
-// registra, e o Item fica marcado para o selo. Só sobra o texto quando ninguém registrou a nota.
 function tomResolvido(musica: Musica, tom: string): { tom: string; original: boolean } {
   if (tom !== TOM_ORIGINAL) return { tom, original: false }
   return { tom: musica.tomOriginal ?? TOM_ORIGINAL, original: true }

@@ -116,7 +116,6 @@ export function BarraDeLeitura({
   )
 }
 
-// Rolar só faz sentido quando sobra letra abaixo da dobra; a medida volta a cada tamanho de letra.
 function usarCabeNaTela(alvo: RefObject<HTMLElement | null>, passo: number): boolean {
   const [cabe, marcarCabe] = useState(false)
 

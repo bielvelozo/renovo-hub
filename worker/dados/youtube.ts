@@ -36,8 +36,6 @@ export async function buscarNoYoutube(chave: string, termo: string): Promise<Dad
     .filter((achado) => achado.videoId && achado.titulo)
 }
 
-// A API devolve o título com as entidades HTML do YouTube (&amp;, &#39;), e o app
-// mostra o texto cru: sem isso, "Eric &amp; Evellyn" entraria assim no catálogo.
 function decodificar(texto: string): string {
   return texto
     .replace(/&quot;/g, '"')

@@ -58,8 +58,6 @@ export async function parDeChaves(privada: string, publica: string): Promise<Par
   }
 }
 
-// RFC 8291, seção 3.4: o mesmo cálculo dos dois lados, só trocando de quem é a
-// chave privada. Quem envia usa a efêmera; quem recebe, a do aparelho.
 export async function segredosDoRegistro(registro: Registro): Promise<Segredos> {
   const publicaDoOutro = await crypto.subtle.importKey(
     'raw',
@@ -89,7 +87,6 @@ export async function segredosDoRegistro(registro: Registro): Promise<Segredos> 
   }
 }
 
-// Corpo aes128gcm (RFC 8188): salt | tamanho do registro | tamanho da chave | chave | cifra.
 export async function cifrarParaAparelho(
   aparelho: ChavesDoAparelho,
   carga: string,
@@ -123,7 +120,6 @@ export async function cifrarParaAparelho(
   return juntar([cabecalho, nossa.publica, cifra])
 }
 
-// workers-types chama o campo de `$public`, mas o workerd só aceita `public`.
 function comChaveDoOutro(publica: CryptoKey): SubtleCryptoDeriveKeyAlgorithm {
   return { name: 'ECDH', public: publica } as unknown as SubtleCryptoDeriveKeyAlgorithm
 }

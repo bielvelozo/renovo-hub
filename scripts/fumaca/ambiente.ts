@@ -31,9 +31,6 @@ export function limparAmbiente(raiz: string): void {
   rmSync(resolve(raiz, '.wrangler/state/v3/d1'), { recursive: true, force: true })
 }
 
-// O wrangler dev roda em dois processos: o node que orquestra e o workerd que serve.
-// Matar só o workerd faz o node respawná-lo, então a ordem importa. Tudo é filtrado pela
-// porta do smoke porque a máquina pode ter outro checkout do projeto servindo noutra.
 export function matarServidoresAntigos(): void {
   if (process.platform === 'win32') {
     const script = [

@@ -9,7 +9,6 @@ export const CHAVE_DA_VELOCIDADE = 'renovo:letra:velocidade'
 
 export const TAMANHOS_DA_LETRA: readonly number[] = [15, 17, 19, 21, 23, 26, 30, 34]
 export const PASSO_PADRAO = 1
-// A um metro do pedestal a letra de sofá não serve: o palco nasce em 26 px e guarda o seu tamanho à parte.
 export const PASSO_PADRAO_NO_PALCO = 5
 
 export type Lugar = 'casca' | 'palco'
@@ -23,9 +22,6 @@ export const VELOCIDADE_MINIMA = 1
 export const VELOCIDADE_MAXIMA = 5
 export const VELOCIDADE_PADRAO = 2
 
-// 8 px/s no padrão: uma letra de 60 linhas leva cerca de dois minutos e meio, perto
-// do tempo de uma música. A sugestão original (12 × velocidade) corria a letra inteira
-// em um minuto e meio já na velocidade mais lenta.
 const PX_POR_SEGUNDO_NO_PASSO = 4
 
 export function tamanhoDoPasso(passo: number): number {

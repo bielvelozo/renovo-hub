@@ -57,8 +57,6 @@ export function Escala() {
 
   const escala = busca.dados
 
-  // A marca «mudou» compara com a visita anterior, então a desta abertura só é
-  // gravada depois de a tela renderizar com os selos.
   useEffect(() => {
     if (!escala) return
     marcarVisitaNaEscala(id)
@@ -423,8 +421,6 @@ export function Repertorio({
           {ordenacao.ordem.map((original, indice) => {
             const item = itens[original]
 
-            // A linha de uma remoção pendente fica no DOM, escondida: a ordenação mede
-            // as linhas por posição, e tirá-la do meio embaralharia as medidas.
             if (pendente.pendentes.includes(item.id)) return <li key={item.id} ref={ordenacao.linha(indice)} hidden />
 
             const puxa = textoDeQuemPuxa(item, quantosMinistros)

@@ -19,7 +19,6 @@ export function FolhaDoWhatsapp({ escalaId, fechar }: { escalaId: string; fechar
       await navigator.clipboard.writeText(busca.dados.texto)
       avisar('Copiado')
     } catch {
-      // Sem permissão de área de transferência: a pessoa copia o texto à mão.
     }
   }
 
@@ -44,8 +43,6 @@ export function FolhaDoWhatsapp({ escalaId, fechar }: { escalaId: string; fechar
   )
 }
 
-// O link é montado na hora com os vídeos que a tela já tem, pra a folha abrir sem
-// espera. O servidor só confere se algum vídeo sumiu do YouTube e corrige depois.
 export function FolhaDaPlaylist({
   escalaId,
   itens,

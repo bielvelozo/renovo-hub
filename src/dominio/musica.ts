@@ -1,6 +1,3 @@
-// O Tom de um Item pode ser esta palavra em vez de uma nota: "toca no tom da gravação",
-// enquanto ninguém tirou a música. Vale como Tom pra tudo — texto do WhatsApp, histórico,
-// notificação — e vira nota quando um músico descobrir qual é.
 export const TOM_ORIGINAL = 'original'
 
 export const NOTAS_BRANCAS = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
@@ -86,8 +83,6 @@ export function partesDoTom(tom: string): { nota: string; menor: boolean } {
   return { nota: achado[1], menor: achado[2] === 'm' }
 }
 
-// O YouTube escreve tanto "Música - Artista" quanto "Artista - Música", e nenhum dos
-// dois lados é confiável: os dois viram candidatos e quem decide é `achadoCombina`.
 export function pedacosDoTitulo(titulo: string): string[] {
   const pedacos = titulo
     .split(/\||•|\s[-–—]\s/)
@@ -102,8 +97,6 @@ export function pedacosDoTitulo(titulo: string): string[] {
   return pedacos.length ? pedacos : [titulo.trim()]
 }
 
-// A busca do Cifra Club é frouxa: procurar pelo nome do artista devolve qualquer
-// música dele. Só vale o achado cujo nome esteja mesmo no título que veio do YouTube.
 export function achadoCombina(nomeAchado: string, tituloOriginal: string): boolean {
   const alvo = normalizarTexto(tituloOriginal)
   const palavras = normalizarTexto(nomeAchado.replace(/\([^)]*\)/g, ' '))

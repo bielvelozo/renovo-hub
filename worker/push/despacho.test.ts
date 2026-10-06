@@ -12,7 +12,6 @@ import { importarPublica } from './vapid'
 
 const AGORA = new Date('2026-09-05T15:00:00.000Z')
 
-// Aparelho fictício com o par do exemplo do RFC 8291, pra dar pra abrir o corpo.
 const APARELHO = {
   endpoint: 'https://web.push.apple.com/aparelho-da-julia',
   p256dh: 'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcxaOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4',

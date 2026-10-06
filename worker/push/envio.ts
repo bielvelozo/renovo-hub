@@ -6,8 +6,6 @@ import type { ChavesVapid } from './vapid'
 
 export const TTL_DO_PUSH = 24 * 60 * 60
 
-// Declarative Web Push (iOS 18.4+): o sistema mostra sozinho pelo objeto
-// `notification`; onde não houver, o service worker lê o mesmo objeto.
 export function cargaDoAviso(aviso: Aviso, origem: string): string {
   return JSON.stringify({
     web_push: 8030,

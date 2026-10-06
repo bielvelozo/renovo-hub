@@ -79,8 +79,6 @@ export function Adicionar() {
     )
   }
 
-  // O catálogo fica montado, só escondido, enquanto o formulário aparece: voltar
-  // encontra a busca e a aba onde estavam.
   return (
     <>
       <section className="pagina" hidden={escolha !== null}>

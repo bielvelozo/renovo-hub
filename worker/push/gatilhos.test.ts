@@ -226,7 +226,6 @@ describe('gerarLembretes', () => {
   })
 })
 
-// 22:30 de Brasília do dia 13 é 01:30 UTC do dia 14.
 const VINTE_E_DUAS_E_MEIA = new Date('2099-09-14T01:30:00.000Z')
 const VINTE_E_DUAS_E_VINTE_E_NOVE = new Date('2099-09-14T01:29:00.000Z')
 

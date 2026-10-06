@@ -31,7 +31,6 @@ self.addEventListener('notificationclick', (evento) => {
   )
 })
 
-// A Apple exige notificação visível em todo push: sem carga legível, mostra o genérico.
 function lerDados(evento) {
   const padrao = { title: 'Renovo Music', body: 'Toque pra ver o que mudou.', navigate: '/' }
 

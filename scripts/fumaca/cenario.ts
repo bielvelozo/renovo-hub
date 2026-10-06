@@ -51,8 +51,6 @@ export function hojeDoAmbiente(): string {
   return hojeEmBrasilia()
 }
 
-// A demonstração desloca as datas de exemplo pra girarem em torno de hoje; os roteiros
-// pedem a Escala pela data fixa do exemplo e deixam o deslocamento com esta função.
 export function dataDaDemonstracao(dataFixa: string): string {
   return dataDeslocada(dataFixa, hojeDoAmbiente())
 }

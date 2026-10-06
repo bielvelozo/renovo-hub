@@ -38,7 +38,6 @@ export function ModoCulto() {
   useEffect(() => marcarTarefa('modo-culto'), [])
   useEffect(() => escurecerABarra(), [])
 
-  // Sessão expirada não tira o palco de quem já tem o pacote guardado; sem pacote, só entrando de novo.
   useEffect(() => {
     if (semSessao && !pacote) navegar('/esqueci', { replace: true })
   }, [semSessao, pacote, navegar])
@@ -143,8 +142,6 @@ function usarTelaAcesa(): boolean {
     let trava: WakeLockSentinel | null = null
     let saiu = false
 
-    // Aparelho sem a API, navegador que nega ou aba em segundo plano: o culto segue sem travar a tela,
-    // e a Ordem só promete a tela acesa enquanto a trava está de fato na mão.
     const pedir = async () => {
       try {
         trava = (await navigator.wakeLock?.request('screen')) ?? null

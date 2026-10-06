@@ -6,11 +6,6 @@ export type AchadoNoCifraClub = {
   url: string
 }
 
-// Cada pedaço do título vira candidato, com e sem o artista: o YouTube tanto escreve
-// "Artista - Música" quanto "Música - Artista", e o artista às vezes é só o canal
-// ("ONE Sounds" por Eric & Evellyn Emerick). Vence o primeiro achado que combine com
-// o título de verdade — sem essa conferência, procurar pelo nome do artista devolve
-// qualquer música dele.
 export async function acharNoCifraClub(titulo: string, artista = ''): Promise<AchadoNoCifraClub | null> {
   const nome = artista.trim()
   const termos = pedacosDoTitulo(titulo).flatMap((pedaco) => (nome ? [`${pedaco} ${nome}`, pedaco] : [pedaco]))
@@ -47,7 +42,6 @@ async function primeiroDaBusca(termo: string) {
 
   if (!resposta.ok) return null
 
-  // A busca do Cifra Club responde em JSONP: o JSON vem entre parênteses.
   const bruto = (await resposta.text()).trim().replace(/^\(/, '').replace(/\);?$/, '')
 
   let dados: { response?: { docs?: Doc[] } }
@@ -81,7 +75,6 @@ async function tomDaPagina(url: string): Promise<string | null> {
 
   const html = await resposta.text()
 
-  // As classes da página são geradas a cada build; o cartão do tom tem id fixo.
   const inicio = html.indexOf('id="key"')
   if (inicio < 0) return null
 

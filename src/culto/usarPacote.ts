@@ -39,8 +39,6 @@ export function usarPacote(): PacoteNaTela {
       })
   }, [])
 
-  // O Ministro pode mudar a ordem com o culto aberto: o pacote pulsa ao voltar a ter internet
-  // e ao voltar para o app, além do mount e do botão Atualizar.
   useEffect(() => {
     const aoVoltar = () => {
       if (document.visibilityState === 'visible') baixar()

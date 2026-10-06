@@ -6,8 +6,6 @@ compatibility_flags = ["nodejs_compat"]
 [assets]
 directory = "./dist"
 not_found_handling = "single-page-application"
-# `/__scheduled` é o gatilho de cron do `wrangler dev --test-scheduled`; sem ele aqui,
-# o fallback de SPA responde o index no lugar do Worker.
 run_worker_first = ["/api/*", "/entrar/*", "/__scheduled"]
 
 [[d1_databases]]

@@ -29,7 +29,6 @@ export function itemSeguinte(itens: ItemDoCulto[], itemId: string): ItemDoCulto 
   return vizinho(itens, itemId, 1)
 }
 
-// Um pacote novo pode chegar sem a Escala que está aberta (a vigília cruzou a meia-noite): ela segue de pé.
 export function escalaDoPacote(
   pacote: Pick<Pacote, 'escalas'>,
   escalaId: string,
@@ -117,7 +116,6 @@ export function quandoAtualizado(geradoEm: string): string {
 
 export type EstadoDoPacote = { texto: string; alerta: boolean }
 
-// Sem internet é o normal do palco: só vira alerta quando o pacote passou da validade e não deu pra trocar.
 export function estadoDoPacote(atualizadoEm: string | null, velho: boolean, erroAoAtualizar: string | null): EstadoDoPacote {
   if (!atualizadoEm) return { texto: 'Guardado no aparelho. Funciona sem internet.', alerta: false }
 
@@ -142,7 +140,6 @@ export function ultimoTomTocado(tom: TomDoCulto | null): string | null {
 
 export type AcaoDaTecla = 'anterior' | 'seguinte' | 'descer' | 'subir'
 
-// Um pedal Bluetooth manda setas, PageDown/PageUp ou Espaço: no palco a mão está ocupada.
 export function acaoDaTecla(tecla: string, shift = false): AcaoDaTecla | null {
   switch (tecla) {
     case 'ArrowRight':
