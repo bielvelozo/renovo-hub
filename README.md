@@ -1,156 +1,181 @@
 # Renovo Music
 
-App interno do ministério de louvor Renovo Music: escalas, repertório, histórico de execuções e notificações. PWA em PT-BR, tema escuro e claro, custo zero.
+Internal app for the Renovo Music worship ministry: schedules, repertoire, execution history and push notifications. A PWA in Brazilian Portuguese, dark and light theme, zero hosting cost.
 
-Vocabulário e regras do domínio: [CONTEXT.md](./CONTEXT.md) e [docs/dominio/escala.md](./docs/dominio/escala.md). O porquê de a Execução ser derivada do plano está no [ADR 0001](./docs/adr/0001-execucao-derivada-do-plano.md).
+## The domain in two sentences
+
+A **Schedule** (Escala) is a service or event with a date, a **Team** (who plays what) and a **Repertoire** (an ordered list of songs, excerpts or medleys, each with the key it will be played in). When the day ends the Schedule becomes *Realizada* on its own and every item turns into an **Execution** derived from the plan, which is what answers "who has played this song" and "when did we last play it"; there is no attendance log to fill in afterwards.
+
+The vocabulary and rules live in [CONTEXT.md](./CONTEXT.md) and [docs/dominio/escala.md](./docs/dominio/escala.md) (Portuguese). The reasoning behind deriving Executions from the plan is in [ADR 0001](./docs/adr/0001-execucao-derivada-do-plano.md); reading the original key from Cifra Club, one lookup per song confirmed by the leader, is in [ADR 0002](./docs/adr/0002-ler-o-tom-no-cifra-club.md).
+
+## What it does
+
+- **Schedules**: a whole month of Sundays in one go (the second Sunday is born as *Santa Ceia*, the communion service) or a single event with its own date and time; cancel, undo, postpone, and edit past Schedules to correct history.
+- **Team**: members with one or more roles (vocal, guitar, acoustic guitar, bass, drums, keys, sound), grouped by role group; a reusable **Formation** applies the usual band in one tap; the worship leader (*Ministro*) is a mark on top of the roles.
+- **Repertoire**: whole songs, excerpts delimited by start/end timestamps in the reference video, and medleys; each item carries its key and an optional note for the group; drag to reorder.
+- **Keys**: a twelve-note keyboard with major/minor; the suggested key is the last Execution, then the hand-filled last known key, then the original key, which can be confirmed from Cifra Club.
+- **Catalogue**: songs added by pasting a YouTube link (oEmbed) or by searching by name (YouTube Data API); a legacy import from the ministry's playlist; archive instead of delete when a song has history; title clean-up for review.
+- **Lyrics (Sequência)**: a Word document attached to a song or to a medley item, parsed in the Worker (markers, emphasis, versions) and shown as written.
+- **Service mode (Modo culto)**: a full-screen, dark, offline view for the day of the Schedule, fed by a bundle downloaded in the background; swipe, arrow keys or a foot pedal to move between items.
+- **Suggestions**: any member proposes a song; others support it; the leader promotes it into a Schedule, keeps it or declines it.
+- **Member view**: home with the next Schedule, song list with filters, profile with photo, Schedules in the year and consecutive weekends; a WhatsApp-ready text and a YouTube playlist per Schedule.
+- **Access**: no passwords. Members enter by invite link; the Admin generates one link per member and a "forgot" page lists members who changed phones.
+- **Admin**: members, roles, formations, songs to review, lyrics, invites and settings.
+- **Notifications**: Web Push for "you were scheduled", "song added to your Schedule" (grouped, at most one push per hour per Schedule), "Schedule cancelled or moved" and a reminder at 10:00 the day before; editing a past Schedule never notifies anyone; each member can mute everything from the profile.
 
 ## Stack
 
-Cloudflare Workers + D1 + Cron Triggers, com o front estático servido pelo mesmo Worker (Workers Static Assets).
+Cloudflare Workers + D1 + Cron Triggers, with the static front end served by the same Worker (Workers Static Assets).
 
-- Front: Vite + React + TypeScript, `react-router`, `vite-plugin-pwa`, CSS próprio com tokens.
-- API: Hono no Worker, rotas em `/api/*`, sessão por cookie.
-- Banco: D1 (SQLite), migrations em `migrations/`.
-- Push: Web Push com VAPID escrito direto no Worker com WebCrypto, sem dependência.
-- Testes: Vitest rodando dentro do runtime dos Workers (`@cloudflare/vitest-pool-workers`), com D1 real.
+- Front end: Vite + React + TypeScript, `react-router`, `vite-plugin-pwa`, hand-written CSS with design tokens.
+- API: Hono inside the Worker, routes under `/api/*`, cookie session.
+- Database: D1 (SQLite), migrations in `migrations/`.
+- Push: Web Push with VAPID written directly in the Worker on top of WebCrypto, no dependency.
+- Tests: Vitest running inside the Workers runtime (`@cloudflare/vitest-pool-workers`) against a real D1, plus `happy-dom` for React components.
 
-## Estrutura
+## Repository structure
 
-| Pasta | O que tem |
+| Folder | Contents |
 | --- | --- |
-| `src/` | front React |
-| `src/dominio/` | domínio puro em TypeScript, compartilhado entre front e Worker |
-| `src/semente/` | leitura dos CSVs e geração do SQL da carga inicial |
-| `src/fumaca/` | parte pura do smoke (relatório e leitura da saída dos scripts) |
-| `worker/` | API Hono, gatilhos de push e o handler `scheduled` do cron |
-| `migrations/` | SQL do D1 |
-| `seed/` | CSVs de carga inicial |
-| `scripts/` | utilitários em TypeScript rodados com `tsx` |
-| `public/` | estáticos e o `push.js` que entra no service worker |
-| `dist/` | build do front, servido pelo Worker |
+| `src/` | React front end |
+| `src/dominio/` | pure TypeScript domain, shared by front end and Worker |
+| `src/semente/` | CSV readers and SQL generation for the initial load |
+| `src/fumaca/` | the pure part of the smoke test (report and parsing of script output) |
+| `src/letra/` | `.docx` lyrics extraction |
+| `src/culto/` | service mode |
+| `worker/` | Hono API, push triggers and the `scheduled` handler for the cron |
+| `migrations/` | D1 SQL migrations |
+| `seed/` | CSVs for the initial load |
+| `scripts/` | TypeScript utilities run with `tsx` |
+| `public/` | static assets and the `push.js` that is imported into the service worker |
+| `docs/` | domain notes, ADRs, brand assets and build records (Portuguese) |
+| `dist/` | front-end build, served by the Worker (git-ignored) |
 
-Testes ficam ao lado do código, em `*.test.ts`.
+Tests sit next to the code as `*.test.ts` and `*.test.tsx`.
 
-## Primeira vez na máquina
+## First-time setup
 
 ```sh
 npm install
-npm run vapid          # imprime as três linhas do .dev.vars
+npm run vapid          # prints the three VAPID lines for .dev.vars
 ```
 
-Crie um arquivo `.dev.vars` na raiz e cole o que o `npm run vapid` imprimiu:
+Create a `.dev.vars` file at the repository root and paste what `npm run vapid` printed:
 
 ```
 VAPID_PUBLIC=...
 VAPID_PRIVATE=...
-VAPID_SUBJECT=mailto:seu-email@exemplo.com
+VAPID_SUBJECT=mailto:you@example.com
 YOUTUBE_API_KEY=...
 ```
 
-O `.dev.vars` é ignorado pelo git. **Trocar as chaves VAPID invalida as inscrições de push já feitas**: quem já tinha ativado precisa ativar de novo.
+`.dev.vars` is git-ignored. **Rotating the VAPID keys invalidates every existing push subscription**: anyone who had enabled notifications has to enable them again.
 
-O `YOUTUBE_API_KEY` é a chave da **YouTube Data API v3**, que faz a busca por nome na hora de adicionar uma música (colar o link não precisa dela). Sai do [Google Cloud](https://console.cloud.google.com): projeto novo, ativar a YouTube Data API v3 na Biblioteca, criar uma Chave de API em Credenciais e restringi-la a essa API. São 10.000 unidades por dia de graça e cada busca custa 100, ou seja **100 buscas por dia**. Sem a chave o app não quebra: a busca por nome responde pedindo o link.
+`YOUTUBE_API_KEY` is a **YouTube Data API v3** key, used only for the search-by-name flow when adding a song (pasting a link does not need it). Get one in the [Google Cloud console](https://console.cloud.google.com): create a project, enable the YouTube Data API v3 in the Library, create an API key under Credentials and restrict it to that API. The free quota is 10,000 units a day and each search costs 100, so **100 searches a day**. Without the key the app does not break: search-by-name answers asking for the link instead.
 
-Depois, um comando só:
+Then a single command:
 
 ```sh
 npm run dev
 ```
 
-O `dev` aplica as migrations, roda a semente, faz o build do front e sobe o app em `http://localhost:8787` com D1 local. Migration e semente são idempotentes, então rodar de novo não duplica nada. Para começar com as Escalas de demonstração, rode `npm run db:seed -- --demo` uma vez.
+`dev` applies the migrations, runs the seed, cleans up the titles pending review, builds the front end and serves the app at `http://localhost:8787` with a local D1. Migrations and seed are idempotent, so running it again duplicates nothing. To start with the demo Schedules, run `npm run db:seed -- --demo` once.
 
-Para desenvolver o front com recarga instantânea, use `npm run dev:front` (Vite na 5173, com proxy de `/api` e `/entrar` para a 8787) com o `npm run dev` rodando em outro terminal.
+For front-end work with hot reload, run `npm run dev:front` (Vite on 5173, proxying `/api` and `/entrar` to 8787) with `npm run dev` running in another terminal.
 
-## Entrar no app pela primeira vez
+## Entering the app for the first time
 
-Não existe senha. Quem entra, entra por link de convite:
+There are no passwords. Everyone enters through an invite link:
 
 ```sh
 npm run convite -- "Gabriel"
 ```
 
-O script insere o convite direto no D1 local e imprime `http://localhost:8787/entrar/<token>`. Abrir esse link no navegador cria a sessão (cookie de um ano) e leva para `/instalar`. O convite não expira e pode ser reaberto em outro aparelho: cada abertura cria uma sessão nova.
+The script inserts the invite straight into the local D1 and prints `http://localhost:8787/entrar/<token>`. Opening that link in the browser creates the session (a one-year cookie) and lands on `/instalar`. The invite does not expire and can be reopened on another device: each opening creates a new session.
 
-Depois do primeiro Admin, os convites saem pela tela: **Admin → Convites e acesso → Gerar link**, um por Membro. A página `/esqueci` lista os Membros para quem trocou de celular, e o Admin pode desligar essa lista quando todo mundo já estiver com o app instalado.
+After the first Admin exists, invites come from the UI: **Admin → Convites e acesso → Gerar link**, one per member. The `/esqueci` page lists members for whoever changed phones, and the Admin can turn that list off once everybody has the app installed.
 
-## Semente
+## Seed
 
-`npm run db:seed` é idempotente e carrega:
+`npm run db:seed` is idempotent and loads:
 
-- as 7 Funções (vocal no Grupo Vocal; guitarra, violão, baixo, bateria e teclado em Músicos; som em Som);
-- os Membros de `seed/membros.csv`, que começa só com `Gabriel,guitarra,0,1`;
-- a Formação "Banda", vazia até alguém montar;
-- as 101 Músicas de `seed/playlist.csv`, todas como Legado e marcadas para revisão.
+- the 7 roles (vocal in the Vocal group; guitar, acoustic guitar, bass, drums and keys in Músicos; sound in Som);
+- the members from `seed/membros.csv`, which starts with a single `Gabriel,guitarra,0,1` row;
+- the "Banda" Formation, empty until someone fills it;
+- the 102 songs from `seed/playlist.csv`, all flagged as legacy and marked for review.
 
-O campo `funcoes` do CSV aceita mais de uma Função separada por `;` ou `|` (`Marcos,"vocal;violão",1,0`), já que a vírgula é o separador do arquivo. `ministro` e `admin` aceitam `1`, `sim` ou `true`.
+The `funcoes` column accepts more than one role separated by `;` or `|` (`Marcos,"vocal;violão",1,0`), since the comma is the file separator. `ministro` and `admin` accept `1`, `sim` or `true`.
 
-`npm run db:seed -- --demo` acrescenta 3 Escalas Realizadas em agosto e 1 Agendada com Equipe e Repertório, com os nomes do protótipo. Serve para demonstrar e é o que o smoke usa.
+`npm run db:seed -- --demo` adds 3 past Schedules in August and 1 upcoming one with Team and Repertoire, using the prototype's names. It is meant for demos and is what the smoke test uses.
 
-Para recomeçar do zero (por exemplo, depois de um `npm run smoke`, que deixa as Escalas e Sugestões de teste no banco local), apague o D1 local e rode o `dev` de novo:
+To start over (for example after `npm run smoke`, which leaves its test Schedules and Suggestions in the local database), delete the local D1 and run `dev` again:
 
 ```sh
 rm -rf .wrangler/state/v3/d1
 npm run dev
 ```
 
-No PowerShell, o equivalente do `rm -rf` é `Remove-Item -Recurse -Force .wrangler\state\v3\d1`.
+On PowerShell the equivalent of `rm -rf` is `Remove-Item -Recurse -Force .wrangler\state\v3\d1`.
 
-## Como adicionar os Membros
+## Adding members
 
-Duas formas, e as duas valem:
+Two ways, both valid:
 
-1. **Pela tela**, em `/admin/membros`: criar, dar Funções, marcar Ministro e Admin. É o caminho normal do dia a dia.
-2. **Pelo CSV**, editando `seed/membros.csv` e rodando `npm run db:seed` de novo. O seed é idempotente (id derivado do nome), então rodar duas vezes não duplica ninguém.
+1. **From the UI**, at `/admin/membros`: create, assign roles, mark leader and Admin. This is the everyday path.
+2. **From the CSV**, editing `seed/membros.csv` and running `npm run db:seed` again. The seed derives the id from the name, so running it twice duplicates nobody.
 
-Remover Membro tem duas pontas, e o app escolhe sozinho: quem nunca serviu em Escala Realizada é apagado de verdade; quem já serviu vira **inativo** — some das listas e das Equipes futuras, perde sessões, convites e push, mas continua nas Escalas passadas, porque a Execução é derivada da Equipe e apagá-lo reescreveria o histórico. "Trazer de volta" desfaz.
+Removing a member has two outcomes and the app picks one on its own: whoever never served in a past Schedule is actually deleted; whoever already served becomes **inactive**, disappearing from lists and future Teams and losing sessions, invites and push, but staying in past Schedules, because Executions are derived from the Team and deleting the member would rewrite history. "Bring back" undoes it.
 
-## Comandos
+## Commands
 
-| Comando | O que faz |
+| Command | What it does |
 | --- | --- |
-| `npm run dev` | migration, semente, build do front e Worker local na porta 8787 |
-| `npm run dev:front` | Vite com recarga instantânea, proxy de `/api` e `/entrar` |
-| `npm run build` | build do front em `dist/` |
-| `npm run check` | checagem de tipos (`tsc -b`) |
-| `npm test` | testes |
-| `npm run db:migrate` | aplica as migrations no D1 local |
-| `npm run db:seed` | carrega Funções, Membros e catálogo (`-- --demo` para dados de exemplo) |
-| `npm run convite -- "Nome"` | gera um link de convite pelo banco local |
-| `npm run vapid` | gera um par de chaves VAPID e mostra onde pôr |
-| `npm run smoke` | percorre o app inteiro por HTTP contra o servidor local |
-| `npm run deploy` | publica no Cloudflare (exige `wrangler login`) |
+| `npm run dev` | migrations, seed, title clean-up, front-end build and local Worker on port 8787 |
+| `npm run dev:front` | Vite with hot reload, proxying `/api` and `/entrar` |
+| `npm run build` | front-end build into `dist/` |
+| `npm run check` | type check (`tsc -b`) |
+| `npm test` | tests |
+| `npm run db:migrate` | applies the migrations to the local D1 |
+| `npm run db:seed` | loads roles, members and catalogue (`-- --demo` for sample data) |
+| `npm run titulos` | cleans up the titles of songs pending review (`-- --remote` for the published database) |
+| `npm run convite -- "Name"` | generates an invite link through the local database |
+| `npm run letra -- "<file.docx>"` | prints how a lyrics Word file will be read |
+| `npm run vapid` | generates a VAPID key pair and shows where to put it |
+| `npm run smoke` | walks the whole app over HTTP against the local server |
+| `npm run deploy` | publishes to Cloudflare (requires `wrangler login`) |
 
-## O smoke
+## The smoke test
 
-`npm run smoke` é a prova de que o app está de pé. Ele **apaga o D1 local**, migra, semeia com `--demo`, sobe o `wrangler dev` sozinho, gera o convite do primeiro Admin e percorre por HTTP:
+`npm run smoke` is the proof that the app stands. It **deletes the local D1**, migrates, seeds with `--demo`, starts `wrangler dev` by itself, generates the first Admin's invite and walks over HTTP through:
 
-- os nove roteiros do protótipo (montar o mês, adicionar por link, Trecho com minutagem, Medley, promover Sugestão, texto do WhatsApp, corrigir o domingo passado, cancelar, Escala criada uma a uma);
-- as telas do Membro (Início, Músicas com filtros e busca, Sugestões, Perfil) e o portão de papel;
-- as telas do Admin (Membros, Funções, Formações, Músicas a revisar, Sequência, Convites e a lista do "esqueci");
-- o Web Push de ponta a ponta, contra um serviço de push falso que **decifra** o que o Worker manda, mais o cron por `/__scheduled`.
+- the nine scripts from the prototype (build the month, add by link, excerpt with timestamps, medley, promote a Suggestion, WhatsApp text, fix last Sunday, cancel, Schedule created one at a time);
+- the member screens (home, songs with filters and search, Suggestions, profile) and the role gate;
+- the Admin screens (members, roles, formations, songs to review, lyrics, invites and the "forgot" list);
+- service mode and Suggestions with their states;
+- Web Push end to end, against a fake push service that **decrypts** what the Worker sends, plus the cron through `/__scheduled`.
 
-Antes de rodar, precisa de três coisas: `npm run build` já feito (o Worker serve o `dist/`), o `.dev.vars` com as chaves VAPID, e internet — os roteiros batem no oEmbed de verdade do YouTube. Ele mata qualquer `wrangler dev` que tenha ficado para trás e derruba o que subiu ao terminar. Cada conferência sai numa linha; no fim vem o resumo por grupo e a lista das falhas, e o processo sai com código 1 se alguma falhou.
+It needs three things before running: `npm run build` already done (the Worker serves `dist/`), `.dev.vars` with the VAPID keys, and internet access, because the scripts hit YouTube's real oEmbed. It kills any `wrangler dev` left behind and shuts down the one it started when it finishes. Every check prints one line; at the end comes the summary per group and the list of failures, and the process exits with code 1 if any failed.
 
-## Publicar no Cloudflare
+## Publishing to Cloudflare
 
-Tudo isto é um passo humano, feito uma vez:
+All of this is a human step, done once:
 
 ```sh
 npx wrangler login
 npx wrangler d1 create renovo-hub
 ```
 
-O `d1 create` imprime um `database_id`. Cole no `wrangler.toml`, no lugar de `trocar-no-deploy`:
+`d1 create` prints a `database_id`. Put it in `wrangler.toml`:
 
 ```toml
 [[d1_databases]]
 binding = "DB"
 database_name = "renovo-hub"
-database_id = "<o id que o comando imprimiu>"
+database_id = "<the id the command printed>"
 migrations_dir = "migrations"
 ```
 
-Depois:
+Then:
 
 ```sh
 npx wrangler d1 migrations apply renovo-hub --remote
@@ -161,21 +186,29 @@ npx wrangler secret put YOUTUBE_API_KEY
 npm run deploy
 ```
 
-O `deploy` faz o build e publica o Worker com o front junto. O cron de 15 em 15 minutos (`[triggers]` no `wrangler.toml`) sobe com ele.
+`deploy` builds and publishes the Worker with the front end. The cron every 15 minutes (`[triggers]` in `wrangler.toml`) ships with it.
 
-Para carregar Funções, Membros e o catálogo no banco publicado, gere o SQL rodando o seed local uma vez (ele escreve em `.wrangler/tmp/semente.sql`) e aplique:
+To load roles, members and the catalogue into the published database, generate the SQL by running the local seed once (it writes `.wrangler/tmp/semente.sql`) and apply it:
 
 ```sh
 npm run db:seed
 npx wrangler d1 execute renovo-hub --remote --file .wrangler/tmp/semente.sql
 ```
 
-Depois é só gerar o primeiro convite pela tela do Admin — ou, se ainda não houver Admin nenhum lá, aplicar um `insert` de convite pelo mesmo `d1 execute --remote`.
+After that, generate the first invite from the Admin screen, or, if there is no Admin there yet, apply an invite `insert` through the same `d1 execute --remote`.
 
-## Notificações
+## Notifications
 
-O catálogo é o do spec: "você foi escalado", "música na sua Escala" (agrupada, no máximo um push por hora por Escala), "escala cancelada ou remarcada" e o lembrete das 10h da véspera. Editar Escala Realizada nunca avisa ninguém. Cada Membro pode silenciar tudo no Perfil, o que mantém a inscrição.
+The catalogue is the one from the spec: "you were scheduled", "song added to your Schedule" (grouped, at most one push per hour per Schedule), "Schedule cancelled or moved" and the 10:00 reminder the day before. Editing a past Schedule never notifies anyone. Each member can mute everything from the profile, which keeps the subscription.
 
-No iPhone, o Web Push **só funciona com o app na tela inicial**. Por isso o botão de ativar notificações fica desabilitado até o app estar instalado, com o texto explicando. O caminho é: abrir o convite no Safari → Compartilhar → Adicionar à Tela de Início → abrir pelo ícone → Perfil ou `/instalar` → Ativar notificações → Enviar push de teste.
+On iPhone, Web Push **only works with the app on the home screen**. That is why the enable-notifications button stays disabled until the app is installed, with the text explaining it. The path is: open the invite in Safari → Share → Add to Home Screen → open from the icon → Profile or `/instalar` → enable notifications → send a test push.
 
-**Ainda falta a verificação em aparelho de verdade.** Todo o caminho até o serviço de push está provado no smoke (corpo `aes128gcm` decifrado, JWT VAPID conferido com a chave anunciada, inscrição morta removida no 410, cron entregando), mas com um serviço falso na própria máquina. Instalar num iPhone ou Android, permitir a notificação e receber o push de teste é o passo que só o aparelho fecha.
+**Verification on a real device is still pending.** The whole path up to the push service is proven in the smoke test (`aes128gcm` body decrypted, VAPID JWT checked against the advertised key, dead subscription removed on 410, cron delivering), but against a fake service on the same machine. Installing on an iPhone or Android, allowing the notification and receiving the test push is the step only the device can close.
+
+## Design notes
+
+- **Zero cost as a constraint, not a goal.** Fifteen volunteers do not justify a monthly bill, so everything runs inside the Cloudflare free tier: one Worker serves API and static assets, D1 is the only database (attachments and member photos are stored as blobs in it), and the cron runs the reminders. There is no queue, no object storage and no third-party auth provider.
+- **PWA on iOS.** The app only matters on the phone, and on iPhone Web Push requires the installed app. The onboarding is built around that: the invite link lands on an install page, the notification toggle is gated on standalone mode, and the service worker caches API responses so the Schedule opens without signal.
+- **Push without dependencies.** VAPID signing (ES256 JWT) and the `aes128gcm` payload encryption are implemented on WebCrypto inside the Worker, which keeps the bundle small and avoids Node-only libraries. The smoke test runs a fake push service that decrypts what the Worker sends, so the protocol is tested end to end on every run.
+- **History derived from the plan.** There is no attendance registry: a past Schedule, its Team and its Repertoire are the history. Fixing the past is editing the Schedule, silently. See ADR 0001.
+- **Database columns and URLs stay in Portuguese.** They are the contract with the production D1 and with links already shared with members; the UI is in Brazilian Portuguese by design.
