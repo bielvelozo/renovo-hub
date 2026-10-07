@@ -382,7 +382,7 @@
       },
       "letra": {
         "displayName": "Letra",
-        "purpose": "400 em 1.45; 17px por padrão em oito passos de 15 a 34, guardados no aparelho. O marcador é Label que cresce com a letra: max(12px, 0.7em)."
+        "purpose": "400 em 1.45, em oito passos de 15 a 34: 17px por padrão fora do culto e 26px no palco, cada lugar guardado no aparelho em chave própria. O marcador é Label que cresce com a letra: max(12px, 0.7em). Cada verso é um bloco com a continuação recuada em 0.6em e quebra sem palavra sozinha; estrofes separadas por 1.1em; no palco, 500 com +0.01em."
       }
     },
     "shadows": [

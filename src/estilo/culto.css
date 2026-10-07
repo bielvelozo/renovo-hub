@@ -348,7 +348,19 @@
 }
 
 .letra p {
-  margin: 0 0 12px;
+  margin: 0 0 1.1em;
+}
+
+.letra .verso {
+  display: block;
+  padding-left: 0.6em;
+  text-indent: -0.6em;
+  text-wrap: pretty;
+}
+
+.culto .letra {
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
 .letra .marcador {

@@ -1,4 +1,3 @@
-import { Fragment } from 'react'
 import type { Bloco, Letra } from '../dominio'
 import { textoDoMarcador } from './letra'
 
@@ -21,10 +20,9 @@ function BlocoDaLetra({ bloco }: { bloco: Bloco }) {
   return (
     <p>
       {bloco.linhas.map((linha, indice) => (
-        <Fragment key={indice}>
-          {indice > 0 && <br />}
+        <span key={indice} className="verso">
           {linha.forte ? <strong>{linha.texto}</strong> : linha.texto}
-        </Fragment>
+        </span>
       ))}
     </p>
   )
