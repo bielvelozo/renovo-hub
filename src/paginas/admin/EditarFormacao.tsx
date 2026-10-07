@@ -95,7 +95,7 @@ export function EditarFormacao() {
     <section className="pagina">
       <Cabecalho
         titulo={formacao.nome}
-        sub={`${quantos} ${quantos === 1 ? 'Membro' : 'Membros'} · toque na Função pra incluir`}
+        sub={`${quantos} ${quantos === 1 ? 'membro' : 'membros'} · toque na função pra incluir`}
         voltarPara="/admin/formacoes"
       />
 
@@ -109,7 +109,7 @@ export function EditarFormacao() {
         <h2>Músicos</h2>
 
         {musicos.length === 0 ? (
-          <Vazio icone="pessoa">Ninguém com Função de instrumento.</Vazio>
+          <Vazio icone="pessoa">Ninguém com função de instrumento.</Vazio>
         ) : (
           <ul className="lista cartao">
             {musicos.map(({ membro, funcoes }) => {
@@ -140,21 +140,21 @@ export function EditarFormacao() {
 
       {confirmando ? (
         <>
-          <p className="aviso">Apagar a Formação não mexe em nenhuma Escala já montada com ela.</p>
+          <p className="aviso">Apagar {formacao.nome}?</p>
           <Botao variante="perigo" largo disabled={acao.ocupado} onClick={apagar}>
             Confirmar
           </Botao>
         </>
       ) : (
         <Botao variante="perigo" largo onClick={() => confirmar(true)}>
-          Apagar Formação
+          Apagar formação
         </Botao>
       )}
 
       <RodapeDeAcao
         primario={
           <Botao largo disabled={acao.ocupado || !atual.nome.trim()} onClick={salvar}>
-            Salvar Formação
+            Salvar formação
           </Botao>
         }
       />

@@ -64,7 +64,7 @@ describe('adicionar Item', () => {
     const { itens } = await resposta.json<Resposta>()
 
     expect(itens).toHaveLength(1)
-    expect(itens[0]).toMatchObject({ tipo: 'inteira', tom: 'D', observacao: '', descricao: 'Rio · Tom D' })
+    expect(itens[0]).toMatchObject({ tipo: 'inteira', tom: 'D', observacao: '', descricao: 'Rio · tom D' })
     expect(itens[0].musica).toMatchObject({ id: 'rio', titulo: 'Rio' })
     expect(itens[0].musica?.capa).toBe('https://i.ytimg.com/vi/s1oU-6vYc4E/maxresdefault.jpg')
     expect(itens[0].link).toBe('https://youtu.be/s1oU-6vYc4E')
@@ -88,7 +88,7 @@ describe('adicionar Item', () => {
       inicio: '1:05',
       fim: '2:30',
       observacao: 'começar mais baixo',
-      descricao: 'Rio (1:05–2:30) · Tom D',
+      descricao: 'Rio (1:05–2:30) · tom D',
       link: 'https://youtu.be/s1oU-6vYc4E?t=65',
     })
   })
@@ -108,7 +108,7 @@ describe('adicionar Item', () => {
     expect(itens[0].tipo).toBe('medley')
     expect(itens[0].trechos?.map((t) => t.tom)).toEqual(['D', 'F'])
     expect(itens[0].trechos?.[1].link).toBe('https://youtu.be/2anDhu7L-Cc?t=130')
-    expect(itens[0].descricao).toBe('Medley: Rio (0:00–1:20, Tom D) + Dono da Minha Afeição (2:10–3:40, Tom F)')
+    expect(itens[0].descricao).toBe('Medley: Rio (0:00–1:20, tom D) + Dono da Minha Afeição (2:10–3:40, tom F)')
     expect(itens[0].tom).toBeUndefined()
   })
 
@@ -149,7 +149,7 @@ describe('recusas ao adicionar', () => {
     const resposta = await adicionar({ tipo: 'inteira', musicaId: 'rio', tom: '' })
 
     expect(resposta.status).toBe(422)
-    expect((await resposta.json<{ erro: string }>()).erro).toBe('Escolha o Tom.')
+    expect((await resposta.json<{ erro: string }>()).erro).toBe('Escolha o tom.')
   })
 
   it('recusa minutagem fora do formato', async () => {
@@ -172,7 +172,7 @@ describe('recusas ao adicionar', () => {
     })
 
     expect(resposta.status).toBe(422)
-    expect((await resposta.json<{ erro: string }>()).erro).toBe('Um Medley precisa de pelo menos dois Trechos.')
+    expect((await resposta.json<{ erro: string }>()).erro).toBe('Um medley precisa de pelo menos dois trechos.')
   })
 
   it('recusa Música desconhecida', async () => {
@@ -188,7 +188,7 @@ describe('recusas ao adicionar', () => {
     const resposta = await adicionar({ tipo: 'inteira', musicaId: 'rio', tom: 'D' })
 
     expect(resposta.status).toBe(422)
-    expect((await resposta.json<{ erro: string }>()).erro).toBe('Rio está arquivada e não entra em Repertório.')
+    expect((await resposta.json<{ erro: string }>()).erro).toBe('Rio está arquivada e não entra em repertório.')
   })
 
   it('recusa tipo desconhecido', async () => {
@@ -317,7 +317,7 @@ describe('editar Item', () => {
 
     expect(resposta.status).toBe(422)
     expect((await resposta.json<{ erro: string }>()).erro).toBe(
-      'O Medley não tem Tom próprio: cada Trecho tem o seu.',
+      'O medley não tem tom próprio: cada trecho tem o seu.',
     )
   })
 

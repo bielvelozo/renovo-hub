@@ -52,7 +52,7 @@ function escolher(nome = 'Rio.docx') {
 afterEach(() => vi.unstubAllGlobals())
 
 describe('FolhaDaLetra', () => {
-  it('mostra a prévia com a contagem de linhas depois do envio', async () => {
+  it('mostra a prévia da letra depois do envio', async () => {
     const enviado = anexo({ id: 'a2', versao: 2 })
     const { caminhos } = responder(201, { ...enviado, letra: LETRA })
     const aoEnviar = vi.fn()
@@ -64,7 +64,7 @@ describe('FolhaDaLetra', () => {
     escolher()
     fireEvent.click(screen.getByRole('button', { name: 'Enviar letra' }))
 
-    await waitFor(() => expect(screen.getByText('Letra lida: 3 linhas')).not.toBeNull())
+    await waitFor(() => expect(screen.getByText('Verso')).not.toBeNull())
 
     expect(caminhos[0]).toBe('/api/musicas/rio/anexos')
     expect(aoEnviar).toHaveBeenCalledWith(enviado, LETRA)
@@ -74,7 +74,7 @@ describe('FolhaDaLetra', () => {
   })
 
   it('manda pro Item quando o dono é o Medley e avisa na folha quando o Word é ilegível', async () => {
-    const recado = 'Não consegui ler a letra desse Word. Salve como .docx e tente de novo.'
+    const recado = 'Não foi possível ler a letra desse Word. Salve como .docx e tente de novo.'
     const { caminhos } = responder(422, { erro: recado })
     const aoEnviar = vi.fn()
 
@@ -99,7 +99,7 @@ describe('FolhaDaLetra', () => {
     expect(screen.getByRole('button', { name: 'Enviar nova versão' })).not.toBeNull()
   })
 
-  it('lista as versões dizendo quais têm letra lida', () => {
+  it('lista as versões dizendo quais têm letra', () => {
     render(
       <FolhaDaLetra
         titulo="Rio"
@@ -110,8 +110,8 @@ describe('FolhaDaLetra', () => {
       />,
     )
 
-    expect(screen.getByText(/versão 2 · .*letra lida/)).not.toBeNull()
-    expect(screen.getByText(/versão 1 · .*sem letra \(enviado antes\)/)).not.toBeNull()
+    expect(screen.getByText(/versão 2 · .*com letra/)).not.toBeNull()
+    expect(screen.getByText(/versão 1 · .*sem letra$/)).not.toBeNull()
   })
 
   it('recusa arquivo que não é Word antes de mandar', () => {
@@ -121,7 +121,7 @@ describe('FolhaDaLetra', () => {
 
     escolher('letra.pdf')
 
-    expect(screen.getByText('A Sequência é um arquivo Word (.docx).')).not.toBeNull()
+    expect(screen.getByText('A sequência é um arquivo Word (.docx).')).not.toBeNull()
     fireEvent.click(screen.getByRole('button', { name: 'Enviar letra' }))
     expect(chamada).not.toHaveBeenCalled()
   })

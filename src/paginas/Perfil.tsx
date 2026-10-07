@@ -154,7 +154,7 @@ export function Perfil() {
 
       {saindo && (
         <Folha titulo="Sair deste aparelho?" fechar={() => confirmarSaida(false)}>
-          <p className="dica">Pra voltar, use o link de convite ou a lista do «esqueci».</p>
+          <p className="dica">Pra voltar, você vai precisar do seu link de convite.</p>
           {acao.erro && <p className="aviso">{acao.erro}</p>}
           <Botao largo variante="perigo" disabled={acao.ocupado} onClick={sair}>
             Sair
@@ -187,7 +187,7 @@ function LinhaDeEscala({ rotulo, texto, para }: { rotulo: string; texto: string;
   return <div className="toque sem-acao">{miolo}</div>
 }
 
-const FOTO_ILEGIVEL = 'Não consegui abrir essa imagem. Tente outra foto.'
+const FOTO_ILEGIVEL = 'Não foi possível abrir essa imagem. Tente outra foto.'
 
 function FotoDoPerfil() {
   const eu = usarEu()

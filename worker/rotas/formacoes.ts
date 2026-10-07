@@ -151,7 +151,7 @@ function conferirEntradas(m: Ministerio, entradas: EntradaDaFormacao[]): string 
   return null
 }
 
-const NOME_OBRIGATORIO = 'Dê um nome para a Formação.'
-const ENTRADAS_INVALIDAS = 'Cada entrada da Formação precisa de membroId e da lista de Funções.'
-const FORMACAO_SO_DE_MUSICOS = 'A Formação guarda só os Músicos.'
+const NOME_OBRIGATORIO = 'Dê um nome para a formação.'
+const ENTRADAS_INVALIDAS = 'Cada entrada da formação precisa de membroId e da lista de funções.'
+const FORMACAO_SO_DE_MUSICOS = 'A formação guarda só os músicos.'
 const FORMACAO_NAO_ENCONTRADA = 'Formação não encontrada.'

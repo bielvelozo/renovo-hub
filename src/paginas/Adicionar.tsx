@@ -55,7 +55,7 @@ export function Adicionar() {
         escalaId={id}
         escolha={escolhaDaSugestao(sugestao.dados)}
         promoverDe={sugestao.dados.id}
-        rotulo="Promover pro Repertório"
+        rotulo="Promover pro repertório"
         aoVoltar={() => navegar('/sugestoes')}
       />
     )
@@ -73,7 +73,7 @@ export function Adicionar() {
         escolha={escolhaDaMusica(musica.dados)}
         musica={musica.dados}
         promoverDe={null}
-        rotulo="Adicionar ao Repertório"
+        rotulo="Adicionar ao repertório"
         aoVoltar={() => navegar(`/musicas/${musicaId}`)}
       />
     )
@@ -112,7 +112,7 @@ export function Adicionar() {
           escalaId={id}
           escolha={escolha}
           promoverDe={null}
-          rotulo="Adicionar ao Repertório"
+          rotulo="Adicionar ao repertório"
           aoVoltar={() => escolher(null)}
         />
       )}

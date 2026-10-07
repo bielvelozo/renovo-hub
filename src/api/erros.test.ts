@@ -3,26 +3,26 @@ import { SEM_CONEXAO, mensagemDeErro, precisaEntrar } from './erros'
 
 describe('mensagemDeErro', () => {
   it('usa o texto que o Worker mandou', () => {
-    expect(mensagemDeErro(403, { erro: 'Só um Ministro ou Admin pode fazer isso.' })).toBe(
-      'Só um Ministro ou Admin pode fazer isso.',
+    expect(mensagemDeErro(403, { erro: 'Só um ministro ou admin pode fazer isso.' })).toBe(
+      'Só um ministro ou admin pode fazer isso.',
     )
-    expect(mensagemDeErro(422, { erro: 'Escolha o Tom.' })).toBe('Escolha o Tom.')
+    expect(mensagemDeErro(422, { erro: 'Escolha o tom.' })).toBe('Escolha o tom.')
   })
 
   it('ignora corpo sem erro em texto e cai no padrão do status', () => {
-    expect(mensagemDeErro(404, {})).toBe('Não encontrei o que você pediu.')
-    expect(mensagemDeErro(404, { erro: '' })).toBe('Não encontrei o que você pediu.')
-    expect(mensagemDeErro(404, { erro: 7 })).toBe('Não encontrei o que você pediu.')
-    expect(mensagemDeErro(404, null)).toBe('Não encontrei o que você pediu.')
-    expect(mensagemDeErro(404, 'página em html')).toBe('Não encontrei o que você pediu.')
+    expect(mensagemDeErro(404, {})).toBe('Não foi possível encontrar o que você pediu.')
+    expect(mensagemDeErro(404, { erro: '' })).toBe('Não foi possível encontrar o que você pediu.')
+    expect(mensagemDeErro(404, { erro: 7 })).toBe('Não foi possível encontrar o que você pediu.')
+    expect(mensagemDeErro(404, null)).toBe('Não foi possível encontrar o que você pediu.')
+    expect(mensagemDeErro(404, 'página em html')).toBe('Não foi possível encontrar o que você pediu.')
   })
 
   it('tem texto próprio pros status que o app trata', () => {
     expect(mensagemDeErro(401, null)).toBe('Entre pelo seu link de convite.')
     expect(mensagemDeErro(403, null)).toBe('Você não tem permissão pra fazer isso.')
     expect(mensagemDeErro(413, null)).toBe('Arquivo grande demais.')
-    expect(mensagemDeErro(500, null)).toBe('Algo deu errado por aqui. Tente de novo.')
-    expect(mensagemDeErro(503, null)).toBe('Algo deu errado por aqui. Tente de novo.')
+    expect(mensagemDeErro(500, null)).toBe('Algo deu errado. Tente de novo.')
+    expect(mensagemDeErro(503, null)).toBe('Algo deu errado. Tente de novo.')
   })
 
   it('status zero é falha de rede', () => {
@@ -30,7 +30,7 @@ describe('mensagemDeErro', () => {
   })
 
   it('status sem texto próprio ainda devolve algo em PT-BR', () => {
-    expect(mensagemDeErro(418, null)).toBe('Não consegui completar. Tente de novo.')
+    expect(mensagemDeErro(418, null)).toBe('Não foi possível concluir. Tente de novo.')
   })
 })
 

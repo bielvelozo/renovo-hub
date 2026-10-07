@@ -57,12 +57,12 @@ push.post('/api/push/teste', exigirMembro, async (c) => {
   const membro = c.get('membro')
 
   if (!chavesDeVapid(c.env)) {
-    return c.json({ erro: 'As chaves de push não estão configuradas neste servidor.' }, 503)
+    return c.json({ erro: 'Não foi possível enviar a notificação.' }, 503)
   }
 
   const aparelhos = await inscricoesDe(c.env.DB, membro.id)
   if (!aparelhos.length) {
-    return c.json({ erro: 'Este aparelho ainda não está inscrito. Ative as notificações primeiro.' }, 409)
+    return c.json({ erro: 'Ative as notificações neste aparelho primeiro.' }, 409)
   }
 
   const agora = new Date()
@@ -76,7 +76,7 @@ push.post('/api/push/teste', exigirMembro, async (c) => {
       escalaId: null,
       aviso: {
         titulo: 'Renovo Music',
-        corpo: 'Deu certo: é assim que os avisos da Escala vão chegar.',
+        corpo: 'Notificação de teste.',
         url: '/perfil',
       },
       enviarApos: agora.toISOString(),

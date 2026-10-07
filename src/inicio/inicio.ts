@@ -1,6 +1,6 @@
 import type { EscalaApresentada, PosCultoApresentado, SugestaoApresentada } from '../api/tipos'
 import type { ChaveDePendencia, Pendencia, PessoaDaEquipe } from '../dominio'
-import { DIAS_DAS_PENDENCIAS, diasEntre, formatarDia, formatarDiaEMes, rotuloDoHorario, somarDias } from '../dominio'
+import { diasEntre, formatarDia, rotuloDoHorario } from '../dominio'
 import { novasDesde } from '../escalas/sugestoes'
 import { rostoDaPessoa } from '../perfil/perfil'
 import type { Rosto } from '../perfil/perfil'
@@ -32,10 +32,6 @@ export function tituloDoInicio(data: string, hoje: string): string {
   const texto = formatarDia(data, hoje)
 
   return texto.charAt(0).toUpperCase() + texto.slice(1)
-}
-
-export function tituloDasPendencias(hoje: string): string {
-  return `Precisa de atenção · até ${formatarDiaEMes(somarDias(hoje, DIAS_DAS_PENDENCIAS))}`
 }
 
 export function quandoAcontece(data: string, hoje: string): string {

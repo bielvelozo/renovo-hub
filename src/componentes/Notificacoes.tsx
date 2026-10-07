@@ -33,7 +33,7 @@ export function Notificacoes({ silenciado, secundario = false }: { silenciado: b
       {ligado && (
         <>
           <Botao variante={variante} largo disabled={push.acao.ocupado} onClick={push.testar}>
-            Enviar push de teste
+            Testar notificação
           </Botao>
 
           <Segmento
@@ -46,7 +46,6 @@ export function Notificacoes({ silenciado, secundario = false }: { silenciado: b
             aoMudar={(valor) => push.definirSilencio(valor === 'silenciar')}
             desligado={push.acao.ocupado}
           />
-          <p className="dica">Silenciar mantém a inscrição deste aparelho: é só religar quando quiser voltar.</p>
 
           <Botao variante="secundario" largo disabled={push.acao.ocupado} onClick={push.desligar}>
             Não receber neste aparelho

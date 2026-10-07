@@ -42,7 +42,6 @@ function mostrar(musicaId: string) {
     erroAoAtualizar: null,
     baixando: false,
     atualizar: () => {},
-    telaAcesa: false,
   }
 
   return render(

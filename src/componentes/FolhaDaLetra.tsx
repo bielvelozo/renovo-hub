@@ -7,7 +7,6 @@ import { usarAcao } from '../api/usarAcao'
 import { Icone } from '../casca/Icone'
 import type { Letra } from '../dominio'
 import { CorpoDaLetra } from '../letra/CorpoDaLetra'
-import { contarLinhas } from '../letra/letra'
 import { Botao } from './Botao'
 import { Campo } from './Campo'
 import { Folha } from './Folha'
@@ -50,8 +49,6 @@ export function FolhaDaLetra({
   if (lida) {
     return (
       <Folha titulo={titulo} fechar={fechar}>
-        <p className="titulo">Letra lida: {contarLinhas(lida)} linhas</p>
-
         <div className="previa-da-letra">
           <CorpoDaLetra letra={lida} />
         </div>
@@ -67,8 +64,6 @@ export function FolhaDaLetra({
 
   return (
     <Folha titulo={titulo} fechar={fechar}>
-      <p className="dica">Enviar de novo não apaga nada: guarda uma versão nova.</p>
-
       {acao.erro && <p className="aviso">{acao.erro}</p>}
 
       {anexos.length > 0 && <Versoes anexos={anexos} />}
@@ -97,7 +92,7 @@ function Versoes({ anexos }: { anexos: Anexo[] }) {
               <span className="titulo">{anexo.nome}</span>
               <span className="dica">
                 versão {anexo.versao} · {tamanhoLegivel(anexo.tamanho)} · {dataDoEnvio(anexo.criadoEm)} ·{' '}
-                {anexo.temLetra ? 'letra lida' : 'sem letra (enviado antes)'}
+                {anexo.temLetra ? 'com letra' : 'sem letra'}
               </span>
             </span>
           </a>

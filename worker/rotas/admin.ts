@@ -90,7 +90,7 @@ admin.patch('/api/admin/membros/:id', exigirAdmin, async (c) => {
   const corpo = await corpoJson<Record<string, unknown>>(c.req.raw)
   if (corpo.nome !== undefined && !ehTextoCheio(corpo.nome)) return c.json({ erro: NOME_DO_MEMBRO }, 422)
   if (id === c.get('membro').id && corpo.admin === false) {
-    return c.json({ erro: 'Você não pode tirar o próprio papel de Admin.' }, 422)
+    return c.json({ erro: 'Você não pode tirar o próprio papel de admin.' }, 422)
   }
 
   const funcoes = await lerFuncoesPedidas(c.env.DB, corpo.funcoes)
@@ -170,7 +170,7 @@ admin.delete('/api/admin/funcoes/:id', exigirAdmin, async (c) => {
   if (!funcao) return c.json({ erro: FUNCAO_NAO_ENCONTRADA }, 404)
 
   if (await funcaoEmAlgumaEquipe(c.env.DB, id)) {
-    return c.json({ erro: `${funcao.nome} já foi usada em Escalas. Edite em vez de apagar.` }, 409)
+    return c.json({ erro: `${funcao.nome} já foi usada em escalas. Edite em vez de apagar.` }, 409)
   }
 
   await apagarFuncao(c.env.DB, id)
@@ -186,10 +186,10 @@ admin.patch('/api/admin/configuracoes', exigirAdmin, async (c) => {
   )
 
   if (listaEsqueci === undefined && semanasDeRepeticao === undefined) {
-    return c.json({ erro: 'Nada pra mudar: mande a lista do "esqueci" ou o alerta de repetição.' }, 422)
+    return c.json({ erro: 'Nada pra mudar.' }, 422)
   }
   if (listaEsqueci !== undefined && typeof listaEsqueci !== 'boolean') {
-    return c.json({ erro: 'A lista do "esqueci" fica ligada ou desligada.' }, 422)
+    return c.json({ erro: 'A entrada pelo nome fica ligada ou desligada.' }, 422)
   }
   if (semanasDeRepeticao !== undefined && !ehSemanasDeRepeticao(semanasDeRepeticao)) {
     return c.json({ erro: 'O alerta de repetição é de 2, 4, 6 ou 8 semanas.' }, 422)
@@ -208,7 +208,7 @@ async function responderConfiguracoes(db: D1Database) {
 
 async function lerFuncoesPedidas(db: D1Database, valor: unknown): Promise<string[] | string> {
   if (valor === undefined) return []
-  if (!ehListaDeTextos(valor)) return 'As Funções são uma lista de ids.'
+  if (!ehListaDeTextos(valor)) return 'As funções são uma lista de ids.'
 
   const conhecidas = await lerFuncoes(db)
   const desconhecida = valor.find((id) => !conhecidas.some((funcao) => funcao.id === id))
@@ -232,10 +232,10 @@ async function responderFuncao(db: D1Database, id: string): Promise<Funcao | und
   return (await lerFuncoes(db)).find((funcao) => funcao.id === id)
 }
 
-const NOME_DO_MEMBRO = 'O Membro precisa de um nome.'
-const NOME_DA_FUNCAO = 'A Função precisa de um nome.'
-const NAIPE_INVALIDO = 'O Grupo é vocal, instrumentos ou tecnica.'
-const ORDEM_INVALIDA = 'A ordem da Função é um número inteiro.'
+const NOME_DO_MEMBRO = 'O membro precisa de um nome.'
+const NOME_DA_FUNCAO = 'A função precisa de um nome.'
+const NAIPE_INVALIDO = 'O grupo é vocal, instrumentos ou tecnica.'
+const ORDEM_INVALIDA = 'A ordem da função é um número inteiro.'
 const MINIMO_INVALIDO = 'O mínimo por escala é um número de 0 a 4.'
 const MEMBRO_NAO_ENCONTRADO = 'Membro não encontrado.'
 const FUNCAO_NAO_ENCONTRADA = 'Função não encontrada.'

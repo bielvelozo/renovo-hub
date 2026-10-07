@@ -34,7 +34,6 @@ import {
   resumoDasPendencias,
   textoDeSugestoesNovas,
   textoDoPosCulto,
-  tituloDasPendencias,
   tituloDoInicio,
 } from '../inicio/inicio'
 import { PrimeirosPassos } from '../guia/PrimeirosPassos'
@@ -84,7 +83,7 @@ export function Inicio() {
 
   const dados = busca.dados
   const escala = dados.minhaProxima ?? dados.proximoCulto
-  const pendencias = dados.pendencias.length > 0 && <Pendencias escalas={dados.pendencias} hoje={hoje} />
+  const pendencias = dados.pendencias.length > 0 && <Pendencias escalas={dados.pendencias} />
   const pendenciasAntes =
     escala !== null && pendenciasVemAntes(dados.pendencias, escala.data, ministraAEscala(escala.pessoas, eu.id))
 
@@ -121,7 +120,7 @@ export function Inicio() {
             ) : undefined
           }
         >
-          {dirige ? 'Nenhuma escala marcada.' : 'Nenhuma escala marcada. Quando o Ministro montar o mês, a sua aparece aqui.'}
+          Nenhuma escala marcada.
         </Vazio>
       )}
 
@@ -147,7 +146,7 @@ export function Inicio() {
 export function CultoDeHoje({ escala, hoje }: { escala: EscalaApresentada; hoje: string }) {
   if (escala.data !== hoje) return null
 
-  return <AtalhoDoCulto escalaId={escala.id} dica={`Hoje às ${rotuloDoHorario(escala.horario)} · letras e tons, sem internet`} />
+  return <AtalhoDoCulto escalaId={escala.id} />
 }
 
 export function CartaoPosCulto({ posCulto, hoje }: { posCulto: PosCultoApresentado; hoje: string }) {
@@ -174,13 +173,12 @@ export function CartaoPosCulto({ posCulto, hoje }: { posCulto: PosCultoApresenta
         <Icone nome="confirmar" />
         <div className="cresce">
           <h2 className="titulo">{textoDoPosCulto(posCulto, hoje)}</h2>
-          <div className="dica">O histórico já foi salvo. Só ajuste se alguma música ou tom mudou na hora.</div>
         </div>
         <Botao variante="icone" icone="remover" aria-label="Fechar" onClick={fecharComDesfazer} />
       </div>
       <div>
         <BotaoLink para={`/escalas/${posCulto.escalaId}`} variante="terciario" pequeno>
-          Ajustar o que foi tocado
+          Ajustar
         </BotaoLink>
       </div>
     </Cartao>
@@ -314,7 +312,7 @@ export function RepertorioDoInicio({
           <Link to={`/escalas/${escala.id}/adicionar`}>Adicionar música</Link>
         </p>
       ) : (
-        <p className="dica">O Ministro ainda não escolheu as músicas.</p>
+        <p className="dica">O ministro ainda não escolheu as músicas.</p>
       )}
 
       {playlist && <FolhaDaPlaylist escalaId={escala.id} itens={escala.itens} fechar={() => abrirPlaylist(false)} />}
@@ -322,11 +320,11 @@ export function RepertorioDoInicio({
   )
 }
 
-function Pendencias({ escalas, hoje }: { escalas: EscalaResumida[]; hoje: string }) {
+function Pendencias({ escalas }: { escalas: EscalaResumida[] }) {
   return (
     <div className="secao">
       <div className="secao-topo">
-        <h2>{tituloDasPendencias(hoje)}</h2>
+        <h2>Precisa de atenção</h2>
         <BotaoLink para="/mes" variante="terciario" pequeno aria-label="Mês: todas as escalas">
           Mês <Icone nome="seta" />
         </BotaoLink>

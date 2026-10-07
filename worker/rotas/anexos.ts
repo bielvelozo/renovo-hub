@@ -85,7 +85,7 @@ anexos.get('/api/anexos/:id', exigirMembro, async (c) => {
 async function receberAnexo(c: Context<Contexto>, dono: DonoDoAnexo) {
   const formulario = await c.req.formData().catch(() => null)
   const arquivo = formulario?.get('arquivo')
-  if (!(arquivo instanceof File)) return c.json({ erro: 'Escolha o arquivo da Sequência.' }, 422)
+  if (!(arquivo instanceof File)) return c.json({ erro: 'Escolha o arquivo da sequência.' }, 422)
   if (arquivo.size > MAXIMO) return c.json({ erro: 'O arquivo passa de 1 MB.' }, 413)
 
   const conteudo = await arquivo.arrayBuffer()
@@ -121,5 +121,5 @@ async function tipoDoItem(db: D1Database, id: string): Promise<string | null> {
 
 const MUSICA_NAO_ENCONTRADA = 'Música não encontrada.'
 const ITEM_NAO_ENCONTRADO = 'Item não encontrado.'
-const WORD_ILEGIVEL = 'Não consegui ler a letra desse Word. Salve como .docx e tente de novo.'
-const LETRA_SO_NO_MEDLEY = 'Só um Medley recebe letra pela Escala. Para uma música, envie na tela dela.'
+const WORD_ILEGIVEL = 'Não foi possível ler a letra desse Word. Salve como .docx e tente de novo.'
+const LETRA_SO_NO_MEDLEY = 'Só um medley recebe letra pela escala. Para uma música, envie na tela dela.'

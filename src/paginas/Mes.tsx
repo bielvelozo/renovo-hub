@@ -37,7 +37,6 @@ export function Mes() {
   const hoje = hojeEmBrasilia()
   const [mes, verMes] = useState(() => mesDaData(hoje))
   const [folha, abrirFolha] = useState<'nova' | 'seletor' | null>(null)
-  const [explicando, explicar] = useState(false)
   const [mostrandoPassadas, mostrarPassadas] = useState(false)
   const busca = usarBusca<{ escalas: EscalaResumida[] }>(`/api/escalas?mes=${mes}`)
   const acao = usarAcao()
@@ -48,7 +47,6 @@ export function Mes() {
     escalas.map((escala) => escala.data),
   )
   const { passadas, proximas } = passadasEProximas(linhasDoMes(escalas, mes, hoje), hoje)
-  const algumaPronta = dirige && escalas.some((escala) => escala.estado === 'agendada' && escala.pronta)
 
   function criarDomingos() {
     acao.executar(async () => {
@@ -101,24 +99,9 @@ export function Mes() {
           icone="calendario"
           acao={
             dirige && faltam.length > 0 ? (
-              <>
-                <span className="criar-domingos">
-                  <Botao disabled={acao.ocupado} onClick={criarDomingos} data-guia="criar-domingos">
-                    {textoDeCriarDomingos(faltam.length, true)}
-                  </Botao>
-                  <Botao
-                    variante="icone"
-                    aria-label="Como os domingos nascem"
-                    aria-expanded={explicando}
-                    onClick={() => explicar(!explicando)}
-                  >
-                    ?
-                  </Botao>
-                </span>
-                {explicando && (
-                  <p className="dica">O segundo domingo nasce Santa Ceia às 8h; os outros, Culto de Domingo às 18h.</p>
-                )}
-              </>
+              <Botao disabled={acao.ocupado} onClick={criarDomingos} data-guia="criar-domingos">
+                {textoDeCriarDomingos(faltam.length, true)}
+              </Botao>
             ) : undefined
           }
         >
@@ -171,8 +154,6 @@ export function Mes() {
           )}
         </ul>
       )}
-
-      {algumaPronta && <p className="dica legenda">Pronta quer dizer equipe completa e músicas escolhidas.</p>}
 
       {dirige && escalas.length > 0 && faltam.length > 0 && (
         <Botao variante="secundario" largo disabled={acao.ocupado} onClick={criarDomingos} data-guia="criar-domingos">
@@ -235,8 +216,6 @@ function FolhaDaNovaEscala({ mes, fechar }: { mes: string; fechar: () => void })
 
   return (
     <Folha titulo="Nova escala" fechar={fechar}>
-      <p className="dica">Evento fora de domingo: nome, data e horário livres.</p>
-
       {acao.erro && <p className="aviso">{acao.erro}</p>}
 
       <Campo rotulo="Nome">

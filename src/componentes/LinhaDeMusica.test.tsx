@@ -129,7 +129,7 @@ describe('LinhaDeMusica', () => {
     expect(screen.getByText('fhop').className).toBe('dica')
   })
 
-  it('só mostra o selo de tempo quando o dado existe, e diz «nunca tocada no app» quando é nulo', () => {
+  it('só mostra o selo de tempo quando o dado existe, e diz «nunca tocada» quando é nulo', () => {
     montar(
       <>
         <LinhaDeMusica musica={resumida} modo="leitura" hoje={HOJE} />
@@ -138,8 +138,25 @@ describe('LinhaDeMusica', () => {
     )
 
     expect(screen.queryByText(/há |nunca/)).not.toBeNull()
-    expect(screen.getAllByText('nunca tocada no app').length).toBe(1)
+    expect(screen.getAllByText('nunca tocada').length).toBe(1)
     expect(screen.queryByText(/há \d/)).toBeNull()
+  })
+
+  it('música Legado sem Execução leva o selo Legado em vez de «nunca»', () => {
+    montar(
+      <>
+        <LinhaDeMusica musica={{ ...naLista, legado: true, ultimaExecucao: null }} modo="leitura" hoje={HOJE} />
+        <LinhaDeMusica
+          musica={{ ...naLista, id: 'outra', legado: true, ultimaExecucao: null }}
+          modo="navegacao"
+          tempo="direita"
+          hoje={HOJE}
+        />
+      </>,
+    )
+
+    expect(screen.getAllByText('Legado').length).toBe(2)
+    expect(screen.queryByText(/nunca/)).toBeNull()
   })
 
   it('com tempo à direita, o tempo sai grande na coluna da direita e o selo pequeno some', () => {
@@ -158,9 +175,8 @@ describe('LinhaDeMusica', () => {
 
     expect(screen.getByText('há 4 semanas').tagName).toBe('B')
     expect(screen.getByText('há 4 semanas').closest('button')).not.toBeNull()
-    expect(screen.queryByText('nunca tocada no app')).toBeNull()
+    expect(screen.queryByText('nunca tocada')).toBeNull()
     expect(screen.getByText('nunca').tagName).toBe('B')
-    expect(screen.getByText('no app')).not.toBeNull()
     expect(screen.getByText('há 1 ano e 2 m.').tagName).toBe('B')
   })
 
@@ -185,8 +201,8 @@ describe('LinhaDeMusica', () => {
 
     expect(screen.getByText('com Isa').className).toBe('selo atencao')
     expect(screen.getByText('há 12 dias').parentElement?.className).toBe('tempo atencao')
-    expect(screen.getByText('no Repertório de dom, 20 de set · Marcos').className).toBe('selo atencao')
-    expect(screen.getByText('no Repertório de dom, 27 de set')).not.toBeNull()
+    expect(screen.getByText('no repertório de dom, 20 de set · Marcos').className).toBe('selo atencao')
+    expect(screen.getByText('no repertório de dom, 27 de set')).not.toBeNull()
     expect(screen.queryByText(/4 de out/)).toBeNull()
     expect(screen.getByText('+1').className).toBe('selo atencao')
   })

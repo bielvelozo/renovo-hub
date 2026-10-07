@@ -20,7 +20,7 @@ const APARELHO = {
 }
 const PRIVADA_DO_APARELHO = 'q1dXpw3UpT5VOmu_cf_v6ih07Aems3njxI-JWgLcM94'
 
-const aviso = { titulo: 'Você foi escalado', corpo: 'Você está na Escala de dom, 13 de set, 18h', url: '/escalas/e0913' }
+const aviso = { titulo: 'Você foi escalado', corpo: 'Você está na escala de dom, 13 de set, 18h', url: '/escalas/e0913' }
 
 afterEach(() => vi.unstubAllGlobals())
 
@@ -135,7 +135,7 @@ describe('rodarNotificacoes', () => {
     const resultado = await rodarNotificacoes(env, new Date('2099-09-12T13:00:00.000Z'))
 
     expect(resultado.enviadas).toBe(1)
-    expect(JSON.parse(await abrir(rede.pedidos[0])).notification.title).toBe('Amanhã tem Escala')
+    expect(JSON.parse(await abrir(rede.pedidos[0])).notification.title).toBe('Amanhã tem escala')
   })
 })
 

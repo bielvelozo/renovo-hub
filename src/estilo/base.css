@@ -629,11 +629,6 @@ nav.abas .contagem {
   height: 18px;
 }
 
-.atalho-do-culto .dica {
-  display: block;
-  font-size: 13px;
-}
-
 .cartao.equipe-por-grupo {
   padding: 0;
   overflow: hidden;
@@ -981,12 +976,6 @@ nav.abas .contagem {
   padding-inline: 4px;
 }
 
-.legenda {
-  margin-top: -8px;
-  padding-inline: 4px;
-  font-size: 13px;
-}
-
 .cartao.recolhidas {
   display: flex;
   align-items: center;
@@ -1022,12 +1011,6 @@ nav.abas .contagem {
   align-items: center;
   gap: 12px;
   padding-block: 10px;
-}
-
-.criar-domingos {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .grupo {
@@ -1186,8 +1169,4 @@ nav.abas .contagem {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.secao > .legenda {
-  margin-top: 0;
 }

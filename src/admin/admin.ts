@@ -10,14 +10,14 @@ export type SecaoDoAdmin = {
 }
 
 export const SECOES: SecaoDoAdmin[] = [
-  { caminho: '/admin/membros', titulo: 'Membros', dica: 'Cadastrar, editar Funções e papéis, remover.' },
+  { caminho: '/admin/membros', titulo: 'Membros', dica: 'Cadastrar, editar funções e papéis, remover.' },
   {
     caminho: '/admin/convites',
     titulo: 'Convites e acesso',
-    dica: 'Gerar o link de cada Membro, ver quem entrou e ligar a lista do «esqueci».',
+    dica: 'Gerar o link de cada membro e ver quem entrou.',
   },
-  { caminho: '/admin/funcoes', titulo: 'Funções', dica: 'Nome, grupo e ordem de cada Função.' },
-  { caminho: '/admin/formacoes', titulo: 'Formações', dica: 'Os grupos que a Equipe aplica de uma vez.' },
+  { caminho: '/admin/funcoes', titulo: 'Funções', dica: 'Nome, grupo e ordem de cada função.' },
+  { caminho: '/admin/formacoes', titulo: 'Formações', dica: 'Grupos de músicos pra escalar de uma vez.' },
   { caminho: '/admin/musicas', titulo: 'Músicas a revisar', dica: 'Arrumar título e artista do que veio da playlist.' },
   { caminho: '/admin/sequencias', titulo: 'Sequências', dica: 'Enviar o Word da letra de várias músicas' },
 ]
@@ -58,13 +58,13 @@ export function proximaOrdem(funcoes: Funcao[]): number {
 }
 
 export function avisoDeRemocao(membro: Membro): string {
-  return `Remover ${membro.nome} apaga as sessões, os convites e as notificações dele, e o tira das Equipes futuras. As Execuções passadas ficam.`
+  return `${membro.nome} perde o acesso e sai das escalas futuras. O histórico continua.`
 }
 
 export function textoDaRemocao(nome: string, apagado: boolean): string {
   if (apagado) return `${nome} saiu do ministério.`
 
-  return `${nome} já serviu em Escala Realizada: fica no histórico como inativo e sai das Equipes futuras.`
+  return `${nome} saiu do ministério. O histórico continua.`
 }
 
 export function resumoDaFormacao(formacao: Formacao, membros: Membro[], funcoes: Funcao[]): string {
@@ -79,12 +79,12 @@ export function resumoDaFormacao(formacao: Formacao, membros: Membro[], funcoes:
     return [nomes.length ? `${membro.nome} (${nomes.join(', ')})` : membro.nome]
   })
 
-  return linhas.length ? linhas.join(', ') : 'Vazia: monte a Equipe de uma Escala e salve por lá.'
+  return linhas.length ? linhas.join(', ') : 'Vazia. Monte a equipe de uma escala e salve como formação.'
 }
 
 export function recusaDoArquivo(arquivo: { nome: string; tamanho: number } | null): string | null {
-  if (!arquivo) return 'Escolha o arquivo da Sequência.'
-  if (!arquivo.nome.toLowerCase().endsWith('.docx')) return 'A Sequência é um arquivo Word (.docx).'
+  if (!arquivo) return 'Escolha o arquivo da sequência.'
+  if (!arquivo.nome.toLowerCase().endsWith('.docx')) return 'A sequência é um arquivo Word (.docx).'
   if (arquivo.tamanho > LIMITE_DO_ANEXO) return 'O arquivo passa de 1 MB.'
 
   return null
@@ -103,10 +103,10 @@ export function dataDoEnvio(criadoEm: string, hoje = hojeEmBrasilia()): string {
 
 export function textoDaListaEsqueci(ligada: boolean): string {
   if (ligada) {
-    return 'Ligada: qualquer pessoa que abrir o app escolhe um nome da lista e entra. Deixe assim até todo mundo estar com o app instalado.'
+    return 'Qualquer pessoa que abrir o app escolhe um nome da lista e entra.'
   }
 
-  return 'Desligada: quem trocar de celular só volta com um convite novo, gerado aqui.'
+  return 'Quem trocar de celular só volta com um convite novo, gerado aqui.'
 }
 
 export function alternar(lista: string[], valor: string): string[] {

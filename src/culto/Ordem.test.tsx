@@ -67,7 +67,6 @@ function mostrar(escala: EscalaDoCulto, extras: Partial<Culto> = {}) {
     erroAoAtualizar: null,
     baixando: false,
     atualizar: () => {},
-    telaAcesa: false,
     ...extras,
   }
 
@@ -116,15 +115,15 @@ describe('ordem do culto', () => {
   it('avisa quando o Ministro não escolheu as músicas', () => {
     mostrar(escalaCom([]))
 
-    expect(screen.getByText('O Ministro ainda não escolheu as músicas')).not.toBeNull()
+    expect(screen.getByText('O ministro ainda não escolheu as músicas')).not.toBeNull()
     expect(screen.getByText('Pesquisar música')).not.toBeNull()
   })
 
-  it('sem internet e com pacote recente, segue tranquilo: guardado no aparelho e a hora da atualização', () => {
+  it('sem internet e com pacote recente, segue tranquilo: só a hora da atualização', () => {
     mostrar(escalaCom(ITENS), { atualizadoEm: '2026-09-12T17:00:00.000Z', erroAoAtualizar: 'Sem conexão' })
 
-    expect(screen.getByText('Guardado no aparelho · atualizado sáb, 14h')).not.toBeNull()
-    expect(screen.queryByText(/Não consegui atualizar/)).toBeNull()
+    expect(screen.getByText('Atualizado sáb, 14h')).not.toBeNull()
+    expect(screen.queryByText(/Última atualização/)).toBeNull()
   })
 
   it('só alerta quando o pacote está velho e não deu pra atualizar', () => {
@@ -134,8 +133,8 @@ describe('ordem do culto', () => {
       erroAoAtualizar: 'Sem conexão',
     })
 
-    expect(screen.getByText('Não consegui atualizar; mostrando o de sáb, 14h')).not.toBeNull()
-    expect(screen.queryByText(/Guardado no aparelho/)).toBeNull()
+    expect(screen.getByText('Última atualização sáb, 14h')).not.toBeNull()
+    expect(screen.queryByText(/^Atualizado/)).toBeNull()
   })
 
   it('deixa atualizar o pacote na hora', () => {
@@ -147,16 +146,4 @@ describe('ordem do culto', () => {
     expect(atualizar).toHaveBeenCalledOnce()
   })
 
-  it('explica o deslize e só promete a tela acesa quando segura a trava', () => {
-    const acesa = mostrar(escalaCom(ITENS), { telaAcesa: true })
-
-    expect(screen.getByText(/deslize para o lado/)).not.toBeNull()
-    expect(screen.getByText(/A tela fica acesa/)).not.toBeNull()
-
-    acesa.unmount()
-    mostrar(escalaCom(ITENS))
-
-    expect(screen.getByText(/deslize para o lado/)).not.toBeNull()
-    expect(screen.queryByText(/A tela fica acesa/)).toBeNull()
-  })
 })

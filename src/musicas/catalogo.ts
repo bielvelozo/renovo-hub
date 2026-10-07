@@ -2,33 +2,33 @@ import type { MusicaNaLista, TomSugeridoApresentado } from '../api/tipos'
 import { formatarDia, hojeEmBrasilia, normalizarTexto } from '../dominio'
 
 export function textoDoUltimoTom(sugerido: TomSugeridoApresentado | null, hoje = hojeEmBrasilia()): string {
-  if (!sugerido) return 'Sem Tom conhecido: ninguém tocou e ninguém preencheu à mão.'
+  if (!sugerido) return 'Sem tom definido.'
 
   if (sugerido.origem === 'execucao') {
     const quem = sugerido.ministradoPorNome ? ' com ' + sugerido.ministradoPorNome : ''
     const parcial = sugerido.parcial ? ' (trecho)' : ''
-    return `Último Tom: ${sugerido.tom}, tocado em ${formatarDia(sugerido.data ?? '', hoje)}${quem}${parcial}.`
+    return `Último tom: ${sugerido.tom}, tocado em ${formatarDia(sugerido.data ?? '', hoje)}${quem}${parcial}.`
   }
 
-  if (sugerido.origem === 'conhecido') return `Último tom conhecido: ${sugerido.tom}, preenchido à mão.`
+  if (sugerido.origem === 'conhecido') return `Tom: ${sugerido.tom}.`
 
   return `Tom original da gravação: ${sugerido.tom}.`
 }
 
 export type AbaDoCatalogo = 'redescobrir' | 'recentes' | 'todas'
 
-export const ABAS_DO_CATALOGO: { valor: AbaDoCatalogo; rotulo: string; explicacao: string }[] = [
+export const ABAS_DO_CATALOGO: { valor: AbaDoCatalogo; rotulo: string; explicacao?: string }[] = [
   {
     valor: 'redescobrir',
     rotulo: 'Redescobrir',
-    explicacao: 'Músicas que o ministério nunca tocou ou não toca há muito tempo. Boas para variar o repertório.',
+    explicacao: 'Nunca tocadas ou paradas há 3 meses ou mais.',
   },
   {
     valor: 'recentes',
     rotulo: 'Recentes',
-    explicacao: 'Tocadas nas últimas semanas. Em laranja, o que pode soar repetido.',
+    explicacao: 'Tocadas nos últimos 3 meses.',
   },
-  { valor: 'todas', rotulo: 'Todas', explicacao: 'O catálogo inteiro, em ordem alfabética.' },
+  { valor: 'todas', rotulo: 'Todas' },
 ]
 
 export type Ver = 'todas' | 'minhas' | 'outros' | 'com-letra' | 'sugestoes'
@@ -67,7 +67,7 @@ export function contagemPorAba(musicas: MusicaNaLista[]): Record<AbaDoCatalogo, 
 export function agruparCatalogo(musicas: MusicaNaLista[], aba: AbaDoCatalogo, semanas: number): SecaoDoCatalogo[] {
   if (aba === 'redescobrir') {
     return semVazias([
-      secao('nunca', 'Nunca tocada no app', porTitulo(musicas.filter((musica) => musica.secao === 'nunca'))),
+      secao('nunca', 'Sem histórico', porTitulo(musicas.filter((musica) => musica.secao === 'nunca'))),
       secao('paradas', 'Paradas há 3 meses ou mais', daMaisAntiga(musicas.filter((musica) => musica.secao === 'paradas'))),
     ])
   }

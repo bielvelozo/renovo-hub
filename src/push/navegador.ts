@@ -42,7 +42,7 @@ export async function ativarPush(): Promise<void> {
   if (permissao !== 'granted') throw new Error('Você não liberou as notificações neste aparelho.')
 
   const { chave } = await api<{ chave: string | null }>('/api/push/chave')
-  if (!chave) throw new Error('Este servidor ainda não tem as chaves de push configuradas.')
+  if (!chave) throw new Error('Não foi possível ativar as notificações.')
 
   const registro = await navigator.serviceWorker.ready
   const inscricao =

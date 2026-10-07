@@ -39,15 +39,12 @@ export function Convites() {
 
   return (
     <section className="pagina">
-      <Cabecalho titulo="Convites e acesso" sub="Um link por Membro, sem validade" voltarPara="/admin" />
+      <Cabecalho titulo="Convites e acesso" sub="Um link por membro" voltarPara="/admin" />
 
       {erro && <p className="aviso">{erro}</p>}
       {acao.erro && <p className="aviso">{acao.erro}</p>}
 
-      <p className="dica">
-        Cada link abre uma sessão no aparelho de quem tocar nele. Pode ser reaberto no computador e no celular: cada
-        abertura é uma sessão nova. Mande pelo WhatsApp só pra pessoa certa.
-      </p>
+      <p className="dica">O link é pessoal: quem abrir entra como essa pessoa. Mande só pra ela.</p>
 
       {lista.length > 0 && (
         <ul className="lista cartao">
@@ -67,9 +64,9 @@ export function Convites() {
 
       {configuracoes.dados && (
         <div className="secao">
-          <h2>Lista do «esqueci»</h2>
+          <h2>Entrar escolhendo o nome</h2>
           <Segmento
-            rotulo="Lista do esqueci"
+            rotulo="Entrar escolhendo o nome"
             opcoes={[
               { valor: 'ligada', rotulo: 'Ligada' },
               { valor: 'desligada', rotulo: 'Desligada' },
@@ -105,10 +102,6 @@ function FolhaDoLink({ convite, fechar }: { convite: Convite; fechar: () => void
       <Botao largo onClick={copiar}>
         Copiar
       </Botao>
-      <p className="dica">
-        O link não expira e serve pra quantos aparelhos precisar. Se a pessoa trocar de celular, gere outro ou deixe a
-        lista do «esqueci» ligada.
-      </p>
     </Folha>
   )
 }

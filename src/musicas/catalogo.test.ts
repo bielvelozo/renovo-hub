@@ -16,19 +16,19 @@ describe('último Tom fora da tela de adicionar', () => {
   })
 
   it('não promete seleção nenhuma, porque aqui não há grade de Tons', () => {
-    expect(textoDoUltimoTom(sugerido(), HOJE)).toBe('Último Tom: C, tocado em dom, 16 de ago com Marcos.')
-    expect(textoDoUltimoTom(sugerido({ parcial: true }), HOJE)).toBe('Último Tom: C, tocado em dom, 16 de ago com Marcos (trecho).')
+    expect(textoDoUltimoTom(sugerido(), HOJE)).toBe('Último tom: C, tocado em dom, 16 de ago com Marcos.')
+    expect(textoDoUltimoTom(sugerido({ parcial: true }), HOJE)).toBe('Último tom: C, tocado em dom, 16 de ago com Marcos (trecho).')
   })
 
   it('diz de onde veio o Tom quando não há Execução', () => {
     expect(textoDoUltimoTom(sugerido({ origem: 'conhecido', tom: 'G' }))).toBe(
-      'Último tom conhecido: G, preenchido à mão.',
+      'Tom: G.',
     )
     expect(textoDoUltimoTom(sugerido({ origem: 'original', tom: 'E' }))).toBe('Tom original da gravação: E.')
   })
 
   it('Música sem Tom nenhum explica o vazio em vez de mandar escolher', () => {
-    expect(textoDoUltimoTom(null)).toBe('Sem Tom conhecido: ninguém tocou e ninguém preencheu à mão.')
+    expect(textoDoUltimoTom(null)).toBe('Sem tom definido.')
   })
 })
 
@@ -88,7 +88,7 @@ describe('agruparCatalogo', () => {
     const secoes = agruparCatalogo(catalogo, 'redescobrir', 4)
 
     expect(secoes.map((s) => [s.chave, s.titulo])).toEqual([
-      ['nunca', 'Nunca tocada no app'],
+      ['nunca', 'Sem histórico'],
       ['paradas', 'Paradas há 3 meses ou mais'],
     ])
     expect(ids(secoes[0])).toEqual(['acorda', 'agua', 'zebra'])

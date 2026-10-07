@@ -210,6 +210,8 @@ export function CorpoDoCatalogo({
     )
   }
 
+  const explicacao = ABAS_DO_CATALOGO.find((opcao) => opcao.valor === aba)?.explicacao
+
   return (
     <>
       <Busca
@@ -260,9 +262,7 @@ export function CorpoDoCatalogo({
         />
       </div>
 
-      {ver !== 'sugestoes' && (
-        <p className="dica explicacao-da-aba">{ABAS_DO_CATALOGO.find((opcao) => opcao.valor === aba)?.explicacao}</p>
-      )}
+      {ver !== 'sugestoes' && explicacao && <p className="dica explicacao-da-aba">{explicacao}</p>}
 
       {ver === 'sugestoes' && aoEscolherSugestao ? (
         <ListaDeSugestoes sugestoes={abertas} hoje={hoje} aoEscolherSugestao={aoEscolherSugestao} />
@@ -354,7 +354,7 @@ function ListaDeSugestoes({
   aoEscolherSugestao: (sugestao: SugestaoApresentada) => void
 }) {
   if (sugestoes.length === 0) {
-    return <Vazio icone="lampada">Nenhuma sugestão aberta. Toque em Sugerir para pedir uma música.</Vazio>
+    return <Vazio icone="lampada">Nenhuma sugestão aberta.</Vazio>
   }
 
   return (

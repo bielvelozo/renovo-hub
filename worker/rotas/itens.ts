@@ -125,7 +125,7 @@ export function lerNovoItem(m: Ministerio, corpo: Record<string, unknown>): Novo
     return typeof trechos === 'string' ? trechos : { tipo: 'medley', trechos, observacao }
   }
 
-  if (corpo.tipo !== 'inteira' && corpo.tipo !== 'trecho') return 'Um Item é uma Música inteira, um Trecho ou um Medley.'
+  if (corpo.tipo !== 'inteira' && corpo.tipo !== 'trecho') return 'Um item é uma música inteira, um trecho ou um medley.'
 
   const recusa = conferirMusica(m, corpo.musicaId)
   if (recusa) return recusa
@@ -140,7 +140,7 @@ export function lerNovoItem(m: Ministerio, corpo: Record<string, unknown>): Novo
 }
 
 function lerTrechos(m: Ministerio, valor: unknown): TrechoNovo[] | string {
-  if (!Array.isArray(valor) || valor.length < 2) return 'Um Medley precisa de pelo menos dois Trechos.'
+  if (!Array.isArray(valor) || valor.length < 2) return 'Um medley precisa de pelo menos dois trechos.'
 
   const trechos: TrechoNovo[] = []
 
@@ -166,32 +166,32 @@ function conferirMusica(m: Ministerio, musicaId: unknown): string | null {
 
   const musica = musicaPorId(m, musicaId)
 
-  return musica.arquivada ? `${musica.titulo} está arquivada e não entra em Repertório.` : null
+  return musica.arquivada ? `${musica.titulo} está arquivada e não entra em repertório.` : null
 }
 
 export function lerMinistradoPor(escala: Escala, valor: unknown): { quem: string | null } | { erro: string } {
   if (valor === undefined || valor === null) return { quem: ministradoPorDe(escala, null) }
   if (typeof valor !== 'string' || !ministros(escala).includes(valor)) {
-    return { erro: 'Ministrado por só pode ser um Ministro marcado nessa Escala.' }
+    return { erro: 'Quem puxa só pode ser um ministro marcado nessa escala.' }
   }
   return { quem: valor }
 }
 
 function conferirEdicao(m: Ministerio, item: Item, corpo: Record<string, unknown>): string | null {
   if (corpo.ordem !== undefined && (!Number.isInteger(corpo.ordem) || (corpo.ordem as number) < 0)) {
-    return 'A posição no Repertório é um número a partir de zero.'
+    return 'A posição no repertório é um número a partir de zero.'
   }
 
   if (corpo.observacao !== undefined && typeof corpo.observacao !== 'string') return 'A observação é um texto.'
 
   if (corpo.tipo !== undefined && corpo.tipo !== 'inteira' && corpo.tipo !== 'trecho') {
-    return 'Um Item vira Música inteira ou Trecho.'
+    return 'Um item vira música inteira ou trecho.'
   }
 
   if (item.tipo === 'medley') {
     if (corpo.tipo !== undefined) return MEDLEY_NAO_TROCA
     if (corpo.tom !== undefined || corpo.inicio !== undefined || corpo.fim !== undefined) {
-      return 'O Medley não tem Tom próprio: cada Trecho tem o seu.'
+      return 'O medley não tem tom próprio: cada trecho tem o seu.'
     }
     if (corpo.trechos !== undefined) {
       const trechos = lerTrechos(m, corpo.trechos)
@@ -201,20 +201,20 @@ function conferirEdicao(m: Ministerio, item: Item, corpo: Record<string, unknown
     return null
   }
 
-  if (corpo.trechos !== undefined) return 'Só um Medley tem Trechos.'
+  if (corpo.trechos !== undefined) return 'Só um medley tem trechos.'
   if (corpo.tom !== undefined && !ehTextoCheio(corpo.tom)) return TOM_OBRIGATORIO
 
   const tipo = (corpo.tipo as 'inteira' | 'trecho' | undefined) ?? item.tipo
 
   if (tipo === 'inteira' && (corpo.inicio !== undefined || corpo.fim !== undefined)) {
-    return 'Uma Música inteira não tem minutagem.'
+    return 'Uma música inteira não tem minutagem.'
   }
 
   if (corpo.inicio !== undefined && !ehMinutagem(corpo.inicio)) return MINUTAGEM_INVALIDA
   if (corpo.fim !== undefined && !ehMinutagem(corpo.fim)) return MINUTAGEM_INVALIDA
 
   if (tipo === 'trecho' && item.tipo === 'inteira' && (corpo.inicio === undefined || corpo.fim === undefined)) {
-    return 'Um Trecho precisa de início e fim.'
+    return 'Um trecho precisa de início e fim.'
   }
 
   return null
@@ -239,10 +239,10 @@ function comOItemNaPosicao(escala: Escala, itemId: string, posicao: number): str
   return outros
 }
 
-const TOM_OBRIGATORIO = 'Escolha o Tom.'
+const TOM_OBRIGATORIO = 'Escolha o tom.'
 const MINUTAGEM_INVALIDA = 'Informe a minutagem no formato 1:05.'
-const TRECHO_INVALIDO = 'Cada Trecho precisa de Música, Tom e minutagem.'
-const MEDLEY_NAO_TROCA = 'O Medley não vira Música inteira nem Trecho.'
-const MUSICAS_DO_MEDLEY = 'Para trocar as músicas, remova o Medley e monte de novo.'
+const TRECHO_INVALIDO = 'Cada trecho precisa de música, tom e minutagem.'
+const MEDLEY_NAO_TROCA = 'O medley não vira música inteira nem trecho.'
+const MUSICAS_DO_MEDLEY = 'Para trocar as músicas, remova o medley e monte de novo.'
 const ESCALA_NAO_ENCONTRADA = 'Escala não encontrada.'
-const ITEM_NAO_ENCONTRADO = 'Item não encontrado nessa Escala.'
+const ITEM_NAO_ENCONTRADO = 'Item não encontrado nessa escala.'

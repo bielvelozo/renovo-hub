@@ -20,14 +20,14 @@ export function Sequencias() {
 
   return (
     <section className="pagina">
-      <Cabecalho titulo="Sequências" sub="A letra da Música em Word, com versões" voltarPara="/admin" />
+      <Cabecalho titulo="Sequências" sub="A letra da música em Word, com versões" voltarPara="/admin" />
 
       {catalogo.erro && <p className="aviso">{catalogo.erro}</p>}
       {catalogo.carregando && <Esqueleto forma="linha-de-musica" quantidade={5} />}
 
-      <Busca valor={termo} aoMudar={escrever} rotulo="Buscar a Música" />
+      <Busca valor={termo} aoMudar={escrever} rotulo="Buscar a música" />
 
-      {catalogo.dados && achadas.length === 0 && <Vazio icone="musica">Nenhuma Música com esse texto.</Vazio>}
+      {catalogo.dados && achadas.length === 0 && <Vazio icone="musica">Nenhuma música com esse texto.</Vazio>}
 
       {achadas.length > 0 && (
         <ul className="lista cartao">

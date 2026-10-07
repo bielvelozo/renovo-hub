@@ -6,14 +6,14 @@ import type { Item, Ministerio } from './tipos'
 export function descricaoDoItem(m: Ministerio, item: Item): string {
   if (item.tipo === 'medley') {
     const partes = item.trechos.map(
-      (t) => musicaPorId(m, t.musicaId).titulo + ' (' + t.inicio + '–' + t.fim + ', Tom ' + t.tom + ')',
+      (t) => musicaPorId(m, t.musicaId).titulo + ' (' + t.inicio + '–' + t.fim + ', tom ' + t.tom + ')',
     )
     return 'Medley: ' + partes.join(' + ')
   }
 
   const musica = musicaPorId(m, item.musicaId)
   const minutagem = item.tipo === 'trecho' ? ' (' + item.inicio + '–' + item.fim + ')' : ''
-  return musica.titulo + minutagem + ' · Tom ' + item.tom
+  return musica.titulo + minutagem + ' · tom ' + item.tom
 }
 
 export function textoParaWhatsApp(m: Ministerio, escalaId: string): string {
@@ -21,7 +21,7 @@ export function textoParaWhatsApp(m: Ministerio, escalaId: string): string {
   const linhas = ['*' + tituloEscala(escala) + ' · ' + formatarDiaNumerico(escala.data) + '*']
 
   for (const grupo of gruposEquipe(m, escala)) linhas.push(grupo.nome + ': ' + grupo.itens.join(', '))
-  if (!escala.equipe.length) linhas.push('(sem Equipe ainda)')
+  if (!escala.equipe.length) linhas.push('(sem equipe ainda)')
 
   linhas.push('', 'Repertório:')
 

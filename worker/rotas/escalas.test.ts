@@ -432,7 +432,7 @@ describe('Equipe', () => {
 
     expect(resposta.status).toBe(422)
     expect(await resposta.json<{ erro: string }>()).toEqual({
-      erro: 'Júlia não tem o papel de Ministro. Só um Admin pode dar esse papel.',
+      erro: 'Júlia não tem o papel de ministro. Só um admin pode dar esse papel.',
     })
   })
 
@@ -486,7 +486,7 @@ describe('texto do WhatsApp', () => {
 
     expect(corpo.texto).toContain('*Culto de Domingo 18h · 13/09*')
     expect(corpo.texto).toContain('Ministro: Marcos')
-    expect(corpo.texto).toContain('1. Meia Noite · Tom G · Canal')
+    expect(corpo.texto).toContain('1. Meia Noite · tom G · Canal')
   })
 })
 

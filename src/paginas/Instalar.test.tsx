@@ -60,7 +60,7 @@ describe('Instalar', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Instalar na tela inicial' }))
 
     expect(prompt).toHaveBeenCalledOnce()
-    expect(await screen.findByText(/Abra o Renovo pelo ícone da tela inicial/)).toBeTruthy()
+    expect(await screen.findByText(/Abra o Renovo Music pelo ícone da tela inicial/)).toBeTruthy()
   })
 
   it('mostra os passos à mão quando o navegador não permite instalar num toque', async () => {

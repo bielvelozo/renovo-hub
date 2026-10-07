@@ -41,9 +41,6 @@ import type { EstadoNaEquipe, MembroComPush, SecaoDaEquipe } from '../escalas/eq
 import { marcarTarefa } from '../guia/andamento'
 import { usarEu } from '../sessao/sessao'
 
-const EXPLICACAO_DA_FORMACAO =
-  'Formação é um grupo de músicos guardado pra reusar: escalar traz todos de uma vez, salvar guarda os que estão aqui agora.'
-
 const AVISO_DO_SINO = 'não vai receber aviso pelo app; combine pelo WhatsApp'
 
 export function Equipe() {
@@ -143,7 +140,6 @@ export function CorpoDaEquipe({
 }) {
   const avisar = usarAviso()
   const [salvando, abrirSalvar] = useState(false)
-  const [explicando, explicar] = useState(false)
 
   const secoes = secoesDaEquipe(membros, funcoes)
   const grupoEmFoco = funcoes.find((funcao) => funcao.id === funcaoEmFoco)?.grupo ?? null
@@ -231,7 +227,7 @@ export function CorpoDaEquipe({
                   </Botao>
                 ) : (
                   <Menu
-                    rotulo="Escalar uma Formação"
+                    rotulo="Escalar uma formação"
                     itens={formacoes.map((formacao) => ({
                       rotulo: formacao.nome,
                       aoEscolher: () => aplicar(formacao),
@@ -243,30 +239,19 @@ export function CorpoDaEquipe({
                     }
                   />
                 )}
-                <Botao
-                  variante="icone"
-                  aria-label="O que é uma Formação"
-                  aria-expanded={explicando}
-                  onClick={() => explicar(!explicando)}
-                >
-                  ?
-                </Botao>
               </span>
             ) : null
           }
           rodape={
             secao.chave === 'musicos' ? (
-              <>
-                {explicando && <p className="dica">{EXPLICACAO_DA_FORMACAO}</p>}
-                <Botao
-                  variante="terciario"
-                  pequeno
-                  disabled={acao.ocupado || escala.equipe.length === 0}
-                  onClick={() => abrirSalvar(true)}
-                >
-                  Salvar como formação
-                </Botao>
-              </>
+              <Botao
+                variante="terciario"
+                pequeno
+                disabled={acao.ocupado || escala.equipe.length === 0}
+                onClick={() => abrirSalvar(true)}
+              >
+                Salvar como formação
+              </Botao>
             ) : null
           }
         />
@@ -332,7 +317,7 @@ function Secao({
       )}
 
       {secao.membros.length === 0 ? (
-        <p className="dica">Ninguém com Função deste grupo ainda.</p>
+        <p className="dica">Ninguém com função deste grupo ainda.</p>
       ) : (
         <ul className="lista cartao">
           {linhas.map(({ membro, funcoes }) => (
@@ -473,8 +458,6 @@ function FolhaDeSalvar({
 
   return (
     <Folha titulo="Salvar como formação" fechar={fechar}>
-      <p className="dica">Guarda os Músicos que estão na Equipe agora.</p>
-
       {formacoes.length > 0 && (
         <ul className="lista">
           {formacoes.map((formacao) => (
@@ -489,12 +472,12 @@ function FolhaDeSalvar({
       )}
 
       <label className="campo">
-        <span className="rotulo">Nova Formação</span>
+        <span className="rotulo">Nova formação</span>
         <input value={nome} placeholder="Banda de domingo" onChange={(e) => escrever(e.target.value)} />
       </label>
 
       <Botao largo disabled={!nome.trim()} onClick={criar}>
-        Criar Formação
+        Criar formação
       </Botao>
     </Folha>
   )

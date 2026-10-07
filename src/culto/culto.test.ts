@@ -247,21 +247,18 @@ describe('textos do modo culto', () => {
     expect(quandoAtualizado('2026-09-12T17:00:00.000Z')).toBe('sáb, 14h')
   })
 
-  it('descreve o pacote guardado e só alerta quando está velho e não deu pra atualizar', () => {
+  it('dá a hora da atualização e só alerta quando o pacote está velho e não deu pra atualizar', () => {
     const geradoEm = '2026-09-12T17:00:00.000Z'
-    const tranquilo = { texto: 'Guardado no aparelho · atualizado sáb, 14h', alerta: false }
+    const tranquilo = { texto: 'Atualizado sáb, 14h', alerta: false }
 
     expect(estadoDoPacote(geradoEm, false, null)).toEqual(tranquilo)
     expect(estadoDoPacote(geradoEm, false, 'Sem conexão')).toEqual(tranquilo)
     expect(estadoDoPacote(geradoEm, true, null)).toEqual(tranquilo)
     expect(estadoDoPacote(geradoEm, true, 'Sem conexão')).toEqual({
-      texto: 'Não consegui atualizar; mostrando o de sáb, 14h',
+      texto: 'Última atualização sáb, 14h',
       alerta: true,
     })
-    expect(estadoDoPacote(null, false, null)).toEqual({
-      texto: 'Guardado no aparelho. Funciona sem internet.',
-      alerta: false,
-    })
+    expect(estadoDoPacote(null, false, null)).toBeNull()
   })
 
   it('conta o último tom tocado e cala o que não veio de Execução', () => {

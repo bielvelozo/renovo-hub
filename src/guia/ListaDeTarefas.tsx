@@ -11,7 +11,7 @@ export function ListaDeTarefas({ tarefas, feitas, dirige }: { tarefas: Tarefa[];
   const comecar = (tarefa: Tarefa) => {
     comecarTarefa(tarefa.id, navegar, dirige)
       .then((problema) => problema && avisar(problema))
-      .catch(() => avisar('Não consegui abrir o guia agora. Tente de novo.'))
+      .catch(() => avisar('Não foi possível abrir o guia agora. Tente de novo.'))
   }
 
   return (

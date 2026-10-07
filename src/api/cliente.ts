@@ -73,7 +73,7 @@ async function pedir<T>(caminho: string, opcoes: Pedido): Promise<RespostaComMet
 
 export function textoDoErro(erro: unknown): string {
   if (erro instanceof ErroDaApi) return erro.message
-  return 'Algo deu errado por aqui. Tente de novo.'
+  return 'Algo deu errado. Tente de novo.'
 }
 
 async function corpoDaResposta(resposta: Response): Promise<unknown> {

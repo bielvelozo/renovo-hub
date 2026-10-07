@@ -115,7 +115,11 @@ export function Musica() {
             {musica.tomSugerido.origem === 'original' ? ' · original' : ''}
           </Selo>
         )}
-        <Selo>{textoDeVezes(musica)}</Selo>
+        {musica.legado && musica.vezesTocada === 0 ? (
+          <Selo variante="legado">Legado</Selo>
+        ) : (
+          <Selo>{textoDeVezes(musica)}</Selo>
+        )}
         {musica.ultimaExecucao?.parcial && <Selo variante="trecho">trecho</Selo>}
       </div>
 
@@ -158,7 +162,7 @@ export function Musica() {
             ))}
           </div>
         ) : (
-          <Vazio icone="musica">Ainda não tocada no app.</Vazio>
+          <Vazio icone="musica">Nada no histórico ainda.</Vazio>
         )}
       </div>
 
@@ -403,7 +407,7 @@ export function nomeExibido(musica: MusicaDetalhada): TituloLimpo {
 function textoDeVezes(musica: MusicaDetalhada): string {
   if (musica.vezesEm6Meses > 0) return `tocada ${musica.vezesEm6Meses}× em 6 meses`
   if (musica.vezesTocada > 0) return `tocada ${musica.vezesTocada}×`
-  return 'nunca tocada no app'
+  return 'nunca tocada'
 }
 
 function formatarTamanho(bytes: number): string {

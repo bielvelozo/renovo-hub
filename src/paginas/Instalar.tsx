@@ -17,12 +17,6 @@ import { textoDaProximaEscala } from '../perfil/perfil'
 import { usarSessao } from '../sessao/sessao'
 import type { Eu } from '../sessao/sessao'
 
-const POR_QUE_INSTALAR: Record<Plataforma, string> = {
-  ios: 'Abre direto do ícone, e é só assim que o iPhone avisa quando você for escalado.',
-  android: 'Abre direto do ícone, como qualquer app, sem procurar o link no WhatsApp.',
-  outra: 'Abre numa janela própria, sem procurar a aba no navegador.',
-}
-
 export function Instalar() {
   const sessao = usarSessao()
   const instalacao = usarInstalacao()
@@ -55,9 +49,7 @@ export function Instalar() {
             <SeloDaMarca />
           </span>
           <h1>{eu ? `Oi, ${eu.nome}` : 'Boas-vindas ao Renovo Music'}</h1>
-          <p className="dica">
-            {eu ? 'Você entrou no Renovo Music. ' : ''}Escala, Repertório e Tom de cada música ficam aqui.
-          </p>
+          {eu && <p className="dica">Você entrou no Renovo Music.</p>}
         </div>
 
         {eu && <ProximaEscala eu={eu} />}
@@ -73,11 +65,7 @@ export function Instalar() {
                 </span>
                 <span className="cresce">
                   <span className="titulo">{peloIcone ? 'Pronto, já está instalado' : 'Instalado'}</span>
-                  <span className="dica">
-                    {peloIcone
-                      ? 'Você está usando o app pelo ícone da tela inicial. É daqui que ele avisa você.'
-                      : 'Abra o Renovo pelo ícone da tela inicial: é de lá que ele avisa você.'}
-                  </span>
+                  {!peloIcone && <span className="dica">Abra o Renovo Music pelo ícone da tela inicial.</span>}
                 </span>
               </div>
             </div>
@@ -89,7 +77,7 @@ export function Instalar() {
                 </span>
                 <span className="cresce">
                   <span className="titulo">Coloque o app na tela inicial</span>
-                  <span className="dica">{POR_QUE_INSTALAR[plataforma]}</span>
+                  {plataforma === 'ios' && <span className="dica">No iPhone, as notificações só chegam pelo ícone.</span>}
                 </span>
               </div>
               <Botao largo icone="instalar" carregando={instalando} onClick={instalar}>

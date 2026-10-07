@@ -39,7 +39,7 @@ app.notFound((c) => c.json({ erro: 'Rota não encontrada.' }, 404))
 
 app.onError((erro, c) => {
   console.error(erro)
-  return c.json({ erro: 'Algo deu errado por aqui. Tente de novo.' }, 500)
+  return c.json({ erro: 'Algo deu errado. Tente de novo.' }, 500)
 })
 
 export default {

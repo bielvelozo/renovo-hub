@@ -96,13 +96,13 @@ describe('proximaOrdem', () => {
 describe('remoção de Membro', () => {
   it('avisa o que a remoção apaga antes de confirmar', () => {
     expect(avisoDeRemocao(membro({ nome: 'Júlia' }))).toContain('Júlia')
-    expect(avisoDeRemocao(membro({ nome: 'Júlia' }))).toContain('Equipes futuras')
+    expect(avisoDeRemocao(membro({ nome: 'Júlia' }))).toContain('escalas futuras')
   })
 
   it('conta o que aconteceu de verdade: apagou ou virou inativo', () => {
     expect(textoDaRemocao('Júlia', true)).toBe('Júlia saiu do ministério.')
     expect(textoDaRemocao('Gabriel', false)).toBe(
-      'Gabriel já serviu em Escala Realizada: fica no histórico como inativo e sai das Equipes futuras.',
+      'Gabriel saiu do ministério. O histórico continua.',
     )
   })
 })
@@ -129,7 +129,7 @@ describe('resumoDaFormacao', () => {
   it('explica o vazio em vez de devolver texto em branco', () => {
     const formacao: Formacao = { id: 'banda', nome: 'Banda', entradas: [] }
 
-    expect(resumoDaFormacao(formacao, membros, FUNCOES)).toBe('Vazia: monte a Equipe de uma Escala e salve por lá.')
+    expect(resumoDaFormacao(formacao, membros, FUNCOES)).toBe('Vazia. Monte a equipe de uma escala e salve como formação.')
   })
 
   it('ignora quem já foi removido do ministério', () => {
@@ -148,12 +148,12 @@ describe('resumoDaFormacao', () => {
 
 describe('recusaDoArquivo', () => {
   it('pede o arquivo quando não escolheram nenhum', () => {
-    expect(recusaDoArquivo(null)).toBe('Escolha o arquivo da Sequência.')
+    expect(recusaDoArquivo(null)).toBe('Escolha o arquivo da sequência.')
   })
 
   it('só aceita Word, sem depender de maiúscula na extensão', () => {
     expect(recusaDoArquivo({ nome: 'Sequência.DOCX', tamanho: 2048 })).toBeNull()
-    expect(recusaDoArquivo({ nome: 'Sequência.pdf', tamanho: 2048 })).toBe('A Sequência é um arquivo Word (.docx).')
+    expect(recusaDoArquivo({ nome: 'Sequência.pdf', tamanho: 2048 })).toBe('A sequência é um arquivo Word (.docx).')
   })
 
   it('recusa antes de subir o que passa de 1 MB', () => {
@@ -178,7 +178,7 @@ describe('dataDoEnvio', () => {
 
 describe('textoDaListaEsqueci', () => {
   it('explica o que cada estado significa pra quem perdeu o celular', () => {
-    expect(textoDaListaEsqueci(true)).toContain('qualquer pessoa')
+    expect(textoDaListaEsqueci(true)).toContain('Qualquer pessoa')
     expect(textoDaListaEsqueci(false)).toContain('convite')
   })
 })

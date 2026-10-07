@@ -10,13 +10,13 @@ export function tituloDoItem(item: ItemApresentado): string {
 export function resumoDoItem(item: ItemApresentado): string {
   if (item.tipo === 'medley') {
     return item.trechos
-      .map((trecho) => `${trecho.musica.titulo} ${trecho.inicio}–${trecho.fim} · Tom ${trecho.tom}`)
+      .map((trecho) => `${trecho.musica.titulo} ${trecho.inicio}–${trecho.fim} · tom ${trecho.tom}`)
       .join(' + ')
   }
 
-  const minutagem = item.tipo === 'trecho' ? `${item.inicio}–${item.fim} · ` : ''
+  if (item.tipo === 'trecho') return `${item.inicio}–${item.fim} · tom ${item.tom}`
 
-  return minutagem + 'Tom ' + item.tom
+  return 'Tom ' + item.tom
 }
 
 export function capasDoItem(item: ItemApresentado): MusicaResumida[] {

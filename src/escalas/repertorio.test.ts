@@ -28,7 +28,7 @@ const inteira: ItemApresentado = {
   ministradoPor: null,
   ministradoPorNome: null,
   atualizadoEm: null,
-  descricao: 'Rio · Tom D',
+  descricao: 'Rio · tom D',
   musicaId: 'rio',
   tom: 'D',
   musica: musica('rio', 'Rio'),
@@ -43,7 +43,7 @@ const trecho: ItemApresentado = {
   ministradoPor: null,
   ministradoPorNome: null,
   atualizadoEm: null,
-  descricao: 'Dono (1:05–2:30) · Tom F',
+  descricao: 'Dono (1:05–2:30) · tom F',
   musicaId: 'dono',
   tom: 'F',
   inicio: '1:05',
@@ -60,7 +60,7 @@ const medley: ItemApresentado = {
   ministradoPor: null,
   ministradoPorNome: null,
   atualizadoEm: null,
-  descricao: 'Medley: Rio (0:10–1:00, Tom D) + Dono (1:05–2:30, Tom F)',
+  descricao: 'Medley: Rio (0:10–1:00, tom D) + Dono (1:05–2:30, tom F)',
   memoria: null,
   trechos: [
     { musicaId: 'rio', tom: 'D', inicio: '0:10', fim: '1:00', musica: musica('rio', 'Rio'), link: 'x', memoria: SEM_MEMORIA },
@@ -85,11 +85,11 @@ describe('resumoDoItem', () => {
   })
 
   it('mostra a minutagem e o Tom do trecho', () => {
-    expect(resumoDoItem(trecho)).toBe('1:05–2:30 · Tom F')
+    expect(resumoDoItem(trecho)).toBe('1:05–2:30 · tom F')
   })
 
   it('encadeia os trechos do Medley com o Tom de cada um', () => {
-    expect(resumoDoItem(medley)).toBe('Rio 0:10–1:00 · Tom D + Dono 1:05–2:30 · Tom F')
+    expect(resumoDoItem(medley)).toBe('Rio 0:10–1:00 · tom D + Dono 1:05–2:30 · tom F')
   })
 })
 

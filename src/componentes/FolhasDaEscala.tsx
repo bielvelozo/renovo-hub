@@ -70,7 +70,7 @@ export function FolhaDaPlaylist({
         </p>
       )}
 
-      {!link && <Vazio icone="musica">Esta Escala ainda não tem músicas.</Vazio>}
+      {!link && <Vazio icone="musica">Esta escala ainda não tem músicas.</Vazio>}
 
       {link && (
         <>

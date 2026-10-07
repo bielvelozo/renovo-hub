@@ -83,7 +83,9 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
       {nome.artista && <span className="dica">{nome.artista}</span>}
       <span className="selos">
         {tom && !tomADireita && <Selo variante="tom">Tom {tom}</Selo>}
-        {temTempo && !tempoADireita && <Selo>{ultima ? tempoRelativo(ultima.data, hoje) : 'nunca tocada no app'}</Selo>}
+        {temTempo && !tempoADireita && (ultima || !props.musica?.legado) && (
+          <Selo>{ultima ? tempoRelativo(ultima.data, hoje) : 'nunca tocada'}</Selo>
+        )}
         {!ehMedley && props.trecho && (
           <Selo variante="trecho">
             trecho {props.trecho.inicio}–{props.trecho.fim}
@@ -99,14 +101,14 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
         )}
         {planejadas.slice(0, MAXIMO_DE_PLANEJADAS).map((planejada) => (
           <Selo key={planejada.escalaId} variante="atencao">
-            no Repertório de {formatarDia(planejada.data, hoje)}
+            no repertório de {formatarDia(planejada.data, hoje)}
             {planejada.ministros.length ? ` · ${planejada.ministros.join(', ')}` : ''}
           </Selo>
         ))}
         {planejadas.length > MAXIMO_DE_PLANEJADAS && (
           <Selo variante="atencao">+{planejadas.length - MAXIMO_DE_PLANEJADAS}</Selo>
         )}
-        {!ehMedley && props.musica.legado && tempo === 'selo' && <Selo variante="legado">Legado</Selo>}
+        {!ehMedley && props.musica.legado && (tempo === 'selo' || !ultima) && <Selo variante="legado">Legado</Selo>}
         {!ehMedley && props.musica.nova && tempo === 'selo' && <Selo>nova</Selo>}
         {letraEm &&
           modo !== 'escolha' &&
@@ -124,16 +126,17 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
   )
 
   const coluna = tempoADireita ? (
-    <span className={`tempo${recente ? ' atencao' : ''}`}>
-      {ultima ? (
+    ultima ? (
+      <span className={`tempo${recente ? ' atencao' : ''}`}>
         <b>{tempoCurto(tempoRelativo(ultima.data, hoje))}</b>
-      ) : (
-        <>
+      </span>
+    ) : (
+      !props.musica?.legado && (
+        <span className="tempo">
           <b>nunca</b>
-          <span>no app</span>
-        </>
-      )}
-    </span>
+        </span>
+      )
+    )
   ) : (
     tomADireita && tom && <ColunaDoTom tom={tom} />
   )

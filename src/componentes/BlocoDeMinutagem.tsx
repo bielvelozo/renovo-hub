@@ -13,7 +13,6 @@ export function BlocoDeMinutagem({
   return (
     <div className="secao">
       <h2>Minutagem</h2>
-      <p className="dica">O trecho do vídeo de referência, no formato 1:05. Sem «:» no teclado, use ponto (1.05) ou só os números (105).</p>
 
       <div className="minutagem">
         <Campo rotulo="Início">

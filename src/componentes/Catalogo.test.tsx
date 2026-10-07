@@ -68,7 +68,7 @@ describe('Catalogo', () => {
     expect(screen.getByRole('button', { name: /Recentes/ }).textContent).toBe('Recentes1')
     expect(screen.getByRole('button', { name: /^Todas/ }).textContent).toBe('Todas6')
 
-    expect(screen.getByText('Nunca tocada no app').textContent).toBe('Nunca tocada no app 4')
+    expect(screen.getByText('Sem histórico').textContent).toBe('Sem histórico 4')
     expect(screen.queryByText('Sublime')).toBeNull()
 
     fireEvent.click(screen.getByRole('button', { name: 'Ver todas as 4' }))

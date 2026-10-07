@@ -45,20 +45,20 @@ export const TAREFAS: Record<IdDaTarefa, Tarefa> = {
   'conferir-escala': {
     id: 'conferir-escala',
     titulo: 'Conferir sua escala',
-    sub: 'Músicas, Tom e quem toca com você',
+    sub: 'Músicas, tom e quem toca com você',
     paraQuemDirige: false,
     comeco: { tipo: 'escala', sufixo: '' },
     passos: [
       {
         alvo: 'repertorio',
         titulo: 'O que vai tocar',
-        texto: 'As músicas desta Escala, na ordem, com o Tom de cada uma. Toque numa música pra ver o vídeo e a letra.',
+        texto: 'As músicas desta escala, na ordem, com o tom de cada uma. Toque numa música pra ver o vídeo e a letra.',
         avanco: 'proximo',
       },
       {
         alvo: 'equipe',
         titulo: 'Quem toca com você',
-        texto: 'A Equipe desta Escala, separada por grupo, com a Função de cada pessoa.',
+        texto: 'A equipe desta escala, separada por grupo, com a função de cada pessoa.',
         avanco: 'proximo',
       },
     ],
@@ -73,7 +73,7 @@ export const TAREFAS: Record<IdDaTarefa, Tarefa> = {
       {
         alvo: 'ver',
         titulo: 'Só as que têm letra',
-        texto: 'Em Ver, escolha Com letra pra ficar só com as músicas que já têm a letra no app.',
+        texto: 'Em Ver, escolha Com letra pra ficar só com as músicas que já têm letra.',
         avanco: 'proximo',
       },
       {
@@ -102,22 +102,22 @@ export const TAREFAS: Record<IdDaTarefa, Tarefa> = {
   'modo-culto': {
     id: 'modo-culto',
     titulo: 'Usar o modo culto',
-    sub: 'No palco, sem internet',
+    sub: 'Letra e tom no palco',
     paraQuemDirige: false,
     comeco: { tipo: 'culto' },
     passos: [
       {
         alvo: 'culto-ordem',
         titulo: 'Abra a letra',
-        texto: 'Toque numa música e a letra abre com o Tom grande. Nada disso precisa de internet.',
+        texto: 'Toque numa música e a letra abre com o tom grande.',
         avanco: 'rota',
         rota: /^\/culto\/[^/]+\/item\//,
-        semAlvo: 'O Ministro ainda não escolheu as músicas desta Escala. Quando escolher, elas aparecem aqui.',
+        semAlvo: 'O ministro ainda não escolheu as músicas desta escala. Quando escolher, elas aparecem aqui.',
       },
       {
         alvo: 'culto-navegar',
         titulo: 'Passe de música',
-        texto: 'Deslize pro lado, ou use estes botões, pra ir pra próxima. A tela fica acesa enquanto o modo culto está aberto.',
+        texto: 'Deslize pro lado, ou use estes botões, pra ir pra próxima.',
         avanco: 'proximo',
       },
       {
@@ -138,7 +138,7 @@ export const TAREFAS: Record<IdDaTarefa, Tarefa> = {
       {
         alvo: 'sugerir',
         titulo: 'Toque em Sugerir',
-        texto: 'Qualquer pessoa do ministério pode sugerir. Quem dirige vê a lista e leva a música pra uma Escala.',
+        texto: 'Qualquer pessoa do ministério pode sugerir. Quem dirige vê a lista e leva a música pra uma escala.',
         avanco: 'toque',
       },
       {
@@ -201,22 +201,22 @@ export const TAREFAS: Record<IdDaTarefa, Tarefa> = {
   },
   'montar-equipe': {
     id: 'montar-equipe',
-    titulo: 'Montar a Equipe',
-    sub: 'Com uma Formação ou pessoa por pessoa',
+    titulo: 'Montar a equipe',
+    sub: 'Com uma formação ou pessoa por pessoa',
     paraQuemDirige: true,
     comeco: { tipo: 'escala', sufixo: '/equipe' },
     passos: [
       {
         alvo: 'formacao',
-        titulo: 'Os Músicos de sempre',
-        texto: 'Com uma Formação, os Músicos de sempre entram num toque. Depois é só ajustar quem faltar.',
+        titulo: 'Os músicos de sempre',
+        texto: 'Com uma formação, os músicos de sempre entram num toque. Depois é só ajustar quem faltar.',
         avanco: 'proximo',
         opcional: true,
       },
       {
         alvo: 'funcao',
         titulo: 'Pessoa por pessoa',
-        texto: 'Toque na Função da pessoa pra escalar, e de novo pra tirar. Cada toque já fica salvo.',
+        texto: 'Toque na função da pessoa pra escalar, e de novo pra tirar.',
         avanco: 'proximo',
       },
       {
@@ -237,20 +237,20 @@ export const TAREFAS: Record<IdDaTarefa, Tarefa> = {
       {
         alvo: 'adicionar-musica',
         titulo: 'Toque em Adicionar música',
-        texto: 'Cada música do Repertório entra por aqui, uma por vez.',
+        texto: 'Cada música do repertório entra por aqui, uma por vez.',
         avanco: 'toque',
       },
       {
         alvo: 'busca',
         titulo: 'Ache a música',
         texto:
-          'Digite o nome ou cole o link do YouTube e toque na música. Se ela não estiver no catálogo, entra nele quando você adicionar.',
+          'Digite o nome ou cole o link do YouTube e toque na música.',
         avanco: 'aparecer',
       },
       {
         alvo: 'tom',
-        titulo: 'Escolha o Tom',
-        texto: 'O app mostra o último Tom em que vocês tocaram, e o Cifra Club ajuda a achar o original.',
+        titulo: 'Escolha o tom',
+        texto: 'O app mostra o último tom em que vocês tocaram, e o Cifra Club ajuda a achar o original.',
         avanco: 'proximo',
       },
       {
@@ -263,7 +263,7 @@ export const TAREFAS: Record<IdDaTarefa, Tarefa> = {
       {
         alvo: 'confirmar-item',
         titulo: 'Adicione',
-        texto: 'Se quiser, deixe uma observação pro grupo, e toque em Adicionar ao Repertório.',
+        texto: 'Se quiser, deixe uma observação pro grupo, e toque em Adicionar ao repertório.',
         avanco: 'toque',
       },
     ],
@@ -277,26 +277,26 @@ export const TAREFAS: Record<IdDaTarefa, Tarefa> = {
     passos: [
       {
         alvo: 'trecho',
-        titulo: 'O primeiro Trecho',
-        texto: 'Cada Trecho é um pedaço de uma música. Toque em Trecho e escolha a música.',
+        titulo: 'O primeiro trecho',
+        texto: 'Cada trecho é um pedaço de uma música. Toque em Trecho e escolha a música.',
         avanco: 'aparecer',
       },
       {
         alvo: 'ok-trecho',
         titulo: 'Tom e minutagem',
-        texto: 'Escolha o Tom e o pedaço do vídeo que vocês tocam, e toque em OK, próximo.',
+        texto: 'Escolha o tom e o pedaço do vídeo que vocês tocam, e toque em OK, próximo.',
         avanco: 'toque',
       },
       {
         alvo: 'trecho',
         titulo: 'Mais um',
-        texto: 'Um medley precisa de pelo menos dois Trechos. Adicione o próximo do mesmo jeito.',
+        texto: 'Um medley precisa de pelo menos dois trechos. Adicione o próximo do mesmo jeito.',
         avanco: 'proximo',
       },
       {
         alvo: 'adicionar-medley',
         titulo: 'Adicione o medley',
-        texto: 'Com dois ou mais Trechos, toque em Adicionar Medley ao Repertório.',
+        texto: 'Com dois ou mais trechos, toque em Adicionar medley ao repertório.',
         avanco: 'proximo',
       },
     ],
@@ -304,7 +304,7 @@ export const TAREFAS: Record<IdDaTarefa, Tarefa> = {
   letra: {
     id: 'letra',
     titulo: 'Enviar a letra em Word',
-    sub: 'O app lê o arquivo como ele está',
+    sub: 'Do jeito que a equipe já escreve',
     paraQuemDirige: true,
     comeco: { tipo: 'rota', caminho: '/musicas' },
     passos: [
@@ -327,7 +327,7 @@ export const TAREFAS: Record<IdDaTarefa, Tarefa> = {
   promover: {
     id: 'promover',
     titulo: 'Promover uma sugestão',
-    sub: 'Da lista de Sugestões pro Repertório',
+    sub: 'Da lista de sugestões pro repertório',
     paraQuemDirige: true,
     comeco: { tipo: 'rota', caminho: '/sugestoes' },
     passos: [
@@ -340,8 +340,8 @@ export const TAREFAS: Record<IdDaTarefa, Tarefa> = {
       },
       {
         alvo: 'promover',
-        titulo: 'Leve pra uma Escala',
-        texto: 'Promover pra uma escala abre a música com Tom e trecho, como em Adicionar música, e avisa quem sugeriu.',
+        titulo: 'Leve pra uma escala',
+        texto: 'Promover pra uma escala abre a música com tom e trecho, como em Adicionar música, e avisa quem sugeriu.',
         avanco: 'proximo',
       },
     ],

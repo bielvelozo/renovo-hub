@@ -9,10 +9,10 @@ export const exigirMembro = exigir(() => true, '')
 
 export const exigirMinistro = exigir(
   (membro) => membro.ministro || membro.admin,
-  'Só um Ministro ou Admin pode fazer isso.',
+  'Só um ministro ou admin pode fazer isso.',
 )
 
-export const exigirAdmin = exigir((membro) => membro.admin, 'Só um Admin pode fazer isso.')
+export const exigirAdmin = exigir((membro) => membro.admin, 'Só um admin pode fazer isso.')
 
 function exigir(permite: (membro: Membro) => boolean, recusa: string) {
   return createMiddleware<Contexto>(async (c, next) => {

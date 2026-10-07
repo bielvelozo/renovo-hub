@@ -66,9 +66,7 @@ export function Painel() {
 
       {folha && semanas && (
         <Folha titulo="Alerta de repetição" fechar={() => abrirFolha(false)}>
-          <p className="dica">
-            Música tocada há menos tempo que isso aparece com alerta no catálogo, na tela da música e nas sugestões.
-          </p>
+          <p className="dica">Avisa quando a música foi tocada há menos tempo que isso.</p>
           {acao.erro && <p className="aviso">{acao.erro}</p>}
           <Segmento
             rotulo="Semanas"

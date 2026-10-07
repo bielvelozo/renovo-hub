@@ -38,7 +38,7 @@ export function frasesDeAlerta(memoria: MemoriaDaMusica, hoje: string): string[]
   for (const planejada of memoria.planejadaEm) {
     if (frases.length >= 2) break
     const quem = planejada.ministros.length ? ` (${planejada.ministros.join(', ')})` : ''
-    frases.push(`Já está no Repertório de ${formatarDia(planejada.data, hoje)}${quem}.`)
+    frases.push(`Já está no repertório de ${formatarDia(planejada.data, hoje)}${quem}.`)
   }
 
   return frases

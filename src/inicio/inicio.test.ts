@@ -11,7 +11,6 @@ import {
   resumoDasPendencias,
   textoDeSugestoesNovas,
   textoDoPosCulto,
-  tituloDasPendencias,
   tituloDoInicio,
 } from './inicio'
 
@@ -115,12 +114,6 @@ describe('pendenciasVemAntes', () => {
   it('para quem dirige sem ser o Ministro da Escala mostrada, as pendências vêm antes do Repertório dos outros', () => {
     expect(pendenciasVemAntes([{ data: '2026-10-11' }], '2026-10-04', false)).toBe(true)
     expect(pendenciasVemAntes([], '2026-10-04', false)).toBe(false)
-  })
-})
-
-describe('tituloDasPendencias', () => {
-  it('diz até que dia a lista olha, em vez do número de semanas da regra', () => {
-    expect(tituloDasPendencias('2026-09-25')).toBe('Precisa de atenção · até 23 out')
   })
 })
 

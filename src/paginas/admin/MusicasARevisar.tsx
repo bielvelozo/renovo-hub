@@ -37,13 +37,10 @@ export function MusicasARevisar() {
       {acao.erro && <p className="aviso">{acao.erro}</p>}
       {catalogo.carregando && <Esqueleto forma="linha-de-musica" quantidade={4} />}
 
-      <p className="dica">
-        Vieram da playlist do YouTube com o título e o canal do vídeo. Arrume o nome da Música e o artista de verdade;
-        marcar como revisada tira daqui.
-      </p>
+      <p className="dica">Corrija título e artista.</p>
 
       {catalogo.dados && musicas.length === 0 && (
-        <Vazio icone="musica">Nenhuma Música esperando revisão. O catálogo está em dia.</Vazio>
+        <Vazio icone="musica">Nada pra revisar.</Vazio>
       )}
 
       {musicas.length > 0 && (
@@ -80,7 +77,7 @@ function FolhaDaRevisao({
     })
 
   return (
-    <Folha titulo="Revisar Música" fechar={fechar}>
+    <Folha titulo="Revisar música" fechar={fechar}>
       <Capa musicas={[musica]} grande />
 
       <Campo rotulo="Título">

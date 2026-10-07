@@ -67,7 +67,6 @@ function mostrar(itemId: string) {
     erroAoAtualizar: null,
     baixando: false,
     atualizar: () => {},
-    telaAcesa: false,
   }
 
   return render(

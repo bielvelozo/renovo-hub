@@ -52,7 +52,7 @@ export function estaLigado(situacao: SituacaoDoPush): boolean {
 
 export function chaveDoServidor(publica: string): Uint8Array<ArrayBuffer> {
   const bytes = base64urlParaBytes(publica)
-  if (bytes.length !== 65 || bytes[0] !== 4) throw new Error('Chave de push inválida.')
+  if (bytes.length !== 65 || bytes[0] !== 4) throw new Error('Não foi possível ativar as notificações.')
 
   return bytes
 }
@@ -60,7 +60,7 @@ export function chaveDoServidor(publica: string): Uint8Array<ArrayBuffer> {
 export function dadosDaInscricao(inscricao: InscricaoBruta): DadosDaInscricao {
   const p256dh = inscricao.getKey('p256dh')
   const auth = inscricao.getKey('auth')
-  if (!p256dh || !auth) throw new Error('O navegador não devolveu as chaves da inscrição.')
+  if (!p256dh || !auth) throw new Error('Não foi possível ativar as notificações.')
 
   return {
     endpoint: inscricao.endpoint,
@@ -73,9 +73,9 @@ const TEXTOS: Record<SituacaoDoPush, string> = {
   'sem-suporte': 'Este navegador não recebe notificação. No iPhone, use o Safari e adicione à tela inicial.',
   'precisa-instalar':
     'Primeiro adicione o Renovo Music à tela inicial e abra por lá: no iPhone, notificação só funciona no app instalado.',
-  'pode-ativar': 'Ative pra receber aviso de Escala nova, mudança no Repertório e o lembrete da véspera.',
+  'pode-ativar': 'Ative pra receber aviso de escala nova, mudança no repertório e o lembrete da véspera.',
   negada:
     'A notificação está bloqueada neste aparelho. Libere em Ajustes › Notificações › Renovo Music e volte aqui.',
-  ligado: 'Este aparelho recebe as notificações do Renovo Music.',
-  silenciado: 'Este aparelho está inscrito, mas você silenciou tudo. Ninguém vai te avisar até religar.',
+  ligado: 'Notificações ligadas neste aparelho.',
+  silenciado: 'Notificações silenciadas.',
 }

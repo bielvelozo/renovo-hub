@@ -36,13 +36,13 @@ export function avisoDeEscalado(m: Ministerio, escala: Escala, membroId: string)
 
   return {
     titulo: 'Você foi escalado',
-    corpo: `Você está na Escala de ${diaDaEscala(escala)}, ${rotuloDoHorario(escala.horario)}${onde}`,
+    corpo: `Você está na escala de ${diaDaEscala(escala)}, ${rotuloDoHorario(escala.horario)}${onde}`,
     url: caminhoDaEscala(escala.id),
   }
 }
 
 export function avisoDeMudanca(escala: Escala, acao: AcaoNaMusica, descricao: string): Aviso {
-  const verbo = acao === 'saiu' ? 'saiu da Escala' : `${acao} na Escala`
+  const verbo = acao === 'saiu' ? 'saiu da escala' : `${acao} na escala`
 
   return {
     titulo: TITULO_DA_MUSICA,
@@ -54,7 +54,7 @@ export function avisoDeMudanca(escala: Escala, acao: AcaoNaMusica, descricao: st
 export function avisoDeVariasMudancas(escala: Escala, quantidade: number): Aviso {
   return {
     titulo: TITULO_DA_MUSICA,
-    corpo: `${quantidade} mudanças na Escala de ${diaDaEscala(escala)}`,
+    corpo: `${quantidade} mudanças na escala de ${diaDaEscala(escala)}`,
     url: caminhoDaEscala(escala.id),
   }
 }
@@ -64,16 +64,16 @@ export function descricaoDaMudanca(m: Ministerio, item: Item): string {
     return 'Medley: ' + item.trechos.map((trecho) => musicaPorId(m, trecho.musicaId).titulo).join(' + ')
   }
 
-  return `${musicaPorId(m, item.musicaId).titulo} (Tom ${item.tom})`
+  return `${musicaPorId(m, item.musicaId).titulo} (tom ${item.tom})`
 }
 
 export function avisoDeLembrete(escala: Escala, musicas: number): Aviso {
   const hora = rotuloDoHorario(escala.horario)
   const corpo = musicas
-    ? `Amanhã ${hora}: Escala com ${musicas} ${musicas === 1 ? 'música' : 'músicas'}. Toque pra ver os Tons.`
-    : `Amanhã ${hora}: Escala ainda sem músicas. Toque pra ver a Equipe.`
+    ? `Amanhã, ${hora} · ${musicas} ${musicas === 1 ? 'música' : 'músicas'}`
+    : `Amanhã, ${hora} · ainda sem músicas`
 
-  return { titulo: 'Amanhã tem Escala', corpo, url: caminhoDaEscala(escala.id) }
+  return { titulo: 'Amanhã tem escala', corpo, url: caminhoDaEscala(escala.id) }
 }
 
 export function avisoDeCancelada(escala: Escala): Aviso {
@@ -114,8 +114,8 @@ export function avisoDeSugestaoRecusada(tituloDaMusica: string, motivo: string):
 
 export function avisoDePosCulto(escala: Escala, musicas: number): Aviso {
   return {
-    titulo: 'Todas as músicas de hoje foram tocadas?',
-    corpo: `${nomeDaEscala(escala)} · ${musicas} ${musicas === 1 ? 'música registrada' : 'músicas registradas'}. Toque para ajustar.`,
+    titulo: `${nomeDaEscala(escala)}: ${musicas} ${musicas === 1 ? 'música' : 'músicas'} no histórico`,
+    corpo: 'Se algo mudou na hora, ajuste na escala.',
     url: caminhoDaEscala(escala.id),
   }
 }
@@ -141,4 +141,4 @@ function comPreposicao(nome: string): string {
   return (nome.endsWith('a') ? 'na ' : 'no ') + nome
 }
 
-const TITULO_DA_MUSICA = 'Música na sua Escala'
+const TITULO_DA_MUSICA = 'Música na sua escala'

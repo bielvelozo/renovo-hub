@@ -35,7 +35,7 @@ describe('Equipe', () => {
 
     const fila = await filaAgora()
     expect(fila).toMatchObject([{ membroId: 'julia', tipo: 'escalado', escalaId: 'futura' }])
-    expect(fila[0].corpo).toBe('Você está na Escala de dom, 13 de set de 2099, 18h, no vocal')
+    expect(fila[0].corpo).toBe('Você está na escala de dom, 13 de set de 2099, 18h, no vocal')
   })
 
   it('não enfileira nada ao mexer na Equipe de Escala Realizada', async () => {
@@ -73,7 +73,7 @@ describe('Repertório', () => {
 
     const fila = await filaAgora()
     expect(fila).toMatchObject([{ membroId: 'julia', tipo: 'musica' }])
-    expect(fila[0].corpo).toBe('Meia Noite (Tom G) entrou na Escala de dom, 13 de set de 2099')
+    expect(fila[0].corpo).toBe('Meia Noite (tom G) entrou na escala de dom, 13 de set de 2099')
   })
 
   it('mudar o Tom avisa, reordenar não', async () => {
@@ -85,7 +85,7 @@ describe('Repertório', () => {
     await pedir('PATCH', '/api/escalas/futura/itens/i1', 'marcos', { tom: 'A' })
     const fila = await filaAgora()
     expect(fila).toHaveLength(1)
-    expect(fila[0].corpo).toBe('Meia Noite (Tom A) mudou na Escala de dom, 13 de set de 2099')
+    expect(fila[0].corpo).toBe('Meia Noite (tom A) mudou na escala de dom, 13 de set de 2099')
   })
 
   it('tirar a música avisa que ela saiu', async () => {
@@ -93,7 +93,7 @@ describe('Repertório', () => {
 
     await pedir('DELETE', '/api/escalas/futura/itens/i1', 'marcos')
 
-    expect((await filaAgora())[0].corpo).toBe('Meia Noite (Tom G) saiu da Escala de dom, 13 de set de 2099')
+    expect((await filaAgora())[0].corpo).toBe('Meia Noite (tom G) saiu da escala de dom, 13 de set de 2099')
   })
 
   it('editar Repertório de Escala Realizada é silencioso', async () => {

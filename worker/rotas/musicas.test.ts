@@ -439,7 +439,7 @@ describe('listar Músicas', () => {
 })
 
 describe('detalhe da Música', () => {
-  it('traz histórico de Tons com quem ministrou, Tom sugerido e link do Cifra Club', async () => {
+  it('traz histórico de Tons com quem ministrou, tom sugerido e link do Cifra Club', async () => {
     const resposta = await pedir('/api/musicas/rio', 'julia')
 
     expect(resposta.status).toBe(200)
@@ -542,14 +542,14 @@ describe('apagar e arquivar', () => {
     )
   })
 
-  it('recusa apagar Música que está no Repertório de uma Escala Agendada', async () => {
+  it('recusa apagar Música que está no repertório de uma Escala Agendada', async () => {
     await criarItemInteira('i1', 'e1', 'sublime', 'A')
 
     const resposta = await pedir('/api/musicas/sublime', 'marcos', { method: 'DELETE' })
 
     expect(resposta.status).toBe(409)
     expect((await resposta.json<{ erro: string }>()).erro).toBe(
-      'Sublime está no Repertório de uma Escala. Tire de lá antes de apagar.',
+      'Sublime está no repertório de uma escala. Tire de lá antes de apagar.',
     )
   })
 

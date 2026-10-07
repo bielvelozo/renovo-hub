@@ -26,7 +26,7 @@ const item: ItemApresentado = {
   ministradoPor: null,
   ministradoPorNome: null,
   atualizadoEm: null,
-  descricao: 'Rio · Tom G',
+  descricao: 'Rio · tom G',
   memoria: { recente: false, ultimaExecucao: null, planejadaEm: [] },
 }
 
@@ -204,7 +204,7 @@ describe('FolhaDoItem', () => {
   it('no Medley com anexo, mostra a versão e abre a folha da letra pra trocar', () => {
     mostrarMedley([doMedley])
 
-    expect(screen.getByText('letra v2 · 12/09 · já guardada neste Medley')).not.toBeNull()
+    expect(screen.getByText('Letra enviada em 12/09')).not.toBeNull()
 
     fireEvent.click(screen.getByRole('button', { name: 'Trocar' }))
 

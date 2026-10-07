@@ -163,7 +163,7 @@ function CamposDaMusica({
         Salvar
       </Botao>
 
-      <BlocoDaLetra titulo="Letra" guardadaEm="na Música" anexos={anexos} abrirLetra={abrirLetra} />
+      <BlocoDaLetra titulo="Letra" anexos={anexos} abrirLetra={abrirLetra} />
     </>
   )
 }
@@ -232,19 +232,17 @@ function CamposDoMedley({
         Salvar
       </Botao>
 
-      <BlocoDaLetra titulo="Letra do medley" guardadaEm="neste Medley" anexos={anexos} abrirLetra={abrirLetra} />
+      <BlocoDaLetra titulo="Letra do medley" anexos={anexos} abrirLetra={abrirLetra} />
     </>
   )
 }
 
 function BlocoDaLetra({
   titulo,
-  guardadaEm,
   anexos,
   abrirLetra,
 }: {
   titulo: string
-  guardadaEm: string
   anexos: Anexo[]
   abrirLetra: () => void
 }) {
@@ -254,11 +252,7 @@ function BlocoDaLetra({
     <div className="secao">
       <h2>{titulo}</h2>
 
-      <p className="dica">
-        {maisNovo
-          ? `letra v${maisNovo.versao} · ${formatarDiaNumerico(maisNovo.criadoEm.slice(0, 10))} · já guardada ${guardadaEm}`
-          : 'O Word é guardado na hora do envio, sem precisar salvar.'}
-      </p>
+      {maisNovo && <p className="dica">Letra enviada em {formatarDiaNumerico(maisNovo.criadoEm.slice(0, 10))}</p>}
 
       <Botao variante="secundario" onClick={abrirLetra}>
         {maisNovo ? 'Trocar' : 'Enviar letra (Word)'}

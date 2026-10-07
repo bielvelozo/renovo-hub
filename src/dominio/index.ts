@@ -32,7 +32,6 @@ export {
   normalizarMinutagem,
   fimDeSemanaDe,
   formatarDia,
-  formatarDiaEMes,
   formatarDiaLongo,
   formatarDiaNumerico,
   hojeEmBrasilia,

@@ -55,56 +55,56 @@ describe('avisoDeEscalado', () => {
   it('diz a Escala, o horário e a Função como o catálogo do spec', () => {
     expect(avisoDeEscalado(m, escala, 'gabriel')).toEqual({
       titulo: 'Você foi escalado',
-      corpo: 'Você está na Escala de dom, 13 de set, 18h, no baixo',
+      corpo: 'Você está na escala de dom, 13 de set, 18h, no baixo',
       url: '/escalas/e0913',
     })
   })
 
   it('junta as Funções com a preposição de cada uma', () => {
     expect(avisoDeEscalado(m, escala, 'julia').corpo).toBe(
-      'Você está na Escala de dom, 13 de set, 18h, na guitarra e no vocal',
+      'Você está na escala de dom, 13 de set, 18h, na guitarra e no vocal',
     )
   })
 
   it('omite a Função de quem entrou só como Ministro', () => {
-    expect(avisoDeEscalado(m, escala, 'davi').corpo).toBe('Você está na Escala de dom, 13 de set, 18h')
+    expect(avisoDeEscalado(m, escala, 'davi').corpo).toBe('Você está na escala de dom, 13 de set, 18h')
   })
 })
 
 describe('avisoDeMudanca', () => {
   it('descreve uma mudança só como o catálogo do spec', () => {
-    expect(avisoDeMudanca(escala, 'entrou', 'Meia Noite (Tom G)')).toEqual({
-      titulo: 'Música na sua Escala',
-      corpo: 'Meia Noite (Tom G) entrou na Escala de dom, 13 de set',
+    expect(avisoDeMudanca(escala, 'entrou', 'Meia Noite (tom G)')).toEqual({
+      titulo: 'Música na sua escala',
+      corpo: 'Meia Noite (tom G) entrou na escala de dom, 13 de set',
       url: '/escalas/e0913',
     })
   })
 
   it('usa «saiu da» pra remoção e «mudou na» pra edição', () => {
-    expect(avisoDeMudanca(escala, 'saiu', 'Meia Noite').corpo).toBe('Meia Noite saiu da Escala de dom, 13 de set')
-    expect(avisoDeMudanca(escala, 'mudou', 'Meia Noite (Tom A)').corpo).toBe(
-      'Meia Noite (Tom A) mudou na Escala de dom, 13 de set',
+    expect(avisoDeMudanca(escala, 'saiu', 'Meia Noite').corpo).toBe('Meia Noite saiu da escala de dom, 13 de set')
+    expect(avisoDeMudanca(escala, 'mudou', 'Meia Noite (tom A)').corpo).toBe(
+      'Meia Noite (tom A) mudou na escala de dom, 13 de set',
     )
   })
 
   it('agrupa várias mudanças numa contagem', () => {
-    expect(avisoDeVariasMudancas(escala, 3).corpo).toBe('3 mudanças na Escala de dom, 13 de set')
-    expect(avisoDeVariasMudancas(escala, 2).corpo).toBe('2 mudanças na Escala de dom, 13 de set')
+    expect(avisoDeVariasMudancas(escala, 3).corpo).toBe('3 mudanças na escala de dom, 13 de set')
+    expect(avisoDeVariasMudancas(escala, 2).corpo).toBe('2 mudanças na escala de dom, 13 de set')
   })
 })
 
 describe('avisoDeLembrete', () => {
   it('conta as músicas', () => {
     expect(avisoDeLembrete(escala, 4)).toEqual({
-      titulo: 'Amanhã tem Escala',
-      corpo: 'Amanhã 18h: Escala com 4 músicas. Toque pra ver os Tons.',
+      titulo: 'Amanhã tem escala',
+      corpo: 'Amanhã, 18h · 4 músicas',
       url: '/escalas/e0913',
     })
   })
 
   it('fala no singular com uma música e avisa quando não tem nenhuma', () => {
-    expect(avisoDeLembrete(escala, 1).corpo).toBe('Amanhã 18h: Escala com 1 música. Toque pra ver os Tons.')
-    expect(avisoDeLembrete(escala, 0).corpo).toBe('Amanhã 18h: Escala ainda sem músicas. Toque pra ver a Equipe.')
+    expect(avisoDeLembrete(escala, 1).corpo).toBe('Amanhã, 18h · 1 música')
+    expect(avisoDeLembrete(escala, 0).corpo).toBe('Amanhã, 18h · ainda sem músicas')
   })
 })
 
@@ -172,7 +172,7 @@ describe('descricaoDaMudanca', () => {
 
   it('põe o Tom junto do título como o catálogo do spec', () => {
     const item: Item = { id: 'i1', tipo: 'inteira', musicaId: 'm1', tom: 'G', observacao: '', ministradoPor: null }
-    expect(descricaoDaMudanca(comMusicas, item)).toBe('Meia Noite (Tom G)')
+    expect(descricaoDaMudanca(comMusicas, item)).toBe('Meia Noite (tom G)')
   })
 
   it('lista as músicas do Medley, que não tem Tom próprio', () => {
@@ -214,17 +214,15 @@ describe('avisos de Sugestão', () => {
 })
 
 describe('avisoDePosCulto', () => {
-  it('lembra o Ministro de conferir o que foi tocado, sem cobrar ação', () => {
+  it('diz quantas músicas já estão no histórico, sem pergunta nem cobrança', () => {
     expect(avisoDePosCulto(escala, 5)).toEqual({
-      titulo: 'Todas as músicas de hoje foram tocadas?',
-      corpo: 'Culto de Domingo · 5 músicas registradas. Toque para ajustar.',
+      titulo: 'Culto de Domingo: 5 músicas no histórico',
+      corpo: 'Se algo mudou na hora, ajuste na escala.',
       url: '/escalas/e0913',
     })
   })
 
   it('fala no singular com uma música só e usa Santa Ceia como nome', () => {
-    expect(avisoDePosCulto({ ...escala, santaCeia: true }, 1).corpo).toBe(
-      'Santa Ceia · 1 música registrada. Toque para ajustar.',
-    )
+    expect(avisoDePosCulto({ ...escala, santaCeia: true }, 1).titulo).toBe('Santa Ceia: 1 música no histórico')
   })
 })

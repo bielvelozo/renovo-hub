@@ -67,7 +67,7 @@ export function usarSessao(): Situacao & { recarregar: () => void; trocarEu: (eu
       .catch((erro: unknown) => {
         if (controle.signal.aborted) return
         if (erro instanceof ErroDaApi && precisaEntrar(erro.status)) return guardar({ situacao: 'fora' })
-        guardar({ situacao: 'erro', mensagem: erro instanceof Error ? erro.message : 'Não consegui carregar.' })
+        guardar({ situacao: 'erro', mensagem: erro instanceof Error ? erro.message : 'Não foi possível carregar.' })
       })
 
     return () => controle.abort()

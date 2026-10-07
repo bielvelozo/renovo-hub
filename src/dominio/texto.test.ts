@@ -8,11 +8,11 @@ const m = ministerioDeExemplo()
 
 describe('descricaoDoItem', () => {
   it('descreve a Música inteira com o Tom', () => {
-    expect(descricaoDoItem(m, escalaPorId(m, 'e0816').itens[0])).toBe('Meia Noite · Tom E')
+    expect(descricaoDoItem(m, escalaPorId(m, 'e0816').itens[0])).toBe('Meia Noite · tom E')
   })
 
   it('descreve o Trecho com a minutagem', () => {
-    expect(descricaoDoItem(m, escalaPorId(m, 'e0830').itens[2])).toBe('Sublime (2:10–4:35) · Tom A')
+    expect(descricaoDoItem(m, escalaPorId(m, 'e0830').itens[2])).toBe('Sublime (2:10–4:35) · tom A')
   })
 
   it('descreve o Medley com o Tom de cada Trecho', () => {
@@ -22,7 +22,7 @@ describe('descricaoDoItem', () => {
     ])
 
     expect(descricaoDoItem(m, item)).toBe(
-      'Medley: Rio (0:30–1:40, Tom D) + Dono da Minha Afeição (2:00–3:10, Tom F)',
+      'Medley: Rio (0:30–1:40, tom D) + Dono da Minha Afeição (2:00–3:10, tom F)',
     )
   })
 })
@@ -38,12 +38,12 @@ describe('textoParaWhatsApp', () => {
         'Som: Davi',
         '',
         'Repertório:',
-        '1. Meia Noite · Tom G · Fhop Music',
+        '1. Meia Noite · tom G · Fhop Music',
         '   Obs: Começar mais baixo, diferente do clipe',
         '   https://youtu.be/hRJUcvsnqKs',
-        '2. Em Teus Braços · Tom G · Laura Souguellis',
+        '2. Em Teus Braços · tom G · Laura Souguellis',
         '   https://youtu.be/IxpWNuxGmzc',
-        '3. Sublime (2:10–4:35) · Tom A · Fhop Music',
+        '3. Sublime (2:10–4:35) · tom A · Fhop Music',
         '   https://youtu.be/7GWZwO0MdsY?t=130',
         '',
         'Playlist pra ouvir em loop: https://www.youtube.com/watch_videos?video_ids=hRJUcvsnqKs,IxpWNuxGmzc,7GWZwO0MdsY',
@@ -53,7 +53,7 @@ describe('textoParaWhatsApp', () => {
 
   it('avisa quando ainda não há Equipe nem Repertório, e omite a playlist', () => {
     expect(textoParaWhatsApp(m, 'e0920')).toBe(
-      ['*Culto de Domingo 18h · 20/09*', '(sem Equipe ainda)', '', 'Repertório:', '(ainda sem músicas)'].join('\n'),
+      ['*Culto de Domingo 18h · 20/09*', '(sem equipe ainda)', '', 'Repertório:', '(ainda sem músicas)'].join('\n'),
     )
   })
 
@@ -76,7 +76,7 @@ describe('textoParaWhatsApp', () => {
     }
 
     expect(textoParaWhatsApp(comMedley, 'e0920')).toContain(
-      ['1. Medley: Rio (0:30–1:40, Tom D) + Dono da Minha Afeição (2:00–3:10, Tom F)', '   https://youtu.be/s1oU-6vYc4E?t=30', '   https://youtu.be/2anDhu7L-Cc?t=120'].join('\n'),
+      ['1. Medley: Rio (0:30–1:40, tom D) + Dono da Minha Afeição (2:00–3:10, tom F)', '   https://youtu.be/s1oU-6vYc4E?t=30', '   https://youtu.be/2anDhu7L-Cc?t=120'].join('\n'),
     )
   })
 

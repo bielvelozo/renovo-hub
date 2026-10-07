@@ -257,13 +257,13 @@ describe('medley', () => {
 
 describe('textos', () => {
   it('o Tom sugerido diz de onde veio', () => {
-    expect(textoDoTomSugerido(null)).toBe('Sem tom de partida: escolha.')
-    expect(textoDoTomSugerido(sugerido(), HOJE)).toBe('Último Tom: C, tocado em dom, 16 de ago com Marcos. Já selecionado.')
+    expect(textoDoTomSugerido(null)).toBe('Escolha o tom.')
+    expect(textoDoTomSugerido(sugerido(), HOJE)).toBe('Último tom: C, tocado em dom, 16 de ago com Marcos. Já selecionado.')
     expect(textoDoTomSugerido(sugerido({ parcial: true }), HOJE)).toBe(
-      'Último Tom: C, tocado em dom, 16 de ago com Marcos (trecho). Já selecionado.',
+      'Último tom: C, tocado em dom, 16 de ago com Marcos (trecho). Já selecionado.',
     )
     expect(textoDoTomSugerido(sugerido({ origem: 'conhecido', tom: 'G' }))).toBe(
-      'Último tom conhecido: G, preenchido à mão. Já selecionado.',
+      'Tom: G. Já selecionado.',
     )
     expect(textoDoTomSugerido(sugerido({ origem: 'original', tom: 'E' }))).toBe(
       'Tom original da gravação: E. Já selecionado.',
@@ -272,9 +272,9 @@ describe('textos', () => {
 
   it('na folha de um Item que já tem Tom, a dica não contradiz o teclado', () => {
     expect(textoDoTomSugerido(null, HOJE, 'D')).toBe('Tom desta escala: D.')
-    expect(textoDoTomSugerido(sugerido(), HOJE, 'C')).toBe('Último Tom: C, tocado em dom, 16 de ago com Marcos. Já selecionado.')
+    expect(textoDoTomSugerido(sugerido(), HOJE, 'C')).toBe('Último tom: C, tocado em dom, 16 de ago com Marcos. Já selecionado.')
     expect(textoDoTomSugerido(sugerido(), HOJE, 'D')).toBe(
-      'Tom desta escala: D. Último Tom: C, tocado em dom, 16 de ago com Marcos.',
+      'Tom desta escala: D. Último tom: C, tocado em dom, 16 de ago com Marcos.',
     )
     expect(textoDoTomSugerido(null, HOJE, 'original')).toBe('Tom desta escala: o original da gravação.')
   })
@@ -287,7 +287,7 @@ describe('textos', () => {
 
   it('a cobertura da Equipe conjuga quem já tocou', () => {
     expect(textoDaCobertura(null)).toBe('')
-    expect(textoDaCobertura({ ja: [], nunca: ['Isa'] })).toBe('Ninguém da Equipe tocou ainda · Isa nunca.')
+    expect(textoDaCobertura({ ja: [], nunca: ['Isa'] })).toBe('Ninguém da equipe tocou ainda · Isa nunca.')
     expect(textoDaCobertura({ ja: ['Gabriel'], nunca: [] })).toBe('Gabriel já tocou.')
     expect(textoDaCobertura({ ja: ['Gabriel', 'Ana'], nunca: ['Isa'] })).toBe('Gabriel, Ana já tocaram · Isa nunca.')
   })

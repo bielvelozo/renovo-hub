@@ -62,7 +62,7 @@ describe('convites', () => {
     })
 
     expect(resposta.status).toBe(403)
-    expect(await resposta.json()).toEqual({ erro: 'Só um Ministro ou Admin pode fazer isso.' })
+    expect(await resposta.json()).toEqual({ erro: 'Só um ministro ou admin pode fazer isso.' })
   })
 
   it('sem cookie a rota de admin recebe 401', async () => {

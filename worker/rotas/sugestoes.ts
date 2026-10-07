@@ -104,10 +104,10 @@ sugestoes.delete('/api/sugestoes/:id', exigirMembro, async (c) => {
 
   const membro = c.get('membro')
   if (!membro.admin && membro.id !== sugestao.membroId) {
-    return c.json({ erro: 'Só quem sugeriu ou um Admin pode apagar uma Sugestão.' }, 403)
+    return c.json({ erro: 'Só quem sugeriu ou um admin pode apagar uma sugestão.' }, 403)
   }
   if (!membro.admin && sugestao.estado !== 'aberta') {
-    return c.json({ erro: 'Essa Sugestão já foi decidida e não dá mais pra apagar.' }, 409)
+    return c.json({ erro: 'Essa sugestão já foi decidida e não dá mais pra apagar.' }, 409)
   }
 
   await apagarSugestao(c.env.DB, sugestao.id)
@@ -133,14 +133,14 @@ sugestoes.post('/api/sugestoes/:id/promover', exigirMinistro, async (c) => {
   const escala = antes.escalas[0]
   if (!escala) return c.json({ erro: 'Escala não encontrada.' }, 404)
   if (estadoEscala(escala, antes.hoje) !== 'agendada') {
-    return c.json({ erro: 'Só dá pra promover para uma Escala Agendada.' }, 422)
+    return c.json({ erro: 'Só dá pra promover para uma escala que ainda vai acontecer.' }, 422)
   }
 
   const forma = lerForma(corpo)
   if (typeof forma === 'string') return c.json({ erro: forma }, 422)
 
   const musicaId = await garantirMusica(c.env.DB, sugestao)
-  if (!musicaId) return c.json({ erro: 'O YouTube não reconheceu o vídeo dessa Sugestão.' }, 404)
+  if (!musicaId) return c.json({ erro: 'O YouTube não reconheceu o vídeo dessa sugestão.' }, 404)
 
   const depois = await carregarMinisterio(c.env.DB, { ids: [escalaId] })
   const novo = lerNovoItem(depois, { ...forma, musicaId })
@@ -228,11 +228,11 @@ async function lerMotivo(c: Context<Contexto>): Promise<string | null> {
 }
 
 function transicaoProibida(sugestao: Sugestao, acao: AcaoNaSugestao): string {
-  if (sugestao.estado === 'aceita') return 'Essa Sugestão já virou Item de uma Escala.'
-  if (sugestao.estado === 'recusada') return 'Essa Sugestão já foi recusada.'
-  if (acao === 'guardar') return 'Essa Sugestão já está guardada.'
-  if (acao === 'reabrir') return 'Essa Sugestão já está aberta.'
-  return 'Essa Sugestão não pode mudar assim.'
+  if (sugestao.estado === 'aceita') return 'Essa sugestão já foi pra uma escala.'
+  if (sugestao.estado === 'recusada') return 'Essa sugestão já foi recusada.'
+  if (acao === 'guardar') return 'Essa sugestão já está guardada.'
+  if (acao === 'reabrir') return 'Essa sugestão já está aberta.'
+  return 'Essa sugestão não pode mudar assim.'
 }
 
 async function lerProposta(db: D1Database, m: Ministerio, corpo: Record<string, unknown>): Promise<Proposta | string> {
@@ -243,11 +243,11 @@ async function lerProposta(db: D1Database, m: Ministerio, corpo: Record<string, 
     return { musicaId: musica.id, link: null, titulo: null }
   }
 
-  if (corpo.link === undefined) return 'Escolha uma Música do catálogo ou cole o link do vídeo no YouTube.'
+  if (corpo.link === undefined) return 'Escolha uma música do catálogo ou cole o link do vídeo no YouTube.'
 
   const videoId = videoIdDoLink(typeof corpo.link === 'string' ? corpo.link : null)
   if (!videoId) return 'Cole o link do vídeo no YouTube.'
-  if (!ehTextoCheio(corpo.titulo)) return 'Escreva o título da Música.'
+  if (!ehTextoCheio(corpo.titulo)) return 'Escreva o título da música.'
 
   const jaNoCatalogo = await musicaPorVideo(db, videoId)
   if (jaNoCatalogo) return { musicaId: jaNoCatalogo, link: null, titulo: null }
@@ -270,8 +270,8 @@ function videoIdDe(m: Ministerio, alvo: { musicaId: string | null; link: string 
 
 function lerForma(corpo: Record<string, unknown>): FormaDaPromocao | string {
   const tipo = corpo.tipo === undefined ? 'inteira' : corpo.tipo
-  if (tipo !== 'inteira' && tipo !== 'trecho') return 'Uma Sugestão vira Música inteira ou Trecho.'
-  if (!ehTextoCheio(corpo.tom)) return 'Escolha o Tom.'
+  if (tipo !== 'inteira' && tipo !== 'trecho') return 'Uma sugestão vira música inteira ou trecho.'
+  if (!ehTextoCheio(corpo.tom)) return 'Escolha o tom.'
 
   const observacao = typeof corpo.observacao === 'string' ? corpo.observacao : ''
   if (tipo === 'inteira') return { tipo, tom: corpo.tom.trim(), observacao }

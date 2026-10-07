@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Letra } from '../dominio'
-import { contarLinhas, juntarLetras, textoDoMarcador } from './letra'
+import { juntarLetras, textoDoMarcador } from './letra'
 
 const rio: Letra = {
   cabecalho: ['Rio – Renovo'],
@@ -29,14 +29,6 @@ describe('textoDoMarcador', () => {
     expect(textoDoMarcador('*Final')).toBe('Final')
     expect(textoDoMarcador('Ponte')).toBe('Ponte')
     expect(textoDoMarcador('//')).toBe('')
-  })
-})
-
-describe('contarLinhas', () => {
-  it('conta marcadores e linhas de estrofe', () => {
-    expect(contarLinhas(rio)).toBe(3)
-    expect(contarLinhas(sublime)).toBe(1)
-    expect(contarLinhas({ cabecalho: [], blocos: [] })).toBe(0)
   })
 })
 

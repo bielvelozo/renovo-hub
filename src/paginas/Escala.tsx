@@ -30,7 +30,7 @@ import { mover } from '../componentes/ordenacao'
 import { usarOrdenacao } from '../componentes/usarOrdenacao'
 import { usarRemocaoPendente } from '../componentes/usarRemocaoPendente'
 import { VistoEm } from '../componentes/VistoEm'
-import { formatarDia, hojeEmBrasilia, nomeDaEscala, rotuloDoHorario } from '../dominio'
+import { formatarDia, hojeEmBrasilia, nomeDaEscala } from '../dominio'
 import { subtituloDaEscala } from '../escalas/cabecalho'
 import { equipePorGrupo, linhaDaEquipe } from '../escalas/equipe'
 import { ministrosDaEscala, textoDeQuemPuxa, tituloDoItem } from '../escalas/repertorio'
@@ -123,7 +123,7 @@ export function Escala() {
       {cabecalho}
 
       {escala.estado === 'agendada' && escala.data === hoje && (
-        <AtalhoDoCulto escalaId={id} dica={`Hoje às ${rotuloDoHorario(escala.horario)} · letras e tons, sem internet`} />
+        <AtalhoDoCulto escalaId={id} />
       )}
 
       {acao.erro && <p className="aviso">{acao.erro}</p>}
@@ -145,7 +145,7 @@ export function Escala() {
       )}
 
       {escala.estado === 'realizada' && dirige && (
-        <p className="dica">Já aconteceu. Mudanças aqui corrigem o histórico e não avisam ninguém.</p>
+        <p className="dica">Culto realizado. Editar aqui não avisa ninguém.</p>
       )}
 
       <Repertorio
@@ -193,7 +193,6 @@ export function Escala() {
 
       {aberta === 'cancelar' && (
         <Folha titulo={'Não vai ter culto dia ' + formatarDia(escala.data, hoje) + '?'} fechar={() => abrir(null)}>
-          <p className="dica">Dá pra desfazer depois.</p>
           <Botao
             variante="perigo"
             largo
@@ -458,11 +457,6 @@ export function Repertorio({
         <p className="dica">Nenhuma música ainda.</p>
       )}
 
-      {podeEditar && itens.length > 0 && (
-        <p className="dica legenda">
-          Toque numa música para mudar o tom, o trecho ou a observação. Arraste pela alça para reordenar.
-        </p>
-      )}
 
       {aberto && (
         <FolhaDoItem
@@ -508,7 +502,7 @@ function FolhaDaData({
         <input type="time" value={horario} onChange={(e) => escreverHorario(e.target.value)} />
       </Campo>
 
-      {escala.estado === 'agendada' && <p className="dica">Quem está na Equipe recebe um aviso da nova data.</p>}
+      {escala.estado === 'agendada' && <p className="dica">Quem está na equipe recebe um aviso da nova data.</p>}
 
       <Botao largo disabled={ocupado} onClick={() => salvar({ data, horario })}>
         Salvar

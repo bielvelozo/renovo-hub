@@ -75,5 +75,5 @@ async function abrirSessao(c: Context<Contexto>, membroId: string): Promise<void
   setCookie(c, NOME_DA_SESSAO, token, opcoesDoCookie(c.req.url))
 }
 
-const RECUSA_DA_LISTA = 'A lista de Membros está desligada. Peça um link de convite a um Ministro.'
+const RECUSA_DA_LISTA = 'Peça seu link de convite a um ministro.'
 

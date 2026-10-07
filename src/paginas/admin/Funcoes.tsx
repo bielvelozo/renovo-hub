@@ -43,7 +43,7 @@ export function Funcoes() {
     <section className="pagina">
       <Cabecalho
         titulo="Funções"
-        sub="O que cada Membro faz numa Equipe"
+        sub="O que cada membro faz numa equipe"
         voltarPara="/admin"
         acao={
           <Botao pequeno onClick={() => editar({ funcao: null })}>
@@ -56,14 +56,14 @@ export function Funcoes() {
       {acao.erro && <p className="aviso">{acao.erro}</p>}
       {papeis.carregando && <Esqueleto forma="linha-de-musica" quantidade={4} />}
 
-      <p className="dica">Arraste pela alça pra mudar a ordem em que a Função aparece nas listas.</p>
+      <p className="dica">Arraste pela alça pra mudar a ordem em que a função aparece nas listas.</p>
 
       {porGrupo(funcoes).map((grupo) => (
         <div key={grupo.grupo} className="secao">
           <h2>{grupo.nome}</h2>
 
           {grupo.funcoes.length === 0 ? (
-            <Vazio icone="lista">Nenhuma Função neste grupo.</Vazio>
+            <Vazio icone="lista">Nenhuma função neste grupo.</Vazio>
           ) : (
             <ListaDeFuncoes
               funcoes={grupo.funcoes}
@@ -121,7 +121,7 @@ function FolhaDaFuncao({
   const apagar = () => gravar(async () => void (await api(`/api/admin/funcoes/${funcao?.id}`, { metodo: 'DELETE' })))
 
   return (
-    <Folha titulo={funcao ? funcao.nome : 'Nova Função'} fechar={fechar}>
+    <Folha titulo={funcao ? funcao.nome : 'Nova função'} fechar={fechar}>
       <Campo rotulo="Nome">
         <input value={nome} placeholder="Teclado" onChange={(evento) => escrever(evento.target.value)} />
       </Campo>
@@ -134,26 +134,24 @@ function FolhaDaFuncao({
       <div className="campo">
         <span className="rotulo">Mínimo por escala</span>
         <Segmento rotulo="Mínimo por escala" opcoes={MINIMOS} valor={minimo} aoMudar={exigir} />
-        <span className="dica">0 não cobra</span>
+        <span className="dica">0 = sem mínimo</span>
       </div>
 
       <Botao largo disabled={!valida} onClick={salvar}>
-        {funcao ? 'Salvar' : 'Criar Função'}
+        {funcao ? 'Salvar' : 'Criar função'}
       </Botao>
 
       {funcao &&
         (confirmando ? (
           <>
-            <p className="aviso">
-              Apagar tira {funcao.nome} de todo mundo. Função já usada em alguma Equipe não apaga: edite o nome.
-            </p>
+            <p className="aviso">Apagar tira {funcao.nome} de todo mundo.</p>
             <Botao variante="perigo" largo onClick={apagar}>
               Confirmar
             </Botao>
           </>
         ) : (
           <Botao variante="perigo" largo onClick={() => confirmar(true)}>
-            Apagar Função
+            Apagar função
           </Botao>
         ))}
     </Folha>

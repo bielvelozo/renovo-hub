@@ -56,7 +56,7 @@ export function usarPush(silenciadoInicial: boolean): Push {
       await ativarPush()
       marcarPermissao(permissaoAtual())
       marcarInscrito(true)
-      contar('Pronto: este aparelho vai receber os avisos.')
+      contar('Notificações ligadas.')
     })
   }, [acao])
 
@@ -74,8 +74,8 @@ export function usarPush(silenciadoInicial: boolean): Push {
       const aparelhos = await enviarPushDeTeste()
       contar(
         aparelhos
-          ? 'Push de teste enviado. Se não chegar em alguns segundos, confira as notificações nos Ajustes.'
-          : 'Nada foi enviado: confira se as notificações estão liberadas neste aparelho.',
+          ? 'Enviada. Se não chegar, confira os Ajustes do celular.'
+          : 'Nada foi enviado. Confira se as notificações estão liberadas neste aparelho.',
       )
     })
   }, [acao])

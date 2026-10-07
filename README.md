@@ -93,7 +93,7 @@ npm run convite -- "Gabriel"
 
 The script inserts the invite straight into the local D1 and prints `http://localhost:8787/entrar/<token>`. Opening that link in the browser creates the session (a one-year cookie) and lands on `/instalar`. The invite does not expire and can be reopened on another device: each opening creates a new session.
 
-After the first Admin exists, invites come from the UI: **Admin → Convites e acesso → Gerar link**, one per member. The `/esqueci` page lists members for whoever changed phones, and the Admin can turn that list off once everybody has the app installed.
+After the first Admin exists, invites come from the UI: **Admin → Convites e acesso → Gerar link**, one per member. The `/esqueci` page lists members for whoever changed phones, and the Admin can turn that list off once everybody has the app installed; with the list off, the page only asks for an invite link from a minister.
 
 ## Seed
 

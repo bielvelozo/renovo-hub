@@ -64,7 +64,7 @@ export function Membros() {
         </ul>
       )}
 
-      {membros.dados && lista.length === 0 && <Vazio icone="pessoa">Nenhum Membro cadastrado ainda.</Vazio>}
+      {membros.dados && lista.length === 0 && <Vazio icone="pessoa">Nenhum membro cadastrado ainda.</Vazio>}
 
       {edicao && papeis.dados && (
         <FolhaDoMembro
@@ -128,7 +128,7 @@ function FolhaDoMembro({
     })
 
   return (
-    <Folha titulo={membro ? membro.nome : 'Novo Membro'} fechar={fechar}>
+    <Folha titulo={membro ? membro.nome : 'Novo membro'} fechar={fechar}>
       <Campo rotulo="Nome">
         <input value={nome} placeholder="Como o grupo chama" onChange={(evento) => escrever(evento.target.value)} />
       </Campo>
@@ -166,8 +166,8 @@ function FolhaDoMembro({
           </button>
         </span>
         <span className="dica">
-          Ministro cria Escalas, monta Equipes e escolhe as músicas. Admin faz tudo isso e mais a gestão desta tela.
-          {souEu && ' Você não pode tirar o próprio papel de Admin.'}
+          Ministro cria escalas, monta equipes e escolhe as músicas. Admin faz tudo isso e também cuida desta tela.
+          {souEu && ' Você não pode tirar o próprio papel de admin.'}
         </span>
       </div>
 
@@ -205,5 +205,5 @@ function papeisEFuncoes(membro: Membro, funcoes: Funcao[]): string {
   const nomes = funcoes.filter((funcao) => membro.funcoes.includes(funcao.id)).map((funcao) => funcao.nome)
   const papeis = [membro.ministro && 'Ministro', membro.admin && 'Admin'].filter(Boolean)
 
-  return [...nomes, ...papeis].join(' · ') || 'Sem Função nem papel'
+  return [...nomes, ...papeis].join(' · ') || 'Sem função nem papel'
 }

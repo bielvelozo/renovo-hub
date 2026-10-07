@@ -236,7 +236,7 @@ export function textoDoTomSugerido(
 ): string {
   const atual = tom ? `Tom desta escala: ${tom === TOM_ORIGINAL ? 'o original da gravação' : tom}.` : null
 
-  if (!sugerido) return atual ?? 'Sem tom de partida: escolha.'
+  if (!sugerido) return atual ?? 'Escolha o tom.'
 
   const ultimo = textoDoUltimoTom(sugerido, hoje)
   if (atual && tom !== sugerido.tom) return `${atual} ${ultimo}`
@@ -258,7 +258,7 @@ export function textoDaCobertura(cobertura: Cobertura | null): string {
 
   const ja = cobertura.ja.length
     ? `${cobertura.ja.join(', ')} já ${cobertura.ja.length > 1 ? 'tocaram' : 'tocou'}`
-    : 'Ninguém da Equipe tocou ainda'
+    : 'Ninguém da equipe tocou ainda'
 
   return ja + (cobertura.nunca.length ? ` · ${cobertura.nunca.join(', ')} nunca` : '') + '.'
 }

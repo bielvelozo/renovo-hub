@@ -73,7 +73,7 @@ export function Medley() {
     const id = chaveDoTrecho(trechos[indice], indice)
 
     pendente.agendar(id, () => guardarTrechos((atuais) => atuais.filter((cada, outro) => chaveDoTrecho(cada, outro) !== id)))
-    avisar('Trecho tirado do Medley', { desfazer: () => pendente.desfazer(id) })
+    avisar('Trecho tirado do medley', { desfazer: () => pendente.desfazer(id) })
   }
 
   if (passo === 'escolher') {
@@ -83,7 +83,7 @@ export function Medley() {
           modo="escolha"
           escalaId={id}
           permiteYoutube
-          titulo={`Trecho ${trechos.length + 1} do Medley`}
+          titulo={`Trecho ${trechos.length + 1} do medley`}
           sub="busque, cole um link ou escolha do catálogo"
           aoVoltar={() => irPara('montar')}
           aoEscolher={(escolhida) => {
@@ -114,12 +114,12 @@ export function Medley() {
 
   return (
     <section className="pagina">
-      <Cabecalho titulo="Montar Medley" sub="dois ou mais Trechos emendados" voltarPara={`/escalas/${id}`} />
+      <Cabecalho titulo="Montar medley" sub="dois ou mais trechos emendados" voltarPara={`/escalas/${id}`} />
 
       {acao.erro && <p className="aviso">{acao.erro}</p>}
 
       {trechos.length === 0 ? (
-        <Vazio icone="musica">Nenhum Trecho ainda.</Vazio>
+        <Vazio icone="musica">Nenhum trecho ainda.</Vazio>
       ) : (
         <>
           <div className="cabecalho-da-musica">
@@ -165,12 +165,12 @@ export function Medley() {
         />
       </Campo>
 
-      {trechos.length === 1 && <p className="dica">Falta pelo menos mais um Trecho.</p>}
+      {trechos.length === 1 && <p className="dica">Falta pelo menos mais um trecho.</p>}
 
       <RodapeDeAcao
         primario={
           <Botao largo disabled={acao.ocupado || !medleyPronto(trechos)} onClick={confirmar} data-guia="adicionar-medley">
-            Adicionar Medley ao Repertório
+            Adicionar medley ao repertório
           </Botao>
         }
       />
@@ -237,11 +237,11 @@ function Campos({
 
   return (
     <section className="pagina">
-      <Cabecalho titulo={escolha.resumo.titulo} sub={`Trecho ${ordem} do Medley`} aoVoltar={aoVoltar} />
+      <Cabecalho titulo={escolha.resumo.titulo} sub={`Trecho ${ordem} do medley`} aoVoltar={aoVoltar} />
 
       <div className="cabecalho-da-musica">
         <Capa musicas={[escolha.resumo]} grande />
-        <p className="dica">{escolha.resumo.artista || 'Entra no catálogo quando o Medley for adicionado.'}</p>
+        {escolha.resumo.artista && <p className="dica">{escolha.resumo.artista}</p>}
       </div>
 
       {cobertura && <p className="cobertura">{cobertura}</p>}

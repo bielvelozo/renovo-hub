@@ -80,7 +80,7 @@ escalas.post('/api/escalas', exigirMinistro, async (c) => {
 
   if (!ehData(corpo.data)) return c.json({ erro: DATA_INVALIDA }, 422)
   if (!ehHorario(corpo.horario)) return c.json({ erro: HORARIO_INVALIDO }, 422)
-  if (!ehTextoCheio(corpo.rotulo)) return c.json({ erro: 'Dê um nome para a Escala.' }, 422)
+  if (!ehTextoCheio(corpo.rotulo)) return c.json({ erro: 'Dê um nome para a escala.' }, 422)
 
   const id = await criarEscala(c.env.DB, {
     data: corpo.data,
@@ -113,7 +113,7 @@ escalas.patch('/api/escalas/:id', exigirMinistro, async (c) => {
   if (corpo.data !== undefined && !ehData(corpo.data)) return c.json({ erro: DATA_INVALIDA }, 422)
   if (corpo.horario !== undefined && !ehHorario(corpo.horario)) return c.json({ erro: HORARIO_INVALIDO }, 422)
   if (corpo.rotulo !== undefined && !ehTextoCheio(corpo.rotulo)) {
-    return c.json({ erro: 'Dê um nome para a Escala.' }, 422)
+    return c.json({ erro: 'Dê um nome para a escala.' }, 422)
   }
   if (corpo.santaCeia !== undefined && typeof corpo.santaCeia !== 'boolean') {
     return c.json({ erro: 'A marca de Santa Ceia é sim ou não.' }, 422)
@@ -152,14 +152,14 @@ escalas.put('/api/escalas/:id/equipe/:membroId', exigirMinistro, async (c) => {
   const funcoes = corpo.funcoes === undefined ? (anterior?.funcoes ?? []) : corpo.funcoes
   const ministro = corpo.ministro === undefined ? (anterior?.ministro ?? false) : corpo.ministro
 
-  if (!ehListaDeTextos(funcoes)) return c.json({ erro: 'Envie a lista de Funções.' }, 422)
-  if (typeof ministro !== 'boolean') return c.json({ erro: 'A marca de Ministro é sim ou não.' }, 422)
+  if (!ehListaDeTextos(funcoes)) return c.json({ erro: 'Envie a lista de funções.' }, 422)
+  if (typeof ministro !== 'boolean') return c.json({ erro: 'A marca de ministro é sim ou não.' }, 422)
 
   const desconhecida = funcoes.find((funcaoId) => !m.funcoes.some((f) => f.id === funcaoId))
   if (desconhecida) return c.json({ erro: `Função desconhecida: ${desconhecida}.` }, 422)
 
   if (ministro && !membro.ministro && !membro.admin) {
-    return c.json({ erro: `${membro.nome} não tem o papel de Ministro. Só um Admin pode dar esse papel.` }, 422)
+    return c.json({ erro: `${membro.nome} não tem o papel de ministro. Só um admin pode dar esse papel.` }, 422)
   }
 
   await definirEntradaDaEquipe(c.env.DB, id, { membroId: membro.id, funcoes: [...new Set(funcoes)], ministro })

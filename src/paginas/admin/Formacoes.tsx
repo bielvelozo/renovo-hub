@@ -38,7 +38,7 @@ export function Formacoes() {
     <section className="pagina">
       <Cabecalho
         titulo="Formações"
-        sub="Grupos que a Equipe aplica de uma vez"
+        sub="Grupos de músicos pra escalar de uma vez"
         voltarPara="/admin"
         acao={
           <Botao pequeno onClick={() => abrirCriacao(true)}>
@@ -66,7 +66,7 @@ export function Formacoes() {
         </ul>
       )}
 
-      {formacoes.dados && lista.length === 0 && <Vazio icone="pessoa">Nenhuma Formação ainda.</Vazio>}
+      {formacoes.dados && lista.length === 0 && <Vazio icone="pessoa">Nenhuma formação ainda.</Vazio>}
 
       {criando && <FolhaDeCriar fechar={() => abrirCriacao(false)} criar={criar} />}
     </section>
@@ -77,13 +77,12 @@ function FolhaDeCriar({ fechar, criar }: { fechar: () => void; criar: (nome: str
   const [nome, escrever] = useState('')
 
   return (
-    <Folha titulo="Nova Formação" fechar={fechar}>
+    <Folha titulo="Nova formação" fechar={fechar}>
       <Campo rotulo="Nome">
         <input value={nome} placeholder="Banda" onChange={(evento) => escrever(evento.target.value)} />
       </Campo>
-      <p className="dica">Ela nasce vazia; monte quem entra na tela seguinte.</p>
       <Botao largo disabled={!nome.trim()} onClick={() => criar(nome.trim())}>
-        Criar Formação
+        Criar formação
       </Botao>
     </Folha>
   )

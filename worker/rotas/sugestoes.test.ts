@@ -291,7 +291,7 @@ describe('promover Sugestão', () => {
     const { escala, sugestao } = await resposta.json<Promovida>()
 
     expect(escala.itens).toHaveLength(1)
-    expect(escala.itens[0]).toMatchObject({ tipo: 'inteira', tom: 'D', descricao: 'Rio · Tom D' })
+    expect(escala.itens[0]).toMatchObject({ tipo: 'inteira', tom: 'D', descricao: 'Rio · tom D' })
     expect(escala.itens[0].musica).toMatchObject({ id: 'rio' })
     expect(sugestao.promovidaEm).not.toBeNull()
     expect(sugestao).toMatchObject({ estado: 'aceita', decididaPor: { id: 'marcos' }, escala: { id: 'e1', data: FUTURO } })

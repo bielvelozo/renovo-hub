@@ -69,7 +69,7 @@ export async function comecarTarefa(id: IdDaTarefa, navegar: (caminho: string) =
     if (!escala) {
       return dirige
         ? 'Ainda não tem escala marcada. Comece criando as escalas do mês.'
-        : 'Você ainda não tem escala marcada. Quando o Ministro montar o mês, esta tarefa funciona.'
+        : 'Você ainda não está em nenhuma escala.'
     }
     caminho = comeco.tipo === 'culto' ? `/culto/${escala.id}` : `/escalas/${escala.id}${comeco.sufixo}`
   }

@@ -6,7 +6,6 @@ import {
   domingosDoMes,
   fimDeSemanaDe,
   formatarDia,
-  formatarDiaEMes,
   formatarDiaLongo,
   formatarDiaNumerico,
   hojeEmBrasilia,
@@ -75,13 +74,6 @@ describe('formatarDiaNumerico e segundos', () => {
     expect(segundos('2:10')).toBe(130)
     expect(segundos('')).toBe(0)
     expect(segundos('abc')).toBe(0)
-  })
-})
-
-describe('formatarDiaEMes', () => {
-  it('escreve só dia e mês abreviado, pra caber num rótulo', () => {
-    expect(formatarDiaEMes('2026-10-23')).toBe('23 out')
-    expect(formatarDiaEMes('2027-01-04')).toBe('4 jan')
   })
 })
 

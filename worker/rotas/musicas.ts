@@ -141,7 +141,7 @@ musicas.patch('/api/musicas/:id', exigirMinistro, async (c) => {
   const corpo = await corpoJson<Record<string, unknown>>(c.req.raw)
 
   if (corpo.titulo !== undefined && !ehTextoCheio(corpo.titulo)) {
-    return c.json({ erro: 'A Música precisa de um título.' }, 422)
+    return c.json({ erro: 'A música precisa de um título.' }, 422)
   }
   if (corpo.artista !== undefined && typeof corpo.artista !== 'string') {
     return c.json({ erro: 'O artista é um texto.' }, 422)
@@ -174,7 +174,7 @@ musicas.delete('/api/musicas/:id', exigirMinistro, async (c) => {
   }
 
   if (await estaEmAlgumRepertorio(c.env.DB, id)) {
-    return c.json({ erro: `${musica.titulo} está no Repertório de uma Escala. Tire de lá antes de apagar.` }, 409)
+    return c.json({ erro: `${musica.titulo} está no repertório de uma escala. Tire de lá antes de apagar.` }, 409)
   }
 
   await apagarMusica(c.env.DB, id)
@@ -225,7 +225,7 @@ async function responderMusica(db: D1Database, id: string) {
 
 const LINK_INVALIDO = 'Cole o link do vídeo no YouTube.'
 const VIDEO_DESCONHECIDO = 'O YouTube não reconheceu esse vídeo.'
-const TOM_INVALIDO = 'O Tom é um texto ou vazio.'
+const TOM_INVALIDO = 'O tom é um texto ou vazio.'
 const MUSICA_NAO_ENCONTRADA = 'Música não encontrada.'
 const ESCALA_NAO_ENCONTRADA = 'Escala não encontrada.'
 const BUSCA_SEM_CHAVE = 'A busca no YouTube ainda não está configurada. Cole o link do vídeo.'

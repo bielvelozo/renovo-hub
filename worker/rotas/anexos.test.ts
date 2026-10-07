@@ -139,7 +139,7 @@ describe('anexos da Sequência', () => {
 
     expect(resposta.status).toBe(422)
     expect((await resposta.json<{ erro: string }>()).erro).toBe(
-      'Não consegui ler a letra desse Word. Salve como .docx e tente de novo.',
+      'Não foi possível ler a letra desse Word. Salve como .docx e tente de novo.',
     )
 
     const { anexos } = await (await pedir('/api/musicas/rio/anexos', 'julia')).json<{ anexos: Anexo[] }>()
@@ -263,7 +263,7 @@ describe('anexos da Sequência', () => {
 
     expect(naoEhMedley.status).toBe(422)
     expect((await naoEhMedley.json<{ erro: string }>()).erro).toBe(
-      'Só um Medley recebe letra pela Escala. Para uma música, envie na tela dela.',
+      'Só um medley recebe letra pela escala. Para uma música, envie na tela dela.',
     )
     expect((await enviarNoItem(word('Do item'), 'nao-existe')).status).toBe(404)
   })

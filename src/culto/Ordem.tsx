@@ -12,7 +12,7 @@ import { TopoDoCulto } from './ModoCulto'
 import { NotaDoTom } from './NotaDoTom'
 
 export function Ordem() {
-  const { escala, catalogo, atualizadoEm, velho, erroAoAtualizar, baixando, atualizar, telaAcesa } = usarCulto()
+  const { escala, catalogo, atualizadoEm, velho, erroAoAtualizar, baixando, atualizar } = usarCulto()
   const hoje = hojeEmBrasilia()
   const pacote = estadoDoPacote(atualizadoEm, velho, erroAoAtualizar)
 
@@ -25,13 +25,15 @@ export function Ordem() {
       <div className="rolagem">
         <h1 className="titulo-da-ordem">{tituloDaOrdem(escala, hoje)}</h1>
 
-        <p className={pacote.alerta ? 'aviso estado-do-pacote' : 'dica estado-do-pacote'}>
-          {!pacote.alerta && <Icone nome="confirmar" />}
-          {pacote.texto}
-          <Botao variante="terciario" pequeno onClick={atualizar} carregando={baixando}>
-            Atualizar
-          </Botao>
-        </p>
+        {pacote && (
+          <p className={pacote.alerta ? 'aviso estado-do-pacote' : 'dica estado-do-pacote'}>
+            {!pacote.alerta && <Icone nome="confirmar" />}
+            {pacote.texto}
+            <Botao variante="terciario" pequeno onClick={atualizar} carregando={baixando}>
+              Atualizar
+            </Botao>
+          </p>
+        )}
 
         {escala.itens.length ? (
           <div className="ordem" data-guia="culto-ordem">
@@ -49,15 +51,9 @@ export function Ordem() {
             ))}
           </div>
         ) : (
-          <Vazio icone="musica">O Ministro ainda não escolheu as músicas</Vazio>
+          <Vazio icone="musica">O ministro ainda não escolheu as músicas</Vazio>
         )}
 
-        {escala.itens.length > 0 && (
-          <p className="dica">
-            Na letra, deslize para o lado para trocar de música.
-            {telaAcesa && ' A tela fica acesa enquanto o modo culto estiver aberto.'}
-          </p>
-        )}
       </div>
 
       <RodapeDeAcao

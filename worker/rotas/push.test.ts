@@ -115,7 +115,7 @@ describe('POST /api/push/teste', () => {
 
     expect(resposta.status).toBe(409)
     expect(await corpoDe<{ erro: string }>(resposta)).toEqual({
-      erro: 'Este aparelho ainda não está inscrito. Ative as notificações primeiro.',
+      erro: 'Ative as notificações neste aparelho primeiro.',
     })
   })
 

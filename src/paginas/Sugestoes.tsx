@@ -308,7 +308,7 @@ export function Sugestoes() {
     aba === 'abertas' ? abertas : aba === 'guardadas' ? guardadas : aceitas
 
   const vazioDaAba: Record<Aba, string> = {
-    abertas: 'Nenhuma sugestão aberta. Toque em Sugerir para pedir uma música.',
+    abertas: 'Nenhuma sugestão aberta.',
     guardadas: 'Nada guardado pra depois.',
     aceitas: 'Nenhuma sugestão aceita ainda.',
   }

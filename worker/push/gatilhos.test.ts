@@ -105,14 +105,14 @@ describe('avisarMudancaDeMusica', () => {
       env.DB,
       m,
       m.escalas[0],
-      { acao: 'entrou', descricao: 'Meia Noite (Tom G)' },
+      { acao: 'entrou', descricao: 'Meia Noite (tom G)' },
       'marcos',
       AGORA,
     )
 
     const fila = await vencidas(env.DB, AGORA)
     expect(fila.map((n) => n.membroId)).toEqual(['julia'])
-    expect(fila[0].corpo).toBe('Meia Noite (Tom G) entrou na Escala de dom, 13 de set de 2099')
+    expect(fila[0].corpo).toBe('Meia Noite (tom G) entrou na escala de dom, 13 de set de 2099')
   })
 
   it('agrupa as mudanças seguintes na mesma notificação pendente', async () => {
@@ -120,19 +120,19 @@ describe('avisarMudancaDeMusica', () => {
     const mudar = (descricao: string) =>
       avisarMudancaDeMusica(env.DB, m, m.escalas[0], { acao: 'entrou', descricao }, 'marcos', AGORA)
 
-    await mudar('Meia Noite (Tom G)')
-    await mudar('Sublime (Tom D)')
-    await mudar('Lugar Secreto (Tom A)')
+    await mudar('Meia Noite (tom G)')
+    await mudar('Sublime (tom D)')
+    await mudar('Lugar Secreto (tom A)')
 
     const fila = await vencidas(env.DB, AGORA)
     expect(fila).toHaveLength(1)
-    expect(fila[0].corpo).toBe('3 mudanças na Escala de dom, 13 de set de 2099')
+    expect(fila[0].corpo).toBe('3 mudanças na escala de dom, 13 de set de 2099')
     expect(fila[0].mudancas).toBe(3)
   })
 
   it('segura a mudança seguinte até fechar a janela de uma hora', async () => {
     const m = await carregarMinisterio(env.DB, { ids: ['futura'] })
-    await avisarMudancaDeMusica(env.DB, m, m.escalas[0], { acao: 'entrou', descricao: 'Meia Noite (Tom G)' }, 'marcos', AGORA)
+    await avisarMudancaDeMusica(env.DB, m, m.escalas[0], { acao: 'entrou', descricao: 'Meia Noite (tom G)' }, 'marcos', AGORA)
 
     const primeira = await vencidas(env.DB, AGORA)
     await marcarEnviadas(env.DB, [primeira[0].id], AGORA)
@@ -149,7 +149,7 @@ describe('avisarMudancaDeMusica', () => {
     await porNaEquipe('passada', 'julia', ['vocal'])
 
     const m = await carregarMinisterio(env.DB, { ids: ['passada'] })
-    await avisarMudancaDeMusica(env.DB, m, m.escalas[0], { acao: 'entrou', descricao: 'Meia Noite (Tom G)' }, 'marcos', AGORA)
+    await avisarMudancaDeMusica(env.DB, m, m.escalas[0], { acao: 'entrou', descricao: 'Meia Noite (tom G)' }, 'marcos', AGORA)
 
     expect(await vencidas(env.DB, AGORA)).toHaveLength(0)
   })
@@ -200,7 +200,7 @@ describe('gerarLembretes', () => {
 
     const fila = await vencidas(env.DB, agora)
     expect(fila.map((n) => n.membroId).sort()).toEqual(['julia', 'marcos'])
-    expect(fila[0].corpo).toBe('Amanhã 18h: Escala com 1 música. Toque pra ver os Tons.')
+    expect(fila[0].corpo).toBe('Amanhã, 18h · 1 música')
   })
 
   it('não enfileira dois dias antes', async () => {
@@ -249,8 +249,8 @@ describe('gerarPosCulto', () => {
     const fila = await vencidas(env.DB, VINTE_E_DUAS_E_MEIA)
     expect(fila).toHaveLength(1)
     expect(fila[0]).toMatchObject({ membroId: 'marcos', tipo: 'pos-culto', escalaId: 'hoje' })
-    expect(fila[0].titulo).toBe('Todas as músicas de hoje foram tocadas?')
-    expect(fila[0].corpo).toContain('1 música registrada')
+    expect(fila[0].titulo).toBe('Culto de Domingo: 1 música no histórico')
+    expect(fila[0].corpo).toBe('Se algo mudou na hora, ajuste na escala.')
   })
 
   it('manda uma vez só por Ministro por Escala', async () => {

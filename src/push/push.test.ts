@@ -94,7 +94,7 @@ describe('chaveDoServidor', () => {
   })
 
   it('recusa chave que não é ponto P-256', () => {
-    expect(() => chaveDoServidor('YWJj')).toThrow('Chave de push inválida.')
+    expect(() => chaveDoServidor('YWJj')).toThrow('Não foi possível ativar as notificações.')
   })
 })
 
@@ -117,7 +117,7 @@ describe('dadosDaInscricao', () => {
 
   it('reclama quando o navegador não devolve as chaves', () => {
     expect(() => dadosDaInscricao({ endpoint: 'https://x', getKey: () => null })).toThrow(
-      'O navegador não devolveu as chaves da inscrição.',
+      'Não foi possível ativar as notificações.',
     )
   })
 })

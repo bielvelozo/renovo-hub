@@ -58,7 +58,7 @@ export function NotificacoesCompactas({ silenciado }: { silenciado: boolean }) {
           {ligado && (
             <>
               <Botao variante="secundario" largo disabled={push.acao.ocupado} onClick={push.testar}>
-                Enviar push de teste
+                Testar notificação
               </Botao>
 
               <Segmento

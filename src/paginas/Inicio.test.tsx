@@ -109,13 +109,12 @@ describe('cartão pós-culto', () => {
 })
 
 describe('atalho do culto de hoje', () => {
-  it('no dia da Escala é o mesmo atalho da tela de Escala, com o horário de hoje', () => {
+  it('no dia da Escala é o mesmo atalho da tela de Escala', () => {
     mostrar(<CultoDeHoje escala={escala([item('i1', null), item('i2', null)])} hoje={HOJE} />)
 
-    const atalho = screen.getByRole('link', { name: /Abrir o modo culto/ })
+    const atalho = screen.getByRole('link', { name: 'Abrir o modo culto' })
     expect(atalho.getAttribute('href')).toBe('/culto/e0913')
     expect(atalho.className).toBe('atalho-do-culto')
-    expect(screen.getByText('Hoje às 18h · letras e tons, sem internet')).not.toBeNull()
   })
 
   it('some quando a Escala mostrada não é a de hoje', () => {
@@ -170,7 +169,7 @@ describe('marca «mudou» no Repertório do Início', () => {
     mostrar(<RepertorioDoInicio escala={escala([])} anexosPorDono={{}} hoje={HOJE} />)
 
     expect(screen.getByRole('heading', { level: 2, name: 'Repertório' })).not.toBeNull()
-    expect(screen.getByText('O Ministro ainda não escolheu as músicas.')).not.toBeNull()
+    expect(screen.getByText('O ministro ainda não escolheu as músicas.')).not.toBeNull()
     expect(screen.queryByText('Ouvir tudo')).toBeNull()
   })
 })
