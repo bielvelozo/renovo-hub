@@ -98,16 +98,30 @@ export function pedacosDoTitulo(titulo: string): string[] {
 }
 
 export function achadoCombina(nomeAchado: string, tituloOriginal: string): boolean {
-  const alvo = normalizarTexto(tituloOriginal)
-  const palavras = normalizarTexto(nomeAchado.replace(/\([^)]*\)/g, ' '))
-    .split(' ')
-    .filter((palavra) => palavra.length > 2)
+  return (
+    nomeEstaEm(nomeAchado, tituloOriginal, 0.7) &&
+    pedacosDoTitulo(tituloOriginal).some((pedaco) => nomeEstaEm(pedaco, nomeAchado, 0.6))
+  )
+}
 
+export function nomeEstaEm(nome: string, texto: string, minimo = 0.7): boolean {
+  const palavras = palavrasDoNome(nome)
   if (!palavras.length) return false
 
-  const dentro = palavras.filter((palavra) => alvo.includes(palavra)).length
+  const alvo = new Set(palavrasDe(texto))
 
-  return dentro / palavras.length >= 0.7
+  return palavras.filter((palavra) => alvo.has(palavra)).length / palavras.length >= minimo
+}
+
+function palavrasDoNome(nome: string): string[] {
+  const todas = palavrasDe(nome.replace(/\([^)]*\)|\[[^\]]*\]/g, ' '))
+  const longas = todas.filter((palavra) => palavra.length > 2)
+
+  return longas.length ? longas : todas
+}
+
+function palavrasDe(texto: string): string[] {
+  return normalizarTexto(texto).split(/[^a-z0-9]+/).filter(Boolean)
 }
 
 const DIAS_PARA_RECONFERIR = 7

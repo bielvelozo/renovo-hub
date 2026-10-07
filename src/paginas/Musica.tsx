@@ -311,7 +311,7 @@ function FolhaDeTom({
         escolher={(tom) => definir(musica.tomOriginal === tom ? null : tom)}
       />
 
-      <BuscaNoCifraClub musica={musica} aoUsar={definir} />
+      <BuscaNoCifraClub musica={musica} />
     </Folha>
   )
 }

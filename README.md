@@ -6,14 +6,14 @@ Internal app for the Renovo Music worship ministry: schedules, repertoire, execu
 
 A **Schedule** (Escala) is a service or event with a date, a **Team** (who plays what) and a **Repertoire** (an ordered list of songs, excerpts or medleys, each with the key it will be played in). When the day ends the Schedule becomes *Realizada* on its own and every item turns into an **Execution** derived from the plan, which is what answers "who has played this song" and "when did we last play it"; there is no attendance log to fill in afterwards.
 
-The vocabulary and rules live in [CONTEXT.md](./CONTEXT.md) and [docs/dominio/escala.md](./docs/dominio/escala.md) (Portuguese). The reasoning behind deriving Executions from the plan is in [ADR 0001](./docs/adr/0001-execucao-derivada-do-plano.md); reading the original key from Cifra Club, one lookup per song confirmed by the leader, is in [ADR 0002](./docs/adr/0002-ler-o-tom-no-cifra-club.md).
+The vocabulary and rules live in [CONTEXT.md](./CONTEXT.md) and [docs/dominio/escala.md](./docs/dominio/escala.md) (Portuguese). The reasoning behind deriving Executions from the plan is in [ADR 0001](./docs/adr/0001-execucao-derivada-do-plano.md); finding the song on Cifra Club so the leader can read the original key there, and why the app no longer reads the page itself, is in [ADR 0002](./docs/adr/0002-ler-o-tom-no-cifra-club.md).
 
 ## What it does
 
 - **Schedules**: a whole month of Sundays in one go (the second Sunday is born as *Santa Ceia*, the communion service) or a single event with its own date and time; cancel, undo, postpone, and edit past Schedules to correct history.
 - **Team**: members with one or more roles (vocal, guitar, acoustic guitar, bass, drums, keys, sound), grouped by role group; a reusable **Formation** applies the usual band in one tap; the worship leader (*Ministro*) is a mark on top of the roles.
 - **Repertoire**: whole songs, excerpts delimited by start/end timestamps in the reference video, and medleys; each item carries its key and an optional note for the group; drag to reorder.
-- **Keys**: a twelve-note keyboard with major/minor; the suggested key is the last Execution, then the hand-filled last known key, then the original key, which can be confirmed from Cifra Club.
+- **Keys**: a twelve-note keyboard with major/minor; the suggested key is the last Execution, then the hand-filled last known key, then the original key, which the leader looks up on the Cifra Club chart the app finds.
 - **Catalogue**: songs added by pasting a YouTube link (oEmbed) or by searching by name (YouTube Data API); a legacy import from the ministry's playlist; archive instead of delete when a song has history; title clean-up for review.
 - **Lyrics (Sequência)**: a Word document attached to a song or to a medley item, parsed in the Worker (markers, emphasis, versions) and shown as written.
 - **Service mode (Modo culto)**: a full-screen, offline view for the day of the Schedule that follows the chosen theme, fed by a bundle downloaded in the background; swipe, arrow keys or a foot pedal to move between items.

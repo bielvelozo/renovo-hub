@@ -194,7 +194,7 @@ function Formulario({
           (
             await api<MusicaDetalhada>('/api/musicas', {
               metodo: 'POST',
-              corpo: { link: escolha.link, tomOriginal: rascunho.tomOriginal },
+              corpo: { link: escolha.link },
             })
           ).id
 

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { api } from '../api/cliente'
 import type { AchadoNoCifraClub, ExecucaoApresentada, TomSugeridoApresentado } from '../api/tipos'
 import { usarAcao } from '../api/usarAcao'
-import { TOM_ORIGINAL, hojeEmBrasilia } from '../dominio'
+import { TOM_ORIGINAL, buscaNoCifraClub, hojeEmBrasilia } from '../dominio'
 import { textoDoHistorico, textoDoTomSugerido } from '../escalas/rascunho'
 import { Botao, classesDoBotao } from './Botao'
 import { SeletorDeTom } from './SeletorDeTom'
@@ -15,7 +15,6 @@ export function BlocoDeTom({
   tomOriginal,
   musica,
   escolher,
-  aoAcharOriginal,
 }: {
   tom: string | null
   sugerido: TomSugeridoApresentado | null
@@ -23,7 +22,6 @@ export function BlocoDeTom({
   tomOriginal: string | null
   musica: { titulo: string; artista: string }
   escolher: (tom: string) => void
-  aoAcharOriginal: (tom: string) => void
 }) {
   return (
     <div className="secao" data-guia="tom">
@@ -41,34 +39,32 @@ export function BlocoDeTom({
 
       <SeletorDeTom tom={tom} sugerido={sugerido?.tom ?? null} original={tomOriginal} escolher={escolher} />
 
-      <BuscaNoCifraClub musica={musica} aoUsar={aoAcharOriginal} rotulo="Descobrir o tom no Cifra Club" />
+      <BuscaNoCifraClub musica={musica} rotulo="Descobrir o tom no Cifra Club" />
 
       {historico.length > 1 && <p className="dica">Histórico: {textoDoHistorico(historico)}</p>}
     </div>
   )
 }
 
+type Procura = { estado: 'parada' } | { estado: 'achou'; achado: AchadoNoCifraClub } | { estado: 'nada' | 'descartou' }
+
 export function BuscaNoCifraClub({
   musica,
-  aoUsar,
   rotulo = 'Buscar no Cifra Club',
   classe = 'secundario largo',
 }: {
   musica: { titulo: string; artista: string }
-  aoUsar: (tom: string) => void
   rotulo?: string
   classe?: string
 }) {
   const acao = usarAcao()
-  const [achado, guardar] = useState<AchadoNoCifraClub | null>(null)
-  const [procurou, marcar] = useState(false)
+  const [procura, mudar] = useState<Procura>({ estado: 'parada' })
 
   const procurar = () =>
     acao.executar(async () => {
       const busca = new URLSearchParams({ termo: musica.titulo, artista: musica.artista })
-      const resposta = await api<{ achado: AchadoNoCifraClub | null }>(`/api/cifraclub?${busca}`)
-      guardar(resposta.achado)
-      marcar(true)
+      const { achado } = await api<{ achado: AchadoNoCifraClub | null }>(`/api/cifraclub?${busca}`)
+      mudar(achado ? { estado: 'achou', achado } : { estado: 'nada' })
     })
 
   return (
@@ -79,37 +75,41 @@ export function BuscaNoCifraClub({
         {rotulo}
       </Botao>
 
-      {achado && (
+      {procura.estado === 'achou' && (
         <div className="achado">
           <p className="titulo">
-            {achado.titulo} · {achado.artista}
+            {procura.achado.titulo} · {procura.achado.artista}
           </p>
-          <p className="dica">
-            No Cifra Club está em <strong>{achado.tom}</strong>. Confira se é a mesma música.
-          </p>
+          <p className="dica">O tom fica no alto da cifra. Confira se é a mesma música e escolha o mesmo tom no teclado.</p>
           <div className="acoes">
-            <Botao
-              pequeno
-              disabled={acao.ocupado}
-              onClick={() => {
-                aoUsar(achado.tom)
-                guardar(null)
-              }}
-            >
-              Usar {achado.tom}
-            </Botao>
-            <a className={classesDoBotao({ variante: 'secundario', pequeno: true })} href={achado.url} target="_blank" rel="noopener">
-              Abrir
+            <a className={classesDoBotao({ pequeno: true })} href={procura.achado.url} target="_blank" rel="noopener">
+              Abrir a cifra
             </a>
-            <Botao variante="secundario" pequeno onClick={() => guardar(null)}>
+            <Botao variante="secundario" pequeno onClick={() => mudar({ estado: 'descartou' })}>
               Não é essa
             </Botao>
           </div>
         </div>
       )}
 
-      {procurou && !achado && !acao.ocupado && (
-        <Vazio icone="cifra">O Cifra Club não achou o tom desta música. Escolha à mão no teclado.</Vazio>
+      {(procura.estado === 'nada' || procura.estado === 'descartou') && !acao.ocupado && (
+        <Vazio
+          icone="cifra"
+          acao={
+            <a
+              className={classesDoBotao({ variante: 'secundario', pequeno: true })}
+              href={buscaNoCifraClub(musica)}
+              target="_blank"
+              rel="noopener"
+            >
+              Procurar no Cifra Club
+            </a>
+          }
+        >
+          {procura.estado === 'nada'
+            ? 'A busca não achou a cifra desta música. Procure no site e escolha o tom no teclado.'
+            : 'Procure a versão certa no site e escolha o tom no teclado.'}
+        </Vazio>
       )}
     </>
   )

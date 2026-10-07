@@ -245,6 +245,15 @@ describe('achadoCombina', () => {
   it('recusa nome vazio', () => {
     expect(achadoCombina('', titulo)).toBe(false)
   })
+
+  it('aceita título de uma palavra curta, sem achar pedaço dela dentro de outra palavra', () => {
+    expect(achadoCombina('Fé', 'Fé')).toBe(true)
+    expect(achadoCombina('Fé', 'Café da Manhã')).toBe(false)
+  })
+
+  it('recusa música que só divide uma palavra com o título', () => {
+    expect(achadoCombina('Quem Me Vê', 'Quem É Esse?')).toBe(false)
+  })
 })
 
 describe('precisaReconferir', () => {
