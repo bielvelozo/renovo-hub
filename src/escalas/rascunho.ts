@@ -22,7 +22,6 @@ export type Escolha = {
 export type Rascunho = {
   escolha: Escolha
   tom: string | null
-  tomOriginal: string | null
   modo: ModoDoItem
   inicio: string
   fim: string
@@ -93,7 +92,6 @@ export function rascunhoDe(
   return {
     escolha,
     tom: sugerido?.tom ?? null,
-    tomOriginal: null,
     modo: 'inteira',
     inicio: '',
     fim: '',
@@ -114,7 +112,6 @@ export function rascunhoDoTrecho(trecho: TrechoEmMontagem): Rascunho {
   return {
     escolha: trecho.escolha,
     tom: trecho.tom,
-    tomOriginal: null,
     modo: 'trecho',
     inicio: trecho.inicio,
     fim: trecho.fim,
@@ -132,7 +129,6 @@ export function rascunhoDoItem(item: ItemApresentado, escolha: Escolha): Rascunh
     return {
       escolha,
       tom: null,
-      tomOriginal: null,
       modo: 'inteira',
       inicio: '',
       fim: '',
@@ -144,7 +140,6 @@ export function rascunhoDoItem(item: ItemApresentado, escolha: Escolha): Rascunh
   return {
     escolha,
     tom: item.tom,
-    tomOriginal: null,
     modo: item.tipo,
     inicio: item.tipo === 'trecho' ? item.inicio : '',
     fim: item.tipo === 'trecho' ? item.fim : '',

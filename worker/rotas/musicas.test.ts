@@ -250,35 +250,27 @@ describe('buscar no YouTube', () => {
   })
 })
 
-describe('tom pelo Cifra Club', () => {
-  const PAGINA = '<div id="key"><p>Tom</p><p class="x">F#m</p></div>'
+describe('cifra pelo Cifra Club', () => {
+  const doc = (m: string, a: string, d: string, u: string) => ({ t: '2', m, a, d, u })
+  const busca = (...docs: ReturnType<typeof doc>[]) => ({
+    'solr.sscdn.co': { status: 200, corpo: { response: { docs } } },
+  })
 
-  it('devolve a música achada e o tom, pro Ministro confirmar', async () => {
-    const rede = fingirRede({
-      'solr.sscdn.co': {
-        status: 200,
-        corpo: { response: { docs: [{ t: '2', m: 'Rio', a: 'Nívea Soares', d: 'nivea-soares', u: 'rio' }] } },
-      },
-      'cifraclub.com.br/nivea-soares/rio': { status: 200, texto: PAGINA },
-    })
+  it('devolve a cifra achada sem abrir a página, pro Ministro ver o tom lá', async () => {
+    const rede = fingirRede(busca(doc('Rio', 'Nívea Soares', 'nivea-soares', 'rio')))
 
-    const resposta = await pedir('/api/cifraclub?termo=rio%20nivea', 'marcos')
+    const resposta = await pedir('/api/cifraclub?termo=rio&artista=Nívea%20Soares', 'marcos')
 
     expect(resposta.status).toBe(200)
     expect(await resposta.json()).toEqual({
-      achado: {
-        titulo: 'Rio',
-        artista: 'Nívea Soares',
-        tom: 'F#m',
-        url: 'https://www.cifraclub.com.br/nivea-soares/rio/',
-      },
+      achado: { titulo: 'Rio', artista: 'Nívea Soares', url: 'https://www.cifraclub.com.br/nivea-soares/rio/' },
     })
-    expect(rede.chamadas[0]).toContain('solr.sscdn.co')
-    expect(rede.chamadas[0]).toContain('rio%20nivea')
+    expect(rede.chamadas).toHaveLength(1)
+    expect(rede.chamadas[0]).toContain('q=rio%20N%C3%ADvea%20Soares')
   })
 
   it('devolve nada quando a busca não acha a música', async () => {
-    fingirRede({ 'solr.sscdn.co': { status: 200, corpo: { response: { docs: [] } } } })
+    fingirRede(busca())
 
     const resposta = await pedir('/api/cifraclub?termo=rio', 'marcos')
 
@@ -286,16 +278,39 @@ describe('tom pelo Cifra Club', () => {
     expect(await resposta.json()).toEqual({ achado: null })
   })
 
-  it('devolve nada quando a página não mostra o tom', async () => {
-    fingirRede({
-      'solr.sscdn.co': {
-        status: 200,
-        corpo: { response: { docs: [{ t: '2', m: 'Rio', a: 'Nívea Soares', d: 'nivea-soares', u: 'rio' }] } },
-      },
-      'cifraclub.com.br/nivea-soares/rio': { status: 200, texto: '<div>sem cartão</div>' },
-    })
+  it('passa do primeiro resultado quando ele é outra música', async () => {
+    fingirRede(
+      busca(
+        doc('Amar Como Você', 'José Jr', 'jose-jr', 'amar-como-voce'),
+        doc('Como Não Te Amar (Part. Lucas Magno)', 'Gabi Sampaio', 'gabi-sampaio', 'como-nao-te-amar'),
+      ),
+    )
 
-    expect(await (await pedir('/api/cifraclub?termo=rio', 'marcos')).json()).toEqual({ achado: null })
+    const corpo = await (await pedir('/api/cifraclub?termo=Como%20N%C3%A3o%20Te%20Amar', 'marcos')).json()
+
+    expect(corpo).toMatchObject({ achado: { artista: 'Gabi Sampaio' } })
+  })
+
+  it('prefere a versão do artista da Música', async () => {
+    fingirRede(
+      busca(doc('Tudo Mudou', 'Belo', 'belo', 'tudo-mudou'), doc('Tudo Mudou', 'SOM DO CÉU', 'som-do-ceu', 'tudo-mudou')),
+    )
+
+    const corpo = await (
+      await pedir('/api/cifraclub?termo=Tudo%20Mudou&artista=SOM%20DO%20C%C3%89U%2C%20Gabi%20Sampaio', 'marcos')
+    ).json()
+
+    expect(corpo).toMatchObject({ achado: { artista: 'SOM DO CÉU' } })
+  })
+
+  it('acha quando o título e o artista vieram trocados do YouTube', async () => {
+    fingirRede(busca(doc('Em Teus Braços', 'Laura Souguellis', 'laura-souguellis', 'em-teus-bracos')))
+
+    const corpo = await (
+      await pedir('/api/cifraclub?termo=LAURA%20SOUGUELLIS&artista=Em%20teus%20bra%C3%A7os', 'marcos')
+    ).json()
+
+    expect(corpo).toMatchObject({ achado: { titulo: 'Em Teus Braços' } })
   })
 
   it('Membro comum não consulta', async () => {

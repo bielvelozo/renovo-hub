@@ -140,6 +140,7 @@ export {
   partesDoTom,
   precisaReconferir,
   achadoCombina,
+  nomeEstaEm,
   pedacosDoTitulo,
   tomDe,
   linkDeVideos,

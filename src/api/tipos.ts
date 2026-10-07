@@ -191,7 +191,6 @@ export type MusicaDetalhada = MusicaNaLista & {
 export type AchadoNoCifraClub = {
   titulo: string
   artista: string
-  tom: string
   url: string
 }
 

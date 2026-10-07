@@ -45,7 +45,7 @@ Conforme os ADRs e o README do projeto:
 
 - **Ritmo mensal**: o Ministro cria o mês de domingos de uma vez; o segundo domingo nasce Santa Ceia às 08h. Vocal e a marca de Ministro são decididos no mês.
 - **Ritmo semanal**: os Músicos entram na semana, quase sempre aplicando uma Formação (conjunto reutilizável de instrumentistas) e ajustando. O Repertório é preenchido um Item por vez: Música inteira, Trecho com minutagem ou Medley, cada um com Tom e observação opcional do Ministro.
-- **Adicionar música**: por link do YouTube ou Spotify, ou busca por nome pela YouTube Data API (100 buscas por dia; sem chave, o app pede o link). O Tom original pode vir do Cifra Club (ADR 0002). O alerta de repetição ("tocada há N dias", "também dia X") aparece só nesse momento.
+- **Adicionar música**: por link do YouTube ou Spotify, ou busca por nome pela YouTube Data API (100 buscas por dia; sem chave, o app pede o link). Pro Tom original, o app acha a cifra no Cifra Club e o Ministro confere o tom lá (ADR 0002). O alerta de repetição ("tocada há N dias", "também dia X") aparece só nesse momento.
 - **Comunicação**: o app gera o texto do WhatsApp agrupado por Grupo de Funções (Vocal, Músicos, Som) e manda push: "você foi escalado", "música na sua Escala" (agrupada, no máximo um por hora por Escala), cancelamento ou remarcação, lembrete às 10h da véspera. Editar Escala Realizada nunca avisa ninguém.
 - **Domingo**: o modo culto mostra a ordem dos Itens com o Tom em letra grande e a Sequência a um toque, lendo só do Pacote do culto. A Escala vira Realizada à meia-noite do dia, não no horário marcado.
 - **Depois**: Escalas Realizadas continuam editáveis sem prazo, em silêncio; é a única forma de corrigir o histórico.
