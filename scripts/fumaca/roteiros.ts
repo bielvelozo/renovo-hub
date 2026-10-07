@@ -330,7 +330,7 @@ export async function roteiroDaSugestao(prova: Prova, cenario: Cenario): Promise
   const item = ultimoItem(promovida.escala)
   const ligacao = consultar(cenario.raiz, `select origem_sugestao_id from itens where id = '${item.id}'`)
 
-  prova.conferir('promover cria o Item na Escala escolhida', item.descricao.includes('Tom A'), item.descricao)
+  prova.conferir('promover cria o Item na Escala escolhida', item.descricao.includes('tom A'), item.descricao)
   prova.conferir(
     'o Item guarda de qual Sugestão veio',
     ligacao[0]?.origem_sugestao_id === sugestao.id,
@@ -377,7 +377,7 @@ export async function roteiroDoWhatsapp(prova: Prova, cenario: Cenario): Promise
   )
   prova.conferir(
     'o Repertório sai numerado com Tom',
-    /^1\. .+ · Tom G · /m.test(texto),
+    /^1\. .+ · tom G · /m.test(texto),
     texto.split('\n').find((linha) => linha.startsWith('1. ')),
   )
   prova.conferir('o Trecho sai com a minutagem', texto.includes('(2:10–4:35)'))
