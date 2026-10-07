@@ -83,7 +83,7 @@ Não há Realizada. A reunião é **marcada** ou **cancelada**; "já passou" é 
   Alinhar o repertório de novembro.
   ```
   Primeira linha no formato do título da Escala (`nome horário · dd/mm`), com ` · cancelada` no fim quando cancelada. Linha de local só se houver; observação depois de uma linha em branco, só se houver.
-- `quandoDaReuniao(reuniao, hoje)`: "hoje", "amanhã" ou "em N dias", para a dica do Início.
+- A dica "hoje", "amanhã" ou "em N dias" do Início reaproveita `quandoAcontece(data, hoje)` de `src/inicio/inicio.ts`, a mesma do cartão da Escala.
 - Avisos (`avisoDeReuniaoMarcada`, `avisoDeReuniaoLembrete`, `avisoDeReuniaoMudou`, `avisoDeReuniaoCancelada`), com o texto da seção 4 e `url: /reunioes/:id`.
 
 ### Vocabulário
@@ -118,19 +118,25 @@ A tabela `notificacoes` hoje só aponta para `escalas` (`escala_id` com cascade)
 
 `reunioesDoMes(db, mes)`, `reunioesEntre(db, de, ate)`, `reunioesDoDia(db, data)`, `reuniaoPorId(db, id)`, `criarReuniao`, `atualizarReuniao`, `definirReuniaoCancelada`. A reunião **não** entra em `carregarMinisterio`: quem não pede, não vê.
 
+### Fila de notificações (`worker/dados/notificacoes.ts`)
+
+Hoje `NovaNotificacao`, `enfileirar`, `COLUNAS`/`LinhaDeNotificacao` e `jaTeve` só carregam `escalaId`. Ganham o caminho de `reuniaoId`: a notificação grava `reuniao_id`, e o "já teve" do lembrete pergunta por Membro, tipo e `reuniao_id`. Passar o id da reunião no `jaTeve` atual nunca casaria, e o lembrete se repetiria a cada 15 minutos. `TipoDeNotificacao` (`src/dominio/notificacoes.ts`) ganha os quatro tipos da seção 4.
+
 ## 3. API
 
 Todas com o mesmo formato de erro e as mesmas mensagens de validação da Escala (`DATA_INVALIDA`, `HORARIO_INVALIDO`).
 
 | Rota | Quem | O que faz |
 | --- | --- | --- |
-| `GET /api/escalas?mes=` | Membro | Passa a devolver também `reunioes` do mês, para o Mês montar a lista numa requisição só |
+| `GET /api/escalas?mes=` | Membro | Passa a devolver também `reunioes` do mês, para o Mês montar a lista numa requisição só. Sem `?mes=` (usado pela `FolhaDeEscolhaDeEscala`) continua como está |
 | `GET /api/inicio` | Membro | Passa a devolver `reunioes` (resultado de `reunioesDoInicio`) |
 | `GET /api/reunioes/:id` | Membro | A reunião, com o nome de quem marcou quando houver. 404 com "Reunião não encontrada." |
 | `POST /api/reunioes` | Ministro | Cria. Corpo `{ data, horario, nome, local?, observacao? }`. Nome vazio vira "Reunião". Data antes de hoje: 422 "Escolha uma data de hoje em diante." Avisa "marcada" |
-| `PATCH /api/reunioes/:id` | Ministro | Edita qualquer campo. Mudar a data para antes de hoje: 422 com a mesma mensagem. Avisa "mudou" só se mudou data, horário ou local e a reunião é de hoje em diante |
-| `POST /api/reunioes/:id/cancelar` | Ministro | Marca cancelada. Avisa "cancelada" se for de hoje em diante |
-| `POST /api/reunioes/:id/desfazer` | Ministro | Desfaz o cancelamento. Avisa "marcada" de novo se for de hoje em diante. Diferente da Escala, que desfaz em silêncio: aqui todo mundo foi avisado do cancelamento |
+| `PATCH /api/reunioes/:id` | Ministro | Edita qualquer campo. Mudar a data para antes de hoje: 422 com a mesma mensagem. Avisa "mudou" só se mudou data, horário ou local, a reunião não está cancelada e é de hoje em diante |
+| `POST /api/reunioes/:id/cancelar` | Ministro | Marca cancelada. Avisa "cancelada" só se ela não estava cancelada e é de hoje em diante |
+| `POST /api/reunioes/:id/desfazer` | Ministro | Desfaz o cancelamento. Avisa "marcada" de novo só se ela estava cancelada e é de hoje em diante. Diferente da Escala, que desfaz em silêncio: aqui todo mundo foi avisado do cancelamento |
+
+Regra geral: aviso só sai quando o estado muda de verdade. Cancelar o que já está cancelado, ou desfazer o que não está, responde 200 sem avisar ninguém. O "já teve" não serve para isso, porque cancelar, desfazer e cancelar de novo é um caminho válido.
 
 ## 4. Avisos
 
@@ -149,31 +155,33 @@ O lembrete entra no `rodarNotificacoes` do cron de 15 minutos, ao lado de `gerar
 
 ## 5. Telas
 
-Todas seguem o canvas aprovado e os componentes existentes (`Cabecalho`, `Folha`, `Segmento`, `Campo`, `Botao`, `Selo`, `Menu`, `Vazio`).
+Todas seguem o canvas aprovado e os componentes existentes (`Cabecalho`, `Folha`, `Segmento`, `Campo`, `Botao`, `Selo`, `Menu`, `Vazio`). O cliente trata `reunioes` como opcional nas respostas de `/api/inicio` e `/api/escalas`: o PWA serve `/api/*` da rede com cache de reserva, e uma resposta guardada antes da publicação chega sem o campo.
 
 ### Mês (`src/paginas/Mes.tsx`, `src/escalas/mes.ts`)
 
 - O botão "Nova escala" do cabeçalho vira **Marcar** (mantém `data-guia="nova-escala"`). A folha ganha um `Segmento` Escala/Reunião no topo, começando em Escala; o título acompanha ("Nova escala" / "Nova reunião"). O lado Escala fica como está hoje.
-- Lado Reunião: dica "Para o ministério inteiro, sem Equipe e sem músicas. Todo mundo recebe o aviso."; campos Nome (placeholder "Reunião do louvor"), Data e Horário lado a lado, Local · opcional, Observação · opcional (área de texto); botão **Marcar reunião**. A data começa em hoje quando o mês visto é o corrente, senão no dia 1 do mês visto. Ao marcar, abre a página da reunião.
+- Lado Reunião: dica "Para o ministério inteiro, sem Equipe e sem músicas. Todo mundo recebe o aviso."; campos Nome (placeholder "Reunião do louvor"), Data e Horário lado a lado, Local · opcional, Observação · opcional (área de texto); botão **Marcar reunião**. A data começa no maior entre hoje e o dia 1 do mês visto (mês passado aberto começa em hoje); o horário começa em 19:30, como no lado Escala. Ao marcar, abre a página da reunião.
 - `linhasDoMes` passa a intercalar reuniões e Escalas por data e horário. Linha da reunião: bloco do dia, nome, dica "horário · local", selo cinza "reunião", e selo "cancelada" (perigo) com o nome em cinza quando cancelada. Sem selo de pendência.
 - "Hoje não tem nada marcado" considera as reuniões.
-- O resumo conta as duas: "4 escalas e 2 reuniões no mês · você está em 3" (o "você está em" continua contando só Escalas).
-- O recolhido das passadas conta as duas: "1 escala e 1 reunião já passaram".
+- Mês com reunião e sem Escala: a lista aparece com as reuniões, e o vazio "Nenhuma escala em …" não aparece. Em `src/paginas/Mes.tsx`, o vazio, o resumo e a lista deixam de depender só de `escalas.length` e passam a depender de haver Escala ou reunião. O botão "Criar os N domingos" continua aparecendo para quem dirige sempre que faltam domingos: embaixo da lista quando há linhas, dentro do vazio quando não há nada.
+- `domingosQueFaltam` continua contando só Escalas: reunião num domingo nunca impede de criar o culto daquele domingo.
+- O resumo conta as duas: "4 escalas e 2 reuniões no mês · você está em 3"; sem reunião, fica como hoje; sem Escala, só "1 reunião no mês" ou "2 reuniões no mês". O "você está em" continua contando só Escalas.
+- O recolhido das passadas conta as duas: "1 escala e 1 reunião já passaram"; só reuniões, "1 reunião já passou".
 - O texto do guia em `src/guia/tarefas.ts` troca "toque em Nova escala" por "toque em Marcar".
 
 ### Página da reunião (`/reunioes/:id`, `src/paginas/Reuniao.tsx`)
 
-- Cabeçalho com voltar, nome e "dia, horário". Para Ministro e Admin, menu "···" com **Cancelar reunião** (ou **Desfazer cancelamento**).
+- Cabeçalho com voltar, nome e "dia, horário". Para Ministro e Admin, menu "···" com **Cancelar reunião** (ou **Desfazer cancelamento**). Cancelar pede confirmação numa folha, como a Escala: título "Cancelar a reunião de sáb, 10 de out?", dica "Todo mundo recebe o aviso. Dá pra desfazer depois.", botão de perigo "Sim, cancelar".
 - Cartão com três linhas de ícone: data por extenso com horário ("Sábado, 10 de outubro, às 13h"), local (só se houver), "Para todo o ministério".
 - Observação em cartão próprio, com rótulo, só se houver.
 - Dica "Marcada por Marcos em 1 de out." (sem o "por" quando não há autor).
-- Cancelada: faixa de aviso "Reunião cancelada" no topo do conteúdo.
-- Rodapé de ação: **WhatsApp** para todos (copia o texto da seção 1); **Editar** ao lado, só para Ministro e Admin, abrindo a mesma folha preenchida, sem segmento, com título "Editar reunião" e botão "Salvar".
-- Id inexistente: a mesma tela de "não encontrada" da Escala.
+- Cancelada: o mesmo cartão de cancelada da Escala (`Cartao className="pagina cancelada"` em `src/paginas/Escala.tsx`) no topo do conteúdo, com "Reunião cancelada".
+- Rodapé de ação: **WhatsApp** para todos, abrindo a folha "Texto pro WhatsApp" de `src/componentes/FolhasDaEscala.tsx` com o texto da seção 1 (a folha passa a aceitar o texto pronto além do `escalaId`, já que a reunião não precisa de rota de texto). **Editar** ao lado, só para Ministro e Admin e só quando não está cancelada (como o `podeEditar` da Escala), abrindo a mesma folha preenchida, sem segmento, com título "Editar reunião" e botão "Salvar". No servidor, editar uma cancelada é aceito e não avisa.
+- Id inexistente: o padrão da Escala, `Cabecalho` mais `ErroDeCarga` com a mensagem da API ("Reunião não encontrada.") e "Tentar de novo". Não é a página `NaoEncontrada`, que é a rota `*`.
 
 ### Início (`src/paginas/Inicio.tsx`)
 
-- Depois do cartão da próxima Escala (ou do vazio, quando não há Escala), rótulo **Reunião** e um cartão com uma linha por reunião de `reunioesDoInicio`: bloco do dia, nome, dica "horário · local · em N dias" ("hoje", "amanhã"), seta para a página. Cancelada leva o selo "cancelada".
+- Logo depois do cartão da próxima Escala (ou do vazio, quando não há Escala) e antes das pendências e do Repertório, nas duas ordens que o Início já tem (`pendenciasAntes`), rótulo **Reunião** e um cartão com uma linha por reunião de `reunioesDoInicio`: bloco do dia, nome, dica "horário · local · em N dias" ("hoje", "amanhã"), seta para a página. Cancelada leva o selo "cancelada".
 - A reunião nunca muda o título do Início, nunca entra em "Precisa de atenção", nunca vira "Culto de hoje" nem atalho do modo culto.
 
 ## 6. Migração dos dados de produção
@@ -209,11 +217,14 @@ DELETE FROM escalas WHERE id IN (
 
 ## 8. Testes
 
-- `src/dominio/reuniao.test.ts`: janela do Início (limites de 0 e 7 dias, canceladas incluídas, ordem), texto do WhatsApp (com e sem local, com e sem observação, cancelada), textos dos quatro avisos, "hoje/amanhã/em N dias".
+- `src/dominio/reuniao.test.ts`: janela do Início (limites de 0 e 7 dias, canceladas incluídas, ordem), texto do WhatsApp (com e sem local, com e sem observação, cancelada), textos dos quatro avisos.
 - `src/escalas/mes.test.ts`: linhas intercaladas, "hoje não tem nada" com reunião hoje, resumo e recolhido contando as duas.
-- `worker/rotas/reunioes.test.ts`: Membro não cria nem edita (403); data passada recusada; criar avisa todos os ativos menos o autor e nenhum inativo; editar só nome ou observação não avisa; editar data avisa "mudou"; cancelar e desfazer avisam; reunião passada não avisa; 404.
+- `worker/rotas/reunioes.test.ts`: Membro não cria nem edita (403); data passada recusada; criar avisa todos os ativos menos o autor e nenhum inativo; editar só nome ou observação não avisa; editar data avisa "mudou"; cancelar uma marcada e desfazer uma cancelada avisam; reunião passada não avisa; 404.
 - `worker/push/gatilhos.test.ts`: lembrete da véspera para todos, uma vez só, nada para cancelada.
-- `worker/rotas/escalas.test.ts` e `inicio.test.ts`: `reunioes` nas respostas, e a prova de que a reunião não aparece em pendências, presença, pacote do culto nem bloqueia a criação do mês.
+- `worker/rotas/escalas.test.ts`: `reunioes` em `?mes=`, ausente sem `?mes=`, e reunião num domingo não impede `POST /api/escalas/mes` de criar aquele culto.
+- `worker/rotas/inicio.test.ts`: `reunioes` na resposta, e a reunião fora das pendências e do título.
+- `worker/rotas/perfil.test.ts` e `worker/rotas/culto.test.ts`: a reunião não conta presença e não entra no Pacote do culto.
+- `worker/rotas/reunioes.test.ts` também cobre: cancelar o que já está cancelado e desfazer o que não está não avisam; editar uma cancelada não avisa.
 - `worker/testes/migracoes.test.ts`: a `0014` aplica sobre o banco atual.
 - `src/paginas/Inicio.test.tsx` e um teste da página da reunião: cartão renderiza, Editar só para quem dirige.
 
