@@ -27,6 +27,7 @@ const ITENS: ItemDoCulto[] = [
     titulo: 'Rio',
     artista: 'Nívea Soares',
     tom: 'D',
+    original: false,
     inicio: null,
     fim: null,
     observacao: '',
@@ -37,7 +38,8 @@ const ITENS: ItemDoCulto[] = [
     musicaId: 'dono',
     titulo: 'Dono do Mundo',
     artista: 'Renovo',
-    tom: 'original',
+    tom: 'G',
+    original: true,
     inicio: null,
     fim: null,
     observacao: '',
@@ -48,8 +50,16 @@ const ITENS: ItemDoCulto[] = [
     observacao: '',
     letra: null,
     trechos: [
-      { musicaId: 'rio', titulo: 'Rio', artista: 'Nívea Soares', tom: 'D', inicio: '0:00', fim: '2:30' },
-      { musicaId: 'sublime', titulo: 'Sublime', artista: 'fhop music', tom: 'original', inicio: '1:10', fim: '3:05' },
+      { musicaId: 'rio', titulo: 'Rio', artista: 'Nívea Soares', tom: 'D', original: false, inicio: '0:00', fim: '2:30' },
+      {
+        musicaId: 'sublime',
+        titulo: 'Sublime',
+        artista: 'fhop music',
+        tom: 'original',
+        original: true,
+        inicio: '1:10',
+        fim: '3:05',
+      },
     ],
   },
 ]
@@ -58,8 +68,8 @@ function escalaCom(itens: ItemDoCulto[], data = hojeEmBrasilia()): EscalaDoCulto
   return { id: 'e1', data, horario: '18:00', titulo: 'Culto de Domingo 18h', itens }
 }
 
-function mostrar(escala: EscalaDoCulto, extras: Partial<Culto> = {}) {
-  const culto: Culto = {
+function cultoDe(escala: EscalaDoCulto, extras: Partial<Culto> = {}): Culto {
+  return {
     escala,
     catalogo: CATALOGO,
     atualizadoEm: null,
@@ -69,16 +79,22 @@ function mostrar(escala: EscalaDoCulto, extras: Partial<Culto> = {}) {
     atualizar: () => {},
     ...extras,
   }
+}
 
-  return render(
+function arvore(culto: Culto) {
+  return (
     <MemoryRouter initialEntries={['/culto/e1']}>
       <Routes>
         <Route path="/culto/:escalaId" element={<Outlet context={culto} />}>
           <Route index element={<Ordem />} />
         </Route>
       </Routes>
-    </MemoryRouter>,
+    </MemoryRouter>
   )
+}
+
+function mostrar(escala: EscalaDoCulto, extras: Partial<Culto> = {}) {
+  return render(arvore(cultoDe(escala, extras)))
 }
 
 describe('ordem do culto', () => {
@@ -91,11 +107,12 @@ describe('ordem do culto', () => {
     expect(screen.getByText('Nívea Soares · letra')).not.toBeNull()
   })
 
-  it('troca a nota grande por selo quando o tom é o original', () => {
+  it('mostra a nota resolvida do tom original em grande, com o selo «original» embaixo', () => {
     mostrar(escalaCom(ITENS))
 
-    expect(screen.getByText('tom original')).not.toBeNull()
-    expect(screen.queryByText('original')).toBeNull()
+    expect(document.querySelector('.nota-com-selo .nota')?.textContent).toBe('G')
+    expect(screen.getByText('original').className).toContain('selo')
+    expect(screen.queryByText('tom original')).toBeNull()
   })
 
   it('junta os trechos do Medley com os tons abreviados', () => {
@@ -119,11 +136,17 @@ describe('ordem do culto', () => {
     expect(screen.getByText('Pesquisar música')).not.toBeNull()
   })
 
-  it('sem internet e com pacote recente, segue tranquilo: só a hora da atualização', () => {
-    mostrar(escalaCom(ITENS), { atualizadoEm: '2026-09-12T17:00:00.000Z', erroAoAtualizar: 'Sem conexão' })
+  it('com pacote recente, dá só a hora da atualização', () => {
+    mostrar(escalaCom(ITENS), { atualizadoEm: '2026-09-12T17:00:00.000Z' })
 
     expect(screen.getByText('Atualizado sáb, 14h')).not.toBeNull()
-    expect(screen.queryByText(/Última atualização/)).toBeNull()
+  })
+
+  it('sem conseguir atualizar um pacote recente, conta sem virar alerta', () => {
+    mostrar(escalaCom(ITENS), { atualizadoEm: '2026-09-12T17:00:00.000Z', erroAoAtualizar: 'Sem conexão' })
+
+    const linha = screen.getByText('Não deu para atualizar · última vez sáb, 14h')
+    expect(linha.className).not.toContain('aviso')
   })
 
   it('só alerta quando o pacote está velho e não deu pra atualizar', () => {
@@ -133,17 +156,31 @@ describe('ordem do culto', () => {
       erroAoAtualizar: 'Sem conexão',
     })
 
-    expect(screen.getByText('Última atualização sáb, 14h')).not.toBeNull()
+    expect(screen.getByText('Não deu para atualizar · última vez sáb, 14h').className).toContain('aviso')
     expect(screen.queryByText(/^Atualizado/)).toBeNull()
   })
 
-  it('deixa atualizar o pacote na hora', () => {
+  it('atualiza o pacote ao abrir a Ordem e de novo pelo botão', () => {
     const atualizar = vi.fn()
     mostrar(escalaCom(ITENS), { atualizadoEm: '2026-09-12T17:00:00.000Z', atualizar })
 
+    expect(atualizar).toHaveBeenCalledTimes(1)
+
     fireEvent.click(screen.getByText('Atualizar'))
 
-    expect(atualizar).toHaveBeenCalledOnce()
+    expect(atualizar).toHaveBeenCalledTimes(2)
+  })
+
+  it('avisa quando um pacote novo muda a ordem, e cala quando nada mudou', () => {
+    const tela = mostrar(escalaCom(ITENS))
+
+    expect(screen.queryByRole('status')).toBeNull()
+
+    tela.rerender(arvore(cultoDe(escalaCom(ITENS))))
+    expect(screen.queryByRole('status')).toBeNull()
+
+    tela.rerender(arvore(cultoDe(escalaCom([...ITENS].reverse()))))
+    expect(screen.getByRole('status').textContent).toBe('Ordem atualizada agora')
   })
 
 })

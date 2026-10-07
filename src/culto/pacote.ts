@@ -17,8 +17,6 @@ const avisos = new EventTarget()
 
 let emMemoria: Pacote | null = null
 
-// Guardar pode faltar (navegação privada, armazenamento bloqueado) ou estourar a quota:
-// quando isso acontece o pacote vale só nesta sessão, em memória, e nada quebra.
 export function guardarPacote(pacote: Pacote, deposito = doAparelho()): void {
   try {
     deposito?.setItem(CHAVE_DO_PACOTE, JSON.stringify(pacote))

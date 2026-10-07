@@ -184,7 +184,6 @@ export function CorpoDaEquipe({
       await navigator.clipboard.writeText(mudos.join(', '))
       avisar('Copiado')
     } catch {
-      // Sem permissão de área de transferência: o Ministro copia os nomes à mão.
     }
   }
 

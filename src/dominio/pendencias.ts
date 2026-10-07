@@ -80,8 +80,6 @@ export function resumoDosGrupos(todas: Funcao[], equipe: EntradaEquipe[]): Resum
   })
 }
 
-// "2 de 3" conta as vagas mínimas preenchidas, não pessoas: quem toca dois instrumentos
-// preenche duas vagas, e a conta nunca diz "3 de 3" com uma Função em falta.
 function textoDoGrupo(grupo: Grupo, escalados: number, preenchidas: number, minimo: number, faltam: string[]): string {
   const nome = NOME_DO_GRUPO[grupo].toLowerCase()
   if (!minimo) return `${nome} ${escalados}`
@@ -99,8 +97,6 @@ function ordenadas(funcoes: Funcao[]): Funcao[] {
   return [...funcoes].sort((a, b) => a.ordem - b.ordem || a.nome.localeCompare(b.nome))
 }
 
-// O plural só serve pros nomes de Função que o Admin cadastra, sempre uma palavra:
-// vocal → vocais, violão → violões, som → sons.
 function plural(nome: string): string {
   if (nome.endsWith('ão')) return nome.slice(0, -2) + 'ões'
   if (nome.endsWith('al')) return nome.slice(0, -2) + 'ais'

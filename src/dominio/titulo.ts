@@ -55,9 +55,6 @@ function separar(titulo: string, canal: string): TituloLimpo {
   return { titulo: aparar(partes[0] ?? ''), artista: semSufixos(canal) }
 }
 
-// O YouTube tanto põe o canal depois do corte ("Música | Canal") quanto antes
-// ("Canal | Música"): fica o primeiro pedaço que não é só o canal. Um pedaço que
-// tem hífen carrega título e artista juntos, então nunca é descartado.
 function pedacoPrincipal(texto: string, canal: string): string {
   const pedacos = texto.split(CORTES).filter((pedaco) => aparar(pedaco) !== '' && !ehSoRuido(pedaco))
   const nomeDoCanal = normalizar(semSufixos(canal))

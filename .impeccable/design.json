@@ -382,7 +382,7 @@
       },
       "letra": {
         "displayName": "Letra",
-        "purpose": "400 em 1.45; 17px por padrão em oito passos de 15 a 34, guardados no aparelho. O marcador é Label que cresce com a letra: max(12px, 0.7em)."
+        "purpose": "400 em 1.45, em oito passos de 15 a 34: 17px por padrão fora do culto e 26px no palco, cada lugar guardado no aparelho em chave própria. O marcador é Label que cresce com a letra: max(12px, 0.7em). Cada verso é um bloco, sem recuo na continuação e com quebra sem palavra sozinha; 0.5em entre versos, para as linhas de um verso que quebrou ficarem juntas; estrofes separadas por 1.5em, cerca de uma linha em branco; no palco, 500 com +0.01em."
       }
     },
     "shadows": [
@@ -576,7 +576,7 @@
       },
       {
         "name": "Regra do Par",
-        "body": "Todo token de cor nasce como light-dark(claro, escuro) em src/estilo/tokens.css, declarado em :root, .culto. Nenhum hex solto em componente. O modo culto força o escuro trocando só o color-scheme da sua subárvore, e é por isso que os tokens precisam estar declarados também em .culto: o light-dark() é resolvido onde a custom property é declarada, não onde é usada (descoberto em 28/09/2026, quando o modo culto renderizava claro no tema claro).",
+        "body": "Todo token de cor nasce como light-dark(claro, escuro) em src/estilo/tokens.css, declarado em :root. Nenhum hex solto em componente. Quem troca o tema é só o color-scheme da raiz; nenhuma subárvore redeclara o seu. Se um dia voltar a ser preciso, lembrar que o light-dark() é resolvido onde a custom property é declarada, não onde é usada, e os tokens teriam que ser declarados também nessa subárvore (descoberto em 28/09/2026, quando o modo culto forçava o escuro e renderizava claro no tema claro; a força saiu em 04/10/2026, quando o modo culto passou a seguir o tema da pessoa).",
         "section": "colors"
       },
       {

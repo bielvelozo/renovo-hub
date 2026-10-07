@@ -12,7 +12,6 @@ fotos.get('/api/membros/:id/foto', exigirMembro, async (c) => {
   const foto = await lerFoto(c.env.DB, c.req.param('id'))
   if (!foto) return c.json({ erro: FOTO_NAO_ENCONTRADA }, 404)
 
-  // A URL leva a versão (?v=), então a mesma URL nunca muda de conteúdo.
   return new Response(foto.conteudo, {
     headers: {
       'content-type': foto.mime,

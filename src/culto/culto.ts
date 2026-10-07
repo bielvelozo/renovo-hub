@@ -1,4 +1,4 @@
-import type { EscalaDoCulto, ItemDoCulto, MusicaDoCulto, TomDoCulto } from '../api/tipos'
+import type { EscalaDoCulto, ItemDoCulto, MusicaDoCulto, Pacote, TomDoCulto } from '../api/tipos'
 import type { Letra } from '../dominio'
 import {
   TOM_ORIGINAL,
@@ -6,7 +6,7 @@ import {
   formatarDia,
   formatarDiaNumerico,
   hojeEmBrasilia,
-  horaEmBrasilia,
+  minutosEmBrasilia,
   nomeDoDia,
   normalizarTexto,
   rotuloDoHorario,
@@ -27,6 +27,14 @@ export function itemAnterior(itens: ItemDoCulto[], itemId: string): ItemDoCulto 
 
 export function itemSeguinte(itens: ItemDoCulto[], itemId: string): ItemDoCulto | null {
   return vizinho(itens, itemId, 1)
+}
+
+export function escalaDoPacote(
+  pacote: Pick<Pacote, 'escalas'>,
+  escalaId: string,
+  aberta: EscalaDoCulto | null,
+): EscalaDoCulto | null {
+  return pacote.escalas.find((escala) => escala.id === escalaId) ?? (aberta?.id === escalaId ? aberta : null)
 }
 
 export function musicaDoCatalogo(catalogo: MusicaDoCulto[], musicaId: string): MusicaDoCulto | null {
@@ -100,7 +108,10 @@ export function tituloDaOrdem(escala: Pick<EscalaDoCulto, 'data'>, hoje: string)
 
 export function quandoAtualizado(geradoEm: string): string {
   const momento = new Date(geradoEm)
-  return `${nomeDoDia(hojeEmBrasilia(momento))}, ${horaEmBrasilia(momento)}h`
+  const minutos = minutosEmBrasilia(momento)
+  const horario = `${String(Math.floor(minutos / 60)).padStart(2, '0')}:${String(minutos % 60).padStart(2, '0')}`
+
+  return `${nomeDoDia(hojeEmBrasilia(momento))}, ${rotuloDoHorario(horario)}`
 }
 
 export type EstadoDoPacote = { texto: string; alerta: boolean }
@@ -113,9 +124,14 @@ export function estadoDoPacote(
   if (!atualizadoEm) return null
 
   const quando = quandoAtualizado(atualizadoEm)
-  if (velho && erroAoAtualizar) return { texto: `Última atualização ${quando}`, alerta: true }
+  if (erroAoAtualizar) return { texto: `Não deu para atualizar · última vez ${quando}`, alerta: velho }
 
   return { texto: `Atualizado ${quando}`, alerta: false }
+}
+
+export function ordemMudou(antes: ItemDoCulto[], depois: ItemDoCulto[]): boolean {
+  const assinatura = (itens: ItemDoCulto[]) => itens.map((item) => `${item.id}:${tomNoRodape(item)}`).join('|')
+  return assinatura(antes) !== assinatura(depois)
 }
 
 export function ultimoTomTocado(tom: TomDoCulto | null): string | null {
@@ -127,7 +143,6 @@ export function ultimoTomTocado(tom: TomDoCulto | null): string | null {
 
 export type AcaoDaTecla = 'anterior' | 'seguinte' | 'descer' | 'subir'
 
-// Um pedal Bluetooth manda setas, PageDown/PageUp ou Espaço: no palco a mão está ocupada.
 export function acaoDaTecla(tecla: string, shift = false): AcaoDaTecla | null {
   switch (tecla) {
     case 'ArrowRight':

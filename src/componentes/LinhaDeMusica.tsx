@@ -71,7 +71,6 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
   const tomADireita = posicaoDoTom === 'direita'
   const recente = !ehMedley && !!props.musica.recente && !!ultima
   const planejadas = ehMedley ? [] : (props.musica.planejadaEm ?? [])
-  // Dentro de um link ou botão, a letra vira selo: o caminho é a Música ou a folha do Item.
   const mioloInterativo = modo === 'navegacao' || (modo === 'leitura' && !!aoEscolher)
 
   const miolo = (
@@ -141,8 +140,6 @@ export function LinhaDeMusica(props: PropriedadesDaLinha) {
     tomADireita && tom && <ColunaDoTom tom={tom} />
   )
 
-  // A alça e o que vem em `direita` ficam fora do botão: arrastar a linha pra
-  // reordenar não pode abrir a folha do Item.
   const tocavelNaLeitura = modo === 'leitura' && !!aoEscolher
 
   return (

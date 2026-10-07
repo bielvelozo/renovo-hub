@@ -28,15 +28,11 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // O SW gerado não trata push: `push.js` entra nele por importScripts, que
-        // é bem mais barato que trocar tudo por injectManifest.
         importScripts: ['/push.js'],
         globIgnores: ['**/push.js'],
         navigateFallback: '/index.html',
-        // /api/* e /entrar/* são do Worker; servir o index em cima deles quebraria o convite.
         navigateFallbackDenylist: [/^\/api\//, /^\/entrar\//],
         runtimeCaching: [
-          // A URL da foto leva a versão, então servir do cache nunca mostra foto velha.
           {
             urlPattern: ({ url, request }) =>
               request.method === 'GET' && url.pathname.startsWith('/api/membros/') && url.pathname.endsWith('/foto'),
@@ -48,7 +44,8 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: ({ url, request }) => url.pathname.startsWith('/api/') && request.method === 'GET',
+            urlPattern: ({ url, request }) =>
+              url.pathname.startsWith('/api/') && request.method === 'GET' && url.pathname !== '/api/culto/pacote',
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api',

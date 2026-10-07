@@ -23,7 +23,6 @@ function comEscalas(escalas: Escala[], hoje = HOJE): Ministerio {
   return { ...ministerioDeExemplo(hoje), escalas }
 }
 
-// Brasília é UTC−3: 22:30 do dia 13 é 01:30 UTC do dia 14.
 const ANTES = new Date('2026-09-14T01:29:00.000Z')
 const NA_HORA = new Date('2026-09-14T01:30:00.000Z')
 const DIA_SEGUINTE = new Date('2026-09-14T15:00:00.000Z')

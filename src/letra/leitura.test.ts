@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest'
 import {
   CHAVE_DA_VELOCIDADE,
   CHAVE_DO_TAMANHO,
+  CHAVE_DO_TAMANHO_NO_PALCO,
   PASSO_PADRAO,
+  PASSO_PADRAO_NO_PALCO,
   TAMANHOS_DA_LETRA,
   VELOCIDADE_MAXIMA,
   VELOCIDADE_MINIMA,
@@ -102,6 +104,19 @@ describe('preferências guardadas no aparelho', () => {
 
     expect(deposito.getItem(CHAVE_DO_TAMANHO)).toBe('4')
     expect(lerPassoDaLetra(deposito)).toBe(4)
+  })
+
+  it('no palco começa nos 26 px e guarda em chave própria, sem mexer na da casca', () => {
+    const deposito = depositoFalso()
+
+    expect(tamanhoDoPasso(PASSO_PADRAO_NO_PALCO)).toBe(26)
+    expect(lerPassoDaLetra(deposito, 'palco')).toBe(PASSO_PADRAO_NO_PALCO)
+
+    guardarPassoDaLetra(7, deposito, 'palco')
+
+    expect(deposito.getItem(CHAVE_DO_TAMANHO_NO_PALCO)).toBe('7')
+    expect(lerPassoDaLetra(deposito, 'palco')).toBe(7)
+    expect(lerPassoDaLetra(deposito)).toBe(PASSO_PADRAO)
   })
 
   it('guarda e lê a velocidade', () => {

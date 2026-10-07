@@ -37,7 +37,6 @@ export function ProvedorDeTema({ children }: { children: ReactNode }) {
     try {
       localStorage.setItem(CHAVE_DO_TEMA, preferencia)
     } catch {
-      // Navegador com armazenamento bloqueado: o tema vale só nesta sessão.
     }
   }, [preferencia, tema])
 

@@ -15,8 +15,6 @@ export type Ordenacao = {
   }
 }
 
-// Arrastar no toque não usa o drag-and-drop do HTML, que o celular ignora: são
-// eventos de ponteiro, com `touch-action: none` na alça pra o dedo não rolar a página.
 export function usarOrdenacao(quantos: number, aoSoltar: (de: number, para: number) => void): Ordenacao {
   const [ordem, definirOrdem] = useState<number[] | null>(null)
   const [arrastando, definirArrastando] = useState<number | null>(null)
@@ -57,8 +55,6 @@ export function usarOrdenacao(quantos: number, aoSoltar: (de: number, para: numb
           const sob = indiceSobOPonteiro(caixas, movimento.clientY)
           if (sob === null || sob === atual) return
 
-          // `atual` é lido dentro do atualizador, que o React roda depois: sem guardar
-          // a posição de agora, a reatribuição abaixo faria mover de um lugar pra ele mesmo.
           const de = atual
           atual = sob
 

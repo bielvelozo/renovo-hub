@@ -79,7 +79,6 @@ function Balao({ andamento }: { andamento: Andamento }) {
   useEffect(() => {
     if (passo.avanco !== 'toque') return
 
-    // Na captura, antes do próprio alvo tratar o toque: o guia avança e a ação do botão segue normal.
     const aoTocar = (evento: MouseEvent) => {
       const alvo = acharAlvo(passo.alvo)
       if (alvo && evento.target instanceof Node && alvo.contains(evento.target)) window.setTimeout(passarAdiante, 0)

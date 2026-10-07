@@ -24,7 +24,6 @@ function gravar(novo: Andamento | null) {
     if (novo) sessionStorage.setItem(CHAVE, JSON.stringify(novo))
     else sessionStorage.removeItem(CHAVE)
   } catch {
-    // Sem sessionStorage o guia só não sobrevive a um recarregamento.
   }
   assinantes.forEach((avisar) => avisar())
 }

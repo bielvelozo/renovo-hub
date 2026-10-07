@@ -51,8 +51,6 @@ export async function avisarEscalados(
   }
 }
 
-// Um push por hora por Escala: enquanto houver pendente, a mudança nova entra
-// nela; logo depois de um envio, a próxima espera fechar a janela.
 export async function avisarMudancaDeMusica(
   db: D1Database,
   m: Ministerio,
@@ -160,8 +158,6 @@ export async function gerarLembretes(db: D1Database, agora: Date): Promise<numbe
   return criados
 }
 
-// Lembrete de fim de culto: não filtra por estado, porque a Escala de hoje só
-// vira Realizada à meia-noite e o cartão precisa aparecer nesta noite.
 export async function gerarPosCulto(db: D1Database, agora: Date): Promise<number> {
   if (minutosEmBrasilia(agora) < MINUTOS_DO_POS_CULTO) return 0
 

@@ -14,17 +14,12 @@ body,
   height: 100%;
 }
 
-/* Dentro do app quem rola é `.conteudo`, não a página. Sem isto o iPhone estica a
-   tela inteira no fim da lista e abre um vazio acima do cabeçalho e abaixo das abas. */
 html,
 body {
   overflow: hidden;
   overscroll-behavior: none;
 }
 
-/* As telas de fora da casca (convite, «esqueci», instalação) não têm `.conteudo`:
-   sem rolagem aqui elas ficam cortadas. Com a casca dentro, `#raiz` tem exatamente
-   a altura da tela e não rola, então o elástico continua fora. */
 #raiz {
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -112,8 +107,6 @@ a {
   outline-offset: 2px;
 }
 
-/* casca */
-
 .casca {
   display: flex;
   flex-direction: column;
@@ -190,8 +183,6 @@ a {
   scroll-padding-bottom: 104px;
 }
 
-/* A faixa cobre o padding de `.conteudo` com margem negativa, pra nada aparecer
-   rolando ao lado dela; o miolo continua alinhado aos 720 px. */
 .conteudo .faixa {
   position: sticky;
   top: -16px;
@@ -424,8 +415,6 @@ nav.abas .contagem {
   }
 }
 
-/* utilitários */
-
 .cresce {
   flex: 1;
   min-width: 0;
@@ -511,7 +500,6 @@ nav.abas .contagem {
   font-weight: 600;
 }
 
-/* Na mesa, rótulo e valor a 900 px de distância não se leem juntos: cada fato vira uma coluna. */
 @media (min-width: 900px) {
   .fatos {
     flex-direction: row;
@@ -547,7 +535,6 @@ nav.abas .contagem {
   margin-left: -8px;
 }
 
-/* A pendência é lida, não gritada: só o ícone leva a cor de Atenção. */
 .estado {
   display: flex;
   align-items: center;
@@ -581,7 +568,6 @@ nav.abas .contagem {
   gap: 8px;
 }
 
-/* O botão de fechar tem 44 px; a margem negativa devolve o X ao canto sem furar os 16 px do cartão. */
 .cartao.pos-culto .botao.icone {
   margin: -12px -12px 0 0;
 }
@@ -677,8 +663,6 @@ nav.abas .contagem {
   display: flex;
   align-items: center;
 }
-
-/* telas */
 
 .alca {
   flex: none;
@@ -780,7 +764,6 @@ nav.abas .contagem {
   padding-inline: 14px;
 }
 
-/* A lista em cartão recorta o que sai dela; o anel de foco de 2 px fica por dentro da linha. */
 .lista.cartao .toque:focus-visible {
   outline-offset: -3px;
 }

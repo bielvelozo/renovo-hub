@@ -1,15 +1,17 @@
 import { describe, expect, it } from 'vitest'
-import type { EscalaDoCulto, ItemDoCulto, MusicaDoCulto } from '../api/tipos'
+import type { EscalaDoCulto, ItemDoCulto, MusicaDoCulto, Pacote } from '../api/tipos'
 import type { Letra } from '../dominio'
 import {
   acaoDaTecla,
   buscarNoCatalogo,
   dicaDoItem,
+  escalaDoPacote,
   estadoDoPacote,
   itemAnterior,
   itemSeguinte,
   letrasDoMedley,
   maisTocadas,
+  ordemMudou,
   posicaoDoItem,
   quandoAtualizado,
   tituloDaOrdem,
@@ -29,7 +31,18 @@ function musica(id: string, titulo: string, extras: Partial<MusicaDoCulto> = {})
 }
 
 function inteira(id: string, musicaId: string, titulo: string, tom = 'G'): ItemDoCulto {
-  return { id, tipo: 'inteira', musicaId, titulo, artista: 'Renovo', tom, inicio: null, fim: null, observacao: '' }
+  return {
+    id,
+    tipo: 'inteira',
+    musicaId,
+    titulo,
+    artista: 'Renovo',
+    tom,
+    original: tom === 'original',
+    inicio: null,
+    fim: null,
+    observacao: '',
+  }
 }
 
 function medley(trechos: [string, string][], letra: Letra | null = null): ItemDoCulto {
@@ -41,6 +54,7 @@ function medley(trechos: [string, string][], letra: Letra | null = null): ItemDo
       titulo: musicaId === 'rio' ? 'Rio' : 'Sublime',
       artista: 'Renovo',
       tom,
+      original: tom === 'original',
       inicio: '0:00',
       fim: '2:30',
     })),
@@ -189,6 +203,37 @@ describe('título e dica do Item', () => {
   })
 })
 
+describe('mudança na ordem', () => {
+  const antes = [inteira('i1', 'rio', 'Rio', 'D'), inteira('i2', 'dono', 'Dono do Mundo', 'G')]
+
+  it('cala quando os Itens e os tons são os mesmos', () => {
+    expect(ordemMudou(antes, [inteira('i1', 'rio', 'Rio', 'D'), inteira('i2', 'dono', 'Dono do Mundo', 'G')])).toBe(false)
+  })
+
+  it('avisa quando a ordem, um tom ou a lista mudou', () => {
+    expect(ordemMudou(antes, [antes[1], antes[0]])).toBe(true)
+    expect(ordemMudou(antes, [inteira('i1', 'rio', 'Rio', 'E'), antes[1]])).toBe(true)
+    expect(ordemMudou(antes, [antes[0]])).toBe(true)
+  })
+})
+
+describe('escala do pacote', () => {
+  const escala: EscalaDoCulto = { id: 'e1', data: '2026-09-20', horario: '18:00', titulo: 'Culto', itens: [] }
+  const pacoteCom = (escalas: EscalaDoCulto[]): Pacote => ({ geradoEm: '2026-09-20T20:00:00.000Z', escalas, catalogo: [] })
+
+  it('acha a Escala no pacote', () => {
+    expect(escalaDoPacote(pacoteCom([escala]), 'e1', null)).toBe(escala)
+  })
+
+  it('segura a Escala aberta quando o pacote novo chega sem ela, como na vigília depois da meia-noite', () => {
+    expect(escalaDoPacote(pacoteCom([]), 'e1', escala)).toBe(escala)
+  })
+
+  it('não reaproveita a Escala aberta para outro id', () => {
+    expect(escalaDoPacote(pacoteCom([]), 'e2', escala)).toBeNull()
+  })
+})
+
 describe('teclas do palco, do teclado ou de um pedal', () => {
   it('setas trocam de música; PageDown, PageUp e Espaço rolam a letra', () => {
     expect(acaoDaTecla('ArrowRight')).toBe('seguinte')
@@ -243,8 +288,9 @@ describe('textos do modo culto', () => {
     expect(tituloDaOrdem(escala, '2026-09-16')).toBe('Ordem de dom, 20 de set')
   })
 
-  it('diz quando o pacote foi atualizado', () => {
+  it('diz quando o pacote foi atualizado, com os minutos quando não é hora cheia', () => {
     expect(quandoAtualizado('2026-09-12T17:00:00.000Z')).toBe('sáb, 14h')
+    expect(quandoAtualizado('2026-09-12T17:40:00.000Z')).toBe('sáb, 14:40')
   })
 
   it('dá a hora da atualização e só alerta quando o pacote está velho e não deu pra atualizar', () => {
@@ -252,10 +298,13 @@ describe('textos do modo culto', () => {
     const tranquilo = { texto: 'Atualizado sáb, 14h', alerta: false }
 
     expect(estadoDoPacote(geradoEm, false, null)).toEqual(tranquilo)
-    expect(estadoDoPacote(geradoEm, false, 'Sem conexão')).toEqual(tranquilo)
     expect(estadoDoPacote(geradoEm, true, null)).toEqual(tranquilo)
+    expect(estadoDoPacote(geradoEm, false, 'Sem conexão')).toEqual({
+      texto: 'Não deu para atualizar · última vez sáb, 14h',
+      alerta: false,
+    })
     expect(estadoDoPacote(geradoEm, true, 'Sem conexão')).toEqual({
-      texto: 'Última atualização sáb, 14h',
+      texto: 'Não deu para atualizar · última vez sáb, 14h',
       alerta: true,
     })
     expect(estadoDoPacote(null, false, null)).toBeNull()

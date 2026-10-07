@@ -18,7 +18,6 @@ export async function reduzirFoto(arquivo: File): Promise<File> {
   contexto.imageSmoothingQuality = 'high'
   contexto.drawImage(imagem, recorte.x, recorte.y, recorte.lado, recorte.lado, 0, 0, lado, lado)
 
-  // Safari não gera WebP no canvas e devolve PNG no lugar; aí vai JPEG.
   const webp = await comprimir(tela, 'image/webp', 0.82)
   const blob = webp.type === 'image/webp' ? webp : await comprimir(tela, 'image/jpeg', 0.85)
 

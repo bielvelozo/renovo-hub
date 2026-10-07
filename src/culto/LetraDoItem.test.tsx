@@ -26,6 +26,7 @@ const ITENS: ItemDoCulto[] = [
     titulo: 'Rio',
     artista: 'Nívea Soares',
     tom: 'D',
+    original: false,
     inicio: null,
     fim: null,
     observacao: 'Começar mais baixo, só piano',
@@ -37,6 +38,7 @@ const ITENS: ItemDoCulto[] = [
     titulo: 'Dono do Mundo',
     artista: 'Renovo',
     tom: 'G',
+    original: false,
     inicio: null,
     fim: null,
     observacao: '',
@@ -46,7 +48,9 @@ const ITENS: ItemDoCulto[] = [
     tipo: 'medley',
     observacao: '',
     letra: null,
-    trechos: [{ musicaId: 'rio', titulo: 'Rio', artista: 'Nívea Soares', tom: 'E', inicio: '0:00', fim: '2:30' }],
+    trechos: [
+      { musicaId: 'rio', titulo: 'Rio', artista: 'Nívea Soares', tom: 'E', original: false, inicio: '0:00', fim: '2:30' },
+    ],
   },
 ]
 
@@ -98,6 +102,7 @@ describe('letra do Item no modo culto', () => {
     expect(screen.getByText('E me mostrou um rio')).not.toBeNull()
     expect(document.querySelector('.bloco-do-tom .nota.grande')?.textContent).toBe('D')
     expect(document.querySelector('.nota.palco')).toBeNull()
+    expect(document.documentElement.style.getPropertyValue('--tamanho-da-letra')).toBe('26px')
   })
 
   it('sem letra, o Tom toma o palco em vez do bloco do cabeçalho', () => {
@@ -168,12 +173,17 @@ describe('letra do Item no modo culto', () => {
     expect(screen.getByText('1 de 3')).not.toBeNull()
   })
 
-  it('as teclas não valem com o foco num botão', () => {
+  it('as setas valem mesmo com o foco no rodapé; num campo de texto, não', () => {
     mostrar('i1')
 
     fireEvent.keyDown(screen.getByText('Primeira').closest('button')!, { key: 'ArrowRight' })
+    expect(screen.getByText('2 de 3')).not.toBeNull()
 
-    expect(screen.getByText('1 de 3')).not.toBeNull()
+    const campo = document.createElement('input')
+    document.body.append(campo)
+    fireEvent.keyDown(campo, { key: 'ArrowLeft' })
+    expect(screen.getByText('2 de 3')).not.toBeNull()
+    campo.remove()
   })
 
   it('não sai da última ao deslizar pra frente', () => {

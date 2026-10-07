@@ -83,7 +83,7 @@ export function LetraDoItem() {
         {item.observacao && <p className="observacao-do-culto">{item.observacao}</p>}
       </div>
 
-      {letra && <BarraDeLeitura key={itemId} rolagem={corpo} />}
+      {letra && <BarraDeLeitura key={itemId} rolagem={corpo} lugar="palco" />}
 
       <div
         className={letra ? 'rolagem' : 'rolagem culto-parado'}
@@ -95,7 +95,7 @@ export function LetraDoItem() {
           <CorpoDaLetra letra={letra} />
         ) : (
           <>
-            {item.tipo !== 'medley' && <TomNoPalco tom={item.tom} />}
+            {item.tipo !== 'medley' && <TomNoPalco tom={item.tom} original={item.original} />}
             <Vazio icone="documento">Sem letra ainda</Vazio>
           </>
         )}
@@ -155,7 +155,7 @@ function MusicaNoTopo({
       {!tomNoPalco && (
         <p className="bloco-do-tom">
           {item.tom !== TOM_ORIGINAL && <span className="rotulo-do-tom">Tom</span>}
-          <NotaDoTom tom={item.tom} tamanho="grande" />
+          <NotaDoTom tom={item.tom} original={item.original} tamanho="grande" />
         </p>
       )}
     </div>
@@ -176,7 +176,7 @@ function MedleyNoTopo({ item }: { item: ItemDoCulto }) {
               {trecho.artista} · {trecho.inicio}–{trecho.fim}
             </span>
           </span>
-          <NotaDoTom tom={trecho.tom} />
+          <NotaDoTom tom={trecho.tom} original={trecho.original} />
         </p>
       ))}
     </>

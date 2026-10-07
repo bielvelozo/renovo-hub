@@ -4,9 +4,6 @@ export type RespostaFalsa = { status: number; corpo?: unknown; texto?: string; f
 
 export type RedeFalsa = { chamadas: string[] }
 
-// A versão 0.22 do pool não exporta mais `fetchMock` de `cloudflare:test`. Como o
-// Worker roda no mesmo isolate do teste, trocar o `fetch` global alcança as duas
-// pontas e ainda deixa contar chamadas, que é como se prova o cache do oEmbed.
 export function fingirRede(rotas: Record<string, RespostaFalsa>): RedeFalsa {
   const chamadas: string[] = []
 
@@ -35,7 +32,6 @@ export function fingirRede(rotas: Record<string, RespostaFalsa>): RedeFalsa {
 
 export type PushFalso = { pedidos: Request[] }
 
-// O despacho precisa do pedido inteiro (cabeçalhos e corpo cifrado), não só da URL.
 export function fingirPush(status: (endpoint: string) => number): PushFalso {
   const pedidos: Request[] = []
 

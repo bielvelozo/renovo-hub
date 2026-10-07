@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import {
+  TOM_ORIGINAL,
   hojeEmBrasilia,
   limparTitulo,
   musicaPorId,
@@ -25,9 +26,10 @@ culto.get('/api/culto/pacote', exigirMembro, async (c) => {
   const [m, letras] = await Promise.all([carregarMinisterio(c.env.DB), letrasMaisNovas(c.env.DB)])
 
   const hoje = hojeEmBrasilia()
+  const desde = somarDias(hoje, -1)
   const ate = somarDias(hoje, DIAS_DO_PACOTE)
   const escalas = m.escalas
-    .filter((escala) => !escala.cancelada && escala.data >= hoje && escala.data <= ate)
+    .filter((escala) => !escala.cancelada && escala.data >= desde && escala.data <= ate)
     .sort((a, b) => a.data.localeCompare(b.data))
 
   const emEscala = new Set(escalas.flatMap((escala) => escala.itens.flatMap(musicasDoItem)))
@@ -59,7 +61,7 @@ function itemDoCulto(m: Ministerio, item: Item, porItem: Record<string, Letra>):
       trechos: item.trechos.map((trecho) => ({
         musicaId: trecho.musicaId,
         ...nomeDaMusica(musicaPorId(m, trecho.musicaId)),
-        tom: trecho.tom,
+        ...tomResolvido(musicaPorId(m, trecho.musicaId), trecho.tom),
         inicio: trecho.inicio,
         fim: trecho.fim,
       })),
@@ -73,7 +75,7 @@ function itemDoCulto(m: Ministerio, item: Item, porItem: Record<string, Letra>):
     tipo: item.tipo,
     musicaId: item.musicaId,
     ...nomeDaMusica(musicaPorId(m, item.musicaId)),
-    tom: item.tom,
+    ...tomResolvido(musicaPorId(m, item.musicaId), item.tom),
     inicio: item.tipo === 'trecho' ? item.inicio : null,
     fim: item.tipo === 'trecho' ? item.fim : null,
     observacao: item.observacao,
@@ -102,6 +104,11 @@ function tomDoCulto(m: Ministerio, musicaId: string): TomDoCulto | null {
     data: sugerido.data,
     ministradoPorNome: nomeDe(m, sugerido.ministradoPor ?? null),
   }
+}
+
+function tomResolvido(musica: Musica, tom: string): { tom: string; original: boolean } {
+  if (tom !== TOM_ORIGINAL) return { tom, original: false }
+  return { tom: musica.tomOriginal ?? TOM_ORIGINAL, original: true }
 }
 
 function nomeDaMusica(musica: Musica): { titulo: string; artista: string } {

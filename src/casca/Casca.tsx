@@ -44,7 +44,6 @@ export function Casca() {
 function Dentro({ eu, trocarEu }: { eu: Eu; trocarEu: (eu: Eu) => void }) {
   const sugestoes = usarContagemDeSugestoes()
 
-  // O pacote do culto é melhor esforço: quem avisa da falha é o modo culto, não o app inteiro.
   useEffect(() => {
     baixarPacote().catch(() => {})
   }, [])

@@ -49,7 +49,6 @@ const INSTRUCOES: Record<Plataforma, Instrucao> = {
   },
 }
 
-// O iPad recente se apresenta como Mac; a tela sensível ao toque é o que o separa de um desktop.
 export function plataformaDoAgente(agente: string, temToque: boolean): Plataforma {
   if (/iPhone|iPad|iPod/i.test(agente)) return 'ios'
   if (/Android/i.test(agente)) return 'android'

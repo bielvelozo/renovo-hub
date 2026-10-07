@@ -60,7 +60,6 @@ export function dadosDoInicio(m: Ministerio, membroId: string, agora: Date): Dad
   }
 }
 
-// A janela abre às 22:30 do dia da Escala e fecha às 23:59 do dia seguinte.
 function janelaAberta(data: string, hoje: string, minutos: number): boolean {
   if (data === hoje) return minutos >= MINUTOS_DO_POS_CULTO
 

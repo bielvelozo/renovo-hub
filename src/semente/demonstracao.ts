@@ -38,8 +38,6 @@ export function dadosDaDemonstracao(hoje: string): { membros: Membro[]; musicas:
   return { membros: m.membros, musicas: m.musicas, escalas: [...fixas, ...escalasDeHoje(hoje)] }
 }
 
-// O smoke monta o mês seguinte com POST /api/escalas/mes e confere os domingos criados:
-// uma Agendada de demonstração num domingo ocuparia o lugar de um deles.
 function foraDoDomingo(data: string, hoje: string): string {
   return data >= hoje && diaDaSemana(data) === 0 ? somarDias(data, 1) : data
 }

@@ -92,7 +92,6 @@ function FolhaDoLink({ convite, fechar }: { convite: Convite; fechar: () => void
       await navigator.clipboard.writeText(endereco)
       avisar('Copiado')
     } catch {
-      // Sem permissão de área de transferência: a pessoa copia o texto à mão.
     }
   }
 

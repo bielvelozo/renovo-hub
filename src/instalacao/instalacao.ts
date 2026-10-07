@@ -44,7 +44,6 @@ export function criarInstalacao(alvo: EventTarget): Instalacao {
       const guardado = evento
       if (!guardado) return 'indisponivel'
 
-      // O navegador só aceita um prompt() por evento.
       evento = null
       mudar()
 

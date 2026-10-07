@@ -8,8 +8,6 @@ import {
   segredosDoRegistro,
 } from './cifra'
 
-// Exemplo da seção 5 do RFC 8291, com os valores intermediários que o próprio
-// RFC publica: se a derivação bate com eles, a criptografia está conforme.
 const RFC = {
   carga: 'When I grow up, I want to be a watermelon',
   uaPublica: 'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcxaOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4',
