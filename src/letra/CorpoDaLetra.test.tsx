@@ -29,7 +29,7 @@ describe('corpo da letra', () => {
     expect(container.textContent).not.toContain('Rio – Renovo')
   })
 
-  it('cada verso é um bloco próprio, para a continuação de um verso longo vir recuada', () => {
+  it('cada verso é um bloco próprio, sem quebra de linha manual', () => {
     const { container } = render(<CorpoDaLetra letra={LETRA} />)
     const [primeira, refrao] = container.querySelectorAll('p:not(.marcador)')
 

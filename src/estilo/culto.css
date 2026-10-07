@@ -348,13 +348,11 @@
 }
 
 .letra p {
-  margin: 0 0 1.1em;
+  margin: 0 0 1.5em;
 }
 
 .letra .verso {
   display: block;
-  padding-left: 0.6em;
-  text-indent: -0.6em;
   text-wrap: pretty;
 }
 
